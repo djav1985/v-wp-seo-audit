@@ -31,7 +31,7 @@ jQuery(function($){
 // Constructor
 function PagePeekerHelper(image, data, onReady, onError) {
     jQuery.ajaxSetup({ cache: false });
-    this.proxy = _global.baseUrl+'/index.php/proxy';
+    this.proxy = _global.baseUrl+'/index.php?r=PagePeekerProxy/index';
     this.data = data;
     this.onReady = onReady;
     this.onError = onError;
@@ -127,6 +127,80 @@ var WrHelper = (function () {
         },
     }
 })();
+
+// Form submission handler
+jQuery(function($) {
+    $('#submit').on('click', function(e) {
+        e.preventDefault();
+        
+        var domain = $('#domain').val().trim();
+        var $errors = $('#errors');
+        var $progressBar = $('#progress-bar');
+        
+        // Hide previous errors
+        $errors.hide().html('');
+        
+        // Validate domain
+        if (!domain) {
+            $errors.html('Please enter a domain name').show();
+            return;
+        }
+        
+        // Show progress bar
+        $progressBar.show();
+        $(this).prop('disabled', true);
+        
+        // Get the base URL from global variable or construct it
+        var baseUrl = (typeof _global !== 'undefined' && _global.baseUrl) ? _global.baseUrl : '';
+        
+        // Submit via AJAX to parse controller
+        $.ajax({
+            url: baseUrl + '/index.php?r=parse/index',
+            type: 'GET',
+            data: {
+                'Website[domain]': domain
+            },
+            dataType: 'json',
+            success: function(response) {
+                // Check if response is a URL (successful validation)
+                if (typeof response === 'string' && response.indexOf('http') === 0) {
+                    // Redirect to the analysis page
+                    window.location.href = response;
+                } else if (typeof response === 'string') {
+                    // Relative URL, redirect to it
+                    window.location.href = response;
+                } else if (response.domain) {
+                    // Error response with validation errors
+                    var errorMessages = [];
+                    $.each(response.domain, function(i, msg) {
+                        errorMessages.push(msg);
+                    });
+                    $errors.html(errorMessages.join('<br>')).show();
+                    $progressBar.hide();
+                    $('#submit').prop('disabled', false);
+                } else {
+                    // Unknown response
+                    $errors.html('An error occurred. Please try again.').show();
+                    $progressBar.hide();
+                    $('#submit').prop('disabled', false);
+                }
+            },
+            error: function() {
+                $errors.html('An error occurred. Please try again.').show();
+                $progressBar.hide();
+                $('#submit').prop('disabled', false);
+            }
+        });
+    });
+    
+    // Allow Enter key to submit
+    $('#domain').on('keypress', function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            $('#submit').trigger('click');
+        }
+    });
+});
 
 var WrPsi = (function () {
     var baseApiUrl = 'https://googlechrome.github.io/lighthouse/viewer/';
