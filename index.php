@@ -4,6 +4,20 @@
  * This file handles AJAX and direct requests to the Yii application
  */
 
+// Prevent direct access to this file for security
+if (!isset($_GET['r']) && !isset($_POST['r'])) {
+    die('Direct access not allowed');
+}
+
+// Set error reporting similar to main plugin
+error_reporting(E_ALL & ~(E_NOTICE | E_DEPRECATED | E_STRICT));
+
+if (!@ini_get('date.timezone')) {
+    date_default_timezone_set('UTC');
+}
+
+mb_internal_encoding('UTF-8');
+
 // Check if WordPress is loaded
 if (!defined('ABSPATH')) {
     // If not, we need to load WordPress
