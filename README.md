@@ -1,3 +1,26 @@
+# V-WP-SEO-Audit WordPress Plugin
+
+WordPress SEO Audit plugin - Analyze your website's SEO performance
+
+## Description
+
+This plugin provides comprehensive SEO audit functionality for WordPress. It analyzes websites for SEO issues, performance, meta tags, links, and more.
+
+## Installation
+
+1. Upload the plugin files to the `/wp-content/plugins/v-wp-seo-audit` directory, or install the plugin through the WordPress plugins screen directly.
+2. Activate the plugin through the 'Plugins' screen in WordPress
+3. Navigate to the 'SEO Audit' menu item in the WordPress admin to use the plugin
+
+## Features
+
+- Website SEO analysis
+- Meta tags verification
+- Link extraction and analysis
+- Content analysis
+- Performance testing
+- PageSpeed Insights integration
+
 ## PHP_CodeSniffer (phpcs) Setup
 
 This project uses [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) for code linting.
