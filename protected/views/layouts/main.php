@@ -1,13 +1,5 @@
 <?php /* @var $this Controller */ ?>
-<!-- WordPress Plugin Layout - No <head> section needed -->
-<div class="container mt-3">
-    <div class="row">
-        <div class="col">
-
-        </div>
-    </div>
-</div>
-
+<!-- WordPress Plugin Layout - No <head> section needed, assets are enqueued via plugin file -->
 <div class="container mt-3">
     <div class="row">
         <div class="col">
