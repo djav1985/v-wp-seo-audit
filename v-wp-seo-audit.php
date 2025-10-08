@@ -265,3 +265,17 @@ function v_wp_seo_audit_deactivate() {
     // Note: This does NOT delete tables - use uninstall for that
 }
 register_deactivation_hook(__FILE__, 'v_wp_seo_audit_deactivate');
+
+// Uninstall hook - remove plugin database tables
+function v_wp_seo_audit_uninstall() {
+    global $wpdb;
+    $table_prefix = $wpdb->prefix . 'ca_';
+    $tables = array(
+        'cloud', 'content', 'document', 'issetobject', 'links', 'metatags', 'misc', 'pagespeed', 'w3c', 'website'
+    );
+    foreach ($tables as $table) {
+        $wpdb->query("DROP TABLE IF EXISTS `{$table_prefix}{$table}`;");
+    }
+    delete_option('v_wp_seo_audit_version');
+}
+register_uninstall_hook(__FILE__, 'v_wp_seo_audit_uninstall');

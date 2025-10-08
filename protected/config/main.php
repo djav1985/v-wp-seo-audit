@@ -4,11 +4,12 @@ $cfg_local = __DIR__.DIRECTORY_SEPARATOR."config_local.php";
 $params = is_file($cfg_local) ? require $cfg_local : require $cfg_main;
 
 return array(
-	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
+    'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
     'name'=>$params['app.name'],
     'language'=>$params['app.default_language'],
     'timeZone'=>$params['app.timezone'],
     'preload'=>array('log'),
+    'defaultController'=>'site',
 
 
 	// autoloading model and component classes
