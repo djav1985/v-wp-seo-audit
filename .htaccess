@@ -1,10 +1,12 @@
-RewriteEngine on
+# This .htaccess file is no longer needed as this is now a WordPress plugin.
+# WordPress handles all routing through its own .htaccess file.
+# This file is kept for reference only.
 
+# Original standalone configuration (deprecated):
+# RewriteEngine on
 # if a directory or a file exists, use it directly
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-
-RedirectMatch 404 /\.git
-
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RedirectMatch 404 /\.git
 # otherwise forward it to index.php
-RewriteRule . index.php
+# RewriteRule . index.php
