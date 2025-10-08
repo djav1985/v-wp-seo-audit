@@ -72,6 +72,16 @@ function v_wp_seo_audit_init() {
             // Set base URL to plugin's relative path (from site root)
             $plugin_relative_url = str_replace(get_site_url(), '', rtrim(V_WP_SEO_AUDIT_PLUGIN_URL, '/'));
             $request->setBaseUrl($plugin_relative_url);
+            // In WordPress, we need to use the index.php as script URL
+            $request->setScriptUrl($plugin_relative_url . '/index.php');
+        }
+        
+        // Configure URL manager for WordPress context
+        if ($v_wp_seo_audit_app->hasComponent('urlManager')) {
+            $urlManager = $v_wp_seo_audit_app->getUrlManager();
+            // Force GET format in WordPress since we can't use pretty URLs
+            $urlManager->urlFormat = 'get';
+            $urlManager->showScriptName = true;
         }
     }
 }
@@ -79,7 +89,7 @@ add_action('wp', 'v_wp_seo_audit_init'); // Use 'wp' instead of 'init' to have a
 
 // Enqueue styles and scripts for front-end
 function v_wp_seo_audit_enqueue_assets() {
-    global $post;
+    global $post, $v_wp_seo_audit_app;
     
     // Only load if shortcode is present on the page
     if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'v_wp_seo_audit')) {
@@ -94,6 +104,22 @@ function v_wp_seo_audit_enqueue_assets() {
         wp_enqueue_script('v-wp-seo-audit-flot', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/jquery.flot.js', array('jquery'), V_WP_SEO_AUDIT_VERSION, true);
         wp_enqueue_script('v-wp-seo-audit-flot-pie', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/jquery.flot.pie.js', array('jquery', 'v-wp-seo-audit-flot'), V_WP_SEO_AUDIT_VERSION, true);
         wp_enqueue_script('v-wp-seo-audit-base', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/base.js', array('jquery'), V_WP_SEO_AUDIT_VERSION, true);
+        
+        // Add global JavaScript variables needed by the plugin
+        // Get the base URL from Yii app if initialized, otherwise use plugin URL
+        $base_url = rtrim(V_WP_SEO_AUDIT_PLUGIN_URL, '/');
+        $proxy_image = 0; // Default to false
+        
+        if ($v_wp_seo_audit_app !== null && $v_wp_seo_audit_app->hasComponent('request')) {
+            $base_url = $v_wp_seo_audit_app->getRequest()->getBaseUrl(true);
+            if (isset($v_wp_seo_audit_app->params['thumbnail.proxy'])) {
+                $proxy_image = (int) $v_wp_seo_audit_app->params['thumbnail.proxy'];
+            }
+        }
+        
+        // Inject global variables into the page
+        $global_vars = "var _global = { baseUrl: '" . esc_js($base_url) . "', proxyImage: " . $proxy_image . " };";
+        wp_add_inline_script('v-wp-seo-audit-base', $global_vars, 'before');
     }
 }
 add_action('wp_enqueue_scripts', 'v_wp_seo_audit_enqueue_assets');
