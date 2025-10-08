@@ -43,10 +43,6 @@ function v_wp_seo_audit_init() {
         global $v_wp_seo_audit_app;
         $v_wp_seo_audit_app = Yii::createWebApplication($config);
         
-        // Override base URL to use WordPress plugin URL
-        $_SERVER['SCRIPT_NAME'] = '/wp-admin/admin.php';
-        $_SERVER['PHP_SELF'] = '/wp-admin/admin.php';
-        
         // Set timezone from config
         if (isset($v_wp_seo_audit_app->params['app.timezone'])) {
             $v_wp_seo_audit_app->setTimeZone($v_wp_seo_audit_app->params['app.timezone']);
@@ -62,57 +58,33 @@ function v_wp_seo_audit_init() {
 }
 add_action('init', 'v_wp_seo_audit_init');
 
-// Enqueue styles and scripts
+// Enqueue styles and scripts for front-end
 function v_wp_seo_audit_enqueue_assets() {
-    // Only load on plugin pages
-    if (!isset($_GET['page']) || strpos($_GET['page'], 'v-wp-seo-audit') !== 0) {
-        return;
+    global $post;
+    
+    // Only load if shortcode is present on the page
+    if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'v_wp_seo_audit')) {
+        // Enqueue CSS files
+        wp_enqueue_style('v-wp-seo-audit-bootstrap', V_WP_SEO_AUDIT_PLUGIN_URL . 'css/bootstrap.min.css', array(), V_WP_SEO_AUDIT_VERSION);
+        wp_enqueue_style('v-wp-seo-audit-fontawesome', V_WP_SEO_AUDIT_PLUGIN_URL . 'css/fontawesome.min.css', array(), V_WP_SEO_AUDIT_VERSION);
+        wp_enqueue_style('v-wp-seo-audit-app', V_WP_SEO_AUDIT_PLUGIN_URL . 'css/app.css', array('v-wp-seo-audit-bootstrap'), V_WP_SEO_AUDIT_VERSION);
+        
+        // Enqueue JS files
+        wp_enqueue_script('jquery'); // Use WordPress jQuery
+        wp_enqueue_script('v-wp-seo-audit-bootstrap', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/bootstrap.bundle.min.js', array('jquery'), V_WP_SEO_AUDIT_VERSION, true);
+        wp_enqueue_script('v-wp-seo-audit-flot', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/jquery.flot.js', array('jquery'), V_WP_SEO_AUDIT_VERSION, true);
+        wp_enqueue_script('v-wp-seo-audit-flot-pie', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/jquery.flot.pie.js', array('jquery', 'v-wp-seo-audit-flot'), V_WP_SEO_AUDIT_VERSION, true);
+        wp_enqueue_script('v-wp-seo-audit-base', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/base.js', array('jquery'), V_WP_SEO_AUDIT_VERSION, true);
     }
-    
-    // Enqueue CSS files
-    wp_enqueue_style('v-wp-seo-audit-bootstrap', V_WP_SEO_AUDIT_PLUGIN_URL . 'css/bootstrap.min.css', array(), V_WP_SEO_AUDIT_VERSION);
-    wp_enqueue_style('v-wp-seo-audit-fontawesome', V_WP_SEO_AUDIT_PLUGIN_URL . 'css/fontawesome.min.css', array(), V_WP_SEO_AUDIT_VERSION);
-    wp_enqueue_style('v-wp-seo-audit-app', V_WP_SEO_AUDIT_PLUGIN_URL . 'css/app.css', array('v-wp-seo-audit-bootstrap'), V_WP_SEO_AUDIT_VERSION);
-    
-    // Enqueue JS files
-    wp_enqueue_script('jquery'); // Use WordPress jQuery
-    wp_enqueue_script('v-wp-seo-audit-bootstrap', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/bootstrap.bundle.min.js', array('jquery'), V_WP_SEO_AUDIT_VERSION, true);
-    wp_enqueue_script('v-wp-seo-audit-flot', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/jquery.flot.js', array('jquery'), V_WP_SEO_AUDIT_VERSION, true);
-    wp_enqueue_script('v-wp-seo-audit-flot-pie', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/jquery.flot.pie.js', array('jquery', 'v-wp-seo-audit-flot'), V_WP_SEO_AUDIT_VERSION, true);
-    wp_enqueue_script('v-wp-seo-audit-base', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/base.js', array('jquery'), V_WP_SEO_AUDIT_VERSION, true);
-    
-    // Add custom CSS for WordPress admin integration
-    wp_add_inline_style('v-wp-seo-audit-app', '
-        .v-wp-seo-audit-container {
-            background: #fff;
-            padding: 20px;
-            margin: 20px 0;
-        }
-    ');
 }
-add_action('admin_enqueue_scripts', 'v_wp_seo_audit_enqueue_assets');
+add_action('wp_enqueue_scripts', 'v_wp_seo_audit_enqueue_assets');
 
-// Add admin menu
-function v_wp_seo_audit_admin_menu() {
-    add_menu_page(
-        'V-WP-SEO-Audit',
-        'SEO Audit',
-        'manage_options',
-        'v-wp-seo-audit',
-        'v_wp_seo_audit_admin_page',
-        'dashicons-search',
-        80
-    );
-}
-add_action('admin_menu', 'v_wp_seo_audit_admin_menu');
-
-// Render admin page
-function v_wp_seo_audit_admin_page() {
+// Register shortcode
+function v_wp_seo_audit_shortcode($atts) {
     global $v_wp_seo_audit_app;
     
     if (!$v_wp_seo_audit_app) {
-        echo '<div class="wrap"><h1>V-WP-SEO-Audit</h1><p>Error: Application not initialized.</p></div>';
-        return;
+        return '<div class="v-wp-seo-audit-error"><p>Error: Application not initialized.</p></div>';
     }
     
     // Start output buffering to capture Yii output
@@ -123,15 +95,11 @@ function v_wp_seo_audit_admin_page() {
         $v_wp_seo_audit_app->run();
         $content = ob_get_clean();
         
-        // Wrap in WordPress admin wrapper
-        echo '<div class="wrap v-wp-seo-audit-container">';
-        echo $content;
-        echo '</div>';
+        // Wrap in container
+        return '<div class="v-wp-seo-audit-container">' . $content . '</div>';
     } catch (Exception $e) {
         ob_end_clean();
-        echo '<div class="wrap">';
-        echo '<h1>V-WP-SEO-Audit</h1>';
-        echo '<div class="error"><p>Error: ' . esc_html($e->getMessage()) . '</p></div>';
-        echo '</div>';
+        return '<div class="v-wp-seo-audit-error"><p>Error: ' . esc_html($e->getMessage()) . '</p></div>';
     }
 }
+add_shortcode('v_wp_seo_audit', 'v_wp_seo_audit_shortcode');

@@ -10,7 +10,17 @@ This plugin provides comprehensive SEO audit functionality for WordPress. It ana
 
 1. Upload the plugin files to the `/wp-content/plugins/v-wp-seo-audit` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
-3. Navigate to the 'SEO Audit' menu item in the WordPress admin to use the plugin
+3. Add the shortcode `[v_wp_seo_audit]` to any page or post where you want to display the SEO audit tool
+
+## Usage
+
+To display the SEO audit tool on your website, simply add the following shortcode to any page or post:
+
+```
+[v_wp_seo_audit]
+```
+
+The plugin will display on the front-end where the shortcode is placed.
 
 ## Features
 
@@ -20,6 +30,7 @@ This plugin provides comprehensive SEO audit functionality for WordPress. It ana
 - Content analysis
 - Performance testing
 - PageSpeed Insights integration
+- Front-end display via shortcode
 
 ## PHP_CodeSniffer (phpcs) Setup
 
