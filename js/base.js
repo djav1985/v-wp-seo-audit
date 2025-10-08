@@ -31,7 +31,7 @@ jQuery(function($){
 // Constructor
 function PagePeekerHelper(image, data, onReady, onError) {
     jQuery.ajaxSetup({ cache: false });
-    this.proxy = _global.baseUrl+'/index.php/proxy';
+    this.proxy = _global.baseUrl+'/index.php?r=PagePeekerProxy/index';
     this.data = data;
     this.onReady = onReady;
     this.onError = onError;
