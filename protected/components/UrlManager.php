@@ -29,6 +29,8 @@ class UrlManager extends CUrlManager
             '<language:\w{2}>/<controller:[\w\-]+>/<action:[\w\-]+>/<id:\d+>' => '<controller>/<action>',
             '<language:\w{2}>/<controller:[\w\-]+>/<action:[\w\-]+>' => '<controller>/<action>',
             '<language:\w{2}>/<controller:[\w\-]+>' => '<controller>/index',
+            // Catch-all: route unknown controllers to site/index
+            '<language:\w{2}>/<_c:.+>' => 'site/index',
         );
     }
 
@@ -42,6 +44,8 @@ class UrlManager extends CUrlManager
             '<controller:[\w\-]+>/<action:[\w\-]+>/<id:\d+>' => '<controller>/<action>',
             '<controller:[\w\-]+>/<action:[\w\-]+>' => '<controller>/<action>',
             '<controller:[\w\-]+>' => '<controller>/index',
+            // Catch-all: route unknown controllers to site/index
+            '<_c:.+>' => 'site/index',
         );
     }
 }

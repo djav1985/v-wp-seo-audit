@@ -43,22 +43,16 @@ return array(
 		),
 
         'db'=>array(
-            // Mysql host: localhost and databse name catalog
-            'connectionString' => "mysql:host={$params['db.host']};dbname={$params['db.dbname']};port={$params['db.port']}",
-            // whether to turn on prepare emulation
-            'emulatePrepare' => true,
-            // db username
-            'username' => $params['db.username'],
-            // db password
-            'password' => $params['db.password'],
-            // default cahrset
-            'charset' => 'utf8mb4',
-            // table prefix
-            'tablePrefix' => 'ca_',
-            // cache time to reduce SHOW CREATE TABLE * queries
-            'schemaCachingDuration' => 60 * 60 * 24 * 30,
-            'enableProfiling'=> YII_DEBUG,
-            'enableParamLogging' => YII_DEBUG,
+              // Use WordPress DB constants if defined, otherwise fallback to Yii config
+              'connectionString' => "mysql:host=" . (defined('DB_HOST') ? DB_HOST : $params['db.host']) . ";dbname=" . (defined('DB_NAME') ? DB_NAME : $params['db.dbname']) . ";port=" . (isset($params['db.port']) ? $params['db.port'] : '3306'),
+              'emulatePrepare' => true,
+              'username' => defined('DB_USER') ? DB_USER : $params['db.username'],
+              'password' => defined('DB_PASSWORD') ? DB_PASSWORD : $params['db.password'],
+              'charset' => defined('DB_CHARSET') ? DB_CHARSET : 'utf8mb4',
+              'tablePrefix' => 'wp_ca_',
+              'schemaCachingDuration' => 60 * 60 * 24 * 30,
+              'enableProfiling'=> defined('YII_DEBUG') ? YII_DEBUG : false,
+              'enableParamLogging' => defined('YII_DEBUG') ? YII_DEBUG : false,
         ),
 
 		// Error handler

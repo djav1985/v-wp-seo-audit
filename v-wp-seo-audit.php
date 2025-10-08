@@ -69,8 +69,9 @@ function v_wp_seo_audit_init() {
         // Configure request component to use WordPress plugin URL
         if ($v_wp_seo_audit_app->hasComponent('request')) {
             $request = $v_wp_seo_audit_app->getRequest();
-            // Set base URL to plugin URL (without trailing slash)
-            $request->setBaseUrl(rtrim(V_WP_SEO_AUDIT_PLUGIN_URL, '/'));
+            // Set base URL to plugin's relative path (from site root)
+            $plugin_relative_url = str_replace(get_site_url(), '', rtrim(V_WP_SEO_AUDIT_PLUGIN_URL, '/'));
+            $request->setBaseUrl($plugin_relative_url);
         }
     }
 }

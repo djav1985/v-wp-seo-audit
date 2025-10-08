@@ -9,12 +9,8 @@
 <script type="text/javascript">
     "use strict";
 
-    $(document).ready(function(){
-        var urls = {
-            <?php foreach($thumbnailStack as $id=>$thumbnail): ?>
-            <?php echo $id ?>:<?php echo $thumbnail ?>,
-            <?php endforeach; ?>
-        };
+    jQuery(function($){
+        var urls = <?php echo json_encode($thumbnailStack ?: new stdClass()); ?>;
         dynamicThumbnail(urls);
     });
 </script>

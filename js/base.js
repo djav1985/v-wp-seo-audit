@@ -1,17 +1,17 @@
 function dynamicThumbnail(url) {
+    if (!url || typeof url !== 'object') {
+        url = {};
+    }
     $.each(url, function(key, data) {
         var onReady = function(img, downloadUrl) {
             img.attr("src", downloadUrl);
-            //console.log(downloadUrl);
             img.on("error", function() {
                 onError(img);
             });
         };
-
         var onError = function(img) {
             img.attr("src", _global.baseUrl + "/img/not-available.png");
         };
-
         var image = $('#thumb_'+key);
         if(_global.proxyImage === 1) {
             var pp = new PagePeekerHelper(image, data, onReady, onError);
@@ -22,10 +22,10 @@ function dynamicThumbnail(url) {
     });
 }
 
-$(document).ready(function(){
+jQuery(function($){
     $("a.disabled, li.disabled a").click(function(){
         return false;
-    })
+    });
 });
 
 // Constructor
