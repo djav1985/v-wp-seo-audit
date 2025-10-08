@@ -26,6 +26,10 @@ if (!@ini_get('date.timezone')) {
 
 mb_internal_encoding('UTF-8');
 
+// Global variable to store Yii application instance
+global $v_wp_seo_audit_app;
+$v_wp_seo_audit_app = null;
+
 // Plugin initialization
 function v_wp_seo_audit_init() {
     // Initialize Yii framework
@@ -39,9 +43,20 @@ function v_wp_seo_audit_init() {
         global $v_wp_seo_audit_app;
         $v_wp_seo_audit_app = Yii::createWebApplication($config);
         
+        // Override base URL to use WordPress plugin URL
+        $_SERVER['SCRIPT_NAME'] = '/wp-admin/admin.php';
+        $_SERVER['PHP_SELF'] = '/wp-admin/admin.php';
+        
         // Set timezone from config
         if (isset($v_wp_seo_audit_app->params['app.timezone'])) {
             $v_wp_seo_audit_app->setTimeZone($v_wp_seo_audit_app->params['app.timezone']);
+        }
+        
+        // Configure request component to use WordPress plugin URL
+        if ($v_wp_seo_audit_app->hasComponent('request')) {
+            $request = $v_wp_seo_audit_app->getRequest();
+            // Set base URL to plugin URL (without trailing slash)
+            $request->setBaseUrl(rtrim(V_WP_SEO_AUDIT_PLUGIN_URL, '/'));
         }
     }
 }
@@ -65,6 +80,15 @@ function v_wp_seo_audit_enqueue_assets() {
     wp_enqueue_script('v-wp-seo-audit-flot', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/jquery.flot.js', array('jquery'), V_WP_SEO_AUDIT_VERSION, true);
     wp_enqueue_script('v-wp-seo-audit-flot-pie', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/jquery.flot.pie.js', array('jquery', 'v-wp-seo-audit-flot'), V_WP_SEO_AUDIT_VERSION, true);
     wp_enqueue_script('v-wp-seo-audit-base', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/base.js', array('jquery'), V_WP_SEO_AUDIT_VERSION, true);
+    
+    // Add custom CSS for WordPress admin integration
+    wp_add_inline_style('v-wp-seo-audit-app', '
+        .v-wp-seo-audit-container {
+            background: #fff;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    ');
 }
 add_action('admin_enqueue_scripts', 'v_wp_seo_audit_enqueue_assets');
 
@@ -91,16 +115,23 @@ function v_wp_seo_audit_admin_page() {
         return;
     }
     
-    // Run the Yii application to handle the request
-    echo '<div class="wrap v-wp-seo-audit-container">';
+    // Start output buffering to capture Yii output
+    ob_start();
     
     try {
         // Process the request through Yii
         $v_wp_seo_audit_app->run();
+        $content = ob_get_clean();
+        
+        // Wrap in WordPress admin wrapper
+        echo '<div class="wrap v-wp-seo-audit-container">';
+        echo $content;
+        echo '</div>';
     } catch (Exception $e) {
+        ob_end_clean();
+        echo '<div class="wrap">';
         echo '<h1>V-WP-SEO-Audit</h1>';
         echo '<div class="error"><p>Error: ' . esc_html($e->getMessage()) . '</p></div>';
+        echo '</div>';
     }
-    
-    echo '</div>';
 }
