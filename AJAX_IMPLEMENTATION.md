@@ -143,3 +143,8 @@ Added to JavaScript global `_global` object:
 - ✅ Fixed "Failed to open stream: No such file or directory" error by ensuring all requests use AJAX
 - ✅ Fixed "Direct access not allowed" error with improved error messaging
 - ✅ PagePeeker proxy handler now correctly acknowledges that thumbnail proxy is disabled (uses thum.io directly)
+- ✅ Fixed "Trying to access array offset on value of type null" error on form submission
+  - Added database check before controller instantiation in `v_wp_seo_audit_ajax_generate_report()`
+  - Returns friendly error message if domain not analyzed yet
+  - Added safety checks in `WebsitestatController::init()` and `collectInfo()` methods
+  - Separated assignment from conditional for better readability
