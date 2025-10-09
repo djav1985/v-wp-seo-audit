@@ -1,4 +1,6 @@
 <?php
+Yii::import("application.vendors.Webmaster.Utils.IDN");
+
 class Website extends CActiveRecord {
 
 	public static function model($className=__CLASS__) {
@@ -15,7 +17,12 @@ class Website extends CActiveRecord {
 
     public static function removeByDomain($domain)
     {
-        $domain = idn_to_ascii($domain);
+        if(function_exists('idn_to_ascii')) {
+            $domain = idn_to_ascii($domain);
+        } else {
+            $idn = new IDN();
+            $domain = $idn->encode($domain);
+        }
         $model = self::model()->findByAttributes(array(
             "md5domain"=>md5($domain),
         ));
