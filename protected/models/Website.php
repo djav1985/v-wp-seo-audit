@@ -17,12 +17,8 @@ class Website extends CActiveRecord {
 
     public static function removeByDomain($domain)
     {
-        if(function_exists('idn_to_ascii')) {
-            $domain = idn_to_ascii($domain);
-        } else {
-            $idn = new IDN();
-            $domain = $idn->encode($domain);
-        }
+        $idn = new IDN();
+        $domain = $idn->encode($domain);
         $model = self::model()->findByAttributes(array(
             "md5domain"=>md5($domain),
         ));

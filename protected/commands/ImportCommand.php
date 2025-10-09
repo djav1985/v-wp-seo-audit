@@ -31,14 +31,9 @@ class ImportCommand extends CConsoleCommand
             }
 
             try {
-                if(function_exists('idn_to_ascii') && function_exists('idn_to_utf8')) {
-                    $domain = idn_to_ascii($file_domain);
-                    $idn = idn_to_utf8($file_domain);
-                } else {
-                    $idnConverter = new IDN();
-                    $domain = $idnConverter->encode($file_domain);
-                    $idn = $file_domain;
-                }
+                $idnConverter = new IDN();
+                $domain = $idnConverter->encode($file_domain);
+                $idn = $file_domain;
                 $ip = gethostbyname($domain);
                 $long = ip2long($ip);
                 if(false === $domain) {
