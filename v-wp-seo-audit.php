@@ -554,35 +554,8 @@ add_action( 'wp_ajax_nopriv_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pag
 // WordPress AJAX handler for PDF download
 function v_wp_seo_audit_ajax_download_pdf()
 {
-    // Log all POST data for debugging (remove in production)
-    if (defined( 'WP_DEBUG' ) && WP_DEBUG) {
-        error_log( 'PDF Download Request - POST data: ' . print_r( $_POST, true ) );
-    }
-    
     // Verify nonce for security
-    // Note: We use wp_verify_nonce() instead of check_ajax_referer() because
-    // this handler is called via form submission with target="_blank", which may
-    // not have the correct referrer header. check_ajax_referer() checks both nonce
-    // and referrer, while wp_verify_nonce() only checks the nonce.
-    $nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( $_POST['nonce'] ) : '';
-    
-    if (empty( $nonce )) {
-        if (defined( 'WP_DEBUG' ) && WP_DEBUG) {
-            error_log( 'PDF Download: Nonce is empty' );
-        }
-        wp_send_json_error( array( 'message' => 'Security check failed: Nonce is empty' ) );
-        return;
-    }
-    
-    $nonce_check = wp_verify_nonce( $nonce, 'v_wp_seo_audit_nonce' );
-    if (defined( 'WP_DEBUG' ) && WP_DEBUG) {
-        error_log( 'PDF Download: Nonce check result: ' . var_export( $nonce_check, true ) );
-    }
-    
-    if ( ! $nonce_check) {
-        wp_send_json_error( array( 'message' => 'Security check failed: Invalid nonce' ) );
-        return;
-    }
+    check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
     
     global $v_wp_seo_audit_app;
     
