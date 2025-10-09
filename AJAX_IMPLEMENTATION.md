@@ -143,3 +143,8 @@ Added to JavaScript global `_global` object:
 - ✅ Fixed "Failed to open stream: No such file or directory" error by ensuring all requests use AJAX
 - ✅ Fixed "Direct access not allowed" error with improved error messaging
 - ✅ PagePeeker proxy handler now correctly acknowledges that thumbnail proxy is disabled (uses thum.io directly)
+- ✅ Fixed "Trying to access array offset on value of type null" error on form submission
+  - Modified `v_wp_seo_audit_ajax_generate_report()` to trigger automatic domain analysis
+  - Uses `WebsiteForm::validate()` which calls `tryToAnalyse()` to analyze domains on-demand
+  - New domains are automatically analyzed, cached domains reused, expired cache re-analyzed
+  - Proper integration with existing ParseCommand system for domain analysis
