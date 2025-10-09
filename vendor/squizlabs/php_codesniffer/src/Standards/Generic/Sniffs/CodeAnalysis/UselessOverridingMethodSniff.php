@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Detects unnecessary overridden methods that simply call their parent.
  *
@@ -27,125 +28,144 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class UselessOverridingMethodSniff implements Sniff
 {
+	/**
+	  * Registers the tokens that this sniff wants to listen for.
+	 *
+	 * @return int[]
+	 */
+	public function register()
+	{
+
+		return array( T_FUNCTION );
+
+	 
+	}//end register()
 
 
-    /**
-     * Registers the tokens that this sniff wants to listen for.
-     *
-     * @return int[]
-     */
-    public function register()
-    {
-        return [T_FUNCTION];
+	/**
+	 * Processes this test, when one of its tokens is encountered.
+	 *
+	 * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+	* @param int                         $stackPtr  The position of the current token
+	 *                                               in the stack passed in $tokens.
+	*
+	 * @return void
+	 */
+	public function process( File $phpcsFile, $stackPtr)
+	{
 
-    }//end register()
+		$tokens = $phpcsFile->getTokens();
+		$token  = $tokens[ $stackPtr ];
 
+		// Skip function without body.
+		if (isset($token['scope_opener']) === false) {
+			  return;
+		 
+		}
 
-    /**
-     * Processes this test, when one of its tokens is encountered.
-     *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
-     * @param int                         $stackPtr  The position of the current token
-     *                                               in the stack passed in $tokens.
-     *
-     * @return void
-     */
-    public function process(File $phpcsFile, $stackPtr)
-    {
-        $tokens = $phpcsFile->getTokens();
-        $token  = $tokens[$stackPtr];
+		// Get function name.
+		$methodName = $phpcsFile->getDeclarationName($stackPtr);
 
-        // Skip function without body.
-        if (isset($token['scope_opener']) === false) {
-            return;
-        }
+		// Get all parameters from method signature.
+		$signature = array();
+		foreach ($phpcsFile->getMethodParameters($stackPtr) as $param) {
+			$signature[] = $param['name'];
+	  
+		}
 
-        // Get function name.
-        $methodName = $phpcsFile->getDeclarationName($stackPtr);
+		$next = ++$token['scope_opener'];
+		$end  = --$token['scope_closer'];
 
-        // Get all parameters from method signature.
-        $signature = [];
-        foreach ($phpcsFile->getMethodParameters($stackPtr) as $param) {
-            $signature[] = $param['name'];
-        }
+		for (; $next <= $end; ++$next) {
+			  $code = $tokens[ $next ]['code'];
 
-        $next = ++$token['scope_opener'];
-        $end  = --$token['scope_closer'];
+			if (isset(Tokens::$emptyTokens[ $code ]) === true) {
+				continue;
+		   
+			} elseif ($code === T_RETURN) {
+				continue;
+		   
+			}
 
-        for (; $next <= $end; ++$next) {
-            $code = $tokens[$next]['code'];
+			break;
+	  
+		}
 
-            if (isset(Tokens::$emptyTokens[$code]) === true) {
-                continue;
-            } else if ($code === T_RETURN) {
-                continue;
-            }
+		// Any token except 'parent' indicates correct code.
+		if ($tokens[ $next ]['code'] !== T_PARENT) {
+			return;
+		 
+		}
 
-            break;
-        }
+		// Find next non empty token index, should be double colon.
+		$next = $phpcsFile->findNext(Tokens::$emptyTokens, ( $next + 1 ), null, true);
 
-        // Any token except 'parent' indicates correct code.
-        if ($tokens[$next]['code'] !== T_PARENT) {
-            return;
-        }
+		// Skip for invalid code.
+		if ($next === false || $tokens[ $next ]['code'] !== T_DOUBLE_COLON) {
+			return;
+		 
+		}
 
-        // Find next non empty token index, should be double colon.
-        $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($next + 1), null, true);
+		// Find next non empty token index, should be the function name.
+		$next = $phpcsFile->findNext(Tokens::$emptyTokens, ( $next + 1 ), null, true);
 
-        // Skip for invalid code.
-        if ($next === false || $tokens[$next]['code'] !== T_DOUBLE_COLON) {
-            return;
-        }
+		// Skip for invalid code or other method.
+		if ($next === false || $tokens[ $next ]['content'] !== $methodName) {
+			return;
+		 
+		}
 
-        // Find next non empty token index, should be the function name.
-        $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($next + 1), null, true);
+		// Find next non empty token index, should be the open parenthesis.
+		$next = $phpcsFile->findNext(Tokens::$emptyTokens, ( $next + 1 ), null, true);
 
-        // Skip for invalid code or other method.
-        if ($next === false || $tokens[$next]['content'] !== $methodName) {
-            return;
-        }
+		// Skip for invalid code.
+		if ($next === false || $tokens[ $next ]['code'] !== T_OPEN_PARENTHESIS) {
+			return;
+		 
+		}
 
-        // Find next non empty token index, should be the open parenthesis.
-        $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($next + 1), null, true);
+		$parameters       = array( '' );
+		$parenthesisCount = 1;
+		$count            = count($tokens);
+		for (++$next; $next < $count; ++$next) {
+			 $code = $tokens[ $next ]['code'];
 
-        // Skip for invalid code.
-        if ($next === false || $tokens[$next]['code'] !== T_OPEN_PARENTHESIS) {
-            return;
-        }
+			if ($code === T_OPEN_PARENTHESIS) {
+				++$parenthesisCount;
+			
+			} elseif ($code === T_CLOSE_PARENTHESIS) {
+					 --$parenthesisCount;
+			
+			} elseif ($parenthesisCount === 1 && $code === T_COMMA) {
+						  $parameters[] = '';
+			 
+			} elseif (isset(Tokens::$emptyTokens[ $code ]) === false) {
+						  $parameters[ ( count($parameters) - 1 ) ] .= $tokens[ $next ]['content'];
+		  
+			}
 
-        $parameters       = [''];
-        $parenthesisCount = 1;
-        $count            = count($tokens);
-        for (++$next; $next < $count; ++$next) {
-            $code = $tokens[$next]['code'];
-
-            if ($code === T_OPEN_PARENTHESIS) {
-                ++$parenthesisCount;
-            } else if ($code === T_CLOSE_PARENTHESIS) {
-                --$parenthesisCount;
-            } else if ($parenthesisCount === 1 && $code === T_COMMA) {
-                $parameters[] = '';
-            } else if (isset(Tokens::$emptyTokens[$code]) === false) {
-                $parameters[(count($parameters) - 1)] .= $tokens[$next]['content'];
-            }
-
-            if ($parenthesisCount === 0) {
+			if ($parenthesisCount === 0) {
                 break;
+          
             }
+       
         }//end for
 
-        $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($next + 1), null, true);
-        if ($next === false || $tokens[$next]['code'] !== T_SEMICOLON) {
+        $next = $phpcsFile->findNext(Tokens::$emptyTokens, ( $next + 1 ), null, true);
+        if ($next === false || $tokens[ $next ]['code'] !== T_SEMICOLON) {
             return;
+         
         }
 
         // Check rest of the scope.
         for (++$next; $next <= $end; ++$next) {
-            $code = $tokens[$next]['code'];
+            $code = $tokens[ $next ]['code'];
             // Skip for any other content.
-            if (isset(Tokens::$emptyTokens[$code]) === false) {
+            if (isset(Tokens::$emptyTokens[ $code ]) === false) {
                 return;
+             
             }
+       
         }
 
         $parameters = array_map('trim', $parameters);
@@ -153,9 +173,8 @@ class UselessOverridingMethodSniff implements Sniff
 
         if (count($parameters) === count($signature) && $parameters === $signature) {
             $phpcsFile->addWarning('Possible useless method overriding detected', $stackPtr, 'Found');
+        
         }
-
     }//end process()
-
-
+    
 }//end class

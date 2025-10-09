@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests that the correct Subversion properties are set.
  *
@@ -15,31 +16,32 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 
 class SubversionPropertiesSniff implements Sniff
 {
+	/**
+	 * The Subversion properties that should be set.
+	*
+	 * Key of array is the SVN property and the value is the
+	* exact value the property should have or NULL if the
+	 * property should just be set but the value is not fixed.
+	 *
+	 * @var array
+	 */
+	protected $properties = array(
+	 'svn:keywords'    => 'Author Id Revision',
+	   'svn:eol-style' => 'native',
+	);
 
-    /**
-     * The Subversion properties that should be set.
-     *
-     * Key of array is the SVN property and the value is the
-     * exact value the property should have or NULL if the
-     * property should just be set but the value is not fixed.
-     *
-     * @var array
-     */
-    protected $properties = [
-        'svn:keywords'  => 'Author Id Revision',
-        'svn:eol-style' => 'native',
-    ];
 
-
-    /**
-     * Returns an array of tokens this test wants to listen for.
-     *
-     * @return array
-     */
-    public function register()
+	/**
+	  * Returns an array of tokens this test wants to listen for.
+	 *
+	 * @return array
+	 */
+	public function register()
     {
-        return [T_OPEN_TAG];
 
+        return array( T_OPEN_TAG );
+
+     
     }//end register()
 
 
@@ -47,83 +49,95 @@ class SubversionPropertiesSniff implements Sniff
      * Processes this test, when one of its tokens is encountered.
      *
      * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
-     * @param int                         $stackPtr  The position of the current token
+    * @param int                         $stackPtr  The position of the current token
      *                                               in the stack passed in $tokens.
-     *
+    *
      * @return void
      */
-    public function process(File $phpcsFile, $stackPtr)
+    public function process( File $phpcsFile, $stackPtr)
     {
+
         $path       = $phpcsFile->getFilename();
         $properties = $this->getProperties($path);
         if ($properties === null) {
             // Not under version control.
-            return ($phpcsFile->numTokens + 1);
+            return ( $phpcsFile->numTokens + 1 );
+       
         }
 
-        $allProperties = ($properties + $this->properties);
+        $allProperties = ( $properties + $this->properties );
         foreach ($allProperties as $key => $value) {
-            if (isset($properties[$key]) === true
-                && isset($this->properties[$key]) === false
+            if (
+            isset($properties[ $key ]) === true
+              && isset($this->properties[ $key ]) === false
+             
             ) {
                 $error = 'Unexpected Subversion property "%s" = "%s"';
-                $data  = [
-                    $key,
-                    $properties[$key],
-                ];
+                $data  = array(
+                  $key,
+                $properties[ $key ],
+                );
                 $phpcsFile->addError($error, $stackPtr, 'Unexpected', $data);
                 continue;
+           
             }
 
-            if (isset($properties[$key]) === false
-                && isset($this->properties[$key]) === true
+            if (
+            isset($properties[ $key ]) === false
+             && isset($this->properties[ $key ]) === true
+          
             ) {
                 $error = 'Missing Subversion property "%s" = "%s"';
-                $data  = [
-                    $key,
-                    $this->properties[$key],
-                ];
+                $data  = array(
+                   $key,
+                 $this->properties[ $key ],
+                );
                 $phpcsFile->addError($error, $stackPtr, 'Missing', $data);
                 continue;
+           
             }
 
-            if ($properties[$key] !== null
-                && $properties[$key] !== $this->properties[$key]
+            if (
+            $properties[ $key ] !== null
+               && $properties[ $key ] !== $this->properties[ $key ]
+            
             ) {
-                $error = 'Subversion property "%s" = "%s" does not match "%s"';
-                $data  = [
-                    $key,
-                    $properties[$key],
-                    $this->properties[$key],
-                ];
-                $phpcsFile->addError($error, $stackPtr, 'NoMatch', $data);
+                   $error = 'Subversion property "%s" = "%s" does not match "%s"';
+                   $data  = array(
+                   $key,
+                 $properties[ $key ],
+                  $this->properties[ $key ],
+                   );
+                   $phpcsFile->addError($error, $stackPtr, 'NoMatch', $data);
+            
             }
+       
         }//end foreach
 
         // Ignore the rest of the file.
-        return ($phpcsFile->numTokens + 1);
-
+        return ( $phpcsFile->numTokens + 1 );
     }//end process()
 
 
     /**
-     * Returns the Subversion properties which are actually set on a path.
+        * Returns the Subversion properties which are actually set on a path.
      *
      * Returns NULL if the file is not under version control.
-     *
+      *
      * @param string $path The path to return Subversion properties on.
-     *
+        *
      * @return array
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If Subversion properties file could
-     *                                                      not be opened.
+       * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If Subversion properties file could
+        *                                                      not be opened.
      */
-    protected function getProperties($path)
+    protected function getProperties( $path)
     {
-        $properties = [];
 
-        $paths   = [];
-        $paths[] = dirname($path).'/.svn/props/'.basename($path).'.svn-work';
-        $paths[] = dirname($path).'/.svn/prop-base/'.basename($path).'.svn-base';
+        $properties = array();
+
+        $paths   = array();
+        $paths[] = dirname($path) . '/.svn/props/' . basename($path) . '.svn-work';
+        $paths[] = dirname($path) . '/.svn/prop-base/' . basename($path) . '.svn-base';
 
         $foundPath = false;
         foreach ($paths as $path) {
@@ -132,17 +146,19 @@ class SubversionPropertiesSniff implements Sniff
 
                 $handle = fopen($path, 'r');
                 if ($handle === false) {
-                    $error = 'Error opening file; could not get Subversion properties';
+                      $error = 'Error opening file; could not get Subversion properties';
                     throw new RuntimeException($error);
+               
                 }
 
                 while (feof($handle) === false) {
                     // Read a key length line. Might be END, though.
-                    $buffer = trim(fgets($handle));
+                      $buffer = trim(fgets($handle));
 
-                    // Check for the end of the hash.
+                      // Check for the end of the hash.
                     if ($buffer === 'END') {
                         break;
+                  
                     }
 
                     // Now read that much into a buffer.
@@ -160,27 +176,33 @@ class SubversionPropertiesSniff implements Sniff
                         // Length of value is ZERO characters, so
                         // value is actually empty.
                         $value = '';
+                    
                     } else {
-                        $value = fread($handle, $length);
+                                           $value = fread($handle, $length);
+                     
                     }
 
                     // Suck up extra newline after value data.
                     fgetc($handle);
 
-                    $properties[$key] = $value;
+                    $properties[ $key ] = $value;
+               
                 }//end while
 
                 fclose($handle);
+          
             }//end if
+       
         }//end foreach
 
         if ($foundPath === false) {
             return null;
+        
         }
 
         return $properties;
 
+    
     }//end getProperties()
-
-
+    
 }//end class

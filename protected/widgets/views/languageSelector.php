@@ -5,7 +5,7 @@
     <div class="dropdown-menu">
         <?php foreach ($languages as $lang_id => $language) : ?>
             <?php
-            if ( $lang_id == Yii::app()->language ) {
+            if ($lang_id == Yii::app()->language) {
 				continue;
 			}
             $url = Yii::app()->controller->createAbsoluteUrl('', array_merge($_GET, array( 'language' => $lang_id )));
