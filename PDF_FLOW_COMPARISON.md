@@ -140,7 +140,9 @@ Browser downloads file
 │  │  v_wp_seo_audit_ajax_download_pdf()              │  │
 │  │                                                   │  │
 │  │  Steps:                                           │  │
-│  │  1. check_ajax_referer() - verify nonce         │  │
+│  │  1. wp_verify_nonce() - verify nonce            │  │
+│  │     (uses wp_verify_nonce instead of            │  │
+│  │      check_ajax_referer for target="_blank")    │  │
 │  │  2. sanitize_text_field() - clean input         │  │
 │  │  3. Initialize Yii framework                     │  │
 │  │  4. Create WebsitestatController                 │  │

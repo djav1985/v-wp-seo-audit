@@ -151,7 +151,7 @@ $('body').on('click', '.v-wp-seo-audit-download-pdf', function(e) {
 
 ## Security Features
 
-1. **CSRF Protection**: Nonce verification via `check_ajax_referer()`
+1. **CSRF Protection**: Nonce verification via `wp_verify_nonce()` (changed from `check_ajax_referer()` to support form submission with `target="_blank"` which may not have correct referrer header)
 2. **Input Sanitization**: `sanitize_text_field()` for domain input
 3. **XSS Protection**: `CHtml::encode()` in view for data attributes
 4. **WordPress Authentication**: Uses built-in WordPress user authentication
@@ -221,3 +221,18 @@ See `PDF_DOWNLOAD_TESTING.md` for detailed test cases.
 - The solution is minimal and surgical as requested
 - Pre-existing coding standard issues in the file were not addressed
 - The implementation is production-ready pending manual testing
+
+## Update (Fix for -1 Error)
+
+**Issue**: After initial implementation, the PDF download button was showing a `-1` error instead of downloading the PDF.
+
+**Root Cause**: The AJAX handler was using `check_ajax_referer()` which checks both the nonce AND the HTTP referrer. When the form is submitted with `target="_blank"` (opens in new window), the referrer may not be set correctly, causing the check to fail.
+
+**Fix**: Changed to use `wp_verify_nonce()` instead of `check_ajax_referer()` in the PDF download handler. This function only validates the nonce cryptographically without checking the referrer, which is appropriate for form submissions that open in new windows.
+
+**Changes**:
+- Updated `v_wp_seo_audit_ajax_download_pdf()` to use `wp_verify_nonce()` (lines 557-567)
+- Added code comments explaining why this approach is needed
+- Updated documentation to reflect the change
+
+**Security**: CSRF protection is maintained through nonce validation. The change only removes the referrer check, which is not reliable for new window form submissions anyway.
