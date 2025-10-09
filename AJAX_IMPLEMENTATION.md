@@ -144,7 +144,7 @@ Added to JavaScript global `_global` object:
 - ✅ Fixed "Direct access not allowed" error with improved error messaging
 - ✅ PagePeeker proxy handler now correctly acknowledges that thumbnail proxy is disabled (uses thum.io directly)
 - ✅ Fixed "Trying to access array offset on value of type null" error on form submission
-  - Added database check before controller instantiation in `v_wp_seo_audit_ajax_generate_report()`
-  - Returns friendly error message if domain not analyzed yet
-  - Added safety checks in `WebsitestatController::init()` and `collectInfo()` methods
-  - Separated assignment from conditional for better readability
+  - Modified `v_wp_seo_audit_ajax_generate_report()` to trigger automatic domain analysis
+  - Uses `WebsiteForm::validate()` which calls `tryToAnalyse()` to analyze domains on-demand
+  - New domains are automatically analyzed, cached domains reused, expired cache re-analyzed
+  - Proper integration with existing ParseCommand system for domain analysis
