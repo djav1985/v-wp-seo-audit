@@ -56,7 +56,7 @@ check_ajax_referer('v_wp_seo_audit_nonce', 'nonce');
 
 **Note**: Using `check_ajax_referer()` is the WordPress best practice for AJAX handlers as it automatically dies with -1 if verification fails, providing better security than manual checking.
 
-**Exception for PDF Download Handler**: The `v_wp_seo_audit_ajax_download_pdf()` handler uses `wp_verify_nonce()` instead of `check_ajax_referer()` because it's called via form submission with `target="_blank"`. When a form opens in a new window, the HTTP referrer may not be set correctly, causing `check_ajax_referer()` to fail even with a valid nonce. The solution is to use `wp_verify_nonce()` which only validates the nonce itself, not the referrer. See the "PDF Download Button Fix" section below for details.
+**Update (Latest)**: The PDF Download Handler now uses `check_ajax_referer()` like all other AJAX handlers, as the implementation was changed from form submission to standard AJAX request. See the "PDF Download Button Fix" section below for details.
 
 ### 3. Improved index.php Error Handling
 
@@ -83,46 +83,75 @@ Changed from a simple `die('Direct access not allowed')` to a comprehensive erro
 - Marked nonce verification as completed in Future Improvements
 - Added bug fixes section
 
-### 5. PDF Download Button Fix
+### 5. PDF Download Button Fix (Updated Implementation)
 
-**File**: `v-wp-seo-audit.php` (lines 557-567)
+**File**: `v-wp-seo-audit.php` (line 558) and `js/base.js` (lines 320-405)
 
-**Problem**: The PDF download button was redirecting to `admin-ajax.php` with a `-1` error instead of downloading the PDF. This occurred because `check_ajax_referer()` was failing when the download form was submitted with `target="_blank"`.
+**Original Problem**: The PDF download button gave a `{"success":false,"data":{"message":"Security check failed"}}` error when clicked.
 
-**Root Cause**: 
-- `check_ajax_referer()` validates both the nonce AND the HTTP referrer header
-- When a form submission opens in a new window (`target="_blank"`), the referrer may not be set correctly
-- This causes the referrer check to fail, even with a valid nonce
-- WordPress's `check_ajax_referer()` automatically dies with `-1` when verification fails
+**Original Implementation Issues**:
+- Used form submission with `target="_blank"` which could cause cookie/referrer issues
+- Required special handling with `wp_verify_nonce()` instead of standard `check_ajax_referer()`
+- Poor error handling (JSON errors displayed in new tab)
+- Inconsistent with other AJAX handlers
 
-**Solution**:
-```php
-// Get nonce from POST data
-$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( $_POST['nonce'] ) : '';
+**New Solution (Current Implementation)**:
 
-// Use wp_verify_nonce() instead of check_ajax_referer()
-if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'v_wp_seo_audit_nonce' ) ) {
-    wp_send_json_error( array( 'message' => 'Security check failed' ) );
-    return;
-}
-```
+**JavaScript Changes** (`js/base.js`):
+- Replaced form submission with XMLHttpRequest
+- Set `responseType='blob'` to handle binary PDF data
+- Proper Content-Type header for POST request
+- Smart response handling:
+  ```javascript
+  if (contentType.indexOf('application/pdf') !== -1) {
+      // Create blob URL and trigger download
+      var blob = xhr.response;
+      var url = window.URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = domain + '.pdf';
+      a.click();
+  } else {
+      // Parse JSON error and show message
+  }
+  ```
 
-**Why This Works**:
-- `wp_verify_nonce()` only checks the nonce itself, not the referrer
-- This is appropriate for form submissions that open in new windows
-- Security is maintained through nonce validation
-- Provides better error handling with meaningful error messages
+**PHP Changes** (`v-wp-seo-audit.php`):
+- Simplified to use standard `check_ajax_referer('v_wp_seo_audit_nonce', 'nonce')`
+- Consistent with other AJAX handlers
+- No special handling needed
 
-**Note**: This is the only handler that uses `wp_verify_nonce()` instead of `check_ajax_referer()` due to the specific requirements of form-based file downloads.
+**Benefits of New Implementation**:
+- ✅ Standard AJAX request (cookies and referrer sent correctly)
+- ✅ Consistent nonce verification with other handlers
+- ✅ Better error handling (errors shown in current page)
+- ✅ No new tab opened (better UX)
+- ✅ Simpler, more maintainable code
+- ✅ Proper resource cleanup
+
+**Technical Details**:
+1. XHR sends POST request with `action`, `domain`, and `nonce`
+2. Server verifies nonce and generates PDF
+3. JavaScript checks Content-Type of response
+4. If PDF: creates temporary blob URL and triggers download
+5. If error: parses JSON and displays error message
+6. Cleans up blob URL after download
 
 ## Files Modified
 
-1. **v-wp-seo-audit.php** (+62 lines)
+1. **v-wp-seo-audit.php** 
    - Added PagePeeker AJAX handler
-   - Added nonce verification to 2 existing handlers
-   - Fixed PDF download handler to use `wp_verify_nonce()` instead of `check_ajax_referer()`
+   - Added nonce verification to all AJAX handlers
+   - Updated PDF download handler to use standard `check_ajax_referer()`
+   - Simplified PDF download implementation
 
-2. **index.php** (+38 lines)
+2. **js/base.js**
+   - Replaced form submission with XMLHttpRequest for PDF download
+   - Added blob-based file download mechanism
+   - Improved error handling and user feedback
+   - Added nonce availability check
+
+3. **index.php** (+38 lines)
    - Improved error page with friendly messaging
    - Better WordPress integration check
 
@@ -132,9 +161,10 @@ if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'v_wp_seo_audit_nonce' ) ) {
 4. **TESTING_GUIDE.md** (+213 lines, new file)
    - Comprehensive testing documentation
 
-5. **AGENTS.md** (+40 lines)
-   - Documented PDF download button fix
-   - Added exception note for nonce verification
+5. **AGENTS.md** 
+   - Documented PDF download button fix and evolution
+   - Updated AJAX endpoints table
+   - Added technical implementation details
 
 **Total**: +368 lines added, -8 lines removed
 
@@ -146,12 +176,10 @@ The plugin now has four fully functional AJAX endpoints:
 |--------|----------|---------|---------------------------|
 | `v_wp_seo_audit_validate` | `v_wp_seo_audit_ajax_validate_domain()` | Validates domain input | `check_ajax_referer()` |
 | `v_wp_seo_audit_generate_report` | `v_wp_seo_audit_ajax_generate_report()` | Generates SEO audit report | `check_ajax_referer()` |
-| `v_wp_seo_audit_download_pdf` | `v_wp_seo_audit_ajax_download_pdf()` | Downloads PDF report for a domain | `wp_verify_nonce()`* |
+| `v_wp_seo_audit_download_pdf` | `v_wp_seo_audit_ajax_download_pdf()` | Downloads PDF report for a domain | `check_ajax_referer()` |
 | `v_wp_seo_audit_pagepeeker` | `v_wp_seo_audit_ajax_pagepeeker()` | Legacy thumbnail proxy | `check_ajax_referer()` |
 
-\* Uses `wp_verify_nonce()` instead of `check_ajax_referer()` due to form submission with `target="_blank"`. See "PDF Download Button Fix" section for details.
-
-All endpoints are registered for both authenticated (`wp_ajax_`) and non-authenticated (`wp_ajax_nopriv_`) users.
+All endpoints use consistent `check_ajax_referer()` for nonce verification and are registered for both authenticated (`wp_ajax_`) and non-authenticated (`wp_ajax_nopriv_`) users.
 
 ## Security Improvements
 

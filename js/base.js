@@ -334,44 +334,69 @@ var WrHelper = (function () {
 
             var ajaxUrl = getAjaxUrl();
             var nonce = getNonce();
-
-            // Create a form and submit it to trigger file download
-            var $form = $('<form>', {
-                method: 'POST',
-                action: ajaxUrl,
-                target: '_blank'
-            });
-
-            $form.append($('<input>', {
-                type: 'hidden',
-                name: 'action',
-                value: 'v_wp_seo_audit_download_pdf'
-            }));
-
-            $form.append($('<input>', {
-                type: 'hidden',
-                name: 'domain',
-                value: domain
-            }));
-
-            $form.append($('<input>', {
-                type: 'hidden',
-                name: 'nonce',
-                value: nonce
-            }));
-
-            // Append form to body, submit it, and remove it
-            $form.appendTo('body').submit();
-
-            // Clean up form after a short delay
-            setTimeout(function() {
-                $form.remove();
-            }, 100);
-
-            // Restore button state after a delay
-            setTimeout(function() {
+            
+            // Debug: Check if nonce is available
+            if (!nonce) {
+                console.error('V-WP-SEO-Audit: Nonce is not available');
+                window.alert('Error: Security token is not available. Please refresh the page and try again.');
                 $trigger.removeClass('disabled').removeAttr('aria-busy').text(originalText);
-            }, 2000);
+                return;
+            }
+
+            // Use XMLHttpRequest to download PDF as blob
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', ajaxUrl, true);
+            xhr.responseType = 'blob';
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            
+            xhr.onload = function() {
+                $trigger.removeClass('disabled').removeAttr('aria-busy').text(originalText);
+                
+                if (xhr.status === 200) {
+                    var contentType = xhr.getResponseHeader('Content-Type');
+                    
+                    // Check if response is a PDF
+                    if (contentType && contentType.indexOf('application/pdf') !== -1) {
+                        // Create a blob URL and trigger download
+                        var blob = xhr.response;
+                        var url = window.URL.createObjectURL(blob);
+                        var a = document.createElement('a');
+                        a.href = url;
+                        a.download = domain + '.pdf';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                    } else {
+                        // Response might be JSON error, try to parse it
+                        var reader = new FileReader();
+                        reader.onload = function() {
+                            try {
+                                var response = JSON.parse(reader.result);
+                                var message = 'Failed to download PDF';
+                                if (response && response.data && response.data.message) {
+                                    message = response.data.message;
+                                }
+                                window.alert('Error: ' + message);
+                            } catch (e) {
+                                window.alert('Error: Failed to download PDF. Please try again.');
+                            }
+                        };
+                        reader.readAsText(xhr.response);
+                    }
+                } else {
+                    window.alert('Error: Failed to download PDF (HTTP ' + xhr.status + '). Please try again.');
+                }
+            };
+            
+            xhr.onerror = function() {
+                $trigger.removeClass('disabled').removeAttr('aria-busy').text(originalText);
+                window.alert('Error: Network error occurred. Please try again.');
+            };
+            
+            // Send the request with form data
+            var formData = 'action=v_wp_seo_audit_download_pdf&domain=' + encodeURIComponent(domain) + '&nonce=' + encodeURIComponent(nonce);
+            xhr.send(formData);
         });
     });
 })(jQuery);
