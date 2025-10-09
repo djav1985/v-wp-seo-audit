@@ -390,6 +390,20 @@ function v_wp_seo_audit_ajax_generate_report() {
         return;
     }
     
+    // Check if the website exists in the database before trying to display it
+    $command = Yii::app()->db->createCommand();
+    $website = $command
+        ->select("id, domain, modified, idn, score, final_url")
+        ->from("{{website}}")
+        ->where('md5domain=:md5', array(':md5' => md5($domain)))
+        ->queryRow();
+    
+    // If website doesn't exist, return an error message indicating it needs to be analyzed first
+    if (!$website) {
+        wp_send_json_error(array('message' => 'This domain has not been analyzed yet. Please wait while we analyze it, then try again.'));
+        return;
+    }
+    
     // Set the domain in GET for the controller
     $_GET['domain'] = $domain;
     
