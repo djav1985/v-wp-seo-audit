@@ -550,3 +550,68 @@ function v_wp_seo_audit_ajax_pagepeeker()
 }
 add_action( 'wp_ajax_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker' );
 add_action( 'wp_ajax_nopriv_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker' );
+
+// WordPress AJAX handler for PDF download
+function v_wp_seo_audit_ajax_download_pdf()
+{
+	// Verify nonce for security
+	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
+	
+	global $v_wp_seo_audit_app;
+	
+	// Initialize Yii if not already initialized
+	if ($v_wp_seo_audit_app === null) {
+		$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
+		$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+		
+		if (file_exists( $yii ) && file_exists( $config )) {
+			require_once $yii;
+			$v_wp_seo_audit_app = Yii::createWebApplication( $config );
+			
+			if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
+				$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
+			}
+		} else {
+			wp_send_json_error( array( 'message' => 'Application not initialized' ) );
+			return;
+		}
+	}
+	
+	v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
+	
+	// Get domain from request
+	$domain = isset( $_POST['domain'] ) ? sanitize_text_field( $_POST['domain'] ) : '';
+	
+	if (empty( $domain )) {
+		wp_send_json_error( array( 'message' => 'Domain is required' ) );
+		return;
+	}
+	
+	// Set the domain in GET for the controller
+	$_GET['domain'] = $domain;
+	
+	// Import the controller class
+	Yii::import( 'application.controllers.WebsitestatController' );
+	
+	try {
+		// Create the controller
+		$controller = new WebsitestatController( 'websitestat' );
+		$controller->init();
+		
+		$previous = Yii::app()->getController();
+		Yii::app()->setController( $controller );
+		
+		try {
+			// Generate and output the PDF
+			// This will set headers and output the PDF directly
+			$controller->actionGeneratePDF( $domain );
+			// The actionGeneratePDF method calls Yii::app()->end() which exits
+		} finally {
+			Yii::app()->setController( $previous );
+		}
+	} catch (Exception $e) {
+		wp_send_json_error( array( 'message' => $e->getMessage() ) );
+	}
+}
+add_action( 'wp_ajax_v_wp_seo_audit_download_pdf', 'v_wp_seo_audit_ajax_download_pdf' );
+add_action( 'wp_ajax_nopriv_v_wp_seo_audit_download_pdf', 'v_wp_seo_audit_ajax_download_pdf' );
