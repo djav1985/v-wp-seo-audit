@@ -219,6 +219,7 @@ class WebsitestatController extends Controller
             'deprecated' => '[]',
             'total_img'  => 0,
             'total_alt'  => 0,
+            'isset_headings' => 0,
             );
         }
         if (! $this->document ) {
@@ -234,6 +235,8 @@ class WebsitestatController extends Controller
             'robotstxt'    => 0,
             'nestedtables' => 0,
             'inlinecss'    => 0,
+            'flash'        => 0,
+            'iframe'       => 0,
             );
         }
         if (! $this->links ) {
@@ -242,6 +245,9 @@ class WebsitestatController extends Controller
             'external_nofollow' => 0,
             'external_dofollow' => 0,
             'internal'          => 0,
+            'friendly'          => 0,
+            'isset_underscore'  => 0,
+            'files_count'       => 0,
             );
         }
         if (! $this->meta ) {
@@ -249,6 +255,7 @@ class WebsitestatController extends Controller
             'ogproperties' => '[]',
             'title'        => '',
             'description'  => '',
+            'keyword'      => '',
             );
         }
         if (! $this->w3c ) {
@@ -261,17 +268,42 @@ class WebsitestatController extends Controller
             );
         }
 
-        $this->content['headings']   = @ (array) json_decode($this->content['headings'], true);
-        $this->links['links']        = @ (array) json_decode($this->links['links'], true);
-        $this->cloud['words']        = Utils::shuffle_assoc(@ (array) json_decode($this->cloud['words'], true));
-        $this->cloud['matrix']       = @ (array) json_decode($this->cloud['matrix'], true);
-        $this->meta['ogproperties']  = @ (array) json_decode($this->meta['ogproperties'], true);
-        $this->content['deprecated'] = @ (array) json_decode($this->content['deprecated'], true);
-
-        if ($this->misc) {
-            $this->misc['sitemap']   = @ (array) json_decode($this->misc['sitemap'], true);
-            $this->misc['analytics'] = @ (array) json_decode($this->misc['analytics'], true);
+        // Ensure fields exist and are not null before JSON decoding
+        // If field is null or doesn't exist, default to empty JSON array string
+        if (!isset($this->content['headings']) || $this->content['headings'] === null) {
+            $this->content['headings'] = '[]';
         }
+        if (!isset($this->content['deprecated']) || $this->content['deprecated'] === null) {
+            $this->content['deprecated'] = '[]';
+        }
+        if (!isset($this->links['links']) || $this->links['links'] === null) {
+            $this->links['links'] = '[]';
+        }
+        if (!isset($this->cloud['words']) || $this->cloud['words'] === null) {
+            $this->cloud['words'] = '[]';
+        }
+        if (!isset($this->cloud['matrix']) || $this->cloud['matrix'] === null) {
+            $this->cloud['matrix'] = '[]';
+        }
+        if (!isset($this->meta['ogproperties']) || $this->meta['ogproperties'] === null) {
+            $this->meta['ogproperties'] = '[]';
+        }
+        if (!isset($this->misc['sitemap']) || $this->misc['sitemap'] === null) {
+            $this->misc['sitemap'] = '[]';
+        }
+        if (!isset($this->misc['analytics']) || $this->misc['analytics'] === null) {
+            $this->misc['analytics'] = '[]';
+        }
+
+        // Decode JSON fields to arrays
+        $this->content['headings']   = (array) json_decode($this->content['headings'], true);
+        $this->links['links']        = (array) json_decode($this->links['links'], true);
+        $this->cloud['words']        = Utils::shuffle_assoc((array) json_decode($this->cloud['words'], true));
+        $this->cloud['matrix']       = (array) json_decode($this->cloud['matrix'], true);
+        $this->meta['ogproperties']  = (array) json_decode($this->meta['ogproperties'], true);
+        $this->content['deprecated'] = (array) json_decode($this->content['deprecated'], true);
+        $this->misc['sitemap']       = (array) json_decode($this->misc['sitemap'], true);
+        $this->misc['analytics']     = (array) json_decode($this->misc['analytics'], true);
 
         $this->strtime        = strtotime($this->website['modified']);
         $this->generated['A'] = date('A', $this->strtime);
