@@ -31,7 +31,9 @@ jQuery(function($){
 // Constructor
 function PagePeekerHelper(image, data, onReady, onError) {
     jQuery.ajaxSetup({ cache: false });
-    this.proxy = _global.baseUrl+'/index.php?r=PagePeekerProxy/index';
+    // Use WordPress AJAX URL instead of index.php
+    var ajaxUrl = (typeof _global !== 'undefined' && _global.ajaxUrl) ? _global.ajaxUrl : '/wp-admin/admin-ajax.php';
+    this.proxy = ajaxUrl + '?action=v_wp_seo_audit_pagepeeker';
     this.data = data;
     this.onReady = onReady;
     this.onError = onError;
