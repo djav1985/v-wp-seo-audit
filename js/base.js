@@ -136,6 +136,7 @@ jQuery(function($) {
         var domain = $('#domain').val().trim();
         var $errors = $('#errors');
         var $progressBar = $('#progress-bar');
+        var $container = $('.v-wp-seo-audit-container');
         
         // Hide previous errors
         $errors.hide().html('');
@@ -146,51 +147,99 @@ jQuery(function($) {
             return;
         }
         
+        // Basic client-side validation
+        // Remove protocol if present
+        domain = domain.replace(/^(https?:\/\/)?(www\.)?/i, '');
+        domain = domain.replace(/\/$/, ''); // Remove trailing slash
+        
+        // Simple domain pattern check
+        var domainPattern = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i;
+        if (!domainPattern.test(domain)) {
+            $errors.html('Please enter a valid domain name').show();
+            return;
+        }
+        
+        // Update the input with cleaned domain
+        $('#domain').val(domain);
+        
         // Show progress bar
         $progressBar.show();
         $(this).prop('disabled', true);
         
-        // Get the base URL from global variable or construct it
-        var baseUrl = (typeof _global !== 'undefined' && _global.baseUrl) ? _global.baseUrl : '';
+        // Get the AJAX URL from global variable
+        var ajaxUrl = (typeof _global !== 'undefined' && _global.ajaxUrl) ? _global.ajaxUrl : '/wp-admin/admin-ajax.php';
+        var nonce = (typeof _global !== 'undefined' && _global.nonce) ? _global.nonce : '';
         
-        // Submit via AJAX to parse controller
+        // Step 1: Validate domain via AJAX
         $.ajax({
-            url: baseUrl + '/index.php?r=parse/index',
-            type: 'GET',
+            url: ajaxUrl,
+            type: 'POST',
             data: {
-                'Website[domain]': domain
+                action: 'v_wp_seo_audit_validate',
+                domain: domain,
+                nonce: nonce
             },
             dataType: 'json',
             success: function(response) {
-                // Check if response is a URL (successful validation)
-                if (typeof response === 'string' && response.indexOf('http') === 0) {
-                    // Redirect to the analysis page
-                    window.location.href = response;
-                } else if (typeof response === 'string') {
-                    // Relative URL, redirect to it
-                    window.location.href = response;
-                } else if (response.domain) {
-                    // Error response with validation errors
-                    var errorMessages = [];
-                    $.each(response.domain, function(i, msg) {
-                        errorMessages.push(msg);
-                    });
-                    $errors.html(errorMessages.join('<br>')).show();
-                    $progressBar.hide();
-                    $('#submit').prop('disabled', false);
+                if (response.success) {
+                    // Domain validated, now generate the report
+                    generateReport(response.data.domain);
                 } else {
-                    // Unknown response
-                    $errors.html('An error occurred. Please try again.').show();
+                    // Validation failed, show error
+                    var errorMessage = response.data && response.data.message ? response.data.message : 'Validation failed';
+                    $errors.html(errorMessage).show();
                     $progressBar.hide();
                     $('#submit').prop('disabled', false);
                 }
             },
-            error: function() {
-                $errors.html('An error occurred. Please try again.').show();
+            error: function(xhr, status, error) {
+                $errors.html('An error occurred during validation. Please try again.').show();
                 $progressBar.hide();
                 $('#submit').prop('disabled', false);
             }
         });
+        
+        // Function to generate report
+        function generateReport(validatedDomain) {
+            $.ajax({
+                url: ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'v_wp_seo_audit_generate_report',
+                    domain: validatedDomain,
+                    nonce: nonce
+                },
+                dataType: 'json',
+                success: function(response) {
+                    $progressBar.hide();
+                    $('#submit').prop('disabled', false);
+                    
+                    if (response.success) {
+                        // Replace the container content with the report
+                        if ($container.length) {
+                            $container.html(response.data.html);
+                        } else {
+                            // If container doesn't exist, create it and replace content
+                            var $parent = $('#website-form').parent();
+                            $parent.html('<div class="v-wp-seo-audit-container">' + response.data.html + '</div>');
+                        }
+                        
+                        // Scroll to top of results
+                        $('html, body').animate({
+                            scrollTop: $container.offset().top - 100
+                        }, 500);
+                    } else {
+                        var errorMessage = response.data && response.data.message ? response.data.message : 'Failed to generate report';
+                        $errors.html(errorMessage).show();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $progressBar.hide();
+                    $('#submit').prop('disabled', false);
+                    $errors.html('An error occurred while generating the report. Please try again.').show();
+                }
+            });
+        }
     });
     
     // Allow Enter key to submit
