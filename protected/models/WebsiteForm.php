@@ -25,8 +25,16 @@ class WebsiteForm extends CFormModel {
 	}
 
     public function punycode($domain) {
-        $this->domain = idn_to_ascii($domain);
-        $this->idn = idn_to_utf8($domain);
+        if(function_exists('idn_to_ascii') && function_exists('idn_to_utf8')) {
+            // Use native PHP intl functions if available
+            $this->domain = idn_to_ascii($domain);
+            $this->idn = idn_to_utf8($domain);
+        } else {
+            // Fallback to IDN vendor class
+            $idn = new IDN();
+            $this->domain = $idn->encode($domain);
+            $this->idn = $domain;
+        }
         return $this->domain;
     }
 
