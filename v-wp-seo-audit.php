@@ -108,17 +108,13 @@ function v_wp_seo_audit_enqueue_assets() {
         // Add global JavaScript variables needed by the plugin
         // Get the base URL from Yii app if initialized, otherwise use plugin URL
         $base_url = rtrim(V_WP_SEO_AUDIT_PLUGIN_URL, '/');
-        $proxy_image = 0; // Default to false
-        
-        if ($v_wp_seo_audit_app !== null && $v_wp_seo_audit_app->hasComponent('request')) {
-            $base_url = $v_wp_seo_audit_app->getRequest()->getBaseUrl(true);
-            if (isset($v_wp_seo_audit_app->params['thumbnail.proxy'])) {
-                $proxy_image = (int) $v_wp_seo_audit_app->params['thumbnail.proxy'];
-            }
-        }
         
         // Inject global variables into the page
-        $global_vars = "var _global = { baseUrl: '" . esc_js($base_url) . "', proxyImage: " . $proxy_image . " };";
+        $global_vars = "var _global = { 
+            baseUrl: '" . esc_js($base_url) . "',
+            ajaxUrl: '" . esc_js(admin_url('admin-ajax.php')) . "',
+            nonce: '" . wp_create_nonce('v_wp_seo_audit_nonce') . "'
+        };";
         wp_add_inline_script('v-wp-seo-audit-base', $global_vars, 'before');
     }
 }
@@ -306,3 +302,107 @@ function v_wp_seo_audit_uninstall() {
     delete_option('v_wp_seo_audit_version');
 }
 register_uninstall_hook(__FILE__, 'v_wp_seo_audit_uninstall');
+
+// WordPress AJAX handler for domain validation
+function v_wp_seo_audit_ajax_validate_domain() {
+    global $v_wp_seo_audit_app;
+    
+    // Initialize Yii if not already initialized
+    if ($v_wp_seo_audit_app === null) {
+        $yii = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
+        $config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+        
+        if (file_exists($yii) && file_exists($config)) {
+            require_once($yii);
+            $v_wp_seo_audit_app = Yii::createWebApplication($config);
+            
+            if (isset($v_wp_seo_audit_app->params['app.timezone'])) {
+                $v_wp_seo_audit_app->setTimeZone($v_wp_seo_audit_app->params['app.timezone']);
+            }
+        } else {
+            wp_send_json_error(array('message' => 'Application not initialized'));
+            return;
+        }
+    }
+    
+    // Get domain from request
+    $domain = isset($_POST['domain']) ? sanitize_text_field($_POST['domain']) : '';
+    
+    if (empty($domain)) {
+        wp_send_json_error(array('message' => 'Please enter a domain name'));
+        return;
+    }
+    
+    // Create and validate the model
+    $model = new WebsiteForm();
+    $model->domain = $domain;
+    
+    if (!$model->validate()) {
+        $errors = $model->getErrors();
+        $errorMessages = array();
+        foreach ($errors as $field => $fieldErrors) {
+            foreach ($fieldErrors as $error) {
+                $errorMessages[] = $error;
+            }
+        }
+        wp_send_json_error(array('message' => implode('<br>', $errorMessages)));
+    } else {
+        // Domain is valid, return success with domain
+        wp_send_json_success(array('domain' => $model->domain));
+    }
+}
+add_action('wp_ajax_v_wp_seo_audit_validate', 'v_wp_seo_audit_ajax_validate_domain');
+add_action('wp_ajax_nopriv_v_wp_seo_audit_validate', 'v_wp_seo_audit_ajax_validate_domain');
+
+// WordPress AJAX handler for generating HTML report
+function v_wp_seo_audit_ajax_generate_report() {
+    global $v_wp_seo_audit_app;
+    
+    // Initialize Yii if not already initialized
+    if ($v_wp_seo_audit_app === null) {
+        $yii = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
+        $config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+        
+        if (file_exists($yii) && file_exists($config)) {
+            require_once($yii);
+            $v_wp_seo_audit_app = Yii::createWebApplication($config);
+            
+            if (isset($v_wp_seo_audit_app->params['app.timezone'])) {
+                $v_wp_seo_audit_app->setTimeZone($v_wp_seo_audit_app->params['app.timezone']);
+            }
+        } else {
+            wp_send_json_error(array('message' => 'Application not initialized'));
+            return;
+        }
+    }
+    
+    // Get domain from request
+    $domain = isset($_POST['domain']) ? sanitize_text_field($_POST['domain']) : '';
+    
+    if (empty($domain)) {
+        wp_send_json_error(array('message' => 'Domain is required'));
+        return;
+    }
+    
+    // Set the domain in GET for the controller
+    $_GET['domain'] = $domain;
+    
+    // Start output buffering to capture the controller output
+    ob_start();
+    
+    try {
+        // Create the controller and render the view
+        $controller = new WebsitestatController('websitestat');
+        $controller->actionGenerateHTML($domain);
+        
+        $content = ob_get_clean();
+        
+        // Return the HTML content
+        wp_send_json_success(array('html' => $content));
+    } catch (Exception $e) {
+        ob_end_clean();
+        wp_send_json_error(array('message' => $e->getMessage()));
+    }
+}
+add_action('wp_ajax_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax_generate_report');
+add_action('wp_ajax_nopriv_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax_generate_report');

@@ -1,111 +1,174 @@
 <?php
 class WebsiteThumbnail
 {
-    private static $imgUrl = '{{Protocol}}://{{Endpoint}}.pagepeeker.com/v2/thumbs.php';
-    private static $resetUrl = '{{Protocol}}://{{Endpoint}}.pagepeeker.com/v2/thumbs.php';
-    private static $pollUrl = '{{Protocol}}://{{Endpoint}}.pagepeeker.com/v2/thumbs_ready.php';
-
-    private static $http = array("free", "free2", "free3", "free4");
-    private static $https = array("api");
-
-    private static function isSecuredCall()
+    /**
+     * Get the WordPress uploads directory path for thumbnails
+     */
+    private static function getUploadDir()
     {
-        return Yii::app()->request->getIsSecureConnection();
-    }
-
-    private static function getApiKey()
-    {
-        return Yii::app()->params['pagepeeker.api_key'];
-    }
-
-    private static function getSingleCallEndpoint()
-    {
-        return self::isSecuredCall() ? "api" : "free";
-    }
-
-    private static function getEndpointServers()
-    {
-        return self::isSecuredCall() ? self::$https : self::$http;
-    }
-
-    public static function getResetUrl(array $params = array())
-    {
-        $strtr = array();
-        $strtr['{{Endpoint}}'] = self::getSingleCallEndpoint();
-        $params['refresh'] = "1";
-        if ($apiKey = self::getApiKey()) {
-            $params['code'] = $apiKey;
+        if (function_exists('wp_upload_dir')) {
+            $upload_dir = wp_upload_dir();
+            $thumbnail_dir = $upload_dir['basedir'] . '/seo-audit/thumbnails';
+            
+            // Create directory if it doesn't exist
+            if (!file_exists($thumbnail_dir)) {
+                wp_mkdir_p($thumbnail_dir);
+            }
+            
+            return $thumbnail_dir;
         }
-        return self::prepareUrl(self::$resetUrl, $strtr, $params);
-    }
-
-    public static function getPollUrl(array $params = array())
-    {
-        $strtr = array();
-        $strtr['{{Endpoint}}'] = self::getSingleCallEndpoint();
-        if ($apiKey = self::getApiKey()) {
-            $params['code'] = $apiKey;
+        
+        // Fallback for non-WordPress environments
+        $root = Yii::getPathofAlias('webroot');
+        $thumbnail_dir = $root . '/uploads/seo-audit/thumbnails';
+        
+        if (!file_exists($thumbnail_dir)) {
+            mkdir($thumbnail_dir, 0755, true);
         }
-        return self::prepareUrl(self::$pollUrl, $strtr, $params);
+        
+        return $thumbnail_dir;
     }
 
+    /**
+     * Get the WordPress uploads directory URL for thumbnails
+     */
+    private static function getUploadUrl()
+    {
+        if (function_exists('wp_upload_dir')) {
+            $upload_dir = wp_upload_dir();
+            return $upload_dir['baseurl'] . '/seo-audit/thumbnails';
+        }
+        
+        // Fallback for non-WordPress environments
+        return Yii::app()->request->getBaseUrl(true) . '/uploads/seo-audit/thumbnails';
+    }
+
+    /**
+     * Get cached thumbnail path for a domain
+     */
+    private static function getCachedThumbnailPath($domain)
+    {
+        $filename = md5($domain) . '.jpg';
+        return self::getUploadDir() . '/' . $filename;
+    }
+
+    /**
+     * Get cached thumbnail URL for a domain
+     */
+    private static function getCachedThumbnailUrl($domain)
+    {
+        $filename = md5($domain) . '.jpg';
+        return self::getUploadUrl() . '/' . $filename;
+    }
+
+    /**
+     * Download and cache thumbnail from thum.io
+     */
+    private static function downloadThumbnail($domain, $width = 350)
+    {
+        $thumbnail_path = self::getCachedThumbnailPath($domain);
+        
+        // Check if cached thumbnail exists and is less than 7 days old
+        if (file_exists($thumbnail_path)) {
+            $file_time = filemtime($thumbnail_path);
+            $cache_duration = 7 * 24 * 60 * 60; // 7 days in seconds
+            
+            if ((time() - $file_time) < $cache_duration) {
+                return self::getCachedThumbnailUrl($domain);
+            }
+        }
+        
+        // Generate thum.io URL
+        $thumbnail_url = "https://image.thum.io/get/maxAge/350/width/{$width}/https://{$domain}";
+        
+        // Download thumbnail
+        $thumbnail_data = Utils::curl($thumbnail_url);
+        
+        if ($thumbnail_data && strlen($thumbnail_data) > 0) {
+            file_put_contents($thumbnail_path, $thumbnail_data);
+            return self::getCachedThumbnailUrl($domain);
+        }
+        
+        return false;
+    }
+
+    /**
+     * Delete cached thumbnail for a domain
+     */
+    public static function deleteThumbnail($domain)
+    {
+        $thumbnail_path = self::getCachedThumbnailPath($domain);
+        
+        if (file_exists($thumbnail_path)) {
+            unlink($thumbnail_path);
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Get thumbnail data (URL) for display
+     */
     public static function getThumbData(array $params = array(), $num = 0)
-    {
-        $servers = self::getEndpointServers();
-        if (!isset($servers[$num])) {
-            throw new InvalidArgumentException("Invalid thumbnail server");
-        }
-        $strtr = array();
-        $strtr['{{Endpoint}}'] = $servers[$num];
-        if ($apiKey = self::getApiKey()) {
-            $params['code'] = $apiKey;
-        }
-        return json_encode(array(
-            'thumb' => self::prepareUrl(self::$imgUrl, $strtr, $params),
-            'size' => isset($params['size']) ? $params['size'] : "m",
-            'url' => $params['url']
-        ));
-    }
-
-    public static function getOgImage(array $params = array())
-    {
-        $strtr = array();
-        $strtr['{{Endpoint}}'] = self::$http[0];
-        $strtr['{{Protocol}}'] = 'http';
-        return self::prepareUrl(self::$imgUrl, $strtr, $params);
-    }
-
-    public static function prepareUrl($url, array $strtr = array(), array $params = array())
     {
         if (!isset($params['url'])) {
             throw new InvalidArgumentException("Url param is not specified");
         }
-        $default = array();
-        if (!isset($strtr['{{Protocol}}'])) {
-            $default['{{Protocol}}'] = self::isSecuredCall() ? 'https' : 'http';
+        
+        $domain = $params['url'];
+        $width = isset($params['width']) ? $params['width'] : 350;
+        
+        // Try to get or create cached thumbnail
+        $thumbnail_url = self::downloadThumbnail($domain, $width);
+        
+        if (!$thumbnail_url) {
+            // Fallback to direct thum.io URL if download fails
+            $thumbnail_url = "https://image.thum.io/get/maxAge/350/width/{$width}/https://{$domain}";
         }
-        $strtr = array_merge($default, $strtr);
-        $url = strtr($url, $strtr);
-        if (!isset($params['size'])) {
-            $params['size'] = 'm';
-        }
-        if (!empty($params)) {
-            $url .= "?" . http_build_query($params);
-        }
-        return $url;
+        
+        return json_encode(array(
+            'thumb' => $thumbnail_url,
+            'url' => $domain,
+            'cached' => file_exists(self::getCachedThumbnailPath($domain))
+        ));
     }
 
+    /**
+     * Get OG image for social media sharing
+     */
+    public static function getOgImage(array $params = array())
+    {
+        if (!isset($params['url'])) {
+            throw new InvalidArgumentException("Url param is not specified");
+        }
+        
+        $domain = $params['url'];
+        $width = isset($params['width']) ? $params['width'] : 350;
+        
+        // Try to get cached thumbnail first
+        $thumbnail_path = self::getCachedThumbnailPath($domain);
+        
+        if (file_exists($thumbnail_path)) {
+            return self::getCachedThumbnailUrl($domain);
+        }
+        
+        // Return thum.io URL as fallback
+        return "https://image.thum.io/get/maxAge/350/width/{$width}/https://{$domain}";
+    }
+
+    /**
+     * Generate thumbnail stack for multiple websites
+     */
     public static function thumbnailStack($websites, array $params = array())
     {
-        $count = count(self::getEndpointServers());
-        $counter = 0;
         $stack = array();
+        
         foreach ($websites as $website) {
-            $index = $counter % $count;
             $params['url'] = $website['domain'];
-            $stack[$website['id']] = self::getThumbData($params, $index);
-            $counter++;
+            $stack[$website['id']] = self::getThumbData($params);
         }
+        
         return $stack;
     }
 }
