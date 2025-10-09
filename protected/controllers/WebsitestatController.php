@@ -21,27 +21,20 @@ class WebsitestatController extends Controller
 		parent::init();
 		$this->command = Yii::app()->db->createCommand();
 		$this->domain = isset($_GET['domain']) ? $_GET['domain'] : null;
-		
-		// Query for website record
-		$this->website = $this->command
+		if (!$this->website = $this->command
 			->select("id, domain, modified, idn, score, final_url")
 			->from("{{website}}")
 			->where('md5domain=:md5', array(':md5' => md5($this->domain)))
-			->queryRow();
-		
-		// If website doesn't exist, handle appropriately
-		if (!$this->website) {
+			->queryRow()) {
 			if (!Yii::app()->params["param.instant_redirect"]) {
 				$form = new WebsiteForm();
 				$form->domain = $this->domain;
 				if ($form->validate()) {
 					$this->redirect($this->createUrl("websitestat/generateHTML", array("domain" => $this->domain)));
-					Yii::app()->end();
 				}
 			}
 			throw new CHttpException(404, Yii::t("app", "The page you are looking for doesn't exists"));
 		}
-		
 		$this->command->reset();
 		$this->wid = $this->website['id'];
 		$this->collectInfo();
@@ -172,11 +165,6 @@ class WebsitestatController extends Controller
 
 	protected function collectInfo()
 	{
-		// Safety check: ensure website exists
-		if (!$this->website || !isset($this->website['modified'])) {
-			throw new CHttpException(500, 'Website data is not available');
-		}
-		
 		// Set thumbnail
 		$this->thumbnail = WebsiteThumbnail::getThumbData(array(
 			'url' => $this->domain,

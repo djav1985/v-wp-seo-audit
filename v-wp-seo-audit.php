@@ -390,22 +390,29 @@ function v_wp_seo_audit_ajax_generate_report() {
         return;
     }
     
-    // Check if the website exists in the database before trying to display it
-    $command = Yii::app()->db->createCommand();
-    $website = $command
-        ->select("id, domain, modified, idn, score, final_url")
-        ->from("{{website}}")
-        ->where('md5domain=:md5', array(':md5' => md5($domain)))
-        ->queryRow();
+    // Create and validate the model to trigger analysis if needed
+    // The WebsiteForm::validate() will automatically call tryToAnalyse()
+    // which will create/update the website record in the database
+    $model = new WebsiteForm();
+    $model->domain = $domain;
     
-    // If website doesn't exist, return an error message indicating it needs to be analyzed first
-    if (!$website) {
-        wp_send_json_error(array('message' => 'This domain has not been analyzed yet. Please wait while we analyze it, then try again.'));
+    if (!$model->validate()) {
+        // Validation failed (domain invalid, unreachable, or analysis error)
+        $errors = $model->getErrors();
+        $errorMessages = array();
+        foreach ($errors as $field => $fieldErrors) {
+            foreach ($fieldErrors as $error) {
+                $errorMessages[] = $error;
+            }
+        }
+        wp_send_json_error(array('message' => implode('<br>', $errorMessages)));
         return;
     }
     
+    // At this point, the domain has been validated and analyzed (if needed)
+    // The website record now exists in the database
     // Set the domain in GET for the controller
-    $_GET['domain'] = $domain;
+    $_GET['domain'] = $model->domain;
     
     // Import the controller class (Yii doesn't auto-load controllers)
     Yii::import('application.controllers.WebsitestatController');
@@ -416,7 +423,7 @@ function v_wp_seo_audit_ajax_generate_report() {
     try {
         // Create the controller and render the view
         $controller = new WebsitestatController('websitestat');
-        $controller->actionGenerateHTML($domain);
+        $controller->actionGenerateHTML($model->domain);
         
         $content = ob_get_clean();
         
