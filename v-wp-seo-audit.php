@@ -108,19 +108,10 @@ function v_wp_seo_audit_enqueue_assets() {
         // Add global JavaScript variables needed by the plugin
         // Get the base URL from Yii app if initialized, otherwise use plugin URL
         $base_url = rtrim(V_WP_SEO_AUDIT_PLUGIN_URL, '/');
-        $proxy_image = 0; // Default to false
-        
-        if ($v_wp_seo_audit_app !== null && $v_wp_seo_audit_app->hasComponent('request')) {
-            $base_url = $v_wp_seo_audit_app->getRequest()->getBaseUrl(true);
-            if (isset($v_wp_seo_audit_app->params['thumbnail.proxy'])) {
-                $proxy_image = (int) $v_wp_seo_audit_app->params['thumbnail.proxy'];
-            }
-        }
         
         // Inject global variables into the page
         $global_vars = "var _global = { 
-            baseUrl: '" . esc_js($base_url) . "', 
-            proxyImage: " . $proxy_image . ",
+            baseUrl: '" . esc_js($base_url) . "',
             ajaxUrl: '" . esc_js(admin_url('admin-ajax.php')) . "',
             nonce: '" . wp_create_nonce('v_wp_seo_audit_nonce') . "'
         };";
@@ -415,57 +406,3 @@ function v_wp_seo_audit_ajax_generate_report() {
 }
 add_action('wp_ajax_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax_generate_report');
 add_action('wp_ajax_nopriv_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax_generate_report');
-
-// WordPress AJAX handler for PagePeeker proxy
-function v_wp_seo_audit_ajax_pagepeeker_proxy() {
-    global $v_wp_seo_audit_app;
-    
-    // Initialize Yii if not already initialized
-    if ($v_wp_seo_audit_app === null) {
-        $yii = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-        $config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
-        
-        if (file_exists($yii) && file_exists($config)) {
-            require_once($yii);
-            $v_wp_seo_audit_app = Yii::createWebApplication($config);
-            
-            if (isset($v_wp_seo_audit_app->params['app.timezone'])) {
-                $v_wp_seo_audit_app->setTimeZone($v_wp_seo_audit_app->params['app.timezone']);
-            }
-        } else {
-            wp_send_json_error(array('message' => 'Application not initialized'));
-            return;
-        }
-    }
-    
-    // Check if thumbnail proxy is enabled
-    if (!$v_wp_seo_audit_app->params['thumbnail.proxy']) {
-        wp_send_json_error(array('message' => 'Proxy not enabled'));
-        return;
-    }
-    
-    $method = isset($_GET['method']) ? sanitize_text_field($_GET['method']) : '';
-    $url = isset($_GET['url']) ? esc_url_raw($_GET['url']) : '';
-    $size = isset($_GET['size']) ? sanitize_text_field($_GET['size']) : '';
-    
-    if ($method === 'poll') {
-        $pollUrl = WebsiteThumbnail::getPollUrl(array(
-            'url' => $url,
-            'size' => $size,
-        ));
-        $response = Utils::curl($pollUrl);
-        $data = @json_decode($response, true);
-        wp_send_json($data);
-    } elseif ($method === 'reset') {
-        $resetUrl = WebsiteThumbnail::getResetUrl(array(
-            'url' => $url,
-            'size' => $size,
-        ));
-        Utils::curl($resetUrl);
-        wp_send_json(array('ok' => 1));
-    } else {
-        wp_send_json_error(array('message' => 'Invalid method'));
-    }
-}
-add_action('wp_ajax_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker_proxy');
-add_action('wp_ajax_nopriv_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker_proxy');

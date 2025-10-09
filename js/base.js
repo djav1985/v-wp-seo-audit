@@ -13,11 +13,11 @@ function dynamicThumbnail(url) {
             img.attr("src", _global.baseUrl + "/img/not-available.png");
         };
         var image = jQuery('#thumb_'+key);
-        if(_global.proxyImage === 1) {
-            var pp = new PagePeekerHelper(image, data, onReady, onError);
-            pp.poll();
-        } else {
+        // Use the thumbnail URL directly since we're now caching on the server
+        if (data && data.thumb) {
             onReady(image, data.thumb);
+        } else {
+            onError(image);
         }
     });
 }
@@ -27,88 +27,6 @@ jQuery(function($){
         return false;
     });
 });
-
-// Constructor
-function PagePeekerHelper(image, data, onReady, onError) {
-    jQuery.ajaxSetup({ cache: false });
-    // Use WordPress AJAX URL instead of index.php
-    var ajaxUrl = (typeof _global !== 'undefined' && _global.ajaxUrl) ? _global.ajaxUrl : '/wp-admin/admin-ajax.php';
-    this.proxy = ajaxUrl + '?action=v_wp_seo_audit_pagepeeker';
-    this.data = data;
-    this.onReady = onReady;
-    this.onError = onError;
-    this.image = image;
-    this.pollTime = 20; // In seconds
-    this.execLimit = 3; // If after x requests PP willn't response with status "Ready", then clear interval to avoid ddos attack.
-}
-
-PagePeekerHelper.prototype.poll = function() {
-    var self = this,
-        size = this.data.size || 'm',
-        url = this.data.url || '',
-        proxyReset = this.proxy + "?" + jQuery.param({
-            size: size,
-            url: url,
-            method: 'reset'
-        }),
-
-        proxyPoll = this.proxy + "?" + jQuery.param({
-            size: size,
-            url: url,
-            method: 'poll'
-        }),
-        limit = this.execLimit,
-        i = 0,
-        isFirstCall = true;
-
-    // Flush the image
-    jQuery.get(proxyReset, function() {
-        //console.log("Reseting " + url);
-
-        var pollUntilReady = function(cb) {
-            //console.log("Polling " + url + " " + (i + 1) + " times");
-
-            jQuery.getJSON(proxyPoll, function(data) {
-                //console.log("Received", data);
-                var isReady = (data && data.IsReady) || 0;
-                if(isReady) {
-                    //console.log("The " + url + " is ready: " + isReady);
-                    self.onReady.apply(self, [self.image, self.data.thumb]);
-                    return true;
-                }
-                if(data && data.Error) {
-                    self.onError.apply(self, [self.image]);
-                    return true;
-                }
-                cb();
-            }).fail(function() {
-                //console.log('Failed to request local proxy script. Clearing the timeout');
-                self.onError.apply(self, [self.image]);
-            });
-        };
-
-
-        (function pollThumbnail() {
-            var timeout = isFirstCall ? 0 : self.pollTime * 1000;
-            setTimeout(function() {
-                pollUntilReady(function() {
-                    //console.log("Async " + url + " has done");
-                    isFirstCall = false;
-                    i++;
-                    if(i < limit) {
-                        pollThumbnail();
-                    } else {
-                        //console.log("Reached limit of reuqests for " + url);
-                        self.onError.apply(self, [self.image]);
-                    }
-                });
-            }, timeout);
-        })();
-
-    }).fail(function() {
-        self.onError.apply(self, [self.image]);
-    });
-};
 
 var WrHelper = (function () {
     return {

@@ -39,6 +39,8 @@ class Utils {
                 unlink($pdf);
             }
         }
+        // Also delete the cached thumbnail
+        WebsiteThumbnail::deleteThumbnail($domain);
 		return true;
 	}
 
