@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => '48e14596375c2eb11f48b1310f6c420af4438f05',
+        'pretty_version' => 'dev-copilot/update-plugin-to-use-ajax',
+        'version' => 'dev-copilot/update-plugin-to-use-ajax',
+        'reference' => 'e960becdb39c1829fbfd48ec6c20b98615248114',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '48e14596375c2eb11f48b1310f6c420af4438f05',
+            'pretty_version' => 'dev-copilot/update-plugin-to-use-ajax',
+            'version' => 'dev-copilot/update-plugin-to-use-ajax',
+            'reference' => 'e960becdb39c1829fbfd48ec6c20b98615248114',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

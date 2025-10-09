@@ -1,0 +1,32 @@
+# Composer dependencies
+/vendor/
+
+# Build artifacts
+/assets/
+/pdf/*.pdf
+
+# Runtime files
+/protected/runtime/*
+!/protected/runtime/.gitignore
+
+# Configuration files (keep template)
+/protected/config/main.php
+!/protected/config/main.php.dist
+
+# Node modules (if any)
+node_modules/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
