@@ -2,7 +2,10 @@
 <ruleset name="v-wp-seo-audit">
     <description>PHP_CodeSniffer rules for v-wp-seo-audit plugin</description>
     <rule ref="PSR12" />
-    <rule ref="WordPress" />
+    <rule ref="WordPress">
+        <!-- Exclude ControlStructureSpacing sniff due to WPCS bug with vsprintf -->
+        <exclude name="WordPress.WhiteSpace.ControlStructureSpacing"/>
+    </rule>
     <exclude-pattern>assets/*</exclude-pattern>
     <exclude-pattern>css/*</exclude-pattern>
     <exclude-pattern>img/*</exclude-pattern>
