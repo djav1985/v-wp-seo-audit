@@ -190,11 +190,11 @@ class WebsitestatController extends Controller
 
 		// Initialize as empty arrays if query returned false/null
 		if (!$this->cloud) $this->cloud = array('words' => '[]', 'matrix' => '[]');
-		if (!$this->content) $this->content = array('headings' => '[]', 'deprecated' => '[]');
-		if (!$this->document) $this->document = array();
-		if (!$this->isseter) $this->isseter = array();
-		if (!$this->links) $this->links = array('links' => '[]');
-		if (!$this->meta) $this->meta = array('ogproperties' => '[]');
+		if (!$this->content) $this->content = array('headings' => '[]', 'deprecated' => '[]', 'total_img' => 0, 'total_alt' => 0);
+		if (!$this->document) $this->document = array('doctype' => '', 'lang' => '', 'htmlratio' => 0, 'charset' => '');
+		if (!$this->isseter) $this->isseter = array('robotstxt' => 0, 'nestedtables' => 0, 'inlinecss' => 0);
+		if (!$this->links) $this->links = array('links' => '[]', 'external_nofollow' => 0, 'external_dofollow' => 0, 'internal' => 0);
+		if (!$this->meta) $this->meta = array('ogproperties' => '[]', 'title' => '', 'description' => '');
 		if (!$this->w3c) $this->w3c = array();
 		if (!$this->misc) $this->misc = array('sitemap' => '[]', 'analytics' => '[]');
 
