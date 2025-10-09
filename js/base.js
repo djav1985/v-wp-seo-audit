@@ -316,6 +316,63 @@ var WrHelper = (function () {
                 }
             });
         });
+
+        $('body').on('click', '.v-wp-seo-audit-download-pdf', function(e) {
+            e.preventDefault();
+
+            var $trigger = $(this);
+            var domain = $trigger.data('domain');
+
+            if (!domain) {
+                window.alert('Domain is required to download PDF');
+                return;
+            }
+
+            // Show loading state
+            var originalText = $trigger.text();
+            $trigger.addClass('disabled').attr('aria-busy', 'true').text('Generating PDF...');
+
+            var ajaxUrl = getAjaxUrl();
+            var nonce = getNonce();
+
+            // Create a form and submit it to trigger file download
+            var $form = $('<form>', {
+                method: 'POST',
+                action: ajaxUrl,
+                target: '_blank'
+            });
+
+            $form.append($('<input>', {
+                type: 'hidden',
+                name: 'action',
+                value: 'v_wp_seo_audit_download_pdf'
+            }));
+
+            $form.append($('<input>', {
+                type: 'hidden',
+                name: 'domain',
+                value: domain
+            }));
+
+            $form.append($('<input>', {
+                type: 'hidden',
+                name: 'nonce',
+                value: nonce
+            }));
+
+            // Append form to body, submit it, and remove it
+            $form.appendTo('body').submit();
+
+            // Clean up form after a short delay
+            setTimeout(function() {
+                $form.remove();
+            }, 100);
+
+            // Restore button state after a delay
+            setTimeout(function() {
+                $trigger.removeClass('disabled').removeAttr('aria-busy').text(originalText);
+            }, 2000);
+        });
     });
 })(jQuery);
 

@@ -101,12 +101,13 @@ Changed from a simple `die('Direct access not allowed')` to a comprehensive erro
 
 ## AJAX Endpoints Summary
 
-The plugin now has three fully functional AJAX endpoints:
+The plugin now has four fully functional AJAX endpoints:
 
 | Action | Function | Purpose | Nonce Required |
 |--------|----------|---------|----------------|
 | `v_wp_seo_audit_validate` | `v_wp_seo_audit_ajax_validate_domain()` | Validates domain input | ✅ Yes |
 | `v_wp_seo_audit_generate_report` | `v_wp_seo_audit_ajax_generate_report()` | Generates SEO audit report | ✅ Yes |
+| `v_wp_seo_audit_download_pdf` | `v_wp_seo_audit_ajax_download_pdf()` | Downloads PDF report for a domain | ✅ Yes |
 | `v_wp_seo_audit_pagepeeker` | `v_wp_seo_audit_ajax_pagepeeker()` | Legacy thumbnail proxy | ✅ Yes |
 
 All endpoints are registered for both authenticated (`wp_ajax_`) and non-authenticated (`wp_ajax_nopriv_`) users.
@@ -274,7 +275,8 @@ User sees report on same page ✓
 │  │  │  Handlers:                                   │    │  │
 │  │  │  1. v_wp_seo_audit_ajax_validate_domain()  │    │  │
 │  │  │  2. v_wp_seo_audit_ajax_generate_report()  │    │  │
-│  │  │  3. v_wp_seo_audit_ajax_pagepeeker_proxy() │    │  │
+│  │  │  3. v_wp_seo_audit_ajax_download_pdf()     │    │  │
+│  │  │  4. v_wp_seo_audit_ajax_pagepeeker_proxy() │    │  │
 │  │  └─────────────────────────────────────────────┘    │  │
 │  │                         ↕                            │  │
 │  │  ┌─────────────────────────────────────────────┐    │  │

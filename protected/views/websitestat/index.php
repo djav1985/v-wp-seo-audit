@@ -146,7 +146,7 @@
 				<div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $website['score']; ?>%;"></div>
 			</div>
 
-			<a href="https://vontainment.com/scripts/seo/websitestat/generatePDF?domain=<?php echo $website['domain']; ?>" class="btn btn-primary">
+			<a href="#" class="btn btn-primary v-wp-seo-audit-download-pdf" data-domain="<?php echo CHtml::encode( $website['domain'] ); ?>">
 				<?php echo Yii::t( 'app', 'Download PDF version' ); ?>
 			</a>
 
