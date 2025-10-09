@@ -393,6 +393,9 @@ function v_wp_seo_audit_ajax_generate_report() {
     // Set the domain in GET for the controller
     $_GET['domain'] = $domain;
     
+    // Import the controller class (Yii doesn't auto-load controllers)
+    Yii::import('application.controllers.WebsitestatController');
+    
     // Start output buffering to capture the controller output
     ob_start();
     
