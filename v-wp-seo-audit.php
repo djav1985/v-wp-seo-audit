@@ -306,10 +306,7 @@ register_uninstall_hook(__FILE__, 'v_wp_seo_audit_uninstall');
 // WordPress AJAX handler for domain validation
 function v_wp_seo_audit_ajax_validate_domain() {
     // Verify nonce for security
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'v_wp_seo_audit_nonce')) {
-        wp_send_json_error(array('message' => 'Security check failed'));
-        return;
-    }
+    check_ajax_referer('v_wp_seo_audit_nonce', 'nonce');
     
     global $v_wp_seo_audit_app;
     
@@ -363,10 +360,7 @@ add_action('wp_ajax_nopriv_v_wp_seo_audit_validate', 'v_wp_seo_audit_ajax_valida
 // WordPress AJAX handler for generating HTML report
 function v_wp_seo_audit_ajax_generate_report() {
     // Verify nonce for security
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'v_wp_seo_audit_nonce')) {
-        wp_send_json_error(array('message' => 'Security check failed'));
-        return;
-    }
+    check_ajax_referer('v_wp_seo_audit_nonce', 'nonce');
     
     global $v_wp_seo_audit_app;
     
@@ -421,6 +415,9 @@ add_action('wp_ajax_nopriv_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax
 
 // WordPress AJAX handler for PagePeeker proxy (legacy - thumbnail proxy is disabled by default)
 function v_wp_seo_audit_ajax_pagepeeker() {
+    // Verify nonce for security
+    check_ajax_referer('v_wp_seo_audit_nonce', 'nonce');
+    
     global $v_wp_seo_audit_app;
     
     // Initialize Yii if not already initialized
