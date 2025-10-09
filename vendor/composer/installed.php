@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-copilot/fix-ajax-implementation-issues',
-        'version' => 'dev-copilot/fix-ajax-implementation-issues',
-        'reference' => 'a0ea84ebf3690baa9ade0b3c299312c69e9c821a',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '619e053da79bc34136d0a3282bcf45a944fb2f53',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-copilot/fix-ajax-implementation-issues',
-            'version' => 'dev-copilot/fix-ajax-implementation-issues',
-            'reference' => 'a0ea84ebf3690baa9ade0b3c299312c69e9c821a',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '619e053da79bc34136d0a3282bcf45a944fb2f53',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

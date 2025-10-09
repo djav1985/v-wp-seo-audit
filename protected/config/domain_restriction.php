@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @@ EXAMPLES @@
  *
@@ -17,7 +18,13 @@
  *      Ban: any-fuck-any.com
  *      Not Ban: any-fuck.com; fuck-any.com; fuck.com, any-fuck-any.net
  */
+
 return array(
-    '^ruporn\.(.*)$', '^russiaxxx\.(.*)$', '^lassoslabs\.(.*)$', '^xvideosanal\.(.*)$',
-    '^bioskopkismin\.(.*)$','^adultcambabes\.(.*)', 'porno',
+	'^ruporn\.(.*)$',
+	'^russiaxxx\.(.*)$',
+	'^lassoslabs\.(.*)$',
+	'^xvideosanal\.(.*)$',
+	'^bioskopkismin\.(.*)$',
+	'^adultcambabes\.(.*)',
+	'porno',
 );
