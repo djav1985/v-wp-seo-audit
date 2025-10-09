@@ -7,7 +7,7 @@
 <script type="text/javascript">
     "use strict";
 
-    $(document).ready(function() {
+    jQuery(function($) {
         dynamicThumbnail({
             <?php echo 'main_' . $website['id']; ?>: <?php echo $thumbnail; ?>
         });
@@ -69,7 +69,7 @@
 			$('#domain').val('<?php echo $website['domain']; ?>');
 		});
 
-		$("body").on("click", ".pdf_review", function() {
+                $('body').on("click", ".pdf_review", function() {
 			$(this).hide();
 			$(this).closest(".form-container").find(".download_form").fadeIn();
 			return false;
@@ -90,7 +90,7 @@
 			?>
 					);
 		<?php endif; ?>
-	});
+        });
 </script>
 
 <div class="jumbotron">

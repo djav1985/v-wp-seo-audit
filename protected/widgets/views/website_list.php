@@ -17,36 +17,37 @@
 
 <div class="row">
 	<?php
-	foreach ($data as $website) :
-		$url = Yii::app()->controller->createUrl('websitestat/generateHTML', array( 'domain' => $website->domain ));
-		?>
-		<div class="col col-12 col-md-6 col-lg-4 mb-4">
-			<div class="card mb-3">
-				<h5 class="card-header"><?php echo Utils::cropDomain($website->idn ); ?></h5>
-				<a href="<?php echo $url; ?>">
-					<img class="card-img-top" id="thumb_<?php echo $website->id; ?>" src="<?php echo Yii::app()->getBaseUrl(true ); ?>/img/loader.gif" alt="<?php echo $website->idn; ?>" />
-				</a>
-				<ul class="list-group list-group-flush">
-					<li class="list-group-item">
-						<p class="card-text">
-							<?php echo Yii::t('app', 'The score is {Score}/100', array( '{Score}' => $website->score ) ); ?>
-						</p>
-						<a href="<?php echo $url; ?>">
-							<div class="progress mb-3">
-								<div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $website->score; ?>%;"></div>
-							</div>
-						</a>
+        foreach ($data as $website) :
+                $url    = Yii::app()->controller->createUrl('websitestat/generateHTML', array( 'domain' => $website->domain ));
+                $domain = CHtml::encode($website->domain);
+                ?>
+                <div class="col col-12 col-md-6 col-lg-4 mb-4">
+                        <div class="card mb-3">
+                                <h5 class="card-header"><?php echo Utils::cropDomain($website->idn ); ?></h5>
+                                <a class="v-wp-seo-audit-view-report" href="<?php echo $url; ?>" data-domain="<?php echo $domain; ?>">
+                                        <img class="card-img-top" id="thumb_<?php echo $website->id; ?>" src="<?php echo Yii::app()->getBaseUrl(true ); ?>/img/loader.gif" alt="<?php echo $website->idn; ?>" />
+                                </a>
+                                <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                                <p class="card-text">
+                                                        <?php echo Yii::t('app', 'The score is {Score}/100', array( '{Score}' => $website->score ) ); ?>
+                                                </p>
+                                                <a class="v-wp-seo-audit-view-report" href="<?php echo $url; ?>" data-domain="<?php echo $domain; ?>">
+                                                        <div class="progress mb-3">
+                                                                <div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $website->score; ?>%;"></div>
+                                                        </div>
+                                                </a>
 
-					</li>
-				</ul>
+                                        </li>
+                                </ul>
 
-				<div class="card-body">
-					<a class="btn btn-primary" href="<?php echo $url; ?>">
-						<?php echo Yii::t('app', 'View analysis' ); ?>
-					</a>
-				</div>
-			</div>
-		</div>
+                                <div class="card-body">
+                                        <a class="btn btn-primary v-wp-seo-audit-view-report" href="<?php echo $url; ?>" data-domain="<?php echo $domain; ?>" role="button">
+                                                <?php echo Yii::t('app', 'View analysis' ); ?>
+                                        </a>
+                                </div>
+                        </div>
+                </div>
 	<?php endforeach; ?>
 </div>
 
