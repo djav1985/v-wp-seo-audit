@@ -132,11 +132,12 @@ Added to JavaScript global `_global` object:
 
 ## Recent Updates (Latest)
 
-### Security Improvements
-- ✅ Added nonce verification to all AJAX handlers (`v_wp_seo_audit_validate`, `v_wp_seo_audit_generate_report`)
-- ✅ Added missing `v_wp_seo_audit_pagepeeker` AJAX handler
+### Security Improvements (Latest - 2024)
+- ✅ **Replaced manual nonce verification with `check_ajax_referer()`** - WordPress best practice for AJAX handlers
+- ✅ **Added nonce verification to PagePeeker handler** - Previously missing, now all three handlers are protected
+- ✅ All AJAX endpoints (`v_wp_seo_audit_validate`, `v_wp_seo_audit_generate_report`, `v_wp_seo_audit_pagepeeker`) now use `check_ajax_referer('v_wp_seo_audit_nonce', 'nonce')`
+- ✅ Protection against CSRF attacks for both authenticated and unauthenticated users
 - ✅ Improved index.php error handling with friendly error page
-- ✅ All AJAX endpoints now properly validate security nonces before processing
 
 ### Bug Fixes
 - ✅ Fixed "Failed to open stream: No such file or directory" error by ensuring all requests use AJAX
