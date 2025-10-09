@@ -438,12 +438,21 @@ function v_wp_seo_audit_ajax_generate_report()
 	// Start output buffering to capture the controller output
 	ob_start();
 	
-	try {
-		// Create the controller and render the view
-		$controller = new WebsitestatController( 'websitestat' );
-		$controller->actionGenerateHTML( $model->domain );
-		
-		$content = ob_get_clean();
+        try {
+                // Create the controller and render the view
+                $controller = new WebsitestatController( 'websitestat' );
+                $controller->init();
+
+                $previous = Yii::app()->getController();
+                Yii::app()->setController( $controller );
+
+                try {
+                        $controller->actionGenerateHTML( $model->domain );
+                } finally {
+                        Yii::app()->setController( $previous );
+                }
+
+                $content = ob_get_clean();
 		
 		// Return the HTML content
 		wp_send_json_success( array( 'html' => $content ) );
