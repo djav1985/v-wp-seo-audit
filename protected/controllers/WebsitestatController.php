@@ -188,6 +188,16 @@ class WebsitestatController extends Controller
 		$this->misc =		$this->command->select('*')->from("{{misc}}")->where('wid=:wid', array(':wid' => $this->wid))->queryRow();
 		$this->command->reset();
 
+		// Initialize as empty arrays if query returned false/null
+		if (!$this->cloud) $this->cloud = array('words' => '[]', 'matrix' => '[]');
+		if (!$this->content) $this->content = array('headings' => '[]', 'deprecated' => '[]', 'total_img' => 0, 'total_alt' => 0);
+		if (!$this->document) $this->document = array('doctype' => '', 'lang' => '', 'htmlratio' => 0, 'charset' => '');
+		if (!$this->isseter) $this->isseter = array('robotstxt' => 0, 'nestedtables' => 0, 'inlinecss' => 0);
+		if (!$this->links) $this->links = array('links' => '[]', 'external_nofollow' => 0, 'external_dofollow' => 0, 'internal' => 0);
+		if (!$this->meta) $this->meta = array('ogproperties' => '[]', 'title' => '', 'description' => '');
+		if (!$this->w3c) $this->w3c = array();
+		if (!$this->misc) $this->misc = array('sitemap' => '[]', 'analytics' => '[]');
+
 		$this->content['headings'] = @(array)json_decode($this->content['headings'], true);
 		$this->links['links'] = @(array)json_decode($this->links['links'], true);
 		$this->cloud['words'] = Utils::shuffle_assoc(@(array) json_decode($this->cloud['words'], true));
