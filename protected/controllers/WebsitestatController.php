@@ -15,14 +15,15 @@ class WebsitestatController extends Controller
 		$meta      = array(),
 		$misc      = array(),
 		$generated = array();
-	public function init()     {
-		parent::init();
+	public function init()
+    {
+        parent::init();
         $this->command = Yii::app()->db->createCommand();
         $this->domain  = isset( $_GET['domain'] ) ? $_GET['domain'] : null;
         if (
         ! $this->website = $this->command->select( 'id, domain, modified, idn, score, final_url' )->from( '{{website}}' )->where( 'md5domain=:md5', array( ':md5' => md5( $this->domain ) ) )->queryRow()
         ) {
-            if (  ! Yii::app()->params['param.instant_redirect'] ) {
+            if ( ! Yii::app()->params['param.instant_redirect']) {
                 $form         = new WebsiteForm();
                 $form->domain = $this->domain;
                 if ($form->validate()) {
@@ -39,7 +40,8 @@ class WebsitestatController extends Controller
      
     }
 
-    public function actionGenerateHTML( $domain )     {
+    public function actionGenerateHTML( $domain )
+    {
         $downloadForm = new DownloadPdfForm();
         if (isset($_POST['DownloadPdfForm']) and is_array($_POST['DownloadPdfForm'])) {
             $downloadForm->attributes = $_POST['DownloadPdfForm'];
@@ -117,7 +119,8 @@ class WebsitestatController extends Controller
             );
     }
 
-    public function actionGeneratePDF( $domain )     {
+    public function actionGeneratePDF( $domain )
+    {
         $filename = $this->domain;
         $pdfFile  = Utils::createPdfFolder($filename);
         if (file_exists($pdfFile)) {
@@ -154,7 +157,8 @@ class WebsitestatController extends Controller
         $this->createPdfFromHtml($html, $pdfFile, $this->website['idn']);
     }
 
-    protected function outputPDF( $pdfFile, $filename )     {
+    protected function outputPDF( $pdfFile, $filename )
+    {
         header('Content-type: application/pdf');
         // It will be called downloaded.pdf
         header('Content-Disposition: attachment; filename="' . $filename . '.pdf"');
@@ -163,7 +167,8 @@ class WebsitestatController extends Controller
         Yii::app()->end();
     }
 
-    protected function createPdfFromHtml( $html, $pdfFile, $filename )     {
+    protected function createPdfFromHtml( $html, $pdfFile, $filename )
+    {
         $pdf = Yii::createComponent('application.extensions.tcpdf.ETcPdf', 'P', 'cm', 'A4', true, 'UTF-8');
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('http://website-review.php8developer.com');
@@ -180,7 +185,8 @@ class WebsitestatController extends Controller
         $this->outputPDF($pdfFile, $filename);
     }
 
-    protected function collectInfo()     {
+    protected function collectInfo()
+    {
         // Set thumbnail
         $this->thumbnail = WebsiteThumbnail::getThumbData(
                 array(
@@ -207,21 +213,22 @@ class WebsitestatController extends Controller
         $this->command->reset();
 
         // Initialize as empty arrays if query returned false/null
-        if (! $this->cloud ) {
+        if (! $this->cloud) {
             $this->cloud = array(
             'words'  => '[]',
             'matrix' => '[]',
             );
         }
-        if (! $this->content ) {
+        if (! $this->content) {
             $this->content = array(
-            'headings'   => '[]',
-            'deprecated' => '[]',
-            'total_img'  => 0,
-            'total_alt'  => 0,
+            'headings'       => '[]',
+            'deprecated'     => '[]',
+            'total_img'      => 0,
+            'total_alt'      => 0,
+            'isset_headings' => 0,
             );
         }
-        if (! $this->document ) {
+        if (! $this->document) {
             $this->document = array(
             'doctype'   => '',
             'lang'      => '',
@@ -229,49 +236,80 @@ class WebsitestatController extends Controller
             'charset'   => '',
             );
         }
-        if (! $this->isseter ) {
+        if (! $this->isseter) {
             $this->isseter = array(
             'robotstxt'    => 0,
             'nestedtables' => 0,
             'inlinecss'    => 0,
+            'flash'        => 0,
+            'iframe'       => 0,
             );
         }
-        if (! $this->links ) {
+        if (! $this->links) {
             $this->links = array(
             'links'             => '[]',
             'external_nofollow' => 0,
             'external_dofollow' => 0,
             'internal'          => 0,
+            'friendly'          => 0,
+            'isset_underscore'  => 0,
+            'files_count'       => 0,
             );
         }
-        if (! $this->meta ) {
+        if (! $this->meta) {
             $this->meta = array(
             'ogproperties' => '[]',
             'title'        => '',
             'description'  => '',
+            'keyword'      => '',
             );
         }
-        if (! $this->w3c ) {
+        if (! $this->w3c) {
             $this->w3c = array();
         }
-        if (! $this->misc ) {
+        if (! $this->misc) {
             $this->misc = array(
             'sitemap'   => '[]',
             'analytics' => '[]',
             );
         }
 
-        $this->content['headings']   = @ (array) json_decode($this->content['headings'], true);
-        $this->links['links']        = @ (array) json_decode($this->links['links'], true);
-        $this->cloud['words']        = Utils::shuffle_assoc(@ (array) json_decode($this->cloud['words'], true));
-        $this->cloud['matrix']       = @ (array) json_decode($this->cloud['matrix'], true);
-        $this->meta['ogproperties']  = @ (array) json_decode($this->meta['ogproperties'], true);
-        $this->content['deprecated'] = @ (array) json_decode($this->content['deprecated'], true);
-
-        if ($this->misc) {
-            $this->misc['sitemap']   = @ (array) json_decode($this->misc['sitemap'], true);
-            $this->misc['analytics'] = @ (array) json_decode($this->misc['analytics'], true);
+        // Ensure fields exist and are not null before JSON decoding
+        // If field is null or doesn't exist, default to empty JSON array string
+        if (! isset($this->content['headings']) || $this->content['headings'] === null) {
+            $this->content['headings'] = '[]';
         }
+        if (! isset($this->content['deprecated']) || $this->content['deprecated'] === null) {
+            $this->content['deprecated'] = '[]';
+        }
+        if (! isset($this->links['links']) || $this->links['links'] === null) {
+            $this->links['links'] = '[]';
+        }
+        if (! isset($this->cloud['words']) || $this->cloud['words'] === null) {
+            $this->cloud['words'] = '[]';
+        }
+        if (! isset($this->cloud['matrix']) || $this->cloud['matrix'] === null) {
+            $this->cloud['matrix'] = '[]';
+        }
+        if (! isset($this->meta['ogproperties']) || $this->meta['ogproperties'] === null) {
+            $this->meta['ogproperties'] = '[]';
+        }
+        if (! isset($this->misc['sitemap']) || $this->misc['sitemap'] === null) {
+            $this->misc['sitemap'] = '[]';
+        }
+        if (! isset($this->misc['analytics']) || $this->misc['analytics'] === null) {
+            $this->misc['analytics'] = '[]';
+        }
+
+        // Decode JSON fields to arrays
+        $this->content['headings']   = (array) json_decode($this->content['headings'], true);
+        $this->links['links']        = (array) json_decode($this->links['links'], true);
+        $this->cloud['words']        = Utils::shuffle_assoc((array) json_decode($this->cloud['words'], true));
+        $this->cloud['matrix']       = (array) json_decode($this->cloud['matrix'], true);
+        $this->meta['ogproperties']  = (array) json_decode($this->meta['ogproperties'], true);
+        $this->content['deprecated'] = (array) json_decode($this->content['deprecated'], true);
+        $this->misc['sitemap']       = (array) json_decode($this->misc['sitemap'], true);
+        $this->misc['analytics']     = (array) json_decode($this->misc['analytics'], true);
 
         $this->strtime        = strtotime($this->website['modified']);
         $this->generated['A'] = date('A', $this->strtime);

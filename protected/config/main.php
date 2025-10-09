@@ -1,29 +1,48 @@
 <?php
 
-// Load WordPress DB constants and $table_prefix
-// Robustly locate wp-config.php for both web and CLI execution.
-// Load DB constants and table prefix from wp-db-config.php for both CLI and web contexts.
-$wp_db_config_path = dirname( __FILE__, 3 ) . DIRECTORY_SEPARATOR . 'wp-db-config.php';
-if (  ! file_exists( $wp_db_config_path ) ) {
-    die( 'Fatal error: wp-db-config.php not found at ' . $wp_db_config_path );
-}
-require_once $wp_db_config_path;
+// Load configuration
 $cfg_main  = __DIR__ . DIRECTORY_SEPARATOR . 'config.php';
 $cfg_local = __DIR__ . DIRECTORY_SEPARATOR . 'config_local.php';
-$params    = is_file( $cfg_local ) ? require $cfg_local : require $cfg_main;
+$params    = is_file($cfg_local) ? require $cfg_local : require $cfg_main;
+
+// Use WordPress DB constants if available (when running as WordPress plugin)
+// Otherwise fall back to config file settings (for CLI or standalone usage)
+if (! defined('DB_NAME')) {
+	define('DB_NAME', $params['db.dbname']);
+}
+if (! defined('DB_USER')) {
+	define('DB_USER', $params['db.username']);
+}
+if (! defined('DB_PASSWORD')) {
+	define('DB_PASSWORD', $params['db.password']);
+}
+if (! defined('DB_HOST')) {
+	define('DB_HOST', $params['db.host']);
+}
+if (! defined('DB_CHARSET')) {
+	define('DB_CHARSET', 'utf8mb4');
+}
+if (! isset($table_prefix)) {
+	global $wpdb;
+	if (isset($wpdb) && isset($wpdb->prefix)) {
+		$table_prefix = $wpdb->prefix;
+	} else {
+		$table_prefix = 'wp_';
+	}
+}
 
 return array(
-    'basePath'   => dirname( __FILE__ ) . DIRECTORY_SEPARATOR . '..',
-    'name'       => $params['app.name'],
-    'language'   => $params['app.default_language'],
-    'timeZone'   => $params['app.timezone'],
-    'preload'    => array( 'log' ),
+	'basePath'   => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
+	'name'       => $params['app.name'],
+	'language'   => $params['app.default_language'],
+	'timeZone'   => $params['app.timezone'],
+	'preload'    => array( 'log' ),
 
 
-    // autoloading model and component classes
-    'import'     => array(
-        'application.models.*',
-        'application.components.*',
+	// autoloading model and component classes
+	'import'     => array(
+		'application.models.*',
+		'application.components.*',
     ),
 
     // application components
@@ -52,64 +71,64 @@ return array(
 
       'db'                => array(
           // Use WordPress DB constants and table prefix
-          'connectionString'      => 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';port=' . ( defined( 'DB_PORT' ) ? DB_PORT : '3306' ),
+          'connectionString'      => 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';port=' . ( defined('DB_PORT') ? DB_PORT : '3306' ),
           'emulatePrepare'        => true,
           'username'              => DB_USER,
           'password'              => DB_PASSWORD,
-          'charset'               => defined( 'DB_CHARSET' ) ? DB_CHARSET : 'utf8mb4',
+          'charset'               => defined('DB_CHARSET') ? DB_CHARSET : 'utf8mb4',
         'tablePrefix'             => 'wp_ca_',
           'schemaCachingDuration' => 60 * 60 * 24 * 30,
-          'enableProfiling'       => defined( 'YII_DEBUG' ) ? YII_DEBUG : false,
-          'enableParamLogging'    => defined( 'YII_DEBUG' ) ? YII_DEBUG : false,
+          'enableProfiling'       => defined('YII_DEBUG') ? YII_DEBUG : false,
+          'enableParamLogging'    => defined('YII_DEBUG') ? YII_DEBUG : false,
       ),
 
-		// Error handler
-		'errorHandler'    => array(
-			// ControllerID/ActionID custom page to handle errors
-			'errorAction' => 'site/error',
-		),
+        // Error handler
+        'errorHandler'    => array(
+            // ControllerID/ActionID custom page to handle errors
+            'errorAction' => 'site/error',
+        ),
 
-		// Log errors into ~/root/website_review/runtime/application.log file
-		'log'             => array(
-			'class'  => 'CLogRouter',
-			'routes' => array(
-				array(
-					'class'  => 'CFileLogRoute',
-					'levels' => 'error, warning',
-					'except' => 'exception.CHttpException.*',
-				),
-				/*
-				array(
-					'class'=>'CWebLogRoute',
-				),*/
-			),
-		),
+        // Log errors into ~/root/website_review/runtime/application.log file
+        'log'             => array(
+            'class'  => 'CLogRouter',
+            'routes' => array(
+                array(
+                    'class'  => 'CFileLogRoute',
+                    'levels' => 'error, warning',
+                    'except' => 'exception.CHttpException.*',
+                ),
+                /*
+                array(
+                    'class'=>'CWebLogRoute',
+                ),*/
+            ),
+        ),
 
-		'securityManager' => array(
-			'encryptionKey' => $params['app.encryption_key'],
-			'validationkey' => $params['app.validation_key'],
-		),
+        'securityManager' => array(
+            'encryptionKey' => $params['app.encryption_key'],
+            'validationkey' => $params['app.validation_key'],
+        ),
 
-		'session'         => array(
-			'cookieParams' => array(
-				'httponly' => true,
-				'path'     => $params['app.base_url'],
-				'secure'   => $params['cookie.secure'],
-				'samesite' => $params['cookie.same_site'],
-			),
-		),
+        'session'         => array(
+            'cookieParams' => array(
+                'httponly' => true,
+                'path'     => $params['app.base_url'],
+                'secure'   => $params['cookie.secure'],
+                'samesite' => $params['cookie.same_site'],
+            ),
+        ),
 
-		'request'         => array(
-			'enableCookieValidation' => $params['app.cookie_validation'],
-			'csrfCookie'             => array(
-				'httpOnly' => true,
-				'path'     => $params['app.base_url'],
-				'secure'   => $params['cookie.secure'],
-				'sameSite' => $params['cookie.same_site'],
-			),
-		),
-	),
+        'request'         => array(
+            'enableCookieValidation' => $params['app.cookie_validation'],
+            'csrfCookie'             => array(
+                'httpOnly' => true,
+                'path'     => $params['app.base_url'],
+                'secure'   => $params['cookie.secure'],
+                'sameSite' => $params['cookie.same_site'],
+            ),
+        ),
+    ),
 
-	// App level params
-	'params'     => $params,
+    // App level params
+    'params'     => $params,
 );

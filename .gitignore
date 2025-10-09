@@ -30,3 +30,4 @@ Thumbs.db
 .idea/
 *.sublime-project
 *.sublime-workspace
+wp-db-config.php
