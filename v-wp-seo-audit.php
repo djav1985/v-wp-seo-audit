@@ -555,7 +555,16 @@ add_action( 'wp_ajax_nopriv_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pag
 function v_wp_seo_audit_ajax_download_pdf()
 {
 	// Verify nonce for security
-	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
+	// Note: We use wp_verify_nonce() instead of check_ajax_referer() because
+	// this handler is called via form submission with target="_blank", which may
+	// not have the correct referrer header. check_ajax_referer() checks both nonce
+	// and referrer, while wp_verify_nonce() only checks the nonce.
+	$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( $_POST['nonce'] ) : '';
+	
+	if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'v_wp_seo_audit_nonce' ) ) {
+		wp_send_json_error( array( 'message' => 'Security check failed' ) );
+		return;
+	}
 	
 	global $v_wp_seo_audit_app;
 	
