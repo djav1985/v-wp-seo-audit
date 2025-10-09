@@ -31,23 +31,24 @@ add_action('wp_ajax_nopriv_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_page
 
 **File**: `v-wp-seo-audit.php`
 
-Added security checks to both AJAX handlers:
+Added security checks to all three AJAX handlers using WordPress's recommended `check_ajax_referer()` function:
 
-**Domain Validation Handler** (lines 312-315):
+**Domain Validation Handler** (line 309):
 ```php
-if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'v_wp_seo_audit_nonce')) {
-    wp_send_json_error(array('message' => 'Security check failed'));
-    return;
-}
+check_ajax_referer('v_wp_seo_audit_nonce', 'nonce');
 ```
 
-**Report Generation Handler** (lines 367-370):
+**Report Generation Handler** (line 363):
 ```php
-if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'v_wp_seo_audit_nonce')) {
-    wp_send_json_error(array('message' => 'Security check failed'));
-    return;
-}
+check_ajax_referer('v_wp_seo_audit_nonce', 'nonce');
 ```
+
+**PagePeeker Proxy Handler** (line 419):
+```php
+check_ajax_referer('v_wp_seo_audit_nonce', 'nonce');
+```
+
+**Note**: Using `check_ajax_referer()` is the WordPress best practice for AJAX handlers as it automatically dies with -1 if verification fails, providing better security than manual checking.
 
 ### 3. Improved index.php Error Handling
 
@@ -100,7 +101,7 @@ The plugin now has three fully functional AJAX endpoints:
 |--------|----------|---------|----------------|
 | `v_wp_seo_audit_validate` | `v_wp_seo_audit_ajax_validate_domain()` | Validates domain input | ✅ Yes |
 | `v_wp_seo_audit_generate_report` | `v_wp_seo_audit_ajax_generate_report()` | Generates SEO audit report | ✅ Yes |
-| `v_wp_seo_audit_pagepeeker` | `v_wp_seo_audit_ajax_pagepeeker()` | Legacy thumbnail proxy | ❌ No (GET request) |
+| `v_wp_seo_audit_pagepeeker` | `v_wp_seo_audit_ajax_pagepeeker()` | Legacy thumbnail proxy | ✅ Yes |
 
 All endpoints are registered for both authenticated (`wp_ajax_`) and non-authenticated (`wp_ajax_nopriv_`) users.
 
