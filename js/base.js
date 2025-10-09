@@ -334,6 +334,14 @@ var WrHelper = (function () {
 
             var ajaxUrl = getAjaxUrl();
             var nonce = getNonce();
+            
+            // Debug: Check if nonce is available
+            if (!nonce) {
+                console.error('V-WP-SEO-Audit: Nonce is not available');
+                window.alert('Error: Security token is not available. Please refresh the page and try again.');
+                $trigger.removeClass('disabled').removeAttr('aria-busy').text(originalText);
+                return;
+            }
 
             // Create a form and submit it to trigger file download
             var $form = $('<form>', {
