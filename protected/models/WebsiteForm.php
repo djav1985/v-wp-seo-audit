@@ -96,6 +96,12 @@ class WebsiteForm extends CFormModel {
 			if($error = $runner -> run ($args)) {
 				$this -> addError("domain", Yii::t("app", "Error Code $error"));
 			} else {
+				// After analysis, check if DB record exists
+				$websiteCheck = $command -> select('id') -> from('{{website}}') -> where('md5domain=:id', array(':id'=>md5($this -> domain))) -> queryRow();
+				if (!$websiteCheck) {
+					$this -> addError("domain", Yii::t("app", "Analysis failed: domain record not created. Please try again or check your domain input."));
+					return false;
+				}
 				return true;
 			}
 		}

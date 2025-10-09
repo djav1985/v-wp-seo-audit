@@ -1,3 +1,9 @@
+<?php if (empty($website) || !is_array($website)) : ?>
+    <div class="alert alert-danger mt-5 mb-5">
+        <?php echo Yii::t("app", "No report available. The domain could not be analyzed or the record was not created. Please try again or check your domain input."); ?>
+    </div>
+    <?php return; ?>
+<?php endif; ?>
 <script type="text/javascript">
     "use strict";
 
