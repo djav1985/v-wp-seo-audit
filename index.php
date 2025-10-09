@@ -1,12 +1,47 @@
 <?php
 /**
  * Yii Application Entry Point for WordPress Plugin
- * This file handles AJAX and direct requests to the Yii application
+ * This file is DEPRECATED and should not be accessed directly.
+ * All functionality is now handled through WordPress AJAX handlers.
+ * This file is kept for backward compatibility only.
  */
 
-// Prevent direct access to this file for security
+// Prevent direct access - this file should only be loaded via WordPress
+if (!defined('ABSPATH')) {
+    // Try to load WordPress if not already loaded
+    $wp_load_path = dirname(dirname(dirname(dirname(__FILE__)))) . '/wp-load.php';
+    if (file_exists($wp_load_path)) {
+        require_once($wp_load_path);
+    } else {
+        die('WordPress not found. This plugin requires WordPress to function properly.');
+    }
+}
+
+// If accessed directly without proper route, show error message
 if (!isset($_GET['r']) && !isset($_POST['r'])) {
-    die('Direct access not allowed');
+    ?>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>V-WP-SEO-Audit - Direct Access Not Allowed</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 50px; }
+            .notice { background: #fff3cd; border: 1px solid #ffc107; padding: 20px; border-radius: 5px; }
+            h1 { color: #856404; }
+            p { color: #856404; }
+        </style>
+    </head>
+    <body>
+        <div class="notice">
+            <h1>Direct Access Not Allowed</h1>
+            <p>This file should not be accessed directly. The V-WP-SEO-Audit plugin now uses WordPress AJAX handlers.</p>
+            <p>Please use the plugin shortcode <code>[v_wp_seo_audit]</code> on a WordPress page instead.</p>
+            <p><a href="<?php echo esc_url(home_url('/')); ?>">Return to Homepage</a></p>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit;
 }
 
 // Set error reporting similar to main plugin

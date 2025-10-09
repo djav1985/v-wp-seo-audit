@@ -305,6 +305,12 @@ register_uninstall_hook(__FILE__, 'v_wp_seo_audit_uninstall');
 
 // WordPress AJAX handler for domain validation
 function v_wp_seo_audit_ajax_validate_domain() {
+    // Verify nonce for security
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'v_wp_seo_audit_nonce')) {
+        wp_send_json_error(array('message' => 'Security check failed'));
+        return;
+    }
+    
     global $v_wp_seo_audit_app;
     
     // Initialize Yii if not already initialized
@@ -356,6 +362,12 @@ add_action('wp_ajax_nopriv_v_wp_seo_audit_validate', 'v_wp_seo_audit_ajax_valida
 
 // WordPress AJAX handler for generating HTML report
 function v_wp_seo_audit_ajax_generate_report() {
+    // Verify nonce for security
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'v_wp_seo_audit_nonce')) {
+        wp_send_json_error(array('message' => 'Security check failed'));
+        return;
+    }
+    
     global $v_wp_seo_audit_app;
     
     // Initialize Yii if not already initialized
@@ -406,3 +418,44 @@ function v_wp_seo_audit_ajax_generate_report() {
 }
 add_action('wp_ajax_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax_generate_report');
 add_action('wp_ajax_nopriv_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax_generate_report');
+
+// WordPress AJAX handler for PagePeeker proxy (legacy - thumbnail proxy is disabled by default)
+function v_wp_seo_audit_ajax_pagepeeker() {
+    global $v_wp_seo_audit_app;
+    
+    // Initialize Yii if not already initialized
+    if ($v_wp_seo_audit_app === null) {
+        $yii = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
+        $config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+        
+        if (file_exists($yii) && file_exists($config)) {
+            require_once($yii);
+            $v_wp_seo_audit_app = Yii::createWebApplication($config);
+            
+            if (isset($v_wp_seo_audit_app->params['app.timezone'])) {
+                $v_wp_seo_audit_app->setTimeZone($v_wp_seo_audit_app->params['app.timezone']);
+            }
+        } else {
+            wp_send_json_error(array('message' => 'Application not initialized'));
+            return;
+        }
+    }
+    
+    // Check if thumbnail proxy is enabled (it's disabled by default)
+    if (!isset($v_wp_seo_audit_app->params['thumbnail.proxy']) || !$v_wp_seo_audit_app->params['thumbnail.proxy']) {
+        // Thumbnail proxy is disabled, use direct thum.io URLs instead
+        $url = isset($_GET['url']) ? sanitize_text_field($_GET['url']) : '';
+        if ($url) {
+            // Return success with a message that thumbnails are served directly
+            wp_send_json_success(array('message' => 'Thumbnails are served directly from thum.io'));
+        } else {
+            wp_send_json_error(array('message' => 'Thumbnail proxy is not enabled'));
+        }
+        return;
+    }
+    
+    // Legacy PagePeeker proxy code (not used with current thum.io implementation)
+    wp_send_json_error(array('message' => 'PagePeeker proxy is deprecated'));
+}
+add_action('wp_ajax_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker');
+add_action('wp_ajax_nopriv_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker');

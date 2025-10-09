@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-copilot/update-plugin-to-use-ajax',
-        'version' => 'dev-copilot/update-plugin-to-use-ajax',
-        'reference' => 'e960becdb39c1829fbfd48ec6c20b98615248114',
+        'pretty_version' => 'dev-copilot/fix-ajax-implementation-issues',
+        'version' => 'dev-copilot/fix-ajax-implementation-issues',
+        'reference' => 'a0ea84ebf3690baa9ade0b3c299312c69e9c821a',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-copilot/update-plugin-to-use-ajax',
-            'version' => 'dev-copilot/update-plugin-to-use-ajax',
-            'reference' => 'e960becdb39c1829fbfd48ec6c20b98615248114',
+            'pretty_version' => 'dev-copilot/fix-ajax-implementation-issues',
+            'version' => 'dev-copilot/fix-ajax-implementation-issues',
+            'reference' => 'a0ea84ebf3690baa9ade0b3c299312c69e9c821a',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

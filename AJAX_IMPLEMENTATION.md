@@ -124,8 +124,21 @@ Added to JavaScript global `_global` object:
 
 ## Future Improvements
 
-1. Add nonce verification in AJAX handlers
+1. ~~Add nonce verification in AJAX handlers~~ ✅ **COMPLETED**
 2. Add rate limiting for AJAX requests
 3. Add caching for repeated domain queries
 4. Implement error logging
 5. Add unit tests for AJAX handlers
+
+## Recent Updates (Latest)
+
+### Security Improvements
+- ✅ Added nonce verification to all AJAX handlers (`v_wp_seo_audit_validate`, `v_wp_seo_audit_generate_report`)
+- ✅ Added missing `v_wp_seo_audit_pagepeeker` AJAX handler
+- ✅ Improved index.php error handling with friendly error page
+- ✅ All AJAX endpoints now properly validate security nonces before processing
+
+### Bug Fixes
+- ✅ Fixed "Failed to open stream: No such file or directory" error by ensuring all requests use AJAX
+- ✅ Fixed "Direct access not allowed" error with improved error messaging
+- ✅ PagePeeker proxy handler now correctly acknowledges that thumbnail proxy is disabled (uses thum.io directly)
