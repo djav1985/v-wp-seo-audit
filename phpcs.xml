@@ -10,5 +10,6 @@
     <exclude-pattern>pdf/*</exclude-pattern>
     <exclude-pattern>webfonts/*</exclude-pattern>
     <exclude-pattern>framework/*</exclude-pattern>
+    <exclude-pattern>vendors/*</exclude-pattern>
     <exclude-pattern>protected/vendors/*</exclude-pattern>
 </ruleset>
