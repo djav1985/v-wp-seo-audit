@@ -48,128 +48,276 @@ var WrHelper = (function () {
     }
 })();
 
-// Form submission handler
-jQuery(function($) {
-    $('#submit').on('click', function(e) {
-        e.preventDefault();
-        
-        var domain = $('#domain').val().trim();
-        var $errors = $('#errors');
-        var $progressBar = $('#progress-bar');
-        var $container = $('.v-wp-seo-audit-container');
-        
-        // Hide previous errors
-        $errors.hide().html('');
-        
-        // Validate domain
-        if (!domain) {
-            $errors.html('Please enter a domain name').show();
-            return;
+(function($) {
+    'use strict';
+
+    function getGlobalSetting(key, fallback) {
+        if (typeof _global !== 'undefined' && _global && Object.prototype.hasOwnProperty.call(_global, key)) {
+            return _global[key];
         }
-        
-        // Basic client-side validation
-        // Remove protocol if present
-        domain = domain.replace(/^(https?:\/\/)?(www\.)?/i, '');
-        domain = domain.replace(/\/$/, ''); // Remove trailing slash
-        
-        // Simple domain pattern check
-        var domainPattern = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i;
-        if (!domainPattern.test(domain)) {
-            $errors.html('Please enter a valid domain name').show();
-            return;
+        return fallback;
+    }
+
+    function getAjaxUrl() {
+        return getGlobalSetting('ajaxUrl', '/wp-admin/admin-ajax.php');
+    }
+
+    function getNonce() {
+        return getGlobalSetting('nonce', '');
+    }
+
+    function normalizeElement(element, fallbackSelector) {
+        if (element && element.jquery) {
+            return element;
         }
-        
-        // Update the input with cleaned domain
-        $('#domain').val(domain);
-        
-        // Show progress bar
-        $progressBar.show();
-        $(this).prop('disabled', true);
-        
-        // Get the AJAX URL from global variable
-        var ajaxUrl = (typeof _global !== 'undefined' && _global.ajaxUrl) ? _global.ajaxUrl : '/wp-admin/admin-ajax.php';
-        var nonce = (typeof _global !== 'undefined' && _global.nonce) ? _global.nonce : '';
-        
-        // Step 1: Validate domain via AJAX
-        $.ajax({
-            url: ajaxUrl,
+        if (element) {
+            return $(element);
+        }
+        if (fallbackSelector) {
+            return $(fallbackSelector);
+        }
+        return $();
+    }
+
+    function resolveContainer($context) {
+        var $container = $context && $context.length ? $context.closest('.v-wp-seo-audit-container') : $();
+        if (!$container.length) {
+            $container = $('.v-wp-seo-audit-container').first();
+        }
+        return $container;
+    }
+
+    window.vWpSeoAudit = window.vWpSeoAudit || {};
+
+    window.vWpSeoAudit.generateReport = function(domain, options) {
+        var settings = $.extend({
+            ajaxUrl: getAjaxUrl(),
+            nonce: getNonce(),
+            $container: null,
+            $errors: null,
+            $progressBar: null,
+            scrollTo: true,
+            manageProgressBar: true,
+            beforeSend: null,
+            afterSend: null
+        }, options || {});
+
+        var $container = normalizeElement(settings.$container, '.v-wp-seo-audit-container').first();
+        var $errors = normalizeElement(settings.$errors, '#errors');
+        var $progressBar = normalizeElement(settings.$progressBar, '#progress-bar');
+        var manageProgress = settings.manageProgressBar !== false;
+
+        settings.$container = $container;
+
+        if ($errors.length) {
+            $errors.hide().html('');
+        }
+
+        if (typeof settings.beforeSend === 'function') {
+            settings.beforeSend();
+        }
+
+        if (manageProgress && $progressBar.length) {
+            $progressBar.show();
+        }
+
+        var request = $.ajax({
+            url: settings.ajaxUrl,
             type: 'POST',
             data: {
-                action: 'v_wp_seo_audit_validate',
+                action: 'v_wp_seo_audit_generate_report',
                 domain: domain,
-                nonce: nonce
+                nonce: settings.nonce
             },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    // Domain validated, now generate the report
-                    generateReport(response.data.domain);
-                } else {
-                    // Validation failed, show error
-                    var errorMessage = response.data && response.data.message ? response.data.message : 'Validation failed';
-                    $errors.html(errorMessage).show();
-                    $progressBar.hide();
-                    $('#submit').prop('disabled', false);
-                }
-            },
-            error: function(xhr, status, error) {
-                $errors.html('An error occurred during validation. Please try again.').show();
+            dataType: 'json'
+        });
+
+        var finalize = function() {
+            if (manageProgress && $progressBar.length) {
                 $progressBar.hide();
-                $('#submit').prop('disabled', false);
+            }
+            if (typeof settings.afterSend === 'function') {
+                settings.afterSend();
+            }
+        };
+
+        request.done(function(response) {
+            finalize();
+
+            if (response && response.success) {
+                var html = response.data && response.data.html ? response.data.html : '';
+                var $targetContainer = $container;
+
+                if ($targetContainer.length) {
+                    $targetContainer.html(html);
+                } else {
+                    var $form = $('#website-form');
+                    if ($form.length) {
+                        var $parent = $form.parent();
+                        $targetContainer = $('<div class="v-wp-seo-audit-container"></div>').html(html);
+                        $parent.html($targetContainer);
+                        settings.$container = $targetContainer;
+                    }
+                }
+
+                if (settings.scrollTo !== false && $targetContainer.length) {
+                    $('html, body').animate({
+                        scrollTop: $targetContainer.offset().top - 100
+                    }, 500);
+                }
+            } else {
+                var message = response && response.data && response.data.message ? response.data.message : 'Failed to generate report';
+                if ($errors.length) {
+                    $errors.html(message).show();
+                } else {
+                    window.alert(message);
+                }
             }
         });
-        
-        // Function to generate report
-        function generateReport(validatedDomain) {
+
+        request.fail(function() {
+            finalize();
+
+            if ($errors.length) {
+                $errors.html('An error occurred while generating the report. Please try again.').show();
+            } else {
+                window.alert('An error occurred while generating the report. Please try again.');
+            }
+        });
+
+        return request;
+    };
+
+    $(function() {
+        var $domainInput = $('#domain');
+        var $submit = $('#submit');
+        var $errors = $('#errors');
+        var $progressBar = $('#progress-bar');
+
+        $('#submit').on('click', function(e) {
+            e.preventDefault();
+
+            var domain = $domainInput.val().trim();
+
+            if ($errors.length) {
+                $errors.hide().html('');
+            }
+
+            if (!domain) {
+                if ($errors.length) {
+                    $errors.html('Please enter a domain name').show();
+                } else {
+                    window.alert('Please enter a domain name');
+                }
+                return;
+            }
+
+            domain = domain.replace(/^(https?:\/\/)?(www\.)?/i, '');
+            domain = domain.replace(/\/$/, '');
+
+            var domainPattern = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i;
+            if (!domainPattern.test(domain)) {
+                if ($errors.length) {
+                    $errors.html('Please enter a valid domain name').show();
+                } else {
+                    window.alert('Please enter a valid domain name');
+                }
+                return;
+            }
+
+            $domainInput.val(domain);
+
+            if ($progressBar.length) {
+                $progressBar.show();
+            }
+            $submit.prop('disabled', true);
+
+            var ajaxUrl = getAjaxUrl();
+            var nonce = getNonce();
+
             $.ajax({
                 url: ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'v_wp_seo_audit_generate_report',
-                    domain: validatedDomain,
+                    action: 'v_wp_seo_audit_validate',
+                    domain: domain,
                     nonce: nonce
                 },
-                dataType: 'json',
-                success: function(response) {
-                    $progressBar.hide();
-                    $('#submit').prop('disabled', false);
-                    
-                    if (response.success) {
-                        // Replace the container content with the report
-                        if ($container.length) {
-                            $container.html(response.data.html);
-                        } else {
-                            // If container doesn't exist, create it and replace content
-                            var $parent = $('#website-form').parent();
-                            $parent.html('<div class="v-wp-seo-audit-container">' + response.data.html + '</div>');
+                dataType: 'json'
+            }).done(function(response) {
+                if (response && response.success && response.data && response.data.domain) {
+                    window.vWpSeoAudit.generateReport(response.data.domain, {
+                        ajaxUrl: ajaxUrl,
+                        nonce: nonce,
+                        $container: resolveContainer($submit),
+                        $errors: $errors,
+                        $progressBar: $progressBar,
+                        manageProgressBar: false,
+                        afterSend: function() {
+                            if ($progressBar.length) {
+                                $progressBar.hide();
+                            }
+                            $submit.prop('disabled', false);
                         }
-                        
-                        // Scroll to top of results
-                        $('html, body').animate({
-                            scrollTop: $container.offset().top - 100
-                        }, 500);
+                    });
+                } else {
+                    var message = response && response.data && response.data.message ? response.data.message : 'Validation failed';
+                    if ($errors.length) {
+                        $errors.html(message).show();
                     } else {
-                        var errorMessage = response.data && response.data.message ? response.data.message : 'Failed to generate report';
-                        $errors.html(errorMessage).show();
+                        window.alert(message);
                     }
-                },
-                error: function(xhr, status, error) {
+                    if ($progressBar.length) {
+                        $progressBar.hide();
+                    }
+                    $submit.prop('disabled', false);
+                }
+            }).fail(function() {
+                if ($errors.length) {
+                    $errors.html('An error occurred during validation. Please try again.').show();
+                } else {
+                    window.alert('An error occurred during validation. Please try again.');
+                }
+                if ($progressBar.length) {
                     $progressBar.hide();
-                    $('#submit').prop('disabled', false);
-                    $errors.html('An error occurred while generating the report. Please try again.').show();
+                }
+                $submit.prop('disabled', false);
+            });
+        });
+
+        $domainInput.on('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                $('#submit').trigger('click');
+            }
+        });
+
+        $('body').on('click', '.v-wp-seo-audit-view-report', function(e) {
+            e.preventDefault();
+
+            var $trigger = $(this);
+            var domain = $trigger.data('domain');
+
+            if (!domain) {
+                var fallback = $trigger.attr('href');
+                if (fallback) {
+                    window.location.href = fallback;
+                }
+                return;
+            }
+
+            window.vWpSeoAudit.generateReport(domain, {
+                $container: resolveContainer($trigger),
+                beforeSend: function() {
+                    $trigger.addClass('disabled').attr('aria-busy', 'true');
+                },
+                afterSend: function() {
+                    $trigger.removeClass('disabled').removeAttr('aria-busy');
                 }
             });
-        }
+        });
     });
-    
-    // Allow Enter key to submit
-    $('#domain').on('keypress', function(e) {
-        if (e.which === 13) {
-            e.preventDefault();
-            $('#submit').trigger('click');
-        }
-    });
-});
+})(jQuery);
 
 var WrPsi = (function () {
     var baseApiUrl = 'https://googlechrome.github.io/lighthouse/viewer/';

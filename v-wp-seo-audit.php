@@ -31,6 +31,59 @@ mb_internal_encoding( 'UTF-8' );
 global $v_wp_seo_audit_app;
 $v_wp_seo_audit_app = null;
 
+function v_wp_seo_audit_configure_yii_app( $app ) {
+        if ( ! $app) {
+                return;
+        }
+
+        if ($app->hasComponent( 'request' )) {
+                $request      = $app->getRequest();
+                $plugin_parts = wp_parse_url( rtrim( V_WP_SEO_AUDIT_PLUGIN_URL, '/' ) );
+                if ( ! is_array( $plugin_parts )) {
+                        $plugin_parts = array();
+                }
+
+                $host_info = '';
+                if ( ! empty( $plugin_parts['scheme'] ) && ! empty( $plugin_parts['host'] )) {
+                        $host_info = $plugin_parts['scheme'] . '://' . $plugin_parts['host'];
+                        if ( ! empty( $plugin_parts['port'] )) {
+                                $host_info .= ':' . $plugin_parts['port'];
+                        }
+                } else {
+                        $site_parts = wp_parse_url( get_site_url() );
+                        if ( ! is_array( $site_parts )) {
+                                $site_parts = array();
+                        }
+                        if ( ! empty( $site_parts['scheme'] ) && ! empty( $site_parts['host'] )) {
+                                $host_info = $site_parts['scheme'] . '://' . $site_parts['host'];
+                                if ( ! empty( $site_parts['port'] )) {
+                                        $host_info .= ':' . $site_parts['port'];
+                                }
+                        }
+                }
+
+                if ($host_info) {
+                        $request->setHostInfo( $host_info );
+                }
+
+                $path = '';
+                if ( ! empty( $plugin_parts['path'] )) {
+                        $path = '/' . ltrim( $plugin_parts['path'], '/' );
+                }
+
+                $path = rtrim( $path, '/' );
+
+                $request->setBaseUrl( $path );
+                $request->setScriptUrl( ( $path ? $path : '' ) . '/index.php' );
+        }
+
+        if ($app->hasComponent( 'urlManager' )) {
+                $urlManager = $app->getUrlManager();
+                $urlManager->urlFormat      = 'get';
+                $urlManager->showScriptName = true;
+        }
+}
+
 // Plugin initialization - only when needed (not on every page load)
 function v_wp_seo_audit_init()
 {
@@ -57,35 +110,18 @@ function v_wp_seo_audit_init()
 	$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
 	$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
 	
-	if (file_exists( $yii ) && file_exists( $config )) {
-		require_once $yii;
-		
-		// Create Yii application but don't run it yet
-		$v_wp_seo_audit_app = Yii::createWebApplication( $config );
-		
-		// Set timezone from config
-		if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
-			$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
-		}
-		
-		// Configure request component to use WordPress plugin URL
-		if ($v_wp_seo_audit_app->hasComponent( 'request' )) {
-			$request = $v_wp_seo_audit_app->getRequest();
-			// Set base URL to plugin's relative path (from site root)
-			$plugin_relative_url = str_replace( get_site_url(), '', rtrim( V_WP_SEO_AUDIT_PLUGIN_URL, '/' ) );
-			$request->setBaseUrl( $plugin_relative_url );
-			// In WordPress, we need to use the index.php as script URL
-			$request->setScriptUrl( $plugin_relative_url . '/index.php' );
-		}
-		
-		// Configure URL manager for WordPress context
-		if ($v_wp_seo_audit_app->hasComponent( 'urlManager' )) {
-			$urlManager = $v_wp_seo_audit_app->getUrlManager();
-			// Force GET format in WordPress since we can't use pretty URLs
-			$urlManager->urlFormat      = 'get';
-			$urlManager->showScriptName = true;
-		}
-	}
+        if (file_exists( $yii ) && file_exists( $config )) {
+                require_once $yii;
+
+                // Create Yii application but don't run it yet
+                $v_wp_seo_audit_app = Yii::createWebApplication( $config );
+
+                // Set timezone from config
+                if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
+                        $v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
+                }
+                v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
+        }
 }
 add_action( 'wp', 'v_wp_seo_audit_init' ); // Use 'wp' instead of 'init' to have access to $post
 
@@ -328,25 +364,27 @@ function v_wp_seo_audit_ajax_validate_domain()
 	global $v_wp_seo_audit_app;
 	
 	// Initialize Yii if not already initialized
-	if ($v_wp_seo_audit_app === null) {
-		$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-		$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
-		
-		if (file_exists( $yii ) && file_exists( $config )) {
-			require_once $yii;
-			$v_wp_seo_audit_app = Yii::createWebApplication( $config );
-			
-			if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
-				$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
-			}
-		} else {
-			wp_send_json_error( array( 'message' => 'Application not initialized' ) );
-			return;
-		}
-	}
-	
-	// Get domain from request
-	$domain = isset( $_POST['domain'] ) ? sanitize_text_field( $_POST['domain'] ) : '';
+        if ($v_wp_seo_audit_app === null) {
+                $yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
+                $config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+
+                if (file_exists( $yii ) && file_exists( $config )) {
+                        require_once $yii;
+                        $v_wp_seo_audit_app = Yii::createWebApplication( $config );
+
+                        if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
+                                $v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
+                        }
+                } else {
+                        wp_send_json_error( array( 'message' => 'Application not initialized' ) );
+                        return;
+                }
+        }
+
+        v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
+
+        // Get domain from request
+        $domain = isset( $_POST['domain'] ) ? sanitize_text_field( $_POST['domain'] ) : '';
 	
 	if (empty( $domain )) {
 		wp_send_json_error( array( 'message' => 'Please enter a domain name' ) );
@@ -383,11 +421,11 @@ function v_wp_seo_audit_ajax_generate_report()
 	global $v_wp_seo_audit_app;
 	
 	// Initialize Yii if not already initialized
-	if ($v_wp_seo_audit_app === null) {
-		$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-		$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
-		
-		if (file_exists( $yii ) && file_exists( $config )) {
+        if ($v_wp_seo_audit_app === null) {
+                $yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
+                $config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+
+                if (file_exists( $yii ) && file_exists( $config )) {
 			require_once $yii;
 			$v_wp_seo_audit_app = Yii::createWebApplication( $config );
 			
@@ -395,12 +433,14 @@ function v_wp_seo_audit_ajax_generate_report()
 				$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
 			}
 		} else {
-			wp_send_json_error( array( 'message' => 'Application not initialized' ) );
-			return;
-		}
-	}
-	
-	// Get domain from request
+                        wp_send_json_error( array( 'message' => 'Application not initialized' ) );
+                        return;
+                }
+        }
+
+        v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
+
+        // Get domain from request
 	$domain = isset( $_POST['domain'] ) ? sanitize_text_field( $_POST['domain'] ) : '';
 	
 	if (empty( $domain )) {
@@ -485,13 +525,15 @@ function v_wp_seo_audit_ajax_pagepeeker()
 				$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
 			}
 		} else {
-			wp_send_json_error( array( 'message' => 'Application not initialized' ) );
-			return;
-		}
-	}
-	
-	// Check if thumbnail proxy is enabled (it's disabled by default)
-	if ( ! isset( $v_wp_seo_audit_app->params['thumbnail.proxy'] ) || ! $v_wp_seo_audit_app->params['thumbnail.proxy']) {
+                        wp_send_json_error( array( 'message' => 'Application not initialized' ) );
+                        return;
+                }
+        }
+
+        v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
+
+        // Check if thumbnail proxy is enabled (it's disabled by default)
+        if ( ! isset( $v_wp_seo_audit_app->params['thumbnail.proxy'] ) || ! $v_wp_seo_audit_app->params['thumbnail.proxy']) {
 		// Thumbnail proxy is disabled, use direct thum.io URLs instead
 		$url = isset( $_GET['url'] ) ? sanitize_text_field( $_GET['url'] ) : '';
 		if ($url) {
