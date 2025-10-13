@@ -7,6 +7,11 @@
 
 class ExecutableFinder {
 
+	/**
+	 * Array of file suffixes to check for executables.
+	 *
+	 * @var array
+	 */
 	private $suffixes = array( '.exe', '.bat', '.cmd', '.com' );
 	/**
 	 * Replaces default suffixes of executable.
@@ -89,6 +94,11 @@ class ExecutableFinder {
  */
 class PhpExecutableFinder {
 
+	/**
+	 * ExecutableFinder instance.
+	 *
+	 * @var ExecutableFinder
+	 */
 	private $executableFinder;
 	/**
 	 * __construct function.

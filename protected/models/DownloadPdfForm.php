@@ -6,6 +6,11 @@
  */
 
 class DownloadPdfForm extends CFormModel {
+	/**
+	 * Validation token for reCAPTCHA.
+	 *
+	 * @var string
+	 */
 	public $validation;
 
 	/**
