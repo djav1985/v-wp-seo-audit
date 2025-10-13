@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Uninstall script for V-WP-SEO-Audit plugin
  *
@@ -10,13 +9,15 @@
  */
 
 // Exit if uninstall not called from WordPress.
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' )) {
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
 global $wpdb;
 // Get the table prefix.
+// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
 $table_prefix = $wpdb->prefix . 'ca_';
+// phpcs:enable WordPress.WP.GlobalVariablesOverride.Prohibited
 // List of tables to drop.
 $tables = array(
 	$table_prefix . 'cloud',
@@ -31,9 +32,11 @@ $tables = array(
 	$table_prefix . 'website',
 );
 // Drop all tables.
-foreach ($tables as $table) {
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+foreach ( $tables as $table ) {
 	$wpdb->query( "DROP TABLE IF EXISTS `{$table}`" );
 }
+// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 // Delete plugin options.
 delete_option( 'v_wp_seo_audit_version' );

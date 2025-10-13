@@ -4,6 +4,7 @@
  *
  * @package V_WP_SEO_Audit
  */
+
 return CMap::mergeArray(
 	require dirname( __FILE__ ) . '/main.php',
 	array(

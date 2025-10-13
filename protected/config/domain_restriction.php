@@ -1,6 +1,7 @@
 <?php
-
 /**
+ * Domain restriction configuration.
+ *
  * @@ EXAMPLES @@
  *
  * Pattern: fuck\.(.*)
