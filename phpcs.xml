@@ -5,6 +5,8 @@
     <rule ref="WordPress">
         <!-- Exclude ControlStructureSpacing sniff due to WPCS bug with vsprintf -->
         <exclude name="WordPress.WhiteSpace.ControlStructureSpacing"/>
+        <!-- Exclude DisallowInlineTabs to avoid conflict with PSR12 (PSR12 uses spaces, WordPress uses tabs) -->
+        <exclude name="Generic.WhiteSpace.DisallowTabIndent"/>
     </rule>
     <exclude-pattern>assets/*</exclude-pattern>
     <exclude-pattern>css/*</exclude-pattern>
