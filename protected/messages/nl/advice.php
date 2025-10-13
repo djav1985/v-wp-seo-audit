@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: advice.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Title advice - success'                  => 'Perfect, uw title tag bevat tussen de {1} en {2} karakters.',

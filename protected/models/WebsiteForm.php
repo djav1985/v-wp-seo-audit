@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: WebsiteForm.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 Yii::import( 'application.vendors.Webmaster.Utils.IDN' );
 

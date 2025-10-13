@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: LanguageSelector.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class LanguageSelector extends CWidget {
 	public function run() {

@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: error.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 /*
  @var $this SiteController */
 /* @var $error array */

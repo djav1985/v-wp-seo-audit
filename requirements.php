@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: requirements.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 function checkPhpExtensionVersion( $extensionName, $version, $compare = '>=') {
 	if ( ! extension_loaded( $extensionName )) {
 		return false;

@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: advice.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Title advice - success'                  => 'Замечательно, Ваш заголовок страницы содержит от {1} до {2} символов.',

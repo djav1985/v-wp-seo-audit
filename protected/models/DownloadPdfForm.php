@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: DownloadPdfForm.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class DownloadPdfForm extends CFormModel {
 	public $validation;

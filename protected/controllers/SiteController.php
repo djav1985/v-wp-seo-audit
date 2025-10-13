@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: SiteController.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class SiteController extends Controller {
 

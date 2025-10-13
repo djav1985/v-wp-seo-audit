@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: ClearCommand.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class ClearCommand extends CConsoleCommand {
 

@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Undersøg links fra din hjemmeside med ankertekster, urls og find frem til din interne og eksterne link procentdel.',

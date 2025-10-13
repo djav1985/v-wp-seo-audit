@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: Controller.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 class Controller extends CController {
 
 	public $title;

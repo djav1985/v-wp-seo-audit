@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: ImportCommand.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 Yii::import( 'application.vendors.Webmaster.Utils.IDN' );
 set_time_limit( 0 );

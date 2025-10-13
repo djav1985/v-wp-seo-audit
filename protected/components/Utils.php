@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: Utils.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class Utils {
 
@@ -255,7 +260,7 @@ class Utils {
 		 $headers    = array();
 		$header_text = substr( $response, 0, strpos( $response, "\r\n\r\n" ) );
 		foreach (explode( "\r\n", $header_text ) as $i => $line) {
-			if ($i === 0) {
+			if ( 0 === $i) {
 				$headers['status']    = $line;
 				$data                 = explode( ' ', $line );
 				$headers['http_code'] = isset( $data[1] ) ? $data[1] : null;

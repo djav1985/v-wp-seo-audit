@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: ManageController.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class ManageController extends Controller {
 

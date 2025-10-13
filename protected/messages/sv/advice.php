@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: advice.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Title advice - success'                  => 'Perfekt, din titel innehåller mellan {1} och {2} tecken.',

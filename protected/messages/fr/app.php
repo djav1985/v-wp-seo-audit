@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Aperçu des liens de votre site web (ancres et URLs) et découvrez le pourcentage des liens externes et internes.',

@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: advice.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Title advice - success'                  => 'Perfekt, din titel indeholder mellem {1} og {2} bogstaver.',

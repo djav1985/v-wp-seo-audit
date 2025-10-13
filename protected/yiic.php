@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: yiic.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 mb_internal_encoding( 'UTF-8' );
 error_reporting( E_ALL & ~( E_NOTICE | E_DEPRECATED | E_STRICT ) );
 

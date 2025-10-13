@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: advice.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Title advice - success'                  => 'Perfekt, denn Ihr Seitentitel enth&auml;lt zwischen {1} und {2} Anzahl Zeichen.',

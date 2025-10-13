@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: ParseCommand.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 Yii::import( 'application.vendors.Webmaster.Source.*' );
 Yii::import( 'application.vendors.Webmaster.TagCloud.*' );
 Yii::import( 'application.vendors.Webmaster.Utils.*' );

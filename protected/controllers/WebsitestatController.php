@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: WebsitestatController.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 Yii::import( 'application.vendors.Webmaster.Rates.*' );
 Yii::import( 'application.vendors.Webmaster.Source.*' );

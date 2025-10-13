@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: command.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class ExecutableFinder {
 

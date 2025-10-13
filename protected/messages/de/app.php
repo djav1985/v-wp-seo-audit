@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Extrahieren Sie Links und Linkbeschreibungen von Ihrer Webseite und analysieren Sie das Verh&auml;ltnis zwischen internen und externen Links.',

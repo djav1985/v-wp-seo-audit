@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Extraia todas as ligações do seu site, com os textos âncora, URL e a percentagem de ligações internas e externas.',

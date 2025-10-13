@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: PagePeekerProxyController.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class PagePeekerProxyController extends Controller {
 

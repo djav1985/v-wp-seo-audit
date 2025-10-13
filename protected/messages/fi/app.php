@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Poista linkki verkkosivustoltasi ankkureilla, url: llä ja selvitä sisäisiä ja ulkoisia linkkejä.',

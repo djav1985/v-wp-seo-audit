@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Estrae i links dal tuo sito con relative ancore, url e determina la percentuale dei links interni ed esterni.',

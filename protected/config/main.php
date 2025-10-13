@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: main.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 // Load configuration.
 $cfg_main  = __DIR__ . DIRECTORY_SEPARATOR . 'config.php';

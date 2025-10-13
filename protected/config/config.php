@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: config.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'app.name'                   => 'SEO Audit By V - v2.0',

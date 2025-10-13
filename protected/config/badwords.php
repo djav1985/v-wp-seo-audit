@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: badwords.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	// DA.

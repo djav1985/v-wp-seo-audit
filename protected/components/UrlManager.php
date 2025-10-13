@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: UrlManager.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class UrlManager extends CUrlManager {
 

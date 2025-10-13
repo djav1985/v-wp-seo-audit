@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: v-wp-seo-audit.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 /*
 Plugin Name: V-WP-SEO-Audit

@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: ParseController.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 class ParseController extends Controller {
 
 	public function filters() {

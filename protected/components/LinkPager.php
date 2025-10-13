@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: LinkPager.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class LinkPager extends CLinkPager {
 
