@@ -8,8 +8,8 @@
  */
 
 // Exit if uninstall not called from WordPress
-if (! defined('WP_UNINSTALL_PLUGIN')) {
-    exit;
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' )) {
+	exit;
 }
 
 global $wpdb;
@@ -20,11 +20,11 @@ $tables = array(
 	$table_prefix . 'cloud',
 	$table_prefix . 'content',
 	$table_prefix . 'document',
-    $table_prefix . 'issetobject',
+	$table_prefix . 'issetobject',
 	$table_prefix . 'links',
 	$table_prefix . 'metatags',
-    $table_prefix . 'misc',
-    $table_prefix . 'pagespeed',
+	$table_prefix . 'misc',
+	$table_prefix . 'pagespeed',
 	$table_prefix . 'w3c',
 	$table_prefix . 'website',
 );
@@ -42,6 +42,6 @@ if (is_multisite()) {
 		switch_to_blog( $site->blog_id );
 		delete_option( 'v_wp_seo_audit_version' );
 		restore_current_blog();
-	 
+
 	}
 }

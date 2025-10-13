@@ -2,8 +2,7 @@
 
 class ManageController extends Controller {
 
-    public function init()
-	{
+	public function init() {
 		parent::init();
 		$app_key = (string) Yii::app()->params['app.manage_key'];
 		$get_key = (string) Yii::app()->request->getQuery( 'key' );
@@ -19,26 +18,23 @@ class ManageController extends Controller {
 		@ini_set( 'max_input_time', -1 );
 	}
 
-	public function actionRemove( $domain)
-	{
-		Website::removeByDomain(  (string) $domain );
+	public function actionRemove( $domain) {
+		Website::removeByDomain( (string) $domain );
 		echo 'removed';
 	}
 
-	public function actionClear()
-	{
+	public function actionClear() {
 		$this->runCommand(
 			array(
-			'yiic',
-		'clear',
-		'pdf',
-		)
-			);
+				'yiic',
+				'clear',
+				'pdf',
+			)
+		);
 		echo 'ok';
 	}
 
-	protected function runCommand( $args)
-	{
+	protected function runCommand( $args) {
 		// Get command path
 		$commandPath = Yii::app()->getBasePath() . DIRECTORY_SEPARATOR . 'commands';
 
@@ -49,6 +45,6 @@ class ManageController extends Controller {
 		$runner->addCommands( $commandPath );
 
 		// If something goes wrong return error
-		$runner->run($args );
+		$runner->run( $args );
 	}
 }

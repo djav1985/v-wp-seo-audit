@@ -4,100 +4,93 @@ Yii::import( 'application.vendors.Webmaster.Utils.IDN' );
 
 class WebsiteForm extends CFormModel {
 
-    public $domain;
-    public $idn;
-    // президент.рф (IDN)
-    public $ip;
+	public $domain;
+	public $idn;
+	// президент.рф (IDN)
+	public $ip;
 
-    public function rules()
-    {
-        return array(
-        array(
-        'domain',
-        'filter',
-        'filter' => array( $this, 'trimDomain' ),
-        ),
-        array(
-        'domain',
-        'filter',
-        'filter' => array( $this, 'punycode' ),
-        ),
-        array( 'domain', 'required' ),
-        array(
-        'domain',
-        'match',
-        'pattern'     => '#^[a-z\d-]{1,62}\.[a-z\d-]{1,62}(.[a-z\d-]{1,62})*$#i',
-        'skipOnError' => true,
-        ),
-        array( 'domain', 'bannedWebsites' ),
-        array( 'domain', 'isReachable' ),
-        array( 'domain', 'tryToAnalyse' ),
-        );
-     
-    }
+	public function rules() {
+		return array(
+			array(
+				'domain',
+				'filter',
+				'filter' => array( $this, 'trimDomain' ),
+			),
+			array(
+				'domain',
+				'filter',
+				'filter' => array( $this, 'punycode' ),
+			),
+			array( 'domain', 'required' ),
+			array(
+				'domain',
+				'match',
+				'pattern'     => '#^[a-z\d-]{1,62}\.[a-z\d-]{1,62}(.[a-z\d-]{1,62})*$#i',
+				'skipOnError' => true,
+			),
+			array( 'domain', 'bannedWebsites' ),
+			array( 'domain', 'isReachable' ),
+			array( 'domain', 'tryToAnalyse' ),
+		);
 
-    public function attributeLabels()
-    {
+	}
 
-        return array( 'domain' => Yii::t('app', 'Domain') );
-     
-    }
+	public function attributeLabels() {
 
-    public function punycode( $domain )
-	{
+		return array( 'domain' => Yii::t( 'app', 'Domain' ) );
+
+	}
+
+	public function punycode( $domain ) {
 
 		$idn          = new IDN();
-		$this->domain = $idn->encode($domain);
+		$this->domain = $idn->encode( $domain );
 		$this->idn    = $domain;
 		return $this->domain;
 	}
 
-	public function bannedWebsites()
-	{
+	public function bannedWebsites() {
 
-		if (! $this->hasErrors()) {
-			$banned = Utils::getLocalConfigIfExists('domain_restriction');
+		if ( ! $this->hasErrors()) {
+			$banned = Utils::getLocalConfigIfExists( 'domain_restriction' );
 			foreach ($banned as $pattern) {
-				if (preg_match("#{$pattern}#i", $this->idn)) {
-					$this->addError('domain', Yii::t('app', 'Error Code 103'));
-				 
+				if (preg_match( "#{$pattern}#i", $this->idn )) {
+					$this->addError( 'domain', Yii::t( 'app', 'Error Code 103' ) );
+
 				}
-		   
+
 			}
-		 
+
 		}
-	 
+
 	}
 
-	public function trimDomain( $domain )
-	{
+	public function trimDomain( $domain ) {
 
-		$domain = trim($domain);
-		$domain = trim($domain, '/');
-		$domain = mb_strtolower($domain);
+		$domain = trim( $domain );
+		$domain = trim( $domain, '/' );
+		$domain = mb_strtolower( $domain );
 		$domain = preg_replace( '#^(https?://)#i', '', $domain );
 		$domain = preg_replace( '#^www\.#i', '', $domain );
 		return $domain;
-	 
+
 	}
 
-	public function isReachable()
-	{
+	public function isReachable() {
 
 		if ( ! $this->hasErrors()) {
 			$this->ip = gethostbyname( $this->domain );
 			$long     = ip2long( $this->ip );
 			if ($long == -1 or $long === false) {
 				$this->addError( 'domain', Yii::t( 'app', 'Could not reach host: {Host}', array( '{Host}' => $this->domain ) ) );
-			 
+
 			}
-		 
+
 		}
-	 
+
 	}
 
-	public function tryToAnalyse()
-	{
+	public function tryToAnalyse() {
 
 		if ( ! $this->hasErrors()) {
 			// Remove "www" from domain
@@ -124,7 +117,7 @@ class WebsiteForm extends CFormModel {
 			// Adding commands
 			$runner->addCommands( $commandPath );
 			// If something goes wrong return error
-			if ($error = $runner->run($args )) {
+			if ($error = $runner->run( $args )) {
 				$this->addError( 'domain', Yii::t( 'app', "Error Code $error" ) );
 			} else {
 				// After analysis, check if DB record exists
@@ -134,10 +127,10 @@ class WebsiteForm extends CFormModel {
 					return false;
 				}
 				return true;
-			 
+
 			}
-		 
+
 		}
-	 
+
 	}
 }

@@ -1,20 +1,20 @@
 <?php
 
-class UrlManager extends CUrlManager
-{
+class UrlManager extends CUrlManager {
+
 	protected function processRules() {
 		$this->rules = Yii::app()->params['url.multi_language_links'] ? $this->getMultiLanguageRules() : $this->getSingleLanguageRules();
 		parent::processRules();
 	}
 
 	public function createUrl( $route, $params = array(), $ampersand = '&') {
-		if (! isset($params['language'])) {
+		if ( ! isset( $params['language'] )) {
 			$params['language'] = Yii::app()->language;
 		}
-		if (! Yii::app()->params['url.multi_language_links']) {
-			unset($params['language']);
+		if ( ! Yii::app()->params['url.multi_language_links']) {
+			unset( $params['language'] );
 		}
-		return parent::createUrl($route, $params, $ampersand);
+		return parent::createUrl( $route, $params, $ampersand );
 	}
 
 

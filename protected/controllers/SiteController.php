@@ -1,12 +1,11 @@
 <?php
 
-class SiteController extends Controller
-{
-	public function actionIndex()
-	{
-		$this->title = Yii::t('meta', 'Index page title', array( '{Brandname}' => Yii::app()->name ));
+class SiteController extends Controller {
 
-		Yii::app()->clientScript->registerMetaTag(Yii::t( 'meta', 'Index page keywords' ), 'keywords' );
+	public function actionIndex() {
+		$this->title = Yii::t( 'meta', 'Index page title', array( '{Brandname}' => Yii::app()->name ) );
+
+		Yii::app()->clientScript->registerMetaTag( Yii::t( 'meta', 'Index page keywords' ), 'keywords' );
 		Yii::app()->clientScript->registerMetaTag( Yii::t( 'meta', 'Index page description', array( '{Brandname}' => Yii::app()->name ) ), 'description' );
 
 		Yii::app()->clientScript->registerMetaTag( Yii::t( 'meta', 'Og property title', array( '{Brandname}' => Yii::app()->name ) ), null, null, array( 'property' => 'og:title' ) );

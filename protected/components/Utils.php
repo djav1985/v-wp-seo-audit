@@ -1,11 +1,10 @@
 <?php
 
-class Utils
-{
-	public static function shuffle_assoc( $list)
-	{
-		$keys = array_keys($list);
-		shuffle($keys);
+class Utils {
+
+	public static function shuffle_assoc( $list) {
+		$keys = array_keys( $list );
+		shuffle( $keys );
 		$random = array();
 		foreach ($keys as $key) {
 			$random[ $key ] = $list[ $key ];
@@ -14,10 +13,9 @@ class Utils
 		return $random;
 	}
 
-	public static function proportion( $big, $small)
-	{
+	public static function proportion( $big, $small) {
 
-		return $big > 0 ? round($small * 100 / $big, 2) : 0;
+		return $big > 0 ? round( $small * 100 / $big, 2 ) : 0;
 	}
 
 	public static function createNestedDir( $path) {
@@ -110,8 +108,8 @@ class Utils
 		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 20 );
 
 		if ($cookie) {
-			curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie );
-			curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie );
+			curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie );
+			curl_setopt( $ch, CURLOPT_COOKIEFILE, $cookie );
 		}
 
 		if ( ! empty( $headers )) {
@@ -125,8 +123,7 @@ class Utils
 				   $user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 		}
 
-
-		curl_setopt( $ch, CURLOPT_USERAGENT, $user_agent);
+		curl_setopt( $ch, CURLOPT_USERAGENT, $user_agent );
 
 		$mr = $maxredirect === null ? 5 : intval( $maxredirect );
 		if (ini_get( 'open_basedir' ) == '' && ( ini_get( 'safe_mode' ) == 'Off' || ini_get( 'safe_mode' ) == '' )) {
@@ -159,32 +156,32 @@ class Utils
 						$code = curl_getinfo( $rch, CURLINFO_HTTP_CODE );
 						if (in_array( $code, array( 301, 302, 307, 308 ) )) {
 							preg_match( '/Location:(.*?)\n/i', $header, $matches );
-							$newurl = trim( array_pop( $matches) );
+							$newurl = trim( array_pop( $matches ) );
 
-							if (! $parsed = parse_url($newurl)) {
+							if ( ! $parsed = parse_url( $newurl )) {
 								return false;
 							}
 
-							if (! isset($parsed['scheme'])) {
+							if ( ! isset( $parsed['scheme'] )) {
 								$parsed['scheme'] = $scheme;
 							} else {
 								$scheme = $parsed['scheme'];
 							}
 
-							if (! isset($parsed['host'])) {
+							if ( ! isset( $parsed['host'] )) {
 								$parsed['host'] = $host;
 							} else {
 								$host = $parsed['host'];
 							}
-							$newurl = self::unparse_http_url($parsed);
+							$newurl = self::unparse_http_url( $parsed );
 						} else {
 							$code = 0;
 						}
 					}
 				} while ($code && --$mr);
-				curl_close($rch);
+				curl_close( $rch );
 
-				if (! $mr) {
+				if ( ! $mr) {
 					if ($maxredirect === null) {
 						return false;
 					} else {
@@ -193,7 +190,7 @@ class Utils
 
 					return false;
 				}
-				curl_setopt($ch, CURLOPT_URL, $newurl);
+				curl_setopt( $ch, CURLOPT_URL, $newurl );
 			}
 		}
 		return $ch;
@@ -201,13 +198,13 @@ class Utils
 
 	public static function unparse_http_url( array $parsed) {
 
-		if (! isset($parsed['host'])) {
+		if ( ! isset( $parsed['host'] )) {
 			return false;
 		}
-		$url = isset($parsed['scheme']) ? $parsed['scheme'] . '://' : 'http://';
-		if (isset($parsed['user'])) {
+		$url = isset( $parsed['scheme'] ) ? $parsed['scheme'] . '://' : 'http://';
+		if (isset( $parsed['user'] )) {
 			$url .= $parsed['user'];
-			if (isset($parsed['pass'])) {
+			if (isset( $parsed['pass'] )) {
 				 $url .= ':' . $parsed['pass'];
 			}
 			 $url .= '@' . $parsed['host'];
@@ -215,17 +212,17 @@ class Utils
 				   $url .= $parsed['host'];
 		}
 
-		if (isset($parsed['port'])) {
+		if (isset( $parsed['port'] )) {
 				 $url .= ':' . $parsed['port'];
 		}
 
-		if (isset($parsed['path'])) {
+		if (isset( $parsed['path'] )) {
 				 $url .= $parsed['path'];
 		}
-		if (isset($parsed['query'])) {
+		if (isset( $parsed['query'] )) {
 			   $url .= '?' . $parsed['query'];
 		}
-		if (isset($parsed['fragment'])) {
+		if (isset( $parsed['fragment'] )) {
 				$url .= '#' . $parsed['fragment'];
 		}
 		return $url;
@@ -236,19 +233,19 @@ class Utils
 		if (false === $curl_info) {
 			return $default;
 		}
-		if (! empty($curl_info['redirect_url'])) {
+		if ( ! empty( $curl_info['redirect_url'] )) {
 			 return $curl_info['redirect_url'];
 		}
-		return self::v($curl_info, 'url', $default);
+		return self::v( $curl_info, 'url', $default );
 	}
 
 	public static function url_get_scheme_host( $url, $default) {
 
-		 $parsed = parse_url($url);
+		 $parsed = parse_url( $url );
 		if (false === $parsed) {
 			return $default;
 		}
-		if (! isset($parsed['scheme'], $parsed['host'])) {
+		if ( ! isset( $parsed['scheme'], $parsed['host'] )) {
 			 return $default;
 		}
 		return $parsed['scheme'] . '://' . $parsed['host'] . '/';
@@ -263,7 +260,7 @@ class Utils
 				$data                 = explode( ' ', $line );
 				$headers['http_code'] = isset( $data[1] ) ? $data[1] : null;
 			} else {
-				list ($key, $value)          = explode( ': ', $line );
+				list ($key, $value)            = explode( ': ', $line );
 				$headers[ strtolower( $key ) ] = $value;
 			}
 		}
@@ -288,7 +285,7 @@ class Utils
 	}
 
 	public static function html_decode( $str) {
-		 return html_entity_decode(  (string) $str, ENT_QUOTES, 'UTF-8' );
+		 return html_entity_decode( (string) $str, ENT_QUOTES, 'UTF-8' );
 	}
 
 	public static function is_allowed_action() {
