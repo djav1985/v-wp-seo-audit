@@ -20,11 +20,11 @@
  */
 
 return array(
-	'^ruporn\.(.*)$',
-	'^russiaxxx\.(.*)$',
-	'^lassoslabs\.(.*)$',
-	'^xvideosanal\.(.*)$',
-	'^bioskopkismin\.(.*)$',
-	'^adultcambabes\.(.*)',
-	'porno',
+    '^ruporn\.(.*)$',
+    '^russiaxxx\.(.*)$',
+    '^lassoslabs\.(.*)$',
+    '^xvideosanal\.(.*)$',
+    '^bioskopkismin\.(.*)$',
+    '^adultcambabes\.(.*)',
+    'porno',
 );
