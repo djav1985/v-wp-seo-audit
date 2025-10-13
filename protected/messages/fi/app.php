@@ -133,7 +133,7 @@ On ilmainen SEO työkalu, joka auttaa sinua analysoimaan Web-sivusi',
 	'Missing doctype'                              => 'Tiedostotyyppi puuttuu',
 	'Download PDF version'                         => 'Lataa PDF Versio',
 	'Enter verification code'                      => 'Anna vahvistuskoodi',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Optimoi',
 	'XML Sitemap'                                  => 'XML Sivukartta',
 	'Missing'                                      => 'Puuttuu',

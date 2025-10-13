@@ -47,7 +47,7 @@ class Utils {
 				unlink( $pdf );
 			}
 		}
-		// Also delete the cached thumbnail
+		// Also delete the cached thumbnail.
 		WebsiteThumbnail::deleteThumbnail( $domain );
 		return true;
 	}
@@ -77,7 +77,7 @@ class Utils {
 		$sepLength    = mb_strlen( $separator );
 		$backLen      = 6;
 		$availableLen = $length - $sepLength - $backLen;
-		// 20-3-6=11
+		// 20-3-6=11.
 		$firstPart = mb_substr( $domain, 0, $availableLen );
 		$lastPart  = mb_substr( $domain, -$backLen );
 		return $firstPart . $separator . $lastPart;
@@ -126,7 +126,7 @@ class Utils {
 		curl_setopt( $ch, CURLOPT_USERAGENT, $user_agent );
 
 		$mr = $maxredirect === null ? 5 : intval( $maxredirect );
-		if (ini_get( 'open_basedir' ) == '' && ( ini_get( 'safe_mode' ) == 'Off' || ini_get( 'safe_mode' ) == '' )) {
+		if (ini_get( 'open_basedir' ) === '' && ( ini_get( 'safe_mode' ) === 'Off' || ini_get( 'safe_mode' ) === '' )) {
 			   curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, $mr > 0 );
 			   curl_setopt( $ch, CURLOPT_MAXREDIRS, $mr );
 		} else {
@@ -182,7 +182,7 @@ class Utils {
 				curl_close( $rch );
 
 				if ( ! $mr) {
-					if ($maxredirect === null) {
+					if ( null === $maxredirect) {
 						return false;
 					} else {
 										$maxredirect = 0;
@@ -270,7 +270,7 @@ class Utils {
 	public static function isPsiActive( $k, $item) {
 		 $key        = "psi.{$k}";
 		 $configItem = Yii::app()->params[ $key ];
-		 return is_array( $configItem ) ? ( empty( $configItem ) or in_array( $item, $configItem ) ) : $configItem == $item;
+		 return is_array( $configItem ) ? ( empty( $configItem ) or in_array( $item, $configItem ) ) : $configItem === $item;
 	}
 
 	public static function starts_with( $haystack, $needle) {

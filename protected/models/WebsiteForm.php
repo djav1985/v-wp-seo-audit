@@ -81,7 +81,7 @@ class WebsiteForm extends CFormModel {
 		if ( ! $this->hasErrors()) {
 			$this->ip = gethostbyname( $this->domain );
 			$long     = ip2long( $this->ip );
-			if ($long == -1 or $long === false) {
+			if ($long === -1 or $long === false) {
 				$this->addError( 'domain', Yii::t( 'app', 'Could not reach host: {Host}', array( '{Host}' => $this->domain ) ) );
 
 			}
@@ -93,13 +93,13 @@ class WebsiteForm extends CFormModel {
 	public function tryToAnalyse() {
 
 		if ( ! $this->hasErrors()) {
-			// Remove "www" from domain
+			// Remove "www" from domain.
 			$this->domain = str_replace( 'www.', '', $this->domain );
-			// Get command instance
+			// Get command instance.
 			$command = Yii::app()->db->createCommand();
-			// Check if website already exists in the database
+			// Check if website already exists in the database.
 			$website = $command->select( 'modified, id' )->from( '{{website}}' )->where( 'md5domain=:id', array( ':id' => md5( $this->domain ) ) )->queryRow();
-			// If website exists and we do not need to update data then exit from method
+			// If website exists and we do not need to update data then exit from method.
 			if ($website and ( $notUpd = ( strtotime( $website['modified'] ) + Yii::app()->params['analyzer.cache_time'] > time() ) )) {
 				return true;
 			} elseif ($website and ! $notUpd) {
@@ -110,17 +110,17 @@ class WebsiteForm extends CFormModel {
 				$args = array( 'yiic', 'parse', 'insert', "--domain={$this -> domain}", "--idn={$this -> idn}", "--ip={$this -> ip}" );
 			}
 
-			// Get command path
+			// Get command path.
 			$commandPath = Yii::app()->getBasePath() . DIRECTORY_SEPARATOR . 'commands';
-			// Create new console command runner
+			// Create new console command runner.
 			$runner = new CConsoleCommandRunner();
-			// Adding commands
+			// Adding commands.
 			$runner->addCommands( $commandPath );
-			// If something goes wrong return error
+			// If something goes wrong return error.
 			if ($error = $runner->run( $args )) {
 				$this->addError( 'domain', Yii::t( 'app', "Error Code $error" ) );
 			} else {
-				// After analysis, check if DB record exists
+				// After analysis, check if DB record exists.
 				$websiteCheck = $command->select( 'id' )->from( '{{website}}' )->where( 'md5domain=:id', array( ':id' => md5( $this->domain ) ) )->queryRow();
 				if ( ! $websiteCheck) {
 					$this->addError( 'domain', Yii::t( 'app', 'Analysis failed: domain record not created. Please try again or check your domain input.' ) );

@@ -5,6 +5,8 @@
  * User: Roman
  * Date: 2015.11.22
  * Time: 15:55
+ *
+ * @package V_WP_SEO_Audit
  */
 class WebsiteList extends CWidget {
 

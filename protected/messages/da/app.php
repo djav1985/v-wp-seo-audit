@@ -128,7 +128,7 @@ return array(
 	'Missing doctype'                              => 'Manglende dokumenttypea',
 	'Download PDF version'                         => 'Hent PDF-version',
 	'Enter verification code'                      => 'Indtast bekræftelseskode',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Optimering',
 	'XML Sitemap'                                  => 'XML Sitemap',
 	'Missing'                                      => 'Mangler',

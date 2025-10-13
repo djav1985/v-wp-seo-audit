@@ -128,7 +128,7 @@ return array(
 	'Missing doctype'                              => 'Falta tipo de documento (doctype)',
 	'Download PDF version'                         => 'Descarga la versión PDF',
 	'Enter verification code'                      => 'Introduce el código de verificación',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Optimización',
 	'XML Sitemap'                                  => 'Mapa del sitio XML',
 	'Missing'                                      => 'No disponible',

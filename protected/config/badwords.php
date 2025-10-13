@@ -1,7 +1,7 @@
 <?php
 
 return array(
-	// DA
+	// DA.
 	'røv',
 	'røvhul',
 	'kælling',
@@ -35,7 +35,7 @@ return array(
 	'møg',
 	'pis',
 
-	// DE
+	// DE.
 	'arschloch',
 	'penner',
 	'wixer',
@@ -55,7 +55,7 @@ return array(
 	'muschi',
 	'pussi',
 
-	// EN
+	// EN.
 	'arse',
 	'asshole',
 	'asswipe',
@@ -83,7 +83,7 @@ return array(
 	'blowjob',
 	'cum',
 
-	// ES
+	// ES.
 	'follar',
 	'gilipollas',
 	'gilipoyas',
@@ -94,7 +94,7 @@ return array(
 	'coño',
 	'correrse',
 
-	// FI
+	// FI.
 	'perse',
 	'perseenreikä',
 	'perseenpyyhintä',
@@ -129,7 +129,7 @@ return array(
 	'pornohubi',
 	'käteenveto',
 
-	// FR
+	// FR.
 	'bordel',
 	'tarlouze',
 	'bâtard',
@@ -168,7 +168,7 @@ return array(
 	'connasse',
 	'salope',
 
-	// IT
+	// IT.
 	'culo',
 	'stronzo',
 	'puttana',
@@ -194,7 +194,7 @@ return array(
 	'faccia di culo',
 	'testa di cazzo',
 
-	// PT
+	// PT.
 	'foda',
 	'foder',
 	'puta',
@@ -211,7 +211,7 @@ return array(
 	'anal',
 	'esporra',
 
-	// RU
+	// RU.
 	'блядь',
 	'пидарас',
 	'пидр',
@@ -230,7 +230,7 @@ return array(
 	'сучка',
 	'блядина',
 
-	// SV
+	// SV.
 	'fitta',
 	'horunge',
 	'mammaknullare',

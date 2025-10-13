@@ -35,16 +35,16 @@ class ManageController extends Controller {
 	}
 
 	protected function runCommand( $args) {
-		// Get command path
+		// Get command path.
 		$commandPath = Yii::app()->getBasePath() . DIRECTORY_SEPARATOR . 'commands';
 
-		// Create new console command runner
+		// Create new console command runner.
 		$runner = new CConsoleCommandRunner();
 
-		// Adding commands
+		// Adding commands.
 		$runner->addCommands( $commandPath );
 
-		// If something goes wrong return error
+		// If something goes wrong return error.
 		$runner->run( $args );
 	}
 }

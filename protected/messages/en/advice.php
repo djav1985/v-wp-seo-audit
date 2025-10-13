@@ -68,7 +68,7 @@ return array(
 	'Deprecated advice - success'             => 'Great! We haven\'t found deprecated HTML tags in your HTML.',
 	'Deprecated advice - error'               => 'Deprecated HTML tags are HTML tags that are no longer used. It is recommended that you remove or replace these HTML tags because they are now obsolete.',
 
-	// v 4.0
+	// v 4.0.
 	'XML Sitemap - success'                   => 'Great, your website has an XML sitemap.',
 	'XML Sitemap - error'                     => 'Your website does not have an XML sitemap - this can be problematic.<br><br>A sitemap lists URLs that are available for crawling and can include additional information like your site\'s latest updates, frequency of changes and importance of the URLs. This allows search engines to crawl the site more intelligently.',
 

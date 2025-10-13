@@ -17,6 +17,8 @@
  * Pattern: (.*)fuck(.*)\.com
  *      Ban: any-fuck-any.com
  *      Not Ban: any-fuck.com; fuck-any.com; fuck.com, any-fuck-any.net
+ *
+ * @package V_WP_SEO_Audit
  */
 
 return array(

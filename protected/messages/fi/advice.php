@@ -73,7 +73,7 @@ verkkosivustosi ei käytä sisäkkäisiä taulukoita.',
 	'Deprecated advice - success'             => 'Hienoa! Emme ole löytäneet vanhentuneita HTML-tunnisteita HTML-koodistasi.',
 	'Deprecated advice - error'               => 'Epäillyt HTML-koodit ovat HTML-tageja, joita ei enää käytetä. On suositeltavaa poistaa tai korvata nämä HTML-tunnisteet, koska ne ovat vanhentuneet.',
 
-	// v 4.0
+	// v 4.0.
 	'XML Sitemap - success'                   => 'Hienoa, sivustossasi on XML-sivukartta.',
 	'XML Sitemap - error'                     => 'Sivustollasi ei ole XML-sivukarttaa - tämä voi olla ongelmallinen. <br> <br> Sivukartta sisältää URL-osoitteita, jotka ovat käytettävissä indeksointiin ja voivat sisältää lisätietoja, kuten sivustosi uusimmat päivitykset, muutosten tiheydet ja URL-osoitteita. Tämä sallii hakukoneiden indeksoida sivuston älykkäästi. ',
 

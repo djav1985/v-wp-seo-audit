@@ -19,7 +19,7 @@ class ImportCommand extends CConsoleCommand {
 
 		while ( ! $file->eof()) {
 			$file_domain = trim( $file->fgets() );
-			// Skip empty lines
+			// Skip empty lines.
 			if (empty( $file_domain )) {
 				continue;
 
@@ -30,7 +30,7 @@ class ImportCommand extends CConsoleCommand {
 					':md5domain' => md5( $file_domain ),
 				)
 			);
-			// Skip existing domain
+			// Skip existing domain.
 			if ($exists) {
 				continue;
 

@@ -128,7 +128,7 @@ return array(
 	'Missing doctype'                              => 'Ontbrekend doctype',
 	'Download PDF version'                         => 'Download PDF-versie',
 	'Enter verification code'                      => 'Voer verificatiecode',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Optimalisatie',
 	'XML Sitemap'                                  => 'XML Sitemap',
 	'Missing'                                      => 'Ontbrekend',

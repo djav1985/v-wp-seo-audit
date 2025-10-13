@@ -13,12 +13,12 @@ if ( ! defined( 'ABSPATH' )) {
 	exit; // Exit if accessed directly
 }
 
-// Define plugin constants
+// Define plugin constants.
 define( 'V_WP_SEO_AUDIT_VERSION', '1.0.0' );
 define( 'V_WP_SEO_AUDIT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'V_WP_SEO_AUDIT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Initialize Yii framework
+// Initialize Yii framework.
 error_reporting( E_ALL & ~( E_NOTICE | E_DEPRECATED | E_STRICT ) );
 
 if ( ! @ini_get( 'date.timezone' )) {
@@ -27,7 +27,7 @@ if ( ! @ini_get( 'date.timezone' )) {
 
 mb_internal_encoding( 'UTF-8' );
 
-// Global variable to store Yii application instance
+// Global variable to store Yii application instance.
 global $v_wp_seo_audit_app;
 $v_wp_seo_audit_app = null;
 
@@ -88,8 +88,8 @@ function v_wp_seo_audit_configure_yii_app( $app ) {
 function v_wp_seo_audit_init() {
 	global $v_wp_seo_audit_app, $post;
 
-	// Only initialize if not already initialized and shortcode is present
-	if ($v_wp_seo_audit_app !== null) {
+	// Only initialize if not already initialized and shortcode is present.
+	if ( null !== $v_wp_seo_audit_app) {
 		return;
 	}
 
@@ -105,17 +105,17 @@ function v_wp_seo_audit_init() {
 		return;
 	}
 
-	// Initialize Yii framework
+	// Initialize Yii framework.
 	$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
 	$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
 
 	if (file_exists( $yii ) && file_exists( $config )) {
 			require_once $yii;
 
-			// Create Yii application but don't run it yet
+			// Create Yii application but don't run it yet.
 			$v_wp_seo_audit_app = Yii::createWebApplication( $config );
 
-			// Set timezone from config
+			// Set timezone from config.
 		if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
 				$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
 		}
@@ -124,29 +124,29 @@ function v_wp_seo_audit_init() {
 }
 add_action( 'wp', 'v_wp_seo_audit_init' ); // Use 'wp' instead of 'init' to have access to $post
 
-// Enqueue styles and scripts for front-end
+// Enqueue styles and scripts for front-end.
 function v_wp_seo_audit_enqueue_assets() {
 	global $post, $v_wp_seo_audit_app;
 
-	// Only load if shortcode is present on the page
+	// Only load if shortcode is present on the page.
 	if (is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'v_wp_seo_audit' )) {
-		// Enqueue CSS files
+		// Enqueue CSS files.
 		wp_enqueue_style( 'v-wp-seo-audit-bootstrap', V_WP_SEO_AUDIT_PLUGIN_URL . 'css/bootstrap.min.css', array(), V_WP_SEO_AUDIT_VERSION );
 		wp_enqueue_style( 'v-wp-seo-audit-fontawesome', V_WP_SEO_AUDIT_PLUGIN_URL . 'css/fontawesome.min.css', array(), V_WP_SEO_AUDIT_VERSION );
 		wp_enqueue_style( 'v-wp-seo-audit-app', V_WP_SEO_AUDIT_PLUGIN_URL . 'css/app.css', array( 'v-wp-seo-audit-bootstrap' ), V_WP_SEO_AUDIT_VERSION );
 
-		// Enqueue JS files
+		// Enqueue JS files.
 		wp_enqueue_script( 'jquery' ); // Use WordPress jQuery
 		wp_enqueue_script( 'v-wp-seo-audit-bootstrap', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/bootstrap.bundle.min.js', array( 'jquery' ), V_WP_SEO_AUDIT_VERSION, true );
 		wp_enqueue_script( 'v-wp-seo-audit-flot', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/jquery.flot.js', array( 'jquery' ), V_WP_SEO_AUDIT_VERSION, true );
 		wp_enqueue_script( 'v-wp-seo-audit-flot-pie', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/jquery.flot.pie.js', array( 'jquery', 'v-wp-seo-audit-flot' ), V_WP_SEO_AUDIT_VERSION, true );
 		wp_enqueue_script( 'v-wp-seo-audit-base', V_WP_SEO_AUDIT_PLUGIN_URL . 'js/base.js', array( 'jquery' ), V_WP_SEO_AUDIT_VERSION, true );
 
-		// Add global JavaScript variables needed by the plugin
-		// Get the base URL from Yii app if initialized, otherwise use plugin URL
+		// Add global JavaScript variables needed by the plugin.
+		// Get the base URL from Yii app if initialized, otherwise use plugin URL.
 		$base_url = rtrim( V_WP_SEO_AUDIT_PLUGIN_URL, '/' );
 
-		// Inject global variables into the page
+		// Inject global variables into the page.
 		$global_vars = "var _global = { 
             baseUrl: '" . esc_js( $base_url ) . "',
             ajaxUrl: '" . esc_js( admin_url( 'admin-ajax.php' ) ) . "',
@@ -157,7 +157,7 @@ function v_wp_seo_audit_enqueue_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'v_wp_seo_audit_enqueue_assets' );
 
-// Register shortcode
+// Register shortcode.
 function v_wp_seo_audit_shortcode( $atts) {
 	global $v_wp_seo_audit_app;
 
@@ -165,15 +165,15 @@ function v_wp_seo_audit_shortcode( $atts) {
 		return '<div class="v-wp-seo-audit-error"><p>Error: Application not initialized.</p></div>';
 	}
 
-	// Start output buffering to capture Yii output
+	// Start output buffering to capture Yii output.
 	ob_start();
 
 	try {
-		// Process the request through Yii
+		// Process the request through Yii.
 		$v_wp_seo_audit_app->run();
 		$content = ob_get_clean();
 
-		// Wrap in container
+		// Wrap in container.
 		return '<div class="v-wp-seo-audit-container">' . $content . '</div>';
 	} catch (Exception $e) {
 		ob_end_clean();
@@ -182,20 +182,20 @@ function v_wp_seo_audit_shortcode( $atts) {
 }
 add_shortcode( 'v_wp_seo_audit', 'v_wp_seo_audit_shortcode' );
 
-// Activation hook - create database tables
+// Activation hook - create database tables.
 function v_wp_seo_audit_activate() {
 	global $wpdb;
 
-	// Get the table prefix from WordPress
+	// Get the table prefix from WordPress.
 	$table_prefix = $wpdb->prefix . 'ca_';
 
-	// Set charset
+	// Set charset.
 	$charset_collate = $wpdb->get_charset_collate();
 
-	// SQL statements to create tables
+	// SQL statements to create tables.
 	$sql = array();
 
-	// ca_cloud table
+	// ca_cloud table.
 	$sql[] = "CREATE TABLE IF NOT EXISTS `{$table_prefix}cloud` (
         `wid` int unsigned NOT NULL,
         `words` mediumtext NOT NULL,
@@ -203,7 +203,7 @@ function v_wp_seo_audit_activate() {
         PRIMARY KEY (`wid`)
     ) ENGINE=InnoDB $charset_collate;";
 
-	// ca_content table
+	// ca_content table.
 	$sql[] = "CREATE TABLE IF NOT EXISTS `{$table_prefix}content` (
         `wid` int unsigned NOT NULL,
         `headings` mediumtext NOT NULL,
@@ -214,7 +214,7 @@ function v_wp_seo_audit_activate() {
         PRIMARY KEY (`wid`)
     ) ENGINE=InnoDB $charset_collate;";
 
-	// ca_document table
+	// ca_document table.
 	$sql[] = "CREATE TABLE IF NOT EXISTS `{$table_prefix}document` (
         `wid` int unsigned NOT NULL,
         `doctype` text,
@@ -227,7 +227,7 @@ function v_wp_seo_audit_activate() {
         PRIMARY KEY (`wid`)
     ) ENGINE=InnoDB $charset_collate;";
 
-	// ca_issetobject table
+	// ca_issetobject table.
 	$sql[] = "CREATE TABLE IF NOT EXISTS `{$table_prefix}issetobject` (
         `wid` int unsigned NOT NULL,
         `flash` tinyint(1) DEFAULT '0',
@@ -244,7 +244,7 @@ function v_wp_seo_audit_activate() {
         PRIMARY KEY (`wid`)
     ) ENGINE=InnoDB $charset_collate;";
 
-	// ca_links table
+	// ca_links table.
 	$sql[] = "CREATE TABLE IF NOT EXISTS `{$table_prefix}links` (
         `wid` int unsigned NOT NULL,
         `links` mediumtext NOT NULL,
@@ -257,7 +257,7 @@ function v_wp_seo_audit_activate() {
         PRIMARY KEY (`wid`)
     ) ENGINE=InnoDB $charset_collate;";
 
-	// ca_metatags table
+	// ca_metatags table.
 	$sql[] = "CREATE TABLE IF NOT EXISTS `{$table_prefix}metatags` (
         `wid` int unsigned NOT NULL,
         `title` mediumtext,
@@ -267,7 +267,7 @@ function v_wp_seo_audit_activate() {
         PRIMARY KEY (`wid`)
     ) ENGINE=InnoDB $charset_collate;";
 
-	// ca_misc table
+	// ca_misc table.
 	$sql[] = "CREATE TABLE IF NOT EXISTS `{$table_prefix}misc` (
         `wid` int unsigned NOT NULL,
         `sitemap` mediumtext NOT NULL,
@@ -275,7 +275,7 @@ function v_wp_seo_audit_activate() {
         PRIMARY KEY (`wid`)
     ) ENGINE=InnoDB $charset_collate;";
 
-	// ca_pagespeed table
+	// ca_pagespeed table.
 	$sql[] = "CREATE TABLE IF NOT EXISTS `{$table_prefix}pagespeed` (
         `wid` int unsigned NOT NULL,
         `data` longtext NOT NULL,
@@ -283,7 +283,7 @@ function v_wp_seo_audit_activate() {
         PRIMARY KEY (`wid`,`lang_id`)
     ) ENGINE=InnoDB $charset_collate;";
 
-	// ca_w3c table
+	// ca_w3c table.
 	$sql[] = "CREATE TABLE IF NOT EXISTS `{$table_prefix}w3c` (
         `wid` int unsigned NOT NULL,
         `validator` enum('html') NOT NULL,
@@ -308,25 +308,25 @@ function v_wp_seo_audit_activate() {
         KEY `ix_rating` (`score`)
     ) ENGINE=InnoDB $charset_collate;";
 
-	// Execute all SQL statements
+	// Execute all SQL statements.
 	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 	foreach ($sql as $query) {
 		dbDelta( $query );
 	}
 
-	// Set plugin version option
+	// Set plugin version option.
 	add_option( 'v_wp_seo_audit_version', V_WP_SEO_AUDIT_VERSION );
 }
 register_activation_hook( __FILE__, 'v_wp_seo_audit_activate' );
 
 // Deactivation hook (optional - for cleanup on deactivation)
 function v_wp_seo_audit_deactivate() {
-	// Add any cleanup code here if needed on deactivation
-	// Note: This does NOT delete tables - use uninstall for that
+	// Add any cleanup code here if needed on deactivation.
+	// Note: This does NOT delete tables - use uninstall for that.
 }
 register_deactivation_hook( __FILE__, 'v_wp_seo_audit_deactivate' );
 
-// Uninstall hook - remove plugin database tables
+// Uninstall hook - remove plugin database tables.
 function v_wp_seo_audit_uninstall() {
 	global $wpdb;
 	$table_prefix = $wpdb->prefix . 'ca_';
@@ -349,15 +349,15 @@ function v_wp_seo_audit_uninstall() {
 }
 register_uninstall_hook( __FILE__, 'v_wp_seo_audit_uninstall' );
 
-// WordPress AJAX handler for domain validation
+// WordPress AJAX handler for domain validation.
 function v_wp_seo_audit_ajax_validate_domain() {
-	// Verify nonce for security
+	// Verify nonce for security.
 	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
 
 	global $v_wp_seo_audit_app;
 
-	// Initialize Yii if not already initialized
-	if ($v_wp_seo_audit_app === null) {
+	// Initialize Yii if not already initialized.
+	if ( null === $v_wp_seo_audit_app) {
 			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
 			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
 
@@ -376,7 +376,7 @@ function v_wp_seo_audit_ajax_validate_domain() {
 
 		v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
 
-		// Get domain from request
+		// Get domain from request.
 		$domain = isset( $_POST['domain'] ) ? sanitize_text_field( $_POST['domain'] ) : '';
 
 	if (empty( $domain )) {
@@ -384,7 +384,7 @@ function v_wp_seo_audit_ajax_validate_domain() {
 		return;
 	}
 
-	// Create and validate the model
+	// Create and validate the model.
 	$model         = new WebsiteForm();
 	$model->domain = $domain;
 
@@ -398,22 +398,22 @@ function v_wp_seo_audit_ajax_validate_domain() {
 		}
 		wp_send_json_error( array( 'message' => implode( '<br>', $errorMessages ) ) );
 	} else {
-		// Domain is valid, return success with domain
+		// Domain is valid, return success with domain.
 		wp_send_json_success( array( 'domain' => $model->domain ) );
 	}
 }
 add_action( 'wp_ajax_v_wp_seo_audit_validate', 'v_wp_seo_audit_ajax_validate_domain' );
 add_action( 'wp_ajax_nopriv_v_wp_seo_audit_validate', 'v_wp_seo_audit_ajax_validate_domain' );
 
-// WordPress AJAX handler for generating HTML report
+// WordPress AJAX handler for generating HTML report.
 function v_wp_seo_audit_ajax_generate_report() {
-	// Verify nonce for security
+	// Verify nonce for security.
 	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
 
 	global $v_wp_seo_audit_app;
 
-	// Initialize Yii if not already initialized
-	if ($v_wp_seo_audit_app === null) {
+	// Initialize Yii if not already initialized.
+	if ( null === $v_wp_seo_audit_app) {
 			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
 			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
 
@@ -432,7 +432,7 @@ function v_wp_seo_audit_ajax_generate_report() {
 
 		v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
 
-		// Get domain from request
+		// Get domain from request.
 	$domain = isset( $_POST['domain'] ) ? sanitize_text_field( $_POST['domain'] ) : '';
 
 	if (empty( $domain )) {
@@ -440,9 +440,9 @@ function v_wp_seo_audit_ajax_generate_report() {
 		return;
 	}
 
-	// Create and validate the model to trigger analysis if needed
+	// Create and validate the model to trigger analysis if needed.
 	// The WebsiteForm::validate() will automatically call tryToAnalyse()
-	// which will create/update the website record in the database
+	// which will create/update the website record in the database.
 	$model         = new WebsiteForm();
 	$model->domain = $domain;
 
@@ -460,18 +460,18 @@ function v_wp_seo_audit_ajax_generate_report() {
 	}
 
 	// At this point, the domain has been validated and analyzed (if needed)
-	// The website record now exists in the database
-	// Set the domain in GET for the controller
+	// The website record now exists in the database.
+	// Set the domain in GET for the controller.
 	$_GET['domain'] = $model->domain;
 
 	// Import the controller class (Yii doesn't auto-load controllers)
 	Yii::import( 'application.controllers.WebsitestatController' );
 
-	// Start output buffering to capture the controller output
+	// Start output buffering to capture the controller output.
 	ob_start();
 
 	try {
-			// Create the controller and render the view
+			// Create the controller and render the view.
 			$controller = new WebsitestatController( 'websitestat' );
 			$controller->init();
 
@@ -486,7 +486,7 @@ function v_wp_seo_audit_ajax_generate_report() {
 
 			$content = ob_get_clean();
 
-			// Return the HTML content
+			// Return the HTML content.
 			wp_send_json_success( array( 'html' => $content ) );
 	} catch (Exception $e) {
 		ob_end_clean();
@@ -498,13 +498,13 @@ add_action( 'wp_ajax_nopriv_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_aja
 
 // WordPress AJAX handler for PagePeeker proxy (legacy - thumbnail proxy is disabled by default)
 function v_wp_seo_audit_ajax_pagepeeker() {
-	// Verify nonce for security
+	// Verify nonce for security.
 	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
 
 	global $v_wp_seo_audit_app;
 
-	// Initialize Yii if not already initialized
-	if ($v_wp_seo_audit_app === null) {
+	// Initialize Yii if not already initialized.
+	if ( null === $v_wp_seo_audit_app) {
 		$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
 		$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
 
@@ -525,10 +525,10 @@ function v_wp_seo_audit_ajax_pagepeeker() {
 
 		// Check if thumbnail proxy is enabled (it's disabled by default)
 	if ( ! isset( $v_wp_seo_audit_app->params['thumbnail.proxy'] ) || ! $v_wp_seo_audit_app->params['thumbnail.proxy']) {
-		// Thumbnail proxy is disabled, use direct thum.io URLs instead
+		// Thumbnail proxy is disabled, use direct thum.io URLs instead.
 		$url = isset( $_GET['url'] ) ? sanitize_text_field( $_GET['url'] ) : '';
 		if ($url) {
-			// Return success with a message that thumbnails are served directly
+			// Return success with a message that thumbnails are served directly.
 			wp_send_json_success( array( 'message' => 'Thumbnails are served directly from thum.io' ) );
 		} else {
 			wp_send_json_error( array( 'message' => 'Thumbnail proxy is not enabled' ) );
@@ -542,15 +542,15 @@ function v_wp_seo_audit_ajax_pagepeeker() {
 add_action( 'wp_ajax_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker' );
 add_action( 'wp_ajax_nopriv_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker' );
 
-// WordPress AJAX handler for PDF download
+// WordPress AJAX handler for PDF download.
 function v_wp_seo_audit_ajax_download_pdf() {
-	// Verify nonce for security
+	// Verify nonce for security.
 	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
 
 	global $v_wp_seo_audit_app;
 
-	// Initialize Yii if not already initialized
-	if ($v_wp_seo_audit_app === null) {
+	// Initialize Yii if not already initialized.
+	if ( null === $v_wp_seo_audit_app) {
 		$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
 		$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
 
@@ -569,7 +569,7 @@ function v_wp_seo_audit_ajax_download_pdf() {
 
 	v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
 
-	// Get domain from request
+	// Get domain from request.
 	$domain = isset( $_POST['domain'] ) ? sanitize_text_field( $_POST['domain'] ) : '';
 
 	if (empty( $domain )) {
@@ -577,14 +577,14 @@ function v_wp_seo_audit_ajax_download_pdf() {
 		return;
 	}
 
-	// Set the domain in GET for the controller
+	// Set the domain in GET for the controller.
 	$_GET['domain'] = $domain;
 
-	// Import the controller class
+	// Import the controller class.
 	Yii::import( 'application.controllers.WebsitestatController' );
 
 	try {
-		// Create the controller
+		// Create the controller.
 		$controller = new WebsitestatController( 'websitestat' );
 		$controller->init();
 
@@ -592,8 +592,8 @@ function v_wp_seo_audit_ajax_download_pdf() {
 		Yii::app()->setController( $controller );
 
 		try {
-			// Generate and output the PDF
-			// This will set headers and output the PDF directly
+			// Generate and output the PDF.
+			// This will set headers and output the PDF directly.
 			$controller->actionGeneratePDF( $domain );
 			// The actionGeneratePDF method calls Yii::app()->end() which exits
 		} finally {

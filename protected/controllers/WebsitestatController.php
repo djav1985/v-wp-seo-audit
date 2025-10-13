@@ -156,9 +156,9 @@ class WebsitestatController extends Controller {
 
 	protected function outputPDF( $pdfFile, $filename ) {
 		header( 'Content-type: application/pdf' );
-		// It will be called downloaded.pdf
+		// It will be called downloaded.pdf.
 		header( 'Content-Disposition: attachment; filename="' . $filename . '.pdf"' );
-		// The PDF source is in original.pdf
+		// The PDF source is in original.pdf.
 		readfile( $pdfFile );
 		Yii::app()->end();
 	}
@@ -181,7 +181,7 @@ class WebsitestatController extends Controller {
 	}
 
 	protected function collectInfo() {
-		// Set thumbnail
+		// Set thumbnail.
 		$this->thumbnail = WebsiteThumbnail::getThumbData(
 			array(
 				'url'  => $this->domain,
@@ -206,7 +206,7 @@ class WebsitestatController extends Controller {
 		$this->misc = $this->command->select( '*' )->from( '{{misc}}' )->where( 'wid=:wid', array( ':wid' => $this->wid ) )->queryRow();
 		$this->command->reset();
 
-		// Initialize as empty arrays if query returned false/null
+		// Initialize as empty arrays if query returned false/null.
 		if ( ! $this->cloud) {
 			$this->cloud = array(
 				'words'  => '[]',
@@ -268,8 +268,8 @@ class WebsitestatController extends Controller {
 			);
 		}
 
-		// Ensure fields exist and are not null before JSON decoding
-		// If field is null or doesn't exist, default to empty JSON array string
+		// Ensure fields exist and are not null before JSON decoding.
+		// If field is null or doesn't exist, default to empty JSON array string.
 		if ( ! isset( $this->content['headings'] ) || $this->content['headings'] === null) {
 			$this->content['headings'] = '[]';
 		}
@@ -295,7 +295,7 @@ class WebsitestatController extends Controller {
 			$this->misc['analytics'] = '[]';
 		}
 
-		// Decode JSON fields to arrays
+		// Decode JSON fields to arrays.
 		$this->content['headings']   = (array) json_decode( $this->content['headings'], true );
 		$this->links['links']        = (array) json_decode( $this->links['links'], true );
 		$this->cloud['words']        = Utils::shuffle_assoc( (array) json_decode( $this->cloud['words'], true ) );

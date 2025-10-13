@@ -3,6 +3,8 @@
  * @var $thumbnailStack array
  * @var $dataProvider CActiveDataProvider
  * @var $data array
+ *
+ * @package V_WP_SEO_Audit
  */
 ?>
 

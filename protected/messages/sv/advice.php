@@ -68,7 +68,7 @@ return array(
 	'Deprecated advice - success'             => 'Bra! Vi har inte hittat några föråldrad HTML taggar i din HTML.',
 	'Deprecated advice - error'               => 'Föråldrade HTML-taggar är HTML-taggar som inte längre används. Vi rekommenderar att du tar bort eller ersätter dessa eftersom dom nu är föråldrade.',
 
-	// v 4.0
+	// v 4.0.
 	'XML Sitemap - success'                   => 'Bra, din webbplats har en XML sitemap.',
 	'XML Sitemap - error'                     => 'Din webbplats saknar en XML sitemap - detta kan orsaka ett problem.<br><br>Eftersom en sitemap listar webbadresser som är tillgängliga för genomsökning och kan innehålla ytterligare information såsom din webbplats senaste uppdatering, antal förändringar och betydelsen av webbadresserna. Detta gör det möjligt för sökmotorer att på ett mer intelligent sätt genomsöka webbplatsen.',
 

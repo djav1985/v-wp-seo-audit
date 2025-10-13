@@ -1,6 +1,6 @@
 <?php
 
-// Load configuration
+// Load configuration.
 $cfg_main  = __DIR__ . DIRECTORY_SEPARATOR . 'config.php';
 $cfg_local = __DIR__ . DIRECTORY_SEPARATOR . 'config_local.php';
 $params    = is_file( $cfg_local ) ? require $cfg_local : require $cfg_main;
@@ -39,13 +39,13 @@ return array(
 	'preload'    => array( 'log' ),
 
 
-	// autoloading model and component classes
+	// autoloading model and component classes.
 	'import'     => array(
 		'application.models.*',
 		'application.components.*',
 	),
 
-	// application components
+	// application components.
 	'components' => array(
 		'user'            => array(
 			'identityCookie' => array(
@@ -56,7 +56,7 @@ return array(
 			),
 		),
 
-		// Url Manager
+		// Url Manager.
 		'urlManager'      => array(
 			'urlFormat'      => 'path',
 			'showScriptName' => $params['url.show_script_name'],
@@ -64,13 +64,13 @@ return array(
 			'cacheID'        => 'cache',
 		),
 
-		// File Cache. ~/root/website_review/runtime/cache direcotry
+		// File Cache. ~/root/website_review/runtime/cache direcotry.
 		'cache'           => array(
 			'class' => 'CFileCache',
 		),
 
 		'db'              => array(
-			// Use WordPress DB constants and table prefix
+			// Use WordPress DB constants and table prefix.
 			'connectionString'      => 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';port=' . ( defined( 'DB_PORT' ) ? DB_PORT : '3306' ),
 			'emulatePrepare'        => true,
 			'username'              => DB_USER,
@@ -82,13 +82,13 @@ return array(
 			'enableParamLogging'    => defined( 'YII_DEBUG' ) ? YII_DEBUG : false,
 		),
 
-		// Error handler
+		// Error handler.
 		'errorHandler'    => array(
-			// ControllerID/ActionID custom page to handle errors
+			// ControllerID/ActionID custom page to handle errors.
 			'errorAction' => 'site/error',
 		),
 
-		// Log errors into ~/root/website_review/runtime/application.log file
+		// Log errors into ~/root/website_review/runtime/application.log file.
 		'log'             => array(
 			'class'  => 'CLogRouter',
 			'routes' => array(
@@ -129,6 +129,6 @@ return array(
 		),
 	),
 
-	// App level params
+	// App level params.
 	'params'     => $params,
 );

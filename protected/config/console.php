@@ -2,7 +2,7 @@
 return CMap::mergeArray(
 	require dirname( __FILE__ ) . '/main.php',
 	array(
-		// console application components
+		// console application components.
 		'components' => array(
 			'request' => array(
 				'hostInfo'  => $params['app.host'],

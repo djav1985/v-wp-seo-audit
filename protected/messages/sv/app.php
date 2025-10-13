@@ -128,7 +128,7 @@ return array(
 	'Missing doctype'                              => 'Doctype saknas',
 	'Download PDF version'                         => 'Ladda ner PDF Versionen',
 	'Enter verification code'                      => 'Fyll i verifieringskod',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Optimering',
 	'XML Sitemap'                                  => 'XML Sitemap',
 	'Missing'                                      => 'Saknas',

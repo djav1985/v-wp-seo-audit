@@ -5,17 +5,19 @@
  *
  * This file is executed when the plugin is uninstalled from WordPress.
  * It removes all database tables and options created by the plugin.
+ *
+ * @package V_WP_SEO_Audit
  */
 
-// Exit if uninstall not called from WordPress
+// Exit if uninstall not called from WordPress.
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' )) {
 	exit;
 }
 
 global $wpdb;
-// Get the table prefix
+// Get the table prefix.
 $table_prefix = $wpdb->prefix . 'ca_';
-// List of tables to drop
+// List of tables to drop.
 $tables = array(
 	$table_prefix . 'cloud',
 	$table_prefix . 'content',
@@ -28,14 +30,14 @@ $tables = array(
 	$table_prefix . 'w3c',
 	$table_prefix . 'website',
 );
-// Drop all tables
+// Drop all tables.
 foreach ($tables as $table) {
 	$wpdb->query( "DROP TABLE IF EXISTS `{$table}`" );
 }
 
-// Delete plugin options
+// Delete plugin options.
 delete_option( 'v_wp_seo_audit_version' );
-// For multisite installations, delete options from all sites
+// For multisite installations, delete options from all sites.
 if (is_multisite()) {
 	$sites = get_sites();
 	foreach ($sites as $site) {

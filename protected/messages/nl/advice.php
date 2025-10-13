@@ -68,7 +68,7 @@ return array(
 	'Deprecated advice - success'             => 'Geweldig! We hebben geen niet meer ondersteunde HTMl tags gevonden in uw HTML.',
 	'Deprecated advice - error'               => 'We hebben niet meer ondersteunde HTML tags gevonden in uw HTML, we adviseren u deze te verwijderen.',
 
-	// v 4.0
+	// v 4.0.
 	'XML Sitemap - success'                   => 'Geweldig, uw website heeft een XML sitemap.',
 	'XML Sitemap - error'                     => 'Uw website heeft geen XML sitemap- dit kan problematisch zijn.<br><br>Een sitemap vermeld url\'s die beschikbaar zijn voor crawlen en kan extra informatie bevatten zoals uw laatste site-updates, frequentie van wijzigingen en het belang van de url\'s. Dit laat zoekmachines toe om de site intelligenter te doorzoeken.',
 

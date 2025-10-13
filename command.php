@@ -43,7 +43,7 @@ class ExecutableFinder {
 					$dirs[] = $path;
 
 				} else {
-					if (basename( $path ) == $name && is_executable( $path )) {
+					if (basename( $path ) === $name && is_executable( $path )) {
 						return $path;
 
 					}
@@ -97,12 +97,12 @@ class PhpExecutableFinder {
 
 		$args = $this->findArguments();
 		$args = $includeArgs && $args ? ' ' . implode( ' ', $args ) : '';
-		// HHVM support
+		// HHVM support.
 		if (defined( 'HHVM_VERSION' )) {
 			return ( getenv( 'PHP_BINARY' ) ?: PHP_BINARY ) . $args;
 
 		}
-		// PHP_BINARY return the current sapi executable
+		// PHP_BINARY return the current sapi executable.
 		if (PHP_BINARY && in_array( PHP_SAPI, array( 'cli', 'cli-server', 'phpdbg' ) ) && is_file( PHP_BINARY )) {
 			return PHP_BINARY . $args;
 
