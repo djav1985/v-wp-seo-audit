@@ -19,6 +19,9 @@ function checkPhpExtensionVersion( $extensionName, $version, $compare = '>=') {
 	return version_compare( $extensionVersion, $version, $compare );
 }
 
+/**
+ * checkServerVar function.
+ */
 function checkServerVar() {
 	$vars    = array( 'HTTP_HOST', 'SERVER_NAME', 'SERVER_PORT', 'SCRIPT_NAME', 'SCRIPT_FILENAME', 'PHP_SELF', 'HTTP_ACCEPT', 'HTTP_USER_AGENT' );
 	$missing = array();
@@ -46,6 +49,9 @@ function checkServerVar() {
 	return '';
 }
 
+/**
+ * checkIcu function.
+ */
 function checkIcu() {
 	if ( ! extension_loaded( 'intl' )) {
 		return 'Intl extension is not loaded';
@@ -66,6 +72,11 @@ function checkIcu() {
 	return '';
 }
 
+/**
+ * checkPhpIniOn function.
+ *
+ * @param mixed $name Parameter.
+ */
 function checkPhpIniOn( $name) {
 	$value = ini_get( $name );
 	if (empty( $value )) {
@@ -75,6 +86,11 @@ function checkPhpIniOn( $name) {
 	return ( (int) $value === 1 || strtolower( $value ) === 'on' );
 }
 
+/**
+ * checkPhpIniOff function.
+ *
+ * @param mixed $name Parameter.
+ */
 function checkPhpIniOff( $name) {
 	$value = ini_get( $name );
 	if (empty( $value )) {
@@ -84,12 +100,20 @@ function checkPhpIniOff( $name) {
 	return ( strtolower( $value ) === 'off' );
 }
 
+/**
+ * getServerInfo function.
+ */
 function getServerInfo() {
 	$info[] = isset( $_SERVER['SERVER_SOFTWARE'] ) ? $_SERVER['SERVER_SOFTWARE'] : '';
 	$info[] = @strftime( '%Y-%m-%d %H:%M', time() );
 	return implode( ' ', $info );
 }
 
+/**
+ * checkPhpFunctions function.
+ *
+ * @param mixed $functions Parameter.
+ */
 function checkPhpFunctions( array $functions) {
 	$not_available = array();
 	foreach ($functions as $function) {

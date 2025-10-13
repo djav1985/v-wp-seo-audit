@@ -8,6 +8,9 @@ class Controller extends CController {
 
 	public $title;
 
+	/**
+	 * init function.
+	 */
 	public function init() {
 		parent::init();
 		$this->setupLanguage();
@@ -15,6 +18,9 @@ class Controller extends CController {
 		CHtml::$errorCss = 'is-invalid';
 	}
 
+	/**
+	 * registerJsGlobalVars function.
+	 */
 	protected function registerJsGlobalVars() {
 		$baseUrl = Yii::app()->request->getBaseUrl( true );
 		Yii::app()->clientScript->registerScript(
@@ -29,6 +35,9 @@ class Controller extends CController {
 		);
 	}
 
+	/**
+	 * setupLanguage function.
+	 */
 	protected function setupLanguage() {
 		$languages    = Yii::app()->params['app.languages'];
 		$request_lang = Yii::app()->request->getQuery( 'language' );
@@ -55,6 +64,11 @@ class Controller extends CController {
 		Yii::app()->language = $lang;
 	}
 
+	/**
+	 * jsonResponse function.
+	 *
+	 * @param mixed $response Parameter.
+	 */
 	public function jsonResponse( $response) {
 		header( 'Content-type: application/json' );
 		echo json_encode( $response );

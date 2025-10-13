@@ -40,16 +40,33 @@ class ParseCommand extends CConsoleCommand {
 	private $url;
 
 	/**
+	 * Description.
+	 *
 	 * @var MetaTags
 	 */
 	private $Metatags;
 
+	/**
+	 * _init function.
+	 *
+	 * @param mixed $domain Parameter.
+	 * @param mixed $idn Parameter.
+	 * @param mixed $ip Parameter.
+	 */
 	private function _init( $domain, $idn, $ip) {
 		$this->domain = $domain;
 		$this->idn    = $idn;
 		$this->ip     = $ip;
 	}
 
+	/**
+	 * actionUpdate function.
+	 *
+	 * @param mixed $domain Parameter.
+	 * @param mixed $idn Parameter.
+	 * @param mixed $ip Parameter.
+	 * @param mixed $wid Parameter.
+	 */
 	public function actionUpdate( $domain, $idn, $ip, $wid) {
 		$this->_init( $domain, $idn, $ip );
 		// Check if were errors during html grabbing.
@@ -212,6 +229,13 @@ class ParseCommand extends CConsoleCommand {
 		return 0;
 	}
 
+	/**
+	 * actionInsert function.
+	 *
+	 * @param mixed $domain Parameter.
+	 * @param mixed $idn Parameter.
+	 * @param mixed $ip Parameter.
+	 */
 	public function actionInsert( $domain, $idn, $ip) {
 		$this->_init( $domain, $idn, $ip );
 		if ( ! $this->grabHtml()) {
@@ -368,6 +392,9 @@ class ParseCommand extends CConsoleCommand {
 		return 0;
 	}
 
+	/**
+	 * checkForBadwords function.
+	 */
 	private function checkForBadwords() {
 		if ( ! Yii::app()->params['param.bad_words_validation']) {
 			return true;
@@ -384,6 +411,9 @@ class ParseCommand extends CConsoleCommand {
 		return true;
 	}
 
+	/**
+	 * parseWebsite function.
+	 */
 	private function parseWebsite() {
 		$document                         = new Document( $this->html );
 		$this->document['doctype']        = $document->getDoctype();
@@ -454,6 +484,9 @@ class ParseCommand extends CConsoleCommand {
 		$this->score = $this->getScore();
 	}
 
+	/**
+	 * getScore function.
+	 */
 	private function getScore() {
 		$rateprovider = new RateProvider();
 		$rateprovider->addCompareArray( 'htmlratio', $this->seoanalyse['htmlratio'] );
@@ -491,6 +524,9 @@ class ParseCommand extends CConsoleCommand {
 		return $rateprovider->getScore();
 	}
 
+	/**
+	 * grabHtml function.
+	 */
 	private function grabHtml() {
 		$url = 'http://' . $this->domain;
 		$ch  = Utils::ch( curl_init( $url ) );

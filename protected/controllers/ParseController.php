@@ -6,15 +6,26 @@
  */
 class ParseController extends Controller {
 
+	/**
+	 * filters function.
+	 */
 	public function filters() {
 		return Yii::app()->params['param.instant_redirect'] ? array( 'ajaxOnly + index' ) : array();
 	}
 
+	/**
+	 * actionIndex function.
+	 */
 	public function actionIndex() {
 		$model = new WebsiteForm();
 		$this->performValidation( $model );
 	}
 
+	/**
+	 * performValidation function.
+	 *
+	 * @param mixed $model Parameter.
+	 */
 	protected function performValidation( $model) {
 		if (isset( $_GET['Website'] ) and is_array( $_GET['Website'] )) {
 			$model->attributes = $_GET['Website'];
@@ -32,6 +43,9 @@ class ParseController extends Controller {
 		}
 	}
 
+	/**
+	 * actionPagespeed function.
+	 */
 	public function actionPagespeed() {
 		Yii::import( 'application.vendors.Webmaster.Google.*' );
 
@@ -117,6 +131,11 @@ class ParseController extends Controller {
 		}
 	}
 
+	/**
+	 * getPageSpeedResults function.
+	 *
+	 * @param mixed $wid Parameter.
+	 */
 	protected function getPageSpeedResults( $wid) {
 		$results = Yii::app()->db->createCommand()->select( 'data' )->from( '{{pagespeed}}' )->where(
 			'wid=:wid AND lang_id=:lang_id',

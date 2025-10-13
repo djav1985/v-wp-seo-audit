@@ -1,4 +1,11 @@
-<?php if ( empty( $website ) || ! is_array( $website ) ) : ?>
+<?php
+/**
+ * File: index.php
+ *
+ * @package V_WP_SEO_Audit
+ */
+
+if ( empty( $website ) || ! is_array( $website ) ) : ?>
 	<div class="alert alert-danger mt-5 mb-5">
 		<?php echo Yii::t( 'app', 'No report available. The domain could not be analyzed or the record was not created. Please try again or check your domain input.' ); ?>
 	</div>
@@ -34,6 +41,9 @@
 			drawPie();
 		};
 
+  /**
+   * drawPie function.
+   */
 		function drawPie() {
 			$.plot($("#links-pie"), pie_data, {
 				series: {

@@ -14,6 +14,9 @@ class WebsiteForm extends CFormModel {
 	// президент.рф (IDN)
 	public $ip;
 
+	/**
+	 * rules function.
+	 */
 	public function rules() {
 		return array(
 			array(
@@ -40,12 +43,20 @@ class WebsiteForm extends CFormModel {
 
 	}
 
+	/**
+	 * attributeLabels function.
+	 */
 	public function attributeLabels() {
 
 		return array( 'domain' => Yii::t( 'app', 'Domain' ) );
 
 	}
 
+	/**
+	 * punycode function.
+	 *
+	 * @param mixed $domain Parameter.
+	 */
 	public function punycode( $domain ) {
 
 		$idn          = new IDN();
@@ -54,6 +65,9 @@ class WebsiteForm extends CFormModel {
 		return $this->domain;
 	}
 
+	/**
+	 * bannedWebsites function.
+	 */
 	public function bannedWebsites() {
 
 		if ( ! $this->hasErrors()) {
@@ -70,6 +84,11 @@ class WebsiteForm extends CFormModel {
 
 	}
 
+	/**
+	 * trimDomain function.
+	 *
+	 * @param mixed $domain Parameter.
+	 */
 	public function trimDomain( $domain ) {
 
 		$domain = trim( $domain );
@@ -81,6 +100,9 @@ class WebsiteForm extends CFormModel {
 
 	}
 
+	/**
+	 * isReachable function.
+	 */
 	public function isReachable() {
 
 		if ( ! $this->hasErrors()) {
@@ -95,6 +117,9 @@ class WebsiteForm extends CFormModel {
 
 	}
 
+	/**
+	 * tryToAnalyse function.
+	 */
 	public function tryToAnalyse() {
 
 		if ( ! $this->hasErrors()) {

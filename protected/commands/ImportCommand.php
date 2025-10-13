@@ -9,6 +9,9 @@ Yii::import( 'application.vendors.Webmaster.Utils.IDN' );
 set_time_limit( 0 );
 class ImportCommand extends CConsoleCommand {
 
+	/**
+	 * actionIndex function.
+	 */
 	public function actionIndex() {
 
 		 $file_path = Yii::getPathOfAlias( 'application.data.domains' ) . '.txt';

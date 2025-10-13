@@ -84,9 +84,15 @@ class ExecutableFinder {
 
 	}
 }
+/**
+ * Class PhpExecutableFinder
+ */
 class PhpExecutableFinder {
 
 	private $executableFinder;
+	/**
+	 * __construct function.
+	 */
 	public function __construct() {
 
 		 $this->executableFinder = new ExecutableFinder();

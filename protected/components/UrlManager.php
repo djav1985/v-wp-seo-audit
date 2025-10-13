@@ -7,11 +7,20 @@
 
 class UrlManager extends CUrlManager {
 
+	/**
+	 * processRules function.
+	 */
 	protected function processRules() {
 		$this->rules = Yii::app()->params['url.multi_language_links'] ? $this->getMultiLanguageRules() : $this->getSingleLanguageRules();
 		parent::processRules();
 	}
 
+	/**
+	 * createUrl function.
+	 *
+	 * @param mixed $route Parameter.
+	 * @param mixed $params Parameter.
+	 */
 	public function createUrl( $route, $params = array(), $ampersand = '&') {
 		if ( ! isset( $params['language'] )) {
 			$params['language'] = Yii::app()->language;
@@ -23,6 +32,9 @@ class UrlManager extends CUrlManager {
 	}
 
 
+	/**
+	 * getMultiLanguageRules function.
+	 */
 	private function getMultiLanguageRules() {
 		return array(
 			'proxy'                                     => 'PagePeekerProxy/index',
@@ -37,6 +49,9 @@ class UrlManager extends CUrlManager {
 		);
 	}
 
+	/**
+	 * getSingleLanguageRules function.
+	 */
 	private function getSingleLanguageRules() {
 		return array(
 			'proxy'                                 => 'PagePeekerProxy/index',

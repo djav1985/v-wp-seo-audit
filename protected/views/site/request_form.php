@@ -1,3 +1,11 @@
+<?php
+/**
+ * File: request_form.php
+ * SEO audit request form view.
+ *
+ * @package V_WP_SEO_Audit
+ */
+?>
 <!-- JS is enqueued via WordPress plugin file. Remove direct <script> and rely on enqueued assets. -->
 
 <div class="jumbotron">

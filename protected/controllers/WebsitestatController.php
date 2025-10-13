@@ -20,6 +20,9 @@ class WebsitestatController extends Controller {
 		$meta      = array(),
 		$misc      = array(),
 		$generated = array();
+	/**
+	 * init function.
+	 */
 	public function init() {
 		parent::init();
 		$this->command = Yii::app()->db->createCommand();
@@ -44,6 +47,11 @@ class WebsitestatController extends Controller {
 
 	}
 
+	/**
+	 * actionGenerateHTML function.
+	 *
+	 * @param mixed $domain Parameter.
+	 */
 	public function actionGenerateHTML( $domain ) {
 		$downloadForm = new DownloadPdfForm();
 		if (isset( $_POST['DownloadPdfForm'] ) and is_array( $_POST['DownloadPdfForm'] )) {
@@ -122,6 +130,11 @@ class WebsitestatController extends Controller {
 		);
 	}
 
+	/**
+	 * actionGeneratePDF function.
+	 *
+	 * @param mixed $domain Parameter.
+	 */
 	public function actionGeneratePDF( $domain ) {
 		$filename = $this->domain;
 		$pdfFile  = Utils::createPdfFolder( $filename );
@@ -159,6 +172,12 @@ class WebsitestatController extends Controller {
 		$this->createPdfFromHtml( $html, $pdfFile, $this->website['idn'] );
 	}
 
+	/**
+	 * outputPDF function.
+	 *
+	 * @param mixed $pdfFile Parameter.
+	 * @param mixed $filename Parameter.
+	 */
 	protected function outputPDF( $pdfFile, $filename ) {
 		header( 'Content-type: application/pdf' );
 		// It will be called downloaded.pdf.
@@ -168,6 +187,13 @@ class WebsitestatController extends Controller {
 		Yii::app()->end();
 	}
 
+	/**
+	 * createPdfFromHtml function.
+	 *
+	 * @param mixed $html Parameter.
+	 * @param mixed $pdfFile Parameter.
+	 * @param mixed $filename Parameter.
+	 */
 	protected function createPdfFromHtml( $html, $pdfFile, $filename ) {
 		$pdf = Yii::createComponent( 'application.extensions.tcpdf.ETcPdf', 'P', 'cm', 'A4', true, 'UTF-8' );
 		$pdf->SetCreator( PDF_CREATOR );
@@ -185,6 +211,9 @@ class WebsitestatController extends Controller {
 		$this->outputPDF( $pdfFile, $filename );
 	}
 
+	/**
+	 * collectInfo function.
+	 */
 	protected function collectInfo() {
 		// Set thumbnail.
 		$this->thumbnail = WebsiteThumbnail::getThumbData(

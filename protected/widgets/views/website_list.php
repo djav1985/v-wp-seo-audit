@@ -1,5 +1,7 @@
 <?php
 /**
+ * Description.
+ *
  * @var $thumbnailStack array
  * @var $dataProvider CActiveDataProvider
  * @var $data array

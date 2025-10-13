@@ -36,6 +36,11 @@ mb_internal_encoding( 'UTF-8' );
 global $v_wp_seo_audit_app;
 $v_wp_seo_audit_app = null;
 
+/**
+ * v_wp_seo_audit_configure_yii_app function.
+ *
+ * @param mixed $app Parameter.
+ */
 function v_wp_seo_audit_configure_yii_app( $app ) {
 	if ( ! $app) {
 			return;
@@ -90,6 +95,9 @@ function v_wp_seo_audit_configure_yii_app( $app ) {
 }
 
 // Plugin initialization - only when needed (not on every page load)
+/**
+ * v_wp_seo_audit_init function.
+ */
 function v_wp_seo_audit_init() {
 	global $v_wp_seo_audit_app, $post;
 
@@ -130,6 +138,9 @@ function v_wp_seo_audit_init() {
 add_action( 'wp', 'v_wp_seo_audit_init' ); // Use 'wp' instead of 'init' to have access to $post
 
 // Enqueue styles and scripts for front-end.
+/**
+ * v_wp_seo_audit_enqueue_assets function.
+ */
 function v_wp_seo_audit_enqueue_assets() {
 	global $post, $v_wp_seo_audit_app;
 
@@ -163,6 +174,11 @@ function v_wp_seo_audit_enqueue_assets() {
 add_action( 'wp_enqueue_scripts', 'v_wp_seo_audit_enqueue_assets' );
 
 // Register shortcode.
+/**
+ * v_wp_seo_audit_shortcode function.
+ *
+ * @param mixed $atts Parameter.
+ */
 function v_wp_seo_audit_shortcode( $atts) {
 	global $v_wp_seo_audit_app;
 
@@ -188,6 +204,9 @@ function v_wp_seo_audit_shortcode( $atts) {
 add_shortcode( 'v_wp_seo_audit', 'v_wp_seo_audit_shortcode' );
 
 // Activation hook - create database tables.
+/**
+ * v_wp_seo_audit_activate function.
+ */
 function v_wp_seo_audit_activate() {
 	global $wpdb;
 
@@ -325,6 +344,9 @@ function v_wp_seo_audit_activate() {
 register_activation_hook( __FILE__, 'v_wp_seo_audit_activate' );
 
 // Deactivation hook (optional - for cleanup on deactivation)
+/**
+ * v_wp_seo_audit_deactivate function.
+ */
 function v_wp_seo_audit_deactivate() {
 	// Add any cleanup code here if needed on deactivation.
 	// Note: This does NOT delete tables - use uninstall for that.
@@ -332,6 +354,9 @@ function v_wp_seo_audit_deactivate() {
 register_deactivation_hook( __FILE__, 'v_wp_seo_audit_deactivate' );
 
 // Uninstall hook - remove plugin database tables.
+/**
+ * v_wp_seo_audit_uninstall function.
+ */
 function v_wp_seo_audit_uninstall() {
 	global $wpdb;
 	$table_prefix = $wpdb->prefix . 'ca_';
@@ -355,6 +380,9 @@ function v_wp_seo_audit_uninstall() {
 register_uninstall_hook( __FILE__, 'v_wp_seo_audit_uninstall' );
 
 // WordPress AJAX handler for domain validation.
+/**
+ * v_wp_seo_audit_ajax_validate_domain function.
+ */
 function v_wp_seo_audit_ajax_validate_domain() {
 	// Verify nonce for security.
 	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
@@ -411,6 +439,9 @@ add_action( 'wp_ajax_v_wp_seo_audit_validate', 'v_wp_seo_audit_ajax_validate_dom
 add_action( 'wp_ajax_nopriv_v_wp_seo_audit_validate', 'v_wp_seo_audit_ajax_validate_domain' );
 
 // WordPress AJAX handler for generating HTML report.
+/**
+ * v_wp_seo_audit_ajax_generate_report function.
+ */
 function v_wp_seo_audit_ajax_generate_report() {
 	// Verify nonce for security.
 	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
@@ -502,6 +533,9 @@ add_action( 'wp_ajax_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax_gener
 add_action( 'wp_ajax_nopriv_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax_generate_report' );
 
 // WordPress AJAX handler for PagePeeker proxy (legacy - thumbnail proxy is disabled by default)
+/**
+ * v_wp_seo_audit_ajax_pagepeeker function.
+ */
 function v_wp_seo_audit_ajax_pagepeeker() {
 	// Verify nonce for security.
 	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
@@ -548,6 +582,9 @@ add_action( 'wp_ajax_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker
 add_action( 'wp_ajax_nopriv_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker' );
 
 // WordPress AJAX handler for PDF download.
+/**
+ * v_wp_seo_audit_ajax_download_pdf function.
+ */
 function v_wp_seo_audit_ajax_download_pdf() {
 	// Verify nonce for security.
 	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );

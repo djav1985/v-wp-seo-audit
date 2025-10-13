@@ -1,3 +1,11 @@
+<?php
+/**
+ * File: languageSelector.php
+ * Language selector widget view.
+ *
+ * @package V_WP_SEO_Audit
+ */
+?>
 <li class="nav-item dropdown">
 	<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
 		<?php echo Yii::t( 'app', 'Language' ); ?> <b class="caret"></b>

@@ -8,6 +8,9 @@
 class DownloadPdfForm extends CFormModel {
 	public $validation;
 
+	/**
+	 * rules function.
+	 */
 	public function rules() {
 		$rules = array();
 		if (Utils::isRecaptchaEnabled()) {
@@ -21,6 +24,9 @@ class DownloadPdfForm extends CFormModel {
 		return $rules;
 	}
 
+	/**
+	 * attributeLabels function.
+	 */
 	public function attributeLabels() {
 		return array(
 			'validation' => Yii::t( 'app', "Please confirm you're not a robot" ),

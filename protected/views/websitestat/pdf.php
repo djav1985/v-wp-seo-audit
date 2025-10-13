@@ -1,3 +1,11 @@
+<?php
+/**
+ * File: pdf.php
+ * PDF view template for SEO audit report.
+ *
+ * @package V_WP_SEO_Audit
+ */
+?>
 <style>
 table {background-color: #ffffff;}
 .table {width:546px !important;}
