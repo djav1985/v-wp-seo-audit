@@ -15,4 +15,5 @@
     <exclude-pattern>framework/*</exclude-pattern>
     <exclude-pattern>vendors/*</exclude-pattern>
     <exclude-pattern>protected/vendors/*</exclude-pattern>
+    <exclude-pattern>vendor/*</exclude-pattern>
 </ruleset>
