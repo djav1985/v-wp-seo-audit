@@ -6,6 +6,8 @@
         <exclude name="WordPress.WhiteSpace.ControlStructureSpacing"/>
         <!-- Exclude variable naming rules due to Yii framework conventions using camelCase -->
         <exclude name="WordPress.NamingConventions.ValidVariableName"/>
+        <!-- Exclude file naming rules - conflicts with Yii framework class naming conventions -->
+        <exclude name="WordPress.Files.FileName"/>
     </rule>
     <exclude-pattern>assets/*</exclude-pattern>
     <exclude-pattern>css/*</exclude-pattern>
