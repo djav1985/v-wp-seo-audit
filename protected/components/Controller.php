@@ -6,6 +6,11 @@
  */
 class Controller extends CController {
 
+	/**
+	 * Page title.
+	 *
+	 * @var string
+	 */
 	public $title;
 
 	/**

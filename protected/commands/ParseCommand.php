@@ -20,23 +20,130 @@ Error codes:
  202. Error while updating data
  */
 class ParseCommand extends CConsoleCommand {
+	/**
+	 * Internationalized Domain Name (IDN) in Unicode format.
+	 *
+	 * @var string
+	 */
 	private $idn;
+
+	/**
+	 * Domain name to analyze (ASCII encoded).
+	 *
+	 * @var string
+	 */
 	private $domain;
+
+	/**
+	 * IP address of the domain.
+	 *
+	 * @var string
+	 */
 	private $ip;
+
+	/**
+	 * Overall SEO score for the analyzed domain.
+	 *
+	 * @var int
+	 */
 	private $score;
+
+	/**
+	 * HTML content of the analyzed website.
+	 *
+	 * @var string
+	 */
 	private $html;
+
+	/**
+	 * Error code if analysis fails.
+	 *
+	 * @var int
+	 */
 	private $errorcode;
+
+	/**
+	 * Document structure analysis data.
+	 *
+	 * @var array
+	 */
 	private $document;
+
+	/**
+	 * Favicon information.
+	 *
+	 * @var array
+	 */
 	private $favicon;
+
+	/**
+	 * Content analysis data.
+	 *
+	 * @var array
+	 */
 	private $content;
+
+	/**
+	 * Image analysis data.
+	 *
+	 * @var array
+	 */
 	private $image;
+
+	/**
+	 * Links analysis data.
+	 *
+	 * @var array
+	 */
 	private $links;
+
+	/**
+	 * Meta tags analysis data.
+	 *
+	 * @var array
+	 */
 	private $metatags;
+
+	/**
+	 * SEO analysis results.
+	 *
+	 * @var array
+	 */
 	private $seoanalyse;
+
+	/**
+	 * HTML validation results.
+	 *
+	 * @var array
+	 */
 	private $validation;
+
+	/**
+	 * Tag cloud analysis data.
+	 *
+	 * @var array
+	 */
 	private $tagcloud;
+
+	/**
+	 * Matrix analysis data.
+	 *
+	 * @var array
+	 */
 	private $matrix;
+
+	/**
+	 * Miscellaneous analysis data.
+	 *
+	 * @var array
+	 */
 	private $misc;
+
+	/**
+	 * Full URL of the analyzed website.
+	 *
+	 * @var string
+	 */
 	private $url;
 
 	/**

@@ -10,16 +10,117 @@ Yii::import( 'application.vendors.Webmaster.Source.*' );
 Yii::import( 'application.vendors.Webmaster.Google.*' );
 class WebsitestatController extends Controller {
 
-	protected $domain, $command, $website, $wid, $diff, $strtime, $thumbnail,
-		$cloud     = array(),
-		$content   = array(),
-		$document  = array(),
-		$isseter   = array(),
-		$links     = array(),
-		$w3c       = array(),
-		$meta      = array(),
-		$misc      = array(),
-		$generated = array();
+	/**
+	 * Domain name to analyze.
+	 *
+	 * @var string
+	 */
+	protected $domain;
+
+	/**
+	 * Database command object.
+	 *
+	 * @var CDbCommand
+	 */
+	protected $command;
+
+	/**
+	 * Website data array.
+	 *
+	 * @var array
+	 */
+	protected $website;
+
+	/**
+	 * Website ID.
+	 *
+	 * @var int
+	 */
+	protected $wid;
+
+	/**
+	 * Time difference for cache expiration.
+	 *
+	 * @var int
+	 */
+	protected $diff;
+
+	/**
+	 * String representation of time.
+	 *
+	 * @var string
+	 */
+	protected $strtime;
+
+	/**
+	 * Thumbnail URL.
+	 *
+	 * @var string
+	 */
+	protected $thumbnail;
+
+	/**
+	 * Tag cloud data.
+	 *
+	 * @var array
+	 */
+	protected $cloud     = array();
+
+	/**
+	 * Content analysis data.
+	 *
+	 * @var array
+	 */
+	protected $content   = array();
+
+	/**
+	 * Document structure data.
+	 *
+	 * @var array
+	 */
+	protected $document  = array();
+
+	/**
+	 * Set flags for various checks.
+	 *
+	 * @var array
+	 */
+	protected $isseter   = array();
+
+	/**
+	 * Links analysis data.
+	 *
+	 * @var array
+	 */
+	protected $links     = array();
+
+	/**
+	 * W3C validation data.
+	 *
+	 * @var array
+	 */
+	protected $w3c       = array();
+
+	/**
+	 * Meta tags data.
+	 *
+	 * @var array
+	 */
+	protected $meta      = array();
+
+	/**
+	 * Miscellaneous data.
+	 *
+	 * @var array
+	 */
+	protected $misc      = array();
+
+	/**
+	 * Generated timestamps and metadata.
+	 *
+	 * @var array
+	 */
+	protected $generated = array();
 	/**
 	 * init function.
 	 */

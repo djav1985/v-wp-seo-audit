@@ -10,7 +10,18 @@
  */
 class WebsiteList extends CWidget {
 
+	/**
+	 * Configuration array for the widget.
+	 *
+	 * @var array
+	 */
 	public $config   = array();
+
+	/**
+	 * Template name for rendering the widget.
+	 *
+	 * @var string
+	 */
 	public $template = 'website_list';
 
 	/**

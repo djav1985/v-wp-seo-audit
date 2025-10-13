@@ -6,6 +6,18 @@
         <exclude name="WordPress.WhiteSpace.ControlStructureSpacing"/>
         <!-- Exclude variable naming rules due to Yii framework conventions using camelCase -->
         <exclude name="WordPress.NamingConventions.ValidVariableName"/>
+        <!-- Exclude file naming rules - conflicts with Yii framework class naming conventions -->
+        <exclude name="WordPress.Files.FileName"/>
+    </rule>
+    <!-- Exclude WordPress escaping rules from Yii framework files -->
+    <!-- Yii uses its own security mechanisms (CHtml::encode, Yii::t with proper encoding) -->
+    <rule ref="WordPress.Security.EscapeOutput">
+        <exclude-pattern>protected/views/*</exclude-pattern>
+        <exclude-pattern>protected/widgets/views/*</exclude-pattern>
+        <exclude-pattern>protected/commands/*</exclude-pattern>
+        <exclude-pattern>protected/controllers/*</exclude-pattern>
+        <exclude-pattern>requirements.php</exclude-pattern>
+        <exclude-pattern>command.php</exclude-pattern>
     </rule>
     <exclude-pattern>assets/*</exclude-pattern>
     <exclude-pattern>css/*</exclude-pattern>

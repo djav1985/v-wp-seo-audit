@@ -9,9 +9,25 @@ Yii::import( 'application.vendors.Webmaster.Utils.IDN' );
 
 class WebsiteForm extends CFormModel {
 
+	/**
+	 * Domain name to analyze (ASCII encoded).
+	 *
+	 * @var string
+	 */
 	public $domain;
+
+	/**
+	 * Internationalized Domain Name (IDN) in Unicode format.
+	 *
+	 * @var string
+	 */
 	public $idn;
-	// президент.рф (IDN)
+
+	/**
+	 * IP address of the domain.
+	 *
+	 * @var string
+	 */
 	public $ip;
 
 	/**
