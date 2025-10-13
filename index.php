@@ -8,14 +8,14 @@
  */
 
 // Prevent direct access - this file should only be loaded via WordPress
-if ( ! defined( 'ABSPATH')) {
-    // Try to load WordPress if not already loaded
-	$wp_load_path = dirname(dirname( dirname( dirname( __FILE__ ) ) )) . '/wp-load.php';
+if ( ! defined( 'ABSPATH' )) {
+	// Try to load WordPress if not already loaded
+	$wp_load_path = dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/wp-load.php';
 	if (file_exists( $wp_load_path )) {
 		require_once $wp_load_path;
 	} else {
 		   die( 'WordPress not found. This plugin requires WordPress to function properly.' );
-	 
+
 	}
 }
 
@@ -90,13 +90,13 @@ global $v_wp_seo_audit_app;
 if ($v_wp_seo_audit_app === null) {
 	// Create Yii application
 	$v_wp_seo_audit_app = Yii::createWebApplication( $config );
-	
+
 	// Set timezone from config
 	if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
 		$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
-	
+
 	}
-	
+
 	// Configure request component to use WordPress plugin URL
 	if ($v_wp_seo_audit_app->hasComponent( 'request' )) {
 		 $request = $v_wp_seo_audit_app->getRequest();
@@ -106,14 +106,14 @@ if ($v_wp_seo_audit_app === null) {
 		 // In WordPress, we need to use the index.php as script URL
 		$request->setScriptUrl( $plugin_relative_url . '/index.php' );
 	}
-	
+
 	// Configure URL manager for WordPress context
 	if ($v_wp_seo_audit_app->hasComponent( 'urlManager' )) {
 		  $urlManager = $v_wp_seo_audit_app->getUrlManager();
 		// Force GET format in WordPress since we can't use pretty URLs
 		$urlManager->urlFormat        = 'get';
 		  $urlManager->showScriptName = true;
-	 
+
 	}
 }
 

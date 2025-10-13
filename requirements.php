@@ -1,232 +1,224 @@
 <?php
-function checkPhpExtensionVersion( $extensionName, $version, $compare = '>=')
-{
-	if (! extension_loaded($extensionName)) {
+function checkPhpExtensionVersion( $extensionName, $version, $compare = '>=') {
+	if ( ! extension_loaded( $extensionName )) {
 		return false;
 	}
-	$extensionVersion = phpversion($extensionName);
-	if (empty($extensionVersion)) {
+	$extensionVersion = phpversion( $extensionName );
+	if (empty( $extensionVersion )) {
 		return false;
 	}
-	if (strncasecmp($extensionVersion, 'PECL-', 5) === 0) {
-		$extensionVersion = substr($extensionVersion, 5);
+	if (strncasecmp( $extensionVersion, 'PECL-', 5 ) === 0) {
+		$extensionVersion = substr( $extensionVersion, 5 );
 	}
 
-	return version_compare($extensionVersion, $version, $compare);
+	return version_compare( $extensionVersion, $version, $compare );
 }
 
-function checkServerVar()
-{
+function checkServerVar() {
 	$vars    = array( 'HTTP_HOST', 'SERVER_NAME', 'SERVER_PORT', 'SCRIPT_NAME', 'SCRIPT_FILENAME', 'PHP_SELF', 'HTTP_ACCEPT', 'HTTP_USER_AGENT' );
 	$missing = array();
-	foreach ($vars as $var)
-	{
-		if (! isset($_SERVER[ $var ])) {
+	foreach ($vars as $var) {
+		if ( ! isset( $_SERVER[ $var ] )) {
 			$missing[] = $var;
 		}
 	}
-	if (! empty($missing)) {
-		return '$_SERVER does not have ' . implode(', ', $missing);
+	if ( ! empty( $missing )) {
+		return '$_SERVER does not have ' . implode( ', ', $missing );
 	}
 
-	if (realpath($_SERVER['SCRIPT_FILENAME']) !== realpath(__FILE__)) {
+	if (realpath( $_SERVER['SCRIPT_FILENAME'] ) !== realpath( __FILE__ )) {
 		return '$_SERVER["SCRIPT_FILENAME"] must be the same as the entry script file path.';
 	}
 
-	if (! isset($_SERVER['REQUEST_URI']) && isset($_SERVER['QUERY_STRING'])) {
+	if ( ! isset( $_SERVER['REQUEST_URI'] ) && isset( $_SERVER['QUERY_STRING'] )) {
 		return 'Either $_SERVER["REQUEST_URI"] or $_SERVER["QUERY_STRING"] must exist.';
 	}
 
-	if (! isset($_SERVER['PATH_INFO']) && strpos($_SERVER['PHP_SELF'], $_SERVER['SCRIPT_NAME']) !== 0) {
+	if ( ! isset( $_SERVER['PATH_INFO'] ) && strpos( $_SERVER['PHP_SELF'], $_SERVER['SCRIPT_NAME'] ) !== 0) {
 		return 'Unable to determine URL path info. Please make sure $_SERVER["PATH_INFO"] (or $_SERVER["PHP_SELF"] and $_SERVER["SCRIPT_NAME"]) contains proper value.';
 	}
 
 	return '';
 }
 
-function checkIcu()
-{
-	if (! extension_loaded('intl')) {
+function checkIcu() {
+	if ( ! extension_loaded( 'intl' )) {
 		return 'Intl extension is not loaded';
 	}
-	if (! defined('INTL_ICU_VERSION')) {
+	if ( ! defined( 'INTL_ICU_VERSION' )) {
 		return 'ICU library is not loaded';
 	}
 
-	if (version_compare(PHP_VERSION, '7.4.0', '<')) {
-		if (version_compare(INTL_ICU_VERSION, '4.0.0', '<=')) {
+	if (version_compare( PHP_VERSION, '7.4.0', '<' )) {
+		if (version_compare( INTL_ICU_VERSION, '4.0.0', '<=' )) {
 			return 'ICU library version must be greater than 4.0.0';
 		}
 	} else {
-		if (version_compare(INTL_ICU_VERSION, '50.1', '<=')) {
+		if (version_compare( INTL_ICU_VERSION, '50.1', '<=' )) {
 			return 'ICU library version must be greater than 50.1';
 		}
 	}
 	return '';
 }
 
-function checkPhpIniOn( $name)
-{
-	$value = ini_get($name);
-	if (empty($value)) {
+function checkPhpIniOn( $name) {
+	$value = ini_get( $name );
+	if (empty( $value )) {
 		return false;
 	}
 
-    return ( (int) $value === 1 || strtolower($value) === 'on' );
+	return ( (int) $value === 1 || strtolower( $value ) === 'on' );
 }
 
-function checkPhpIniOff( $name)
-{
-    $value = ini_get($name);
-    if (empty($value)) {
-        return true;
-    }
+function checkPhpIniOff( $name) {
+	$value = ini_get( $name );
+	if (empty( $value )) {
+		return true;
+	}
 
-    return ( strtolower($value) === 'off' );
+	return ( strtolower( $value ) === 'off' );
 }
 
-function getServerInfo()
-{
-    $info[] = isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '';
-    $info[] = @strftime('%Y-%m-%d %H:%M', time());
-    return implode(' ', $info);
+function getServerInfo() {
+	$info[] = isset( $_SERVER['SERVER_SOFTWARE'] ) ? $_SERVER['SERVER_SOFTWARE'] : '';
+	$info[] = @strftime( '%Y-%m-%d %H:%M', time() );
+	return implode( ' ', $info );
 }
 
-function checkPhpFunctions( array $functions)
-{
-    $not_available = array();
-    foreach ($functions as $function) {
-        if (! function_exists($function)) {
-            $not_available[] = sprintf('<strong>%s</strong> is not available', $function);
-        }
-    }
-    return ! empty($not_available) ? join(', ', $not_available) : '';
+function checkPhpFunctions( array $functions) {
+	$not_available = array();
+	foreach ($functions as $function) {
+		if ( ! function_exists( $function )) {
+			$not_available[] = sprintf( '<strong>%s</strong> is not available', $function );
+		}
+	}
+	return ! empty( $not_available ) ? join( ', ', $not_available ) : '';
 }
 
 $serverInfo = getServerInfo();
 
 $requirements = array(
-    array(
-        'rule'        => 'PHP version (5.6.0 or higher)',
-        'result'      => version_compare(PHP_VERSION, '5.6.0', '>='),
-        'explanation' => 'PHP 5.6.0 or higher is required.',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => '$_SERVER variable',
-        'result'      => '' === $message = checkServerVar(),
-        'explanation' => $message,
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'Reflection extension',
-        'result'      => class_exists('Reflection', false),
-        'explanation' => 'Reflection extension is not loaded',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'PCRE extension',
-        'result'      => extension_loaded('pcre'),
-        'explanation' => 'PCRE extension is not loaded',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'SPL extension',
-        'result'      => extension_loaded('SPL'),
-        'explanation' => 'SPL extension is not loaded',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'DOM extension',
-        'result'      => class_exists('DOMDocument', false),
-        'explanation' => 'DOMDocument class is not available',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'ZipArchive extension',
-        'result'      => class_exists('ZipArchive', false),
-        'explanation' => 'ZipArchive class is not available',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'PDO extension',
-        'result'      => extension_loaded('pdo'),
-        'explanation' => 'PDO extension is not loaded',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'PDO MySQL driver',
-        'result'      => extension_loaded('pdo_mysql'),
-        'explanation' => 'PDO MySQL extension is not loaded',
-        'mandatory'   => true,
-    ),
+	array(
+		'rule'        => 'PHP version (5.6.0 or higher)',
+		'result'      => version_compare( PHP_VERSION, '5.6.0', '>=' ),
+		'explanation' => 'PHP 5.6.0 or higher is required.',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => '$_SERVER variable',
+		'result'      => '' === $message = checkServerVar(),
+		'explanation' => $message,
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'Reflection extension',
+		'result'      => class_exists( 'Reflection', false ),
+		'explanation' => 'Reflection extension is not loaded',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'PCRE extension',
+		'result'      => extension_loaded( 'pcre' ),
+		'explanation' => 'PCRE extension is not loaded',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'SPL extension',
+		'result'      => extension_loaded( 'SPL' ),
+		'explanation' => 'SPL extension is not loaded',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'DOM extension',
+		'result'      => class_exists( 'DOMDocument', false ),
+		'explanation' => 'DOMDocument class is not available',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'ZipArchive extension',
+		'result'      => class_exists( 'ZipArchive', false ),
+		'explanation' => 'ZipArchive class is not available',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'PDO extension',
+		'result'      => extension_loaded( 'pdo' ),
+		'explanation' => 'PDO extension is not loaded',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'PDO MySQL driver',
+		'result'      => extension_loaded( 'pdo_mysql' ),
+		'explanation' => 'PDO MySQL extension is not loaded',
+		'mandatory'   => true,
+	),
 
-    array(
-        'rule'        => 'Ctype extension',
-        'result'      => extension_loaded('ctype'),
-        'explanation' => 'Ctype extension is not loaded',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'Bcmath extension',
-        'result'      => extension_loaded('bcmath'),
-        'explanation' => 'Bcmath extension is not loaded',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'MBString extension',
-        'result'      => extension_loaded('mbstring'),
-        'explanation' => 'MBString extension is not loaded. Required for multibyte encoding string processing.',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'OpenSSL extension',
-        'result'      => extension_loaded('openssl'),
-        'explanation' => 'OpenSSL extension is not loaded. Required by encrypt and decrypt methods.',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'Fileinfo extension',
-        'result'      => extension_loaded('fileinfo'),
-        'explanation' => 'Fileinfo extension is not loaded',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'Intl extension && ICU library',
-        'result'      => '' === $messageIcu = checkIcu(),
-        'explanation' => $messageIcu,
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'cURL extension',
-        'result'      => function_exists('curl_version'),
-        'explanation' => 'cURL is not enabled',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'Socket functions',
-        'result'      => ( '' === $email_func = checkPhpFunctions(array( 'stream_socket_client', 'socket_set_timeout', 'stream_socket_enable_crypto', 'socket_get_status', 'fsockopen' )) ),
-        'explanation' => $email_func . '. These functions must be available in order to send email notifications.',
-        'mandatory'   => true,
-    ),
-    array(
-        'rule'        => 'Safe mode (php.ini directive) must be disabled',
-        'result'      => checkPhpIniOff('safe_mode'),
-        'explanation' => 'You need to disable <strong>safe_mode</strong> in <strong>php.ini</strong> to execute long running scripts.',
-        'mandatory'   => false,
-    ),
+	array(
+		'rule'        => 'Ctype extension',
+		'result'      => extension_loaded( 'ctype' ),
+		'explanation' => 'Ctype extension is not loaded',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'Bcmath extension',
+		'result'      => extension_loaded( 'bcmath' ),
+		'explanation' => 'Bcmath extension is not loaded',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'MBString extension',
+		'result'      => extension_loaded( 'mbstring' ),
+		'explanation' => 'MBString extension is not loaded. Required for multibyte encoding string processing.',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'OpenSSL extension',
+		'result'      => extension_loaded( 'openssl' ),
+		'explanation' => 'OpenSSL extension is not loaded. Required by encrypt and decrypt methods.',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'Fileinfo extension',
+		'result'      => extension_loaded( 'fileinfo' ),
+		'explanation' => 'Fileinfo extension is not loaded',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'Intl extension && ICU library',
+		'result'      => '' === $messageIcu = checkIcu(),
+		'explanation' => $messageIcu,
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'cURL extension',
+		'result'      => function_exists( 'curl_version' ),
+		'explanation' => 'cURL is not enabled',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'Socket functions',
+		'result'      => ( '' === $email_func = checkPhpFunctions( array( 'stream_socket_client', 'socket_set_timeout', 'stream_socket_enable_crypto', 'socket_get_status', 'fsockopen' ) ) ),
+		'explanation' => $email_func . '. These functions must be available in order to send email notifications.',
+		'mandatory'   => true,
+	),
+	array(
+		'rule'        => 'Safe mode (php.ini directive) must be disabled',
+		'result'      => checkPhpIniOff( 'safe_mode' ),
+		'explanation' => 'You need to disable <strong>safe_mode</strong> in <strong>php.ini</strong> to execute long running scripts.',
+		'mandatory'   => false,
+	),
 );
 
 $result = 1;  // 1: all pass, 0: fail
 foreach ($requirements as $i => $requirement) {
-    if (! $requirement['result'] && $requirement['mandatory']) {
-        $result = 0;
-    }
-    $requirements[ $i ]['cell_class'] = $requirement['result'] ? 'passed' : ( $requirement['mandatory'] ? 'failed' : 'warning' );
+	if ( ! $requirement['result'] && $requirement['mandatory']) {
+		$result = 0;
+	}
+	$requirements[ $i ]['cell_class'] = $requirement['result'] ? 'passed' : ( $requirement['mandatory'] ? 'failed' : 'warning' );
 
-    if ($requirement['explanation'] === '') {
-        $requirements[ $i ]['explanation'] = '&nbsp;';
-    }
+	if ($requirement['explanation'] === '') {
+		$requirements[ $i ]['explanation'] = '&nbsp;';
+	}
 }
 
 ?>
@@ -349,32 +341,32 @@ foreach ($requirements as $i => $requirement) {
 		</p>
 		<h2>Conclusion</h2>
 		<p>
-            <?php if ($result > 0) : ?>
+			<?php if ($result > 0) : ?>
 				Congratulations! Your server configuration satisfies minimum requirements by Website Review.
-            <?php else : ?>
+			<?php else : ?>
 				Unfortunately your server configuration does not satisfy the requirements by Website Review.
-            <?php endif; ?>
+			<?php endif; ?>
 		</p>
 
 		<h2>Details</h2>
 
 		<table class="result">
 			<tr><th>Name</th><th>Result</th><th>Memo</th></tr>
-            <?php foreach ($requirements as $requirement) : ?>
+			<?php foreach ($requirements as $requirement) : ?>
 				<tr>
 					<td>
-                        <?php echo $requirement['rule']; ?>
+						<?php echo $requirement['rule']; ?>
 					</td>
-                    <td class="<?php echo $requirement['cell_class']; ?>">
-                        <?php echo ucfirst($requirement['cell_class'] ); ?>
+					<td class="<?php echo $requirement['cell_class']; ?>">
+						<?php echo ucfirst( $requirement['cell_class'] ); ?>
 					</td>
 					<td>
-                        <?php if (! $requirement['result']) : ?>
-                            <?php echo $requirement['explanation']; ?>
-                        <?php endif; ?>
+						<?php if ( ! $requirement['result']) : ?>
+							<?php echo $requirement['explanation']; ?>
+						<?php endif; ?>
 					</td>
 				</tr>
-            <?php endforeach; ?>
+			<?php endforeach; ?>
 		</table>
 
 		<table>
@@ -388,7 +380,7 @@ foreach ($requirements as $i => $requirement) {
 	</div><!-- content -->
 
 	<div id="footer">
-        <?php echo $serverInfo; ?>
+		<?php echo $serverInfo; ?>
 	</div><!-- footer -->
 
 </div><!-- page -->

@@ -1,15 +1,15 @@
 <!-- JS is enqueued via WordPress plugin file. Remove direct <script> and rely on enqueued assets. -->
 
 <div class="jumbotron">
-    <h1><?php echo Yii::app()->name; ?></h1>
-    <p class="lead mb-4">
-        <?php
-        echo Yii::t(
+	<h1><?php echo Yii::app()->name; ?></h1>
+	<p class="lead mb-4">
+		<?php
+		echo Yii::t(
 			'app',
 			'Marketing speak - header',
 			array(
 				'{Brandname}' => Yii::app()->name,
-		)
+			)
 		)
 		?>
 	</p>
@@ -20,7 +20,7 @@
 					<input type="text"  name="Website[domain]" id="domain" class="form-control form-control-lg" placeholder="<?php echo Yii::app()->params['param.placeholder']; ?>">
 					<div class="input-group-append">
 						<button class="btn btn-primary" type="button" id="submit">
-							<?php echo Yii::t( 'app', 'Analyze'); ?>
+							<?php echo Yii::t( 'app', 'Analyze' ); ?>
 						</button>
 					</div>
 				</div>
