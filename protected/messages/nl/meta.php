@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: meta.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Index page keywords'      => 'SEO tips, check seo, seo test, seo tool, seo scan',

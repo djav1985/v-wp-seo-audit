@@ -1,9 +1,17 @@
 <?php
+/**
+ * File: ImportCommand.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 Yii::import( 'application.vendors.Webmaster.Utils.IDN' );
 set_time_limit( 0 );
 class ImportCommand extends CConsoleCommand {
 
+	/**
+	 * actionIndex function.
+	 */
 	public function actionIndex() {
 
 		 $file_path = Yii::getPathOfAlias( 'application.data.domains' ) . '.txt';
@@ -19,7 +27,7 @@ class ImportCommand extends CConsoleCommand {
 
 		while ( ! $file->eof()) {
 			$file_domain = trim( $file->fgets() );
-			// Skip empty lines
+			// Skip empty lines.
 			if (empty( $file_domain )) {
 				continue;
 
@@ -30,7 +38,7 @@ class ImportCommand extends CConsoleCommand {
 					':md5domain' => md5( $file_domain ),
 				)
 			);
-			// Skip existing domain
+			// Skip existing domain.
 			if ($exists) {
 				continue;
 

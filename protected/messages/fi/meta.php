@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: meta.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Index page keywords'      => 'Verkkosivustojen sisällön analysointi, ilmainen SEO-työkalu, sisällön tarkistus, sisällön analyysi, sisällön analysointi',

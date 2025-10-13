@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: command.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class ExecutableFinder {
 
@@ -43,7 +48,7 @@ class ExecutableFinder {
 					$dirs[] = $path;
 
 				} else {
-					if (basename( $path ) == $name && is_executable( $path )) {
+					if (basename( $path ) === $name && is_executable( $path )) {
 						return $path;
 
 					}
@@ -79,9 +84,15 @@ class ExecutableFinder {
 
 	}
 }
+/**
+ * Class PhpExecutableFinder
+ */
 class PhpExecutableFinder {
 
 	private $executableFinder;
+	/**
+	 * __construct function.
+	 */
 	public function __construct() {
 
 		 $this->executableFinder = new ExecutableFinder();
@@ -97,12 +108,12 @@ class PhpExecutableFinder {
 
 		$args = $this->findArguments();
 		$args = $includeArgs && $args ? ' ' . implode( ' ', $args ) : '';
-		// HHVM support
+		// HHVM support.
 		if (defined( 'HHVM_VERSION' )) {
 			return ( getenv( 'PHP_BINARY' ) ?: PHP_BINARY ) . $args;
 
 		}
-		// PHP_BINARY return the current sapi executable
+		// PHP_BINARY return the current sapi executable.
 		if (PHP_BINARY && in_array( PHP_SAPI, array( 'cli', 'cli-server', 'phpdbg' ) ) && is_file( PHP_BINARY )) {
 			return PHP_BINARY . $args;
 

@@ -1,4 +1,11 @@
-<?php if ( empty( $website ) || ! is_array( $website ) ) : ?>
+<?php
+/**
+ * File: index.php
+ *
+ * @package V_WP_SEO_Audit
+ */
+
+if ( empty( $website ) || ! is_array( $website ) ) : ?>
 	<div class="alert alert-danger mt-5 mb-5">
 		<?php echo Yii::t( 'app', 'No report available. The domain could not be analyzed or the record was not created. Please try again or check your domain input.' ); ?>
 	</div>
@@ -34,6 +41,9 @@
 			drawPie();
 		};
 
+  /**
+   * drawPie function.
+   */
 		function drawPie() {
 			$.plot($("#links-pie"), pie_data, {
 				series: {
@@ -320,7 +330,7 @@
 	</div>
 
 	<!-- Images -->
-	<?php $advice = $rateprovider->addCompare( 'imgHasAlt', $content['total_img'] == $content['total_alt'] ); ?>
+	<?php $advice = $rateprovider->addCompare( 'imgHasAlt', $content['total_img'] === $content['total_alt'] ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -752,19 +762,19 @@
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $advice == 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
 							<td><?php echo Yii::t( 'advice', "CSS count advice - $advice", array( '{MoreNr}' => _RATE_CSS_COUNT ) ); ?></td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $advice == 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
 							<td><?php echo Yii::t( 'advice', "JS count advice - $advice", array( '{MoreNr}' => _RATE_JS_COUNT ) ); ?></td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $advice == 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
 							<td><?php echo Yii::t( 'advice', "Gzip - $advice" ); ?></td>
 						</tr>
 

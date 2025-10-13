@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: advice.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Title advice - success'                  => 'Perfetto, il tuo title contiene tra {1} e {2} caratteri.',
@@ -68,7 +73,7 @@ return array(
 	'Deprecated advice - success'             => 'Grande! Non abbiamo trovato tags HTML deprecati nel tuo codice.',
 	'Deprecated advice - error'               => 'Tags HTML deprecati sono tags HTML che non vengono piu utilizzati. Ti raccomandiamo di rimuoverli o sostituire questi tags HTML perche ora sono obsoleti.',
 
-	// v 4.0
+	// v 4.0.
 	'XML Sitemap - success'                   => 'Grande, il vostro sito ha una sitemap XML.',
 	'XML Sitemap - error'                     => 'Il tuo sito web non ha una sitemap XML - questo può essere problematico.<br><br>A elenca sitemap URL che sono disponibili per la scansione e possono includere informazioni aggiuntive come gli ultimi aggiornamenti del tuo sito, frequenza delle variazioni e l\'importanza degli URL. In questo modo i motori di ricerca di eseguire la scansione del sito in modo più intelligente.',
 

@@ -1,7 +1,18 @@
 <?php
+/**
+ * File: Utils.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class Utils {
 
+	/**
+	 * Shuffle an associative array.
+	 *
+	 * @param array $list The array to shuffle.
+	 * @return array The shuffled array.
+	 */
 	public static function shuffle_assoc( $list) {
 		$keys = array_keys( $list );
 		shuffle( $keys );
@@ -13,11 +24,24 @@ class Utils {
 		return $random;
 	}
 
+	/**
+	 * Calculate proportion as percentage.
+	 *
+	 * @param int $big The larger value.
+	 * @param int $small The smaller value.
+	 * @return float The percentage.
+	 */
 	public static function proportion( $big, $small) {
 
 		return $big > 0 ? round( $small * 100 / $big, 2 ) : 0;
 	}
 
+	/**
+	 * Create nested directory structure.
+	 *
+	 * @param string $path The path to create.
+	 * @return bool True on success, false on failure.
+	 */
 	public static function createNestedDir( $path) {
 
 		$dir = pathinfo( $path, PATHINFO_DIRNAME );
@@ -31,6 +55,13 @@ class Utils {
 		}
 		return false;
 	}
+
+	/**
+	 * Create PDF folder for a domain.
+	 *
+	 * @param string $domain The domain name.
+	 * @return string The PDF file path.
+	 */
 	public static function createPdfFolder( $domain) {
 
 		$pdf = self::getPdfFile( $domain );
@@ -39,6 +70,13 @@ class Utils {
 		}
 		return $pdf;
 	}
+
+	/**
+	 * Delete PDF files for a domain.
+	 *
+	 * @param string $domain The domain name.
+	 * @return bool True on success.
+	 */
 	public static function deletePdf( $domain) {
 
 		foreach (Yii::app()->params['app.languages'] as $langId => $language) {
@@ -47,11 +85,18 @@ class Utils {
 				unlink( $pdf );
 			}
 		}
-		// Also delete the cached thumbnail
+		// Also delete the cached thumbnail.
 		WebsiteThumbnail::deleteThumbnail( $domain );
 		return true;
 	}
 
+	/**
+	 * Get PDF file path for a domain.
+	 *
+	 * @param string $domain The domain name.
+	 * @param string $lang The language code (optional).
+	 * @return string The PDF file path.
+	 */
 	public static function getPdfFile( $domain, $lang = null) {
 
 		$root      = Yii::getPathofAlias( 'webroot' );
@@ -61,14 +106,30 @@ class Utils {
 		return $file;
 	}
 
+	/**
+	 * Get value from array with default fallback.
+	 *
+	 * @param array $a The array.
+	 * @param mixed $k The key.
+	 * @param mixed $d The default value.
+	 * @return mixed The value or default.
+	 */
 	public static function v( array $a, $k, $d = null) {
 
 		return isset( $a[ $k ] ) ? $a[ $k ] : $d;
 	}
 
-	/*
-	* thelonglongdomain.com -> thelong...ain.com
-	*/
+	/**
+	 * Crop domain name to specified length.
+	 *
+	 * Shortens long domain names by keeping the start and end with separator in middle.
+	 * Example: thelonglongdomain.com -> thelong...ain.com
+	 *
+	 * @param string $domain The domain name.
+	 * @param int    $length Maximum length.
+	 * @param string $separator The separator string.
+	 * @return string The cropped domain name.
+	 */
 	public static function cropDomain( $domain, $length = 24, $separator = '...') {
 
 		if (mb_strlen( $domain ) < $length) {
@@ -77,12 +138,20 @@ class Utils {
 		$sepLength    = mb_strlen( $separator );
 		$backLen      = 6;
 		$availableLen = $length - $sepLength - $backLen;
-		// 20-3-6=11
+		// 20-3-6=11.
 		$firstPart = mb_substr( $domain, 0, $availableLen );
 		$lastPart  = mb_substr( $domain, -$backLen );
 		return $firstPart . $separator . $lastPart;
 	}
 
+	/**
+	 * Perform a cURL request.
+	 *
+	 * @param string $url The URL to request.
+	 * @param array  $headers Optional headers.
+	 * @param bool   $cookie Whether to use cookies.
+	 * @return mixed The response.
+	 */
 	public static function curl( $url, array $headers = array(), $cookie = false) {
 
 		$ch = curl_init( $url );
@@ -95,11 +164,29 @@ class Utils {
 		return $html;
 	}
 
+	/**
+	 * Execute cURL request with options.
+	 *
+	 * @param resource $ch The cURL handle.
+	 * @param array    $headers Optional headers.
+	 * @param mixed    $cookie Cookie file path or false.
+	 * @param int      $maxredirect Maximum redirects (by reference).
+	 * @return mixed The response.
+	 */
 	public static function curl_exec( $ch, $headers = array(), $cookie = false, &$maxredirect = null) {
 
 		 return curl_exec( self::ch( $ch, $headers, $cookie, $maxredirect ) );
 	}
 
+	/**
+	 * Configure cURL handle with options.
+	 *
+	 * @param resource $ch The cURL handle.
+	 * @param array    $headers Optional headers.
+	 * @param mixed    $cookie Cookie file path or false.
+	 * @param int      $maxredirect Maximum redirects (by reference).
+	 * @return resource The configured cURL handle.
+	 */
 	public static function ch( $ch, $headers = array(), $cookie = false, &$maxredirect = null) {
 
 		 curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
@@ -126,7 +213,7 @@ class Utils {
 		curl_setopt( $ch, CURLOPT_USERAGENT, $user_agent );
 
 		$mr = $maxredirect === null ? 5 : intval( $maxredirect );
-		if (ini_get( 'open_basedir' ) == '' && ( ini_get( 'safe_mode' ) == 'Off' || ini_get( 'safe_mode' ) == '' )) {
+		if (ini_get( 'open_basedir' ) === '' && ( ini_get( 'safe_mode' ) === 'Off' || ini_get( 'safe_mode' ) === '' )) {
 			   curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, $mr > 0 );
 			   curl_setopt( $ch, CURLOPT_MAXREDIRS, $mr );
 		} else {
@@ -182,7 +269,7 @@ class Utils {
 				curl_close( $rch );
 
 				if ( ! $mr) {
-					if ($maxredirect === null) {
+					if ( null === $maxredirect) {
 						return false;
 					} else {
 										$maxredirect = 0;
@@ -255,7 +342,7 @@ class Utils {
 		 $headers    = array();
 		$header_text = substr( $response, 0, strpos( $response, "\r\n\r\n" ) );
 		foreach (explode( "\r\n", $header_text ) as $i => $line) {
-			if ($i === 0) {
+			if ( 0 === $i) {
 				$headers['status']    = $line;
 				$data                 = explode( ' ', $line );
 				$headers['http_code'] = isset( $data[1] ) ? $data[1] : null;
@@ -270,7 +357,7 @@ class Utils {
 	public static function isPsiActive( $k, $item) {
 		 $key        = "psi.{$k}";
 		 $configItem = Yii::app()->params[ $key ];
-		 return is_array( $configItem ) ? ( empty( $configItem ) or in_array( $item, $configItem ) ) : $configItem == $item;
+		 return is_array( $configItem ) ? ( empty( $configItem ) or in_array( $item, $configItem ) ) : $configItem === $item;
 	}
 
 	public static function starts_with( $haystack, $needle) {

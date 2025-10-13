@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: WebsitestatController.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 Yii::import( 'application.vendors.Webmaster.Rates.*' );
 Yii::import( 'application.vendors.Webmaster.Source.*' );
@@ -15,6 +20,9 @@ class WebsitestatController extends Controller {
 		$meta      = array(),
 		$misc      = array(),
 		$generated = array();
+	/**
+	 * init function.
+	 */
 	public function init() {
 		parent::init();
 		$this->command = Yii::app()->db->createCommand();
@@ -39,6 +47,11 @@ class WebsitestatController extends Controller {
 
 	}
 
+	/**
+	 * actionGenerateHTML function.
+	 *
+	 * @param mixed $domain Parameter.
+	 */
 	public function actionGenerateHTML( $domain ) {
 		$downloadForm = new DownloadPdfForm();
 		if (isset( $_POST['DownloadPdfForm'] ) and is_array( $_POST['DownloadPdfForm'] )) {
@@ -117,6 +130,11 @@ class WebsitestatController extends Controller {
 		);
 	}
 
+	/**
+	 * actionGeneratePDF function.
+	 *
+	 * @param mixed $domain Parameter.
+	 */
 	public function actionGeneratePDF( $domain ) {
 		$filename = $this->domain;
 		$pdfFile  = Utils::createPdfFolder( $filename );
@@ -154,15 +172,28 @@ class WebsitestatController extends Controller {
 		$this->createPdfFromHtml( $html, $pdfFile, $this->website['idn'] );
 	}
 
+	/**
+	 * outputPDF function.
+	 *
+	 * @param mixed $pdfFile Parameter.
+	 * @param mixed $filename Parameter.
+	 */
 	protected function outputPDF( $pdfFile, $filename ) {
 		header( 'Content-type: application/pdf' );
-		// It will be called downloaded.pdf
+		// It will be called downloaded.pdf.
 		header( 'Content-Disposition: attachment; filename="' . $filename . '.pdf"' );
-		// The PDF source is in original.pdf
+		// The PDF source is in original.pdf.
 		readfile( $pdfFile );
 		Yii::app()->end();
 	}
 
+	/**
+	 * createPdfFromHtml function.
+	 *
+	 * @param mixed $html Parameter.
+	 * @param mixed $pdfFile Parameter.
+	 * @param mixed $filename Parameter.
+	 */
 	protected function createPdfFromHtml( $html, $pdfFile, $filename ) {
 		$pdf = Yii::createComponent( 'application.extensions.tcpdf.ETcPdf', 'P', 'cm', 'A4', true, 'UTF-8' );
 		$pdf->SetCreator( PDF_CREATOR );
@@ -180,8 +211,11 @@ class WebsitestatController extends Controller {
 		$this->outputPDF( $pdfFile, $filename );
 	}
 
+	/**
+	 * collectInfo function.
+	 */
 	protected function collectInfo() {
-		// Set thumbnail
+		// Set thumbnail.
 		$this->thumbnail = WebsiteThumbnail::getThumbData(
 			array(
 				'url'  => $this->domain,
@@ -206,7 +240,7 @@ class WebsitestatController extends Controller {
 		$this->misc = $this->command->select( '*' )->from( '{{misc}}' )->where( 'wid=:wid', array( ':wid' => $this->wid ) )->queryRow();
 		$this->command->reset();
 
-		// Initialize as empty arrays if query returned false/null
+		// Initialize as empty arrays if query returned false/null.
 		if ( ! $this->cloud) {
 			$this->cloud = array(
 				'words'  => '[]',
@@ -268,8 +302,8 @@ class WebsitestatController extends Controller {
 			);
 		}
 
-		// Ensure fields exist and are not null before JSON decoding
-		// If field is null or doesn't exist, default to empty JSON array string
+		// Ensure fields exist and are not null before JSON decoding.
+		// If field is null or doesn't exist, default to empty JSON array string.
 		if ( ! isset( $this->content['headings'] ) || $this->content['headings'] === null) {
 			$this->content['headings'] = '[]';
 		}
@@ -295,7 +329,7 @@ class WebsitestatController extends Controller {
 			$this->misc['analytics'] = '[]';
 		}
 
-		// Decode JSON fields to arrays
+		// Decode JSON fields to arrays.
 		$this->content['headings']   = (array) json_decode( $this->content['headings'], true );
 		$this->links['links']        = (array) json_decode( $this->links['links'], true );
 		$this->cloud['words']        = Utils::shuffle_assoc( (array) json_decode( $this->cloud['words'], true ) );

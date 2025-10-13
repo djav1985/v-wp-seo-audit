@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Undersøg links fra din hjemmeside med ankertekster, urls og find frem til din interne og eksterne link procentdel.',
@@ -128,7 +133,7 @@ return array(
 	'Missing doctype'                              => 'Manglende dokumenttypea',
 	'Download PDF version'                         => 'Hent PDF-version',
 	'Enter verification code'                      => 'Indtast bekræftelseskode',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Optimering',
 	'XML Sitemap'                                  => 'XML Sitemap',
 	'Missing'                                      => 'Mangler',

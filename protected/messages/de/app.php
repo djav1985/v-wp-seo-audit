@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Extrahieren Sie Links und Linkbeschreibungen von Ihrer Webseite und analysieren Sie das Verh&auml;ltnis zwischen internen und externen Links.',
@@ -128,7 +133,7 @@ return array(
 	'Missing doctype'                              => 'Fehlender Doctype',
 	'Download PDF version'                         => 'Download PDF-Version',
 	'Enter verification code'                      => 'Sicherheitscode eingeben',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Optimierung',
 	'XML Sitemap'                                  => 'XML-Sitemap',
 	'Missing'                                      => 'Fehlt',

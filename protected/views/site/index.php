@@ -1,4 +1,11 @@
-<?php echo $this->renderPartial( '//site/request_form' ); ?>
+<?php
+/**
+ * File: index.php
+ *
+ * @package V_WP_SEO_Audit
+ */
+
+echo $this->renderPartial( '//site/request_form' ); ?>
 
 
 <div class="row">

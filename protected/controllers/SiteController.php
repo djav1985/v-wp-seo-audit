@@ -1,7 +1,15 @@
 <?php
+/**
+ * File: SiteController.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class SiteController extends Controller {
 
+	/**
+	 * actionIndex function.
+	 */
 	public function actionIndex() {
 		$this->title = Yii::t( 'meta', 'Index page title', array( '{Brandname}' => Yii::app()->name ) );
 
@@ -34,6 +42,9 @@ class SiteController extends Controller {
 		);
 	}
 
+	/**
+	 * actionError function.
+	 */
 	public function actionError() {
 		if ($error = Yii::app()->errorHandler->error) {
 			if (Yii::app()->request->isAjaxRequest) {

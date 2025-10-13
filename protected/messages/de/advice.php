@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: advice.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Title advice - success'                  => 'Perfekt, denn Ihr Seitentitel enth&auml;lt zwischen {1} und {2} Anzahl Zeichen.',
@@ -68,7 +73,7 @@ return array(
 	'Deprecated advice - success'             => 'Sehr gut! Sie verwenden aktuelle HTML Tags in Ihrem Webseitenquelltext.',
 	'Deprecated advice - error'               => '&Uuml;berholte (deprecated) HTML Tags sind HTML Tags, die zwar aktuell funktionieren, aber bald nicht mehr von jedem Browser unterst&uuml;tzt werden. Wir empfehlen Ihnen diese &uuml;berholten HTML Tags durch aktuelle HTML Tags zu ersetzen.',
 
-	// v 4.0
+	// v 4.0.
 	'XML Sitemap - success'                   => 'Perfekt! Ihre Seite hat eine XML-Sitemap.',
 	'XML Sitemap - error'                     => 'Ihre Webseite hat keine XML-Sitemap. Dies könnte Probleme machen.<br><br>Eine Sitemap listet alle URLs, die für einen Suchmaschinenzugriff verfügbar sind. Sie kann ebenfalls Angaben zu aktuellen Updates, Häufigkeit von Änderungen und zur Priorität der URLs enthalten. Dies erlaubt Suchmaschinen, Seiten effizienter auszuloten.',
 

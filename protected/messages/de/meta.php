@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: meta.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Index page keywords'      => 'Webseitenbewertung, Webseiteninhalt-Analyse, Kostenloses SEO Werkzeug, Inhalte pr&uuml;fen, Inhaltsanalyse',

@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: advice.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Title advice - success'                  => 'Perfekt, din titel indeholder mellem {1} og {2} bogstaver.',
@@ -68,7 +73,7 @@ return array(
 	'Deprecated advice - success'             => 'Godt! Vi har ikke fundet udgåede HTML tags i din kildekode',
 	'Deprecated advice - error'               => 'Fejl! Vi har fundet udgåede HTML tags i din kildekode. Udgåede tags bliver ikke længere understøttet af alle browsere.',
 
-	// v 4.0
+	// v 4.0.
 	'XML Sitemap - success'                   => 'Stor, din hjemmeside har en XML sitemap.',
 	'XML Sitemap - error'                     => 'Dit websted ikke har en XML sitemap - det kan være problematisk.<br><br>Et sitemap lister URL\'er, der er tilgængelige for gennemgang og kan indeholde yderligere oplysninger som dit websted seneste opdateringer, hyppigheden af ændringer, og betydningen af de webadresser. Dette gør det muligt søgemaskiner til at gennemgå webstedet mere intelligent.',
 

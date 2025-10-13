@@ -1,12 +1,26 @@
 <?php
+/**
+ * File: UrlManager.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class UrlManager extends CUrlManager {
 
+	/**
+	 * processRules function.
+	 */
 	protected function processRules() {
 		$this->rules = Yii::app()->params['url.multi_language_links'] ? $this->getMultiLanguageRules() : $this->getSingleLanguageRules();
 		parent::processRules();
 	}
 
+	/**
+	 * createUrl function.
+	 *
+	 * @param mixed $route Parameter.
+	 * @param mixed $params Parameter.
+	 */
 	public function createUrl( $route, $params = array(), $ampersand = '&') {
 		if ( ! isset( $params['language'] )) {
 			$params['language'] = Yii::app()->language;
@@ -18,6 +32,9 @@ class UrlManager extends CUrlManager {
 	}
 
 
+	/**
+	 * getMultiLanguageRules function.
+	 */
 	private function getMultiLanguageRules() {
 		return array(
 			'proxy'                                     => 'PagePeekerProxy/index',
@@ -27,11 +44,14 @@ class UrlManager extends CUrlManager {
 			'<language:\w{2}>/<controller:[\w\-]+>/<action:[\w\-]+>/<id:\d+>' => '<controller>/<action>',
 			'<language:\w{2}>/<controller:[\w\-]+>/<action:[\w\-]+>' => '<controller>/<action>',
 			'<language:\w{2}>/<controller:[\w\-]+>'     => '<controller>/index',
-			// Catch-all: route unknown controllers to site/index
+			// Catch-all: route unknown controllers to site/index.
 			'<language:\w{2}>/<_c:.+>'                  => 'site/index',
 		);
 	}
 
+	/**
+	 * getSingleLanguageRules function.
+	 */
 	private function getSingleLanguageRules() {
 		return array(
 			'proxy'                                 => 'PagePeekerProxy/index',
@@ -41,7 +61,7 @@ class UrlManager extends CUrlManager {
 			'<controller:[\w\-]+>/<action:[\w\-]+>/<id:\d+>' => '<controller>/<action>',
 			'<controller:[\w\-]+>/<action:[\w\-]+>' => '<controller>/<action>',
 			'<controller:[\w\-]+>'                  => '<controller>/index',
-			// Catch-all: route unknown controllers to site/index
+			// Catch-all: route unknown controllers to site/index.
 			'<_c:.+>'                               => 'site/index',
 		);
 	}

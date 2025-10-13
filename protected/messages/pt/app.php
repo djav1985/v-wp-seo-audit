@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Extraia todas as ligações do seu site, com os textos âncora, URL e a percentagem de ligações internas e externas.',
@@ -128,7 +133,7 @@ return array(
 	'Missing doctype'                              => 'O tipo de documento está em falta',
 	'Download PDF version'                         => 'Descarregue a versão PDF',
 	'Enter verification code'                      => 'Introduza o código de verificação',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Otimização',
 	'XML Sitemap'                                  => 'XML Sitemap',
 	'Missing'                                      => 'Em falta',

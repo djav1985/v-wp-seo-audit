@@ -4,6 +4,8 @@
     <rule ref="WordPress">
         <!-- Exclude ControlStructureSpacing sniff due to WPCS bug with vsprintf -->
         <exclude name="WordPress.WhiteSpace.ControlStructureSpacing"/>
+        <!-- Exclude variable naming rules due to Yii framework conventions using camelCase -->
+        <exclude name="WordPress.NamingConventions.ValidVariableName"/>
     </rule>
     <exclude-pattern>assets/*</exclude-pattern>
     <exclude-pattern>css/*</exclude-pattern>

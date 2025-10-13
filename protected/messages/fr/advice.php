@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: advice.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Title advice - success'                  => 'Parfait, votre titre contient entre {1} et {2} caractères.',
@@ -69,7 +74,7 @@ return array(
 	'Deprecated advice - success'             => 'Génial! Nous n\'avons pas trouvé de balises HTML obsolètes dans votre code.',
 	'Deprecated advice - error'               => 'Les balises HTML obsolètes sont des balises qui ne sont plus utilisés. Il est recommandé de supprimer ou de remplacer ces balises HTML, car elles sont désormais obsolètes.',
 
-	// v 4.0
+	// v 4.0.
 	'XML Sitemap - success'                   => 'Votre site web dispose d’une sitemap XML, ce qui est optimal.',
 	'XML Sitemap - error'                     => 'Votre site web ne dispose pas d’une sitemap XML, ce qui peut poser problème.<br><br>La sitemap recense les URLs que les moteurs de recherche peuvent indexer, tout en proposant d’éventuelles informations supplémentaires (comme la date de dernière mise à jour, la fréquence des changements, ainsi que leur niveau d’importance). Ceci permet aux moteurs de recherche de parcourir le site de façon plus efficace.',
 

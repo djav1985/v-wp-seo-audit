@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: ParseCommand.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 Yii::import( 'application.vendors.Webmaster.Source.*' );
 Yii::import( 'application.vendors.Webmaster.TagCloud.*' );
 Yii::import( 'application.vendors.Webmaster.Utils.*' );
@@ -35,16 +40,33 @@ class ParseCommand extends CConsoleCommand {
 	private $url;
 
 	/**
+	 * Description.
+	 *
 	 * @var MetaTags
 	 */
 	private $Metatags;
 
+	/**
+	 * _init function.
+	 *
+	 * @param mixed $domain Parameter.
+	 * @param mixed $idn Parameter.
+	 * @param mixed $ip Parameter.
+	 */
 	private function _init( $domain, $idn, $ip) {
 		$this->domain = $domain;
 		$this->idn    = $idn;
 		$this->ip     = $ip;
 	}
 
+	/**
+	 * actionUpdate function.
+	 *
+	 * @param mixed $domain Parameter.
+	 * @param mixed $idn Parameter.
+	 * @param mixed $ip Parameter.
+	 * @param mixed $wid Parameter.
+	 */
 	public function actionUpdate( $domain, $idn, $ip, $wid) {
 		$this->_init( $domain, $idn, $ip );
 		// Check if were errors during html grabbing.
@@ -58,14 +80,14 @@ class ParseCommand extends CConsoleCommand {
 
 		$this->parseWebsite();
 
-		// Begin transaction
+		// Begin transaction.
 		$transaction = Yii::app()->db->beginTransaction();
 		try {
 
-			// Get db command
+			// Get db command.
 			$command = Yii::app()->db->createCommand();
 
-			// Update base domain information
+			// Update base domain information.
 			$now = date( 'Y-m-d H:i:s' );
 			$command->update(
 				'{{website}}',
@@ -79,7 +101,7 @@ class ParseCommand extends CConsoleCommand {
 				array( ':id' => $wid )
 			);
 
-			// Update cloud and matrix
+			// Update cloud and matrix.
 			$command->update(
 				'{{cloud}}',
 				array(
@@ -90,7 +112,7 @@ class ParseCommand extends CConsoleCommand {
 				array( ':wid' => $wid )
 			);
 
-			// Update deprecated tags, images, headings
+			// Update deprecated tags, images, headings.
 			$command->update(
 				'{{content}}',
 				array(
@@ -104,7 +126,7 @@ class ParseCommand extends CConsoleCommand {
 				array( ':wid' => $wid )
 			);
 
-			// Update document data
+			// Update document data.
 			$command->update(
 				'{{document}}',
 				array(
@@ -120,7 +142,7 @@ class ParseCommand extends CConsoleCommand {
 				array( ':wid' => $wid )
 			);
 
-			// Update BOOLEAN data
+			// Update BOOLEAN data.
 			$command->update(
 				'{{issetobject}}',
 				array(
@@ -140,7 +162,7 @@ class ParseCommand extends CConsoleCommand {
 				array( ':wid' => $wid )
 			);
 
-			// Update Links
+			// Update Links.
 			$command->update(
 				'{{links}}',
 				array(
@@ -156,7 +178,7 @@ class ParseCommand extends CConsoleCommand {
 				array( ':wid' => $wid )
 			);
 
-			// Update metatags
+			// Update metatags.
 			$command->update(
 				'{{metatags}}',
 				array(
@@ -169,7 +191,7 @@ class ParseCommand extends CConsoleCommand {
 				array( ':wid' => $wid )
 			);
 
-			// Update w3c
+			// Update w3c.
 			$command->update(
 				'{{w3c}}',
 				array(
@@ -196,7 +218,7 @@ class ParseCommand extends CConsoleCommand {
 
 			$command->reset();
 
-			// All is ok. Commit the result
+			// All is ok. Commit the result.
 			$transaction->commit();
 
 		} catch (Exception $e) {
@@ -207,6 +229,13 @@ class ParseCommand extends CConsoleCommand {
 		return 0;
 	}
 
+	/**
+	 * actionInsert function.
+	 *
+	 * @param mixed $domain Parameter.
+	 * @param mixed $idn Parameter.
+	 * @param mixed $ip Parameter.
+	 */
 	public function actionInsert( $domain, $idn, $ip) {
 		$this->_init( $domain, $idn, $ip );
 		if ( ! $this->grabHtml()) {
@@ -217,17 +246,17 @@ class ParseCommand extends CConsoleCommand {
 			return $this->errorcode;
 		}
 
-		// Parse website and set variables
+		// Parse website and set variables.
 		$this->parseWebsite();
 
-		// Begin transaction
+		// Begin transaction.
 		$transaction = Yii::app()->db->beginTransaction();
 		try {
 
-			// Get db command
+			// Get db command.
 			$command = Yii::app()->db->createCommand();
 
-			// Insert base domain information
+			// Insert base domain information.
 			$now = date( 'Y-m-d H:i:s' );
 			$command->insert(
 				'{{website}}',
@@ -242,10 +271,10 @@ class ParseCommand extends CConsoleCommand {
 				)
 			);
 
-			// Get website's ID
+			// Get website's ID.
 			$wid = Yii::app()->db->getLastInsertID();
 
-			// Insert cloud and matrix
+			// Insert cloud and matrix.
 			$command->insert(
 				'{{cloud}}',
 				array(
@@ -255,7 +284,7 @@ class ParseCommand extends CConsoleCommand {
 				)
 			);
 
-			// Insert deprecated tags, headings, images
+			// Insert deprecated tags, headings, images.
 			$command->insert(
 				'{{content}}',
 				array(
@@ -268,7 +297,7 @@ class ParseCommand extends CConsoleCommand {
 				)
 			);
 
-			// Insert document data
+			// Insert document data.
 			$command->insert(
 				'{{document}}',
 				array(
@@ -283,7 +312,7 @@ class ParseCommand extends CConsoleCommand {
 				)
 			);
 
-			// Insert BOOLEAN data
+			// Insert BOOLEAN data.
 			$command->insert(
 				'{{issetobject}}',
 				array(
@@ -302,7 +331,7 @@ class ParseCommand extends CConsoleCommand {
 				)
 			);
 
-			// Insert Links
+			// Insert Links.
 			$command->insert(
 				'{{links}}',
 				array(
@@ -317,7 +346,7 @@ class ParseCommand extends CConsoleCommand {
 				)
 			);
 
-			// Insert metatags
+			// Insert metatags.
 			$command->insert(
 				'{{metatags}}',
 				array(
@@ -329,7 +358,7 @@ class ParseCommand extends CConsoleCommand {
 				)
 			);
 
-			// Insert w3c
+			// Insert w3c.
 			$command->insert(
 				'{{w3c}}',
 				array(
@@ -341,7 +370,7 @@ class ParseCommand extends CConsoleCommand {
 				)
 			);
 
-			// Insert misc
+			// Insert misc.
 			$command->insert(
 				'{{misc}}',
 				array(
@@ -351,7 +380,7 @@ class ParseCommand extends CConsoleCommand {
 				)
 			);
 
-			// All is ok. Commit the result
+			// All is ok. Commit the result.
 			$transaction->commit();
 
 		} catch (Exception $e) {
@@ -363,6 +392,9 @@ class ParseCommand extends CConsoleCommand {
 		return 0;
 	}
 
+	/**
+	 * checkForBadwords function.
+	 */
 	private function checkForBadwords() {
 		if ( ! Yii::app()->params['param.bad_words_validation']) {
 			return true;
@@ -379,6 +411,9 @@ class ParseCommand extends CConsoleCommand {
 		return true;
 	}
 
+	/**
+	 * parseWebsite function.
+	 */
 	private function parseWebsite() {
 		$document                         = new Document( $this->html );
 		$this->document['doctype']        = $document->getDoctype();
@@ -449,6 +484,9 @@ class ParseCommand extends CConsoleCommand {
 		$this->score = $this->getScore();
 	}
 
+	/**
+	 * getScore function.
+	 */
 	private function getScore() {
 		$rateprovider = new RateProvider();
 		$rateprovider->addCompareArray( 'htmlratio', $this->seoanalyse['htmlratio'] );
@@ -463,7 +501,7 @@ class ParseCommand extends CConsoleCommand {
 		$rateprovider->addCompare( 'noInlineCSS', ! $this->content['inlinceCss'] );
 		$rateprovider->addCompare( 'noEmail', ! $this->content['email'] );
 		$rateprovider->addCompare( 'issetFavicon', ! empty( $this->favicon ) );
-		$rateprovider->addCompare( 'imgHasAlt', $this->image['totalCount'] == $this->image['totalAlt'] );
+		$rateprovider->addCompare( 'imgHasAlt', $this->image['totalCount'] === $this->image['totalAlt'] );
 		$rateprovider->addCompare( 'noUnderScore', ! $this->links['issetUnderscore'] );
 		$rateprovider->addCompare( 'issetInternalLinks', $this->links['internal'] > 0 );
 		$rateprovider->addCompare( 'isFriendlyUrl', $this->links['friendly'] );
@@ -486,6 +524,9 @@ class ParseCommand extends CConsoleCommand {
 		return $rateprovider->getScore();
 	}
 
+	/**
+	 * grabHtml function.
+	 */
 	private function grabHtml() {
 		$url = 'http://' . $this->domain;
 		$ch  = Utils::ch( curl_init( $url ) );
@@ -505,7 +546,7 @@ class ParseCommand extends CConsoleCommand {
 
 		$this->Metatags = new MetaTags( $this->html );
 		$charset        = $this->Metatags->getCharset();
-		if ( ! empty( $charset ) and strtolower( $charset ) != 'utf-8') {
+		if ( ! empty( $charset ) and strtolower( $charset ) !== 'utf-8') {
 			$this->html     = @iconv( $charset, 'utf-8//IGNORE', $this->html );
 			$this->Metatags = new MetaTags( $this->html );
 		}

@@ -1,7 +1,15 @@
 <?php
+/**
+ * File: PagePeekerProxyController.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class PagePeekerProxyController extends Controller {
 
+	/**
+	 * actionIndex function.
+	 */
 	public function actionIndex() {
 		if ( ! Yii::app()->params['thumbnail.proxy']) {
 			 throw new CHttpException( 404, Yii::t( 'notification', "The page you are looking for doesn't exists" ) );
@@ -16,6 +24,9 @@ class PagePeekerProxyController extends Controller {
 
 	}
 
+	/**
+	 * execPoll function.
+	 */
 	private function execPoll() {
 		$url      = WebsiteThumbnail::getPollUrl(
 			array(
@@ -28,6 +39,9 @@ class PagePeekerProxyController extends Controller {
 
 	}
 
+	/**
+	 * execReset function.
+	 */
 	private function execReset() {
 		$url = WebsiteThumbnail::getResetUrl(
 			array(

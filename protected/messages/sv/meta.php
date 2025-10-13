@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: meta.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Index page keywords'      => 'webbplats analys, webbplats innehålls analys, gratis seo verktyg, innehållskoll,  innehållsanalys, innehållsanalysator',

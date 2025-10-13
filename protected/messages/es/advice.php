@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: advice.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Title advice - success'                  => 'Perfecto, tu título contiene entre {1} y {2} caracteres.',
@@ -72,7 +77,7 @@ return array(
 	'Deprecated advice - success'             => 'Genial, no hemos detectado ninguna etiqueta HTML obsoleta.',
 	'Deprecated advice - error'               => 'Hemos detectado etiquetas HTML obsoletas que ya no se usa. Es recomendable que cambies esas etiquetas por otras similares.',
 
-	// v 4.0
+	// v 4.0.
 	'XML Sitemap - success'                   => '¡Perfecto! Su sitio tiene un mapa del sitio en XML.',
 	'XML Sitemap - error'                     => 'Su sitio web no tiene un mapa del sitio XML. Esto puede traerle problemas. <br><br> Un mapa del sitio enumera las URL que pueden rastrearse y puede incluir información adicional, como las últimas actualizaciones de su sitio web, la frecuencia de cambios y la importancia de las URL. Esto permite a los motores de búsqueda rastrear el sitio web de una forma más exhaustiva.',
 

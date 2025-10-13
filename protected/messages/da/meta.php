@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: meta.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Index page keywords'      => 'website bedømmelse, website indholdsanalyse, gratis seo redskab, indholds checker, indholdsanalyse, analyser indhold',

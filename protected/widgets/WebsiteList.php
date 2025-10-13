@@ -5,12 +5,17 @@
  * User: Roman
  * Date: 2015.11.22
  * Time: 15:55
+ *
+ * @package V_WP_SEO_Audit
  */
 class WebsiteList extends CWidget {
 
 	public $config   = array();
 	public $template = 'website_list';
 
+	/**
+	 * init function.
+	 */
 	public function init() {
 		$config       = array(
 			'criteria'      => array(
@@ -25,6 +30,9 @@ class WebsiteList extends CWidget {
 		$this->config = CMap::mergeArray( $config, $this->config );
 	}
 
+	/**
+	 * run function.
+	 */
 	public function run() {
 		$dataProvider = new CActiveDataProvider( 'Website', $this->config );
 		$data         = $dataProvider->getData();

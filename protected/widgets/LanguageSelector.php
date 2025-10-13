@@ -1,6 +1,14 @@
 <?php
+/**
+ * File: LanguageSelector.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 class LanguageSelector extends CWidget {
+	/**
+	 * run function.
+	 */
 	public function run() {
 		$currentLang = Yii::app()->language;
 		$languages   = Yii::app()->params['app.languages'];

@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: advice.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Title advice - success'                  => 'Perfeito, o Título contém entre {1} e {2} caracteres.',
@@ -68,7 +73,7 @@ return array(
 	'Deprecated advice - success'             => 'Fantástico! Não detetámos etiquetas HTML obsoletas.',
 	'Deprecated advice - error'               => 'Etiquetas HTML obsoletas são etiquetas que já não são usadas segundo as normas mais recentes. É recomendado que sejam removidas ou substituídas por outras etiquetas atualizadas.',
 
-	// v 4.0
+	// v 4.0.
 	'XML Sitemap - success'                   => 'Perfeito, o site tem um mapa XML do site (sitemap).',
 	'XML Sitemap - error'                     => 'O site não tem um mapa XML do site (sitemap) - isto pode ser problemático.<br><br>Um mapa do site identifica todas as URLs que estão disponíveis para rastreio, incluindo informação acerca de atualizações, frequência de alterações ou a importancia de cada URL. Isto contribui para uma maior inteligência e eficiência do rastreio.',
 

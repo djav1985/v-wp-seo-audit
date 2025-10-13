@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Genereer een link overzicht voor uw website met ankerteksten, url en stel het externe en interne link percentage vast.',
@@ -128,7 +133,7 @@ return array(
 	'Missing doctype'                              => 'Ontbrekend doctype',
 	'Download PDF version'                         => 'Download PDF-versie',
 	'Enter verification code'                      => 'Voer verificatiecode',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Optimalisatie',
 	'XML Sitemap'                                  => 'XML Sitemap',
 	'Missing'                                      => 'Ontbrekend',

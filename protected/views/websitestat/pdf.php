@@ -1,3 +1,11 @@
+<?php
+/**
+ * File: pdf.php
+ * PDF view template for SEO audit report.
+ *
+ * @package V_WP_SEO_Audit
+ */
+?>
 <style>
 table {background-color: #ffffff;}
 .table {width:546px !important;}
@@ -157,7 +165,7 @@ echo Yii::t(
 	<?php
 	$i = 0;
 	foreach ($meta['ogproperties'] as $property => $c) :
-		$even = $i % 2 == 0;
+		$even = $i % 2 === 0;
 		?>
 <tr nobr="true" class="<?php echo $even ? 'even' : 'odd'; ?>">
 <td><?php echo CHtml::encode( $property ); ?></td>
@@ -223,7 +231,7 @@ if ($content['isset_headings']) :
 </tr>
 
 <!-- Images -->
-<?php $advice = $rateprovider->addCompare( 'imgHasAlt', $content['total_img'] == $content['total_alt'] ); ?>
+<?php $advice = $rateprovider->addCompare( 'imgHasAlt', $content['total_img'] === $content['total_alt'] ); ?>
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
@@ -404,7 +412,7 @@ echo Yii::t(
 <?php
 $i = 0;
 foreach ($links['links'] as $link) :
-	$even = $i % 2 == 0;
+	$even = $i % 2 === 0;
 	?>
 <tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 <td>
@@ -471,7 +479,7 @@ endforeach;
 <?php
 $i = 0;
 foreach ($cloud['matrix'] as $word => $object) :
-	$even = $i % 2 == 0;
+	$even = $i % 2 === 0;
 	?>
 <tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 <td><?php echo CHtml::encode( $word ); ?></td>
@@ -647,7 +655,7 @@ endif;
 	<?php
 	$i = 0;
 	foreach ($content['deprecated'] as $tag => $count) :
-		$even = $i % 2 == 0;
+		$even = $i % 2 === 0;
 		?>
 <tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 <td align="center"><?php echo htmlspecialchars( '<' . $tag . '>' ); ?></td>
@@ -692,21 +700,21 @@ endif;
 <tr class="even">
 <?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
 <?php list($img_advice,) = explode( ' ', $advice ); ?>
-<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $img_advice == 'success' ? '1' : '0'; ?>.png" /></td>
+<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
 <td><?php echo Yii::t( 'advice', "CSS count advice - $advice", array( '{MoreNr}' => _RATE_CSS_COUNT ) ); ?></td>
 </tr>
 
 <tr class="odd">
 <?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
 <?php list($img_advice,) = explode( ' ', $advice ); ?>
-<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $img_advice == 'success' ? '1' : '0'; ?>.png" /></td>
+<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
 <td><?php echo Yii::t( 'advice', "JS count advice - $advice", array( '{MoreNr}' => _RATE_JS_COUNT ) ); ?></td>
 </tr>
 
 <tr class="even">
 	<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
 	<?php list($img_advice,) = explode( ' ', $advice ); ?>
-	<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $img_advice == 'success' ? '1' : '0'; ?>.png" /></td>
+	<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
 	<td><?php echo Yii::t( 'advice', "Gzip - $advice" ); ?></td>
 </tr>
 
@@ -798,7 +806,7 @@ endif;
 		<?php
 		$i = 0;
 		foreach ($misc['sitemap'] as $sitemap) :
-			$even = $i % 2 == 0;
+			$even = $i % 2 === 0;
 			?>
 <tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 <td><?php echo CHtml::encode( $sitemap ); ?></td>
@@ -855,7 +863,7 @@ endif;
 		<?php
 		$i = 0;
 		foreach ($misc['analytics'] as $analytics) :
-			$even = $i % 2 == 0;
+			$even = $i % 2 === 0;
 			?>
 <tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 <td>

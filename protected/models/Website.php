@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: Website.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 Yii::import( 'application.vendors.Webmaster.Utils.IDN' );
 
@@ -9,11 +14,17 @@ class Website extends CActiveRecord {
 
 	}
 
+	/**
+	 * tableName function.
+	 */
 	public function tableName() {
 		return Yii::app()->db->tablePrefix . 'website';
 
 	}
 
+	/**
+	 * total function.
+	 */
 	public function total() {
 		return $this->cache( 60 * 60 * 5 )->count();
 	}

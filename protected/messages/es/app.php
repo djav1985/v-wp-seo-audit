@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Extrae enlaces de tu web con anclas (anchors), urls y averigua el porcentaje de links externos e internos.',
@@ -128,7 +133,7 @@ return array(
 	'Missing doctype'                              => 'Falta tipo de documento (doctype)',
 	'Download PDF version'                         => 'Descarga la versión PDF',
 	'Enter verification code'                      => 'Introduce el código de verificación',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Optimización',
 	'XML Sitemap'                                  => 'Mapa del sitio XML',
 	'Missing'                                      => 'No disponible',

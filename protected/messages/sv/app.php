@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Extrahera länkar från din webbplats med ankare, url och ta reda på interna och externa länkars procentsats.',
@@ -128,7 +133,7 @@ return array(
 	'Missing doctype'                              => 'Doctype saknas',
 	'Download PDF version'                         => 'Ladda ner PDF Versionen',
 	'Enter verification code'                      => 'Fyll i verifieringskod',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Optimering',
 	'XML Sitemap'                                  => 'XML Sitemap',
 	'Missing'                                      => 'Saknas',

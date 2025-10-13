@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Extract links from your website with anchors, url and find out internal and external links percentage.',
@@ -128,7 +133,7 @@ return array(
 	'Missing doctype'                              => 'Missing doctype',
 	'Download PDF version'                         => 'Download PDF Version',
 	'Enter verification code'                      => 'Enter verification code',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Optimization',
 	'XML Sitemap'                                  => 'XML Sitemap',
 	'Missing'                                      => 'Missing',

@@ -1,3 +1,11 @@
+<?php
+/**
+ * File: languageSelector.php
+ * Language selector widget view.
+ *
+ * @package V_WP_SEO_Audit
+ */
+?>
 <li class="nav-item dropdown">
 	<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
 		<?php echo Yii::t( 'app', 'Language' ); ?> <b class="caret"></b>
@@ -5,7 +13,7 @@
 	<div class="dropdown-menu">
 		<?php foreach ($languages as $lang_id => $language) : ?>
 			<?php
-			if ($lang_id == Yii::app()->language) {
+			if ($lang_id === Yii::app()->language) {
 				continue;
 			}
 			$url = Yii::app()->controller->createAbsoluteUrl( '', array_merge( $_GET, array( 'language' => $lang_id ) ) );

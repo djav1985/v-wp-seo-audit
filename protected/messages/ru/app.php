@@ -1,4 +1,9 @@
 <?php
+/**
+ * File: app.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 return array(
 	'Marketing speak - links'                      => 'Извлекайте ссылки с Вашего веб-сайта, анализируйте их, находите процент внутренних и внешних ссылок.',
@@ -128,7 +133,7 @@ return array(
 	'Missing doctype'                              => 'Тип документа не установлен',
 	'Download PDF version'                         => 'Скачать PDF версию',
 	'Enter verification code'                      => 'Введите код',
-	// v 4.0
+	// v 4.0.
 	'Optimization'                                 => 'Оптимизация',
 	'XML Sitemap'                                  => 'XML карта сайта',
 	'Missing'                                      => 'Отсутствует',
