@@ -125,9 +125,36 @@ Configure the extension to use your global or local phpcs path if needed.
 
 ## Plugin Conversion
 
-This plugin was converted from a standalone Yii PHP application to a WordPress plugin. **Phase 1 cleanup completed**: Removed 11 unused files (~1,600 lines of code) that were specific to standalone operation.
+This plugin was converted from a standalone Yii PHP application to a WordPress plugin. The conversion is happening in phases to gradually reduce Yii dependencies while maintaining functionality.
 
-### Recent Changes (Phase 1 - Oct 2025)
+### Phase 4 (October 2025) - Autoloader Fix & Utils Migration
+
+**Critical Bug Fix:**
+- ✅ Fixed Helper.php autoloader issue that prevented form submission
+- ✅ Changed class loading order to avoid triggering Yii autoloader prematurely
+
+**WordPress-Native Conversions:**
+- ✅ `Utils::deletePdf()` → `v_wp_seo_audit_delete_pdf()` (uses `wp_upload_dir()`, `wp_delete_file()`)
+- ✅ `Utils::getLocalConfigIfExists()` → `v_wp_seo_audit_get_config()` (uses plugin constants)
+- ✅ `Yii::app()->params['analyzer.cache_time']` → WordPress filter `v_wp_seo_audit_cache_time`
+
+**Files Modified:**
+- `v-wp-seo-audit.php` - Added 3 new WordPress-native helper functions
+- `protected/models/WebsiteForm.php` - Updated to use WordPress functions
+
+**Documentation:**
+- [ISSUE_RESOLUTION.md](ISSUE_RESOLUTION.md) - Summary of fixes and testing instructions
+- [PHASE4_MIGRATION.md](PHASE4_MIGRATION.md) - Detailed technical documentation
+
+### Phase 3 (Completed)
+- ✅ Website analysis migrated to WordPress-native
+- ✅ Database operations via V_WP_SEO_Audit_DB class
+
+### Phase 2 (Completed)
+- ✅ WordPress Cron for cleanup
+- ✅ WordPress-native domain validation
+
+### Phase 1 (Completed)
 
 **Removed unused code:**
 - ✅ CLI/Console commands (7 files) - Not needed for WordPress plugin
@@ -166,6 +193,7 @@ To test the plugin functionality:
    - Enter a domain name (e.g., "google.com")
    - Click "Analyze"
    - Verify that:
+     - No "Helper.php" error appears
      - Progress bar shows while processing
      - No page redirect occurs
      - Report appears on the same page
@@ -187,10 +215,12 @@ To test the plugin functionality:
 **Before Changes (Problem)**:
 - Form would redirect to URLs like `http://localhost/wp-content/plugins/v-wp-seo-audit/index.php/www/example.com`
 - "Direct access not allowed" error
+- **"Helper.php not found" fatal error** (Phase 4 fix)
 - Page reloads on every action
 
 **After Changes (Fixed)**:
 - Form uses AJAX calls to admin-ajax.php
 - No page redirects
+- **Helper.php loads correctly** (Phase 4 fix)
 - Content updates dynamically on the same page
 - Smooth user experience with progress indicators

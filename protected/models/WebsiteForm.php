@@ -87,7 +87,8 @@ class WebsiteForm extends CFormModel {
 	public function bannedWebsites() {
 
 		if ( ! $this->hasErrors()) {
-			$banned = Utils::getLocalConfigIfExists( 'domain_restriction' );
+			// Use WordPress-native config function instead of Utils::getLocalConfigIfExists().
+			$banned = function_exists( 'v_wp_seo_audit_get_config' ) ? v_wp_seo_audit_get_config( 'domain_restriction' ) : array();
 			foreach ($banned as $pattern) {
 				if (preg_match( "#{$pattern}#i", $this->idn )) {
 					$this->addError( 'domain', 'Website contains bad words' );
@@ -157,15 +158,25 @@ class WebsiteForm extends CFormModel {
 
 			// If website exists and we do not need to update data then exit from method.
 			$notUpd = false;
-			if ( $website && ( strtotime( $website['modified'] ) + Yii::app()->params['analyzer.cache_time'] > time() ) ) {
+			// Get cache time - use WordPress filter with default of 24 hours.
+			$cache_time = apply_filters( 'v_wp_seo_audit_cache_time', DAY_IN_SECONDS );
+			global $v_wp_seo_audit_app;
+			if ( null !== $v_wp_seo_audit_app && isset( $v_wp_seo_audit_app->params['analyzer.cache_time'] ) ) {
+				$cache_time = $v_wp_seo_audit_app->params['analyzer.cache_time'];
+			}
+
+			if ( $website && ( strtotime( $website['modified'] ) + $cache_time > time() ) ) {
 				$notUpd = true;
 				return true;
 			}
 
 			// If website exists but needs update, delete old PDFs.
 			if ( $website && ! $notUpd ) {
-				Utils::deletePdf( $this->domain );
-				Utils::deletePdf( $this->domain . '_pagespeed' );
+				// Use WordPress-native delete function instead of Utils::deletePdf().
+				if ( function_exists( 'v_wp_seo_audit_delete_pdf' ) ) {
+					v_wp_seo_audit_delete_pdf( $this->domain );
+					v_wp_seo_audit_delete_pdf( $this->domain . '_pagespeed' );
+				}
 				$wid = $website['id'];
 			} else {
 				$wid = null;

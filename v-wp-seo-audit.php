@@ -886,6 +886,65 @@ add_action( 'wp_ajax_v_wp_seo_audit_download_pdf', 'v_wp_seo_audit_ajax_download
 add_action( 'wp_ajax_nopriv_v_wp_seo_audit_download_pdf', 'v_wp_seo_audit_ajax_download_pdf' );
 
 /**
+ * WordPress-native function to delete PDF files for a domain.
+ * Replaces Utils::deletePdf() with WordPress-native implementation.
+ *
+ * @param string $domain The domain name.
+ * @return bool True on success.
+ */
+function v_wp_seo_audit_delete_pdf( $domain ) {
+	// Get WordPress upload directory.
+	$upload_dir = wp_upload_dir();
+	$pdf_base   = $upload_dir['basedir'] . '/seo-audit/pdf/';
+
+	// Get available languages from config or use default.
+	global $v_wp_seo_audit_app;
+	$languages = array( 'en' ); // Default language.
+
+	if ( null !== $v_wp_seo_audit_app && isset( $v_wp_seo_audit_app->params['app.languages'] ) ) {
+		$languages = array_keys( $v_wp_seo_audit_app->params['app.languages'] );
+	}
+
+	// Delete PDF for each language.
+	foreach ( $languages as $lang ) {
+		$subfolder = mb_substr( $domain, 0, 1 );
+		$pdf_path  = $pdf_base . $lang . '/' . $subfolder . '/' . $domain . '.pdf';
+
+		if ( file_exists( $pdf_path ) ) {
+			wp_delete_file( $pdf_path );
+		}
+	}
+
+	// Also delete the cached thumbnail if the class is available.
+	if ( class_exists( 'WebsiteThumbnail' ) ) {
+		WebsiteThumbnail::deleteThumbnail( $domain );
+	}
+
+	return true;
+}
+
+/**
+ * WordPress-native function to get config file value.
+ * Replaces Utils::getLocalConfigIfExists() with WordPress-native implementation.
+ *
+ * @param string $config_name The config file name (without extension).
+ * @return mixed The config value or empty array on failure.
+ */
+function v_wp_seo_audit_get_config( $config_name ) {
+	$config_dir   = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/';
+	$config_local = $config_dir . $config_name . '_local.php';
+	$config_prod  = $config_dir . $config_name . '.php';
+
+	if ( file_exists( $config_local ) ) {
+		return require $config_local;
+	} elseif ( file_exists( $config_prod ) ) {
+		return require $config_prod;
+	}
+
+	return array();
+}
+
+/**
  * WordPress-native website analysis function.
  * Replaces the removed CLI commands with inline analysis.
  *
@@ -899,11 +958,11 @@ function v_wp_seo_audit_analyze_website( $domain, $idn, $ip, $wid = null ) {
 	global $wpdb;
 
 	// Load required Yii vendor classes.
-	if ( ! class_exists( 'Helper' ) ) {
-		$helper_path = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/vendors/Webmaster/Utils/Helper.php';
-		if ( file_exists( $helper_path ) ) {
-			require_once $helper_path;
-		}
+	// Note: We must load files directly before any class_exists() checks to avoid
+	// triggering Yii's autoloader which will try to find the class in the wrong path.
+	$helper_path = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/vendors/Webmaster/Utils/Helper.php';
+	if ( file_exists( $helper_path ) ) {
+		require_once $helper_path;
 	}
 
 	try {
