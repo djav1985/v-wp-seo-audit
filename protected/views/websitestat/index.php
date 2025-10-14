@@ -110,13 +110,26 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8 col-lg-7 col-sm-12 text-left">
 			<h1 class="text-break">
-				<?php echo 'Website review {Domain}'; ?>
+				<?php echo 'Website review for ' . CHtml::encode( $website['idn'] ); ?>
 			</h1>
 
 			<p>
 				<i class="fas fa-clock"></i>&nbsp;<small><?php echo 'Generated on'; ?> <?php
-				$monthNames = array('Jan' => 'January', 'Feb' => 'February', 'Mar' => 'March', 'Apr' => 'April', 'May' => 'May', 'Jun' => 'June', 'Jul' => 'July', 'Aug' => 'August', 'Sep' => 'September', 'Oct' => 'October', 'Nov' => 'November', 'Dec' => 'December');
-				$month = isset($monthNames[$generated['M']]) ? $monthNames[$generated['M']] : $generated['M'];
+				$monthNames = array(
+					'Jan' => 'January',
+					'Feb' => 'February',
+					'Mar' => 'March',
+					'Apr' => 'April',
+					'May' => 'May',
+					'Jun' => 'June',
+					'Jul' => 'July',
+					'Aug' => 'August',
+					'Sep' => 'September',
+					'Oct' => 'October',
+					'Nov' => 'November',
+					'Dec' => 'December',
+				);
+				$month      = isset( $monthNames[ $generated['M'] ] ) ? $monthNames[ $generated['M'] ] : $generated['M'];
 				echo $month . ' ' . $generated['d'] . ' ' . $generated['Y'] . ' ' . $generated['H'] . ':' . $generated['i'] . ' ' . $generated['A'];
 				?>
 				</small>
@@ -135,7 +148,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 
 			<p class="mt-3">
-				<strong><?php echo 'The score is {Score}/100'; ?></strong>
+				<strong><?php echo 'The score is ' . (int) $website['score'] . '/100'; ?></strong>
 			</p>
 			<div class="progress-score progress mb-3">
 				<div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $website['score']; ?>%;"></div>
@@ -172,7 +185,14 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			</p>
 			<p>
 				<?php
-				echo 'Title advice - $advice';
+				$title_length = mb_strlen( Utils::html_decode( $meta['title'] ) );
+				if ( $advice === 'success' ) {
+					echo 'Great! Your title tag has an optimal length (' . $title_length . ' characters).';
+				} elseif ( $advice === 'warning' ) {
+					echo 'Your title tag length (' . $title_length . ' characters) could be improved. Aim for 10-70 characters.';
+				} else {
+					echo 'Your title tag needs attention. Current length is ' . $title_length . ' characters. Optimal length is 10-70 characters.';
+				}
 				?>
 			</p>
 		</div>
@@ -198,7 +218,14 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			</p>
 			<p>
 				<?php
-				echo 'Description advice - $advice';
+				$desc_length = mb_strlen( Utils::html_decode( $meta['description'] ) );
+				if ( $advice === 'success' ) {
+					echo 'Perfect! Your meta description has an optimal length (' . $desc_length . ' characters).';
+				} elseif ( $advice === 'warning' ) {
+					echo 'Your meta description length (' . $desc_length . ' characters) could be improved. Aim for 70-160 characters.';
+				} else {
+					echo 'Your meta description needs attention. Current length is ' . $desc_length . ' characters. Optimal length is 70-160 characters.';
+				}
 				?>
 			</p>
 		</div>
@@ -215,7 +242,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo 'Og Meta Properties advice - $advice'; ?>
+				<?php
+				if ( $advice === 'success' ) {
+					echo 'Great! Your page has Open Graph meta properties for better social media sharing.';
+				} else {
+					echo 'Your page is missing Open Graph meta properties. Adding these tags helps control how your content appears when shared on social media.';
+				}
+				?>
 			</p>
 
 			<?php if ( ! empty( $meta['ogproperties'] ) ) : ?>
@@ -311,10 +344,16 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo 'We found {Count} images on this web page.'; ?>
+				<?php echo 'We found ' . (int) $content['total_img'] . ' images on this web page.'; ?>
 			</p>
 			<p>
-				<?php echo 'Image advice - $advice'; ?>
+				<?php
+				if ( $advice === 'success' ) {
+					echo 'Excellent! All images have alt attributes, which is great for SEO and accessibility.';
+				} else {
+					echo 'Some images are missing alt attributes. Alt text is important for SEO and accessibility. ' . (int) $content['total_alt'] . ' out of ' . (int) $content['total_img'] . ' images have alt attributes.';
+				}
+				?>
 			</p>
 		</div>
 	</div>
@@ -334,7 +373,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			</p>
 			<p>
 				<?php
-				echo 'HTML ratio advice - $advice';
+				if ( $advice === 'success' ) {
+					echo 'Good! Your page has a healthy text to HTML ratio (' . $document['htmlratio'] . '%). This means your page has a good balance of content to code.';
+				} elseif ( $advice === 'warning' ) {
+					echo 'Your text/HTML ratio (' . $document['htmlratio'] . '%) could be improved. Aim for a ratio between 10-25% for better SEO.';
+				} else {
+					echo 'Your text/HTML ratio (' . $document['htmlratio'] . '%) is too low. Consider adding more content or reducing HTML markup for better SEO.';
+				}
 				?>
 			</p>
 		</div>
@@ -351,7 +396,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo 'Flash advice - $advice'; ?>
+				<?php
+				if ( $advice === 'success' ) {
+					echo 'Great! Your page does not use Flash, which is good for SEO and modern web standards.';
+				} else {
+					echo 'Your page uses Flash content. Flash is obsolete and not supported by most modern browsers and devices. Consider using HTML5 alternatives.';
+				}
+				?>
 			</p>
 		</div>
 	</div>
@@ -367,7 +418,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo 'Iframe advice - $advice'; ?>
+				<?php
+				if ( $advice === 'success' ) {
+					echo 'Good! Your page does not use iframes, which is better for SEO and page performance.';
+				} else {
+					echo 'Your page uses iframes. While sometimes necessary, iframes can negatively impact SEO and page load times.';
+				}
+				?>
 			</p>
 		</div>
 	</div>
@@ -387,7 +444,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo 'Friendly url advice - $advice'; ?>
+				<?php
+				if ( $advice === 'success' ) {
+					echo 'Perfect! Your URLs are SEO-friendly and do not contain query strings or dynamic parameters.';
+				} else {
+					echo 'Your URLs contain query strings or dynamic parameters. Consider using URL rewriting to create cleaner, more SEO-friendly URLs.';
+				}
+				?>
 			</p>
 		</div>
 	</div>
@@ -403,7 +466,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo 'Underscore advice - $advice'; ?>
+				<?php
+				if ( $advice === 'success' ) {
+					echo 'Great! Your URLs do not contain underscores, which is better for SEO. Search engines prefer hyphens over underscores.';
+				} else {
+					echo 'Your URLs contain underscores. Consider using hyphens instead of underscores in URLs for better SEO, as search engines treat hyphens as word separators.';
+				}
+				?>
 			</p>
 		</div>
 	</div>
@@ -420,7 +489,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-8">
 			<p class="mb-3">
 				<?php
-				echo 'We found a total of {Links} links including {Files} link(s) to files';
+				$file_links = 0;
+				foreach ( $links['links'] as $link ) {
+					if ( ! empty( $link['Link'] ) && preg_match( '/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|txt|csv)$/i', $link['Link'] ) ) {
+						$file_links++;
+					}
+				}
+				echo 'We found a total of ' . $linkcount . ' links including ' . $file_links . ' link(s) to files';
 				?>
 			</p>
 			<div class="row">
@@ -452,8 +527,8 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 										<?php echo ! empty( $link['Name'] ) ? CHtml::encode( Utils::html_decode( $link['Name'] ) ) : '-'; ?>
 									</a>
 								</td>
-								<td><?php echo ($link['Type'] === 'internal' ? 'Internal' : 'External'); ?></td>
-								<td><?php echo ($link['Juice'] === 'nofollow' ? 'noFollow' : 'Passing Juice'); ?></td>
+								<td><?php echo ( $link['Type'] === 'internal' ? 'Internal' : 'External' ); ?></td>
+								<td><?php echo ( $link['Juice'] === 'nofollow' ? 'noFollow' : 'Passing Juice' ); ?></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -557,7 +632,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo 'Favicon advice - $advice'; ?>
+				<?php
+				if ( $advice === 'success' ) {
+					echo 'Excellent! Your website has a favicon, which helps with branding and user experience.';
+				} else {
+					echo 'Your website is missing a favicon. A favicon helps with branding and makes your site more recognizable in browser tabs and bookmarks.';
+				}
+				?>
 			</p>
 		</div>
 	</div>
@@ -573,7 +654,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo 'Language advice - $advice'; ?>
+				<?php
+				if ( $advice === 'success' ) {
+					echo 'Great! Your page has a language attribute declared, which helps search engines understand your content.';
+				} else {
+					echo 'Your page is missing a language attribute. Adding a language attribute to your HTML tag helps search engines and screen readers.';
+				}
+				?>
 			</p>
 		</div>
 	</div>
@@ -589,7 +676,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo 'Dublin Core advice - $advice'; ?>
+				<?php
+				if ( $advice === 'success' ) {
+					echo 'Good! Your page uses Dublin Core metadata, which can help with content categorization and discovery.';
+				} else {
+					echo 'Your page does not use Dublin Core metadata. While not essential, Dublin Core can help with content categorization in digital libraries and archives.';
+				}
+				?>
 			</p>
 		</div>
 	</div>
@@ -631,7 +724,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo 'Encoding advice - $advice'; ?>
+				<?php
+				if ( $advice === 'success' ) {
+					echo 'Perfect! Your page specifies a character encoding, which is essential for proper text display.';
+				} else {
+					echo 'Your page is missing a character encoding declaration. This can lead to display issues with special characters. Add a charset meta tag.';
+				}
+				?>
 			</p>
 		</div>
 	</div>
@@ -687,7 +786,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			</div>
 
 			<p>
-				<?php echo 'Deprecated advice - $advice'; ?>
+				<?php
+				if ( $advice === 'success' ) {
+					echo 'Excellent! Your page does not use deprecated HTML tags.';
+				} else {
+					echo 'Your page uses deprecated HTML tags. Consider updating to modern HTML5 elements for better compatibility and standards compliance.';
+				}
+				?>
 			</p>
 		</div>
 	</div>
@@ -707,25 +812,59 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] ); ?>
 							<td width="50px"><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
-							<td><?php echo 'Nested tables advice - $advice'; ?></td>
+							<td>
+								<?php
+								if ( $advice === 'success' ) {
+									echo 'Good! No nested tables found. Nested tables can slow down page rendering.';
+								} else {
+									echo 'Your page uses nested tables, which can slow down page rendering. Consider using CSS for layout instead.';
+								}
+								?>
+							</td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] ); ?>
 							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
-							<td><?php echo 'Inline CSS advice - $advice'; ?></td>
+							<td>
+								<?php
+								if ( $advice === 'success' ) {
+									echo 'Perfect! No inline CSS found. External stylesheets are better for performance and maintainability.';
+								} else {
+									echo 'Your page uses inline CSS. Consider moving styles to external stylesheets for better performance and caching.';
+								}
+								?>
+							</td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
 							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
-							<td><?php echo 'CSS count advice - $advice'; ?></td>
+							<td>
+								<?php
+								$css_count = is_array( $document['css'] ) ? count( $document['css'] ) : 0;
+								if ( $advice === 'success' ) {
+									echo 'Great! Your page has an optimal number of CSS files (' . $css_count . '). Keep stylesheets minimal for better performance.';
+								} else {
+									echo 'Your page has ' . $css_count . ' CSS files. Too many CSS files can slow down page load. Consider combining them.';
+								}
+								?>
+							</td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
 							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
-							<td><?php echo 'JS count advice - $advice'; ?></td>
+							<td>
+								<?php
+								$js_count = is_array( $document['js'] ) ? count( $document['js'] ) : 0;
+								if ( $advice === 'success' ) {
+									echo 'Excellent! Your page has an optimal number of JavaScript files (' . $js_count . '). Keep scripts minimal for better performance.';
+								} else {
+									echo 'Your page has ' . $js_count . ' JavaScript files. Too many JS files can slow down page load. Consider combining them.';
+								}
+								?>
+							</td>
 						</tr>
 
 						<tr>
