@@ -16,7 +16,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 	jQuery(function($) {
 		dynamicThumbnail({
-			<?php echo 'main_' . $website['id']; ?>: <?php echo $thumbnail; ?>
+			<?php echo 'main_' . $website['id']; ?>: <?php echo json_encode( $thumbnail ); ?>
 		});
 
 		var pie_data = [];

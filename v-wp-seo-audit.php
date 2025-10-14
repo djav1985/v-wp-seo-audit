@@ -197,8 +197,11 @@ function v_wp_seo_audit_shortcode( $atts) {
 		$v_wp_seo_audit_app->run();
 		$content = ob_get_clean();
 
-		// Wrap in container.
-		return '<div class="v-wp-seo-audit-container">' . $content . '</div>';
+		// Create a fresh nonce for the container to support PDF downloads.
+		$nonce = wp_create_nonce( 'v_wp_seo_audit_nonce' );
+
+		// Wrap in container with data-nonce attribute.
+		return '<div class="v-wp-seo-audit-container" data-nonce="' . esc_attr( $nonce ) . '">' . $content . '</div>';
 	} catch (Exception $e) {
 		ob_end_clean();
 		return '<div class="v-wp-seo-audit-error"><p>Error: ' . esc_html( $e->getMessage() ) . '</p></div>';

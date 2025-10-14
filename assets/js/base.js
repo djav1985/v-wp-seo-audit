@@ -10,7 +10,8 @@ function dynamicThumbnail(url) {
             });
         };
         var onError = function(img) {
-            img.attr("src", _global.baseUrl + "/assets/img/not-available.png");
+            var baseUrl = (typeof _global !== 'undefined' && _global.baseUrl) ? _global.baseUrl : '';
+            img.attr("src", baseUrl + "/assets/img/not-available.png");
         };
         var image = jQuery('#thumb_'+key);
         // Use the thumbnail URL directly since we're now caching on the server

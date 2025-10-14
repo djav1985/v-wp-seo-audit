@@ -125,12 +125,10 @@ class WebsiteThumbnail {
 			$thumbnail_url = "https://image.thum.io/get/maxAge/350/width/{$width}/https://{$domain}";
 		}
 
-		return json_encode(
-			array(
-				'thumb'  => $thumbnail_url,
-				'url'    => $domain,
-				'cached' => file_exists( self::getCachedThumbnailPath( $domain ) ),
-			)
+		return array(
+			'thumb'  => $thumbnail_url,
+			'url'    => $domain,
+			'cached' => file_exists( self::getCachedThumbnailPath( $domain ) ),
 		);
 	}
 
