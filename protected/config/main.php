@@ -52,15 +52,6 @@ return array(
 
 	// application components.
 	'components' => array(
-		'user'            => array(
-			'identityCookie' => array(
-				'httpOnly' => true,
-				'path'     => $params['app.base_url'],
-				'secure'   => $params['cookie.secure'],
-				'sameSite' => $params['cookie.same_site'],
-			),
-		),
-
 		// Url Manager.
 		'urlManager'      => array(
 			'urlFormat'      => 'path',
@@ -108,25 +99,6 @@ return array(
 		'securityManager' => array(
 			'encryptionKey' => $params['app.encryption_key'],
 			'validationkey' => $params['app.validation_key'],
-		),
-
-		'session'         => array(
-			'cookieParams' => array(
-				'httponly' => true,
-				'path'     => $params['app.base_url'],
-				'secure'   => $params['cookie.secure'],
-				'samesite' => $params['cookie.same_site'],
-			),
-		),
-
-		'request'         => array(
-			'enableCookieValidation' => $params['app.cookie_validation'],
-			'csrfCookie'             => array(
-				'httpOnly' => true,
-				'path'     => $params['app.base_url'],
-				'secure'   => $params['cookie.secure'],
-				'sameSite' => $params['cookie.same_site'],
-			),
 		),
 	),
 

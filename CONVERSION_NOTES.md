@@ -194,6 +194,43 @@ The following Yii components are still in use and could be converted in future p
 3. **Views/Templates** - Still uses Yii view rendering
 4. **ActiveRecord for Website model** - The `model()` and `tableName()` methods still exist for backward compatibility
 
+#### 4. Removed Unnecessary Cookie and Session Code (✅ Completed)
+
+**Rationale:**
+- Plugin has no authentication/login system
+- Multi-language support is disabled (url.multi_language_links = false)
+- Cookie validation is disabled (app.cookie_validation = false)
+- No active session usage (no session_start or $_SESSION in plugin code)
+- Cookie and session configurations were unused Yii boilerplate
+
+**Removed Code:**
+- Language cookie setting/reading logic in `protected/components/Controller.php`
+- User identity cookie configuration in `protected/config/main.php`
+- Session cookie configuration in `protected/config/main.php`
+- Request cookie validation configuration in `protected/config/main.php`
+- CSRF cookie configuration in `protected/config/main.php`
+- Cookie configuration parameters in `protected/config/config.php` (cookie.secure, cookie.same_site)
+- app.cookie_validation parameter in `protected/config/config.php`
+
+**Simplified Implementation:**
+- `setupLanguage()` method now directly sets default language without cookie checks
+- No cookie or session components configured in Yii application
+- Reduced configuration complexity and memory footprint
+
+**Files Modified:**
+- `protected/components/Controller.php` - Simplified setupLanguage() method
+- `protected/config/main.php` - Removed user, session, and request components
+- `protected/config/config.php` - Removed cookie-related parameters
+
+**Benefits:**
+- Reduced complexity and configuration overhead
+- Removed unused code that could cause confusion
+- Slightly reduced memory usage (no cookie/session component initialization)
+- Clearer that this plugin doesn't use cookies or sessions
+- Follows WordPress principle of minimal dependencies
+
+**Note:** CURL cookie cache in Utils.php is intentionally kept - it's used for external website scraping (maintaining session state while crawling target websites), not for user cookie management.
+
 ---
 
 **Last Updated**: 2025-10-14
