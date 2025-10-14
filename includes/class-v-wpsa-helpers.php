@@ -12,9 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class V_WP_SEO_Audit_Helpers
+ * Class V_WPSA_Helpers
  */
-class V_WP_SEO_Audit_Helpers {
+class V_WPSA_Helpers {
 
 	/**
 	 * Delete PDF file for a domain.
@@ -130,7 +130,7 @@ class V_WP_SEO_Audit_Helpers {
 					$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
 				}
 
-				V_WP_SEO_Audit_Yii_Integration::configure_yii_app( $v_wp_seo_audit_app );
+				V_WPSA_Yii_Integration::configure_yii_app( $v_wp_seo_audit_app );
 			} else {
 				return false;
 			}

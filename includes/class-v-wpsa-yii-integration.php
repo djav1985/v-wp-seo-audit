@@ -12,9 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class V_WP_SEO_Audit_Yii_Integration
+ * Class V_WPSA_Yii_Integration
  */
-class V_WP_SEO_Audit_Yii_Integration {
+class V_WPSA_Yii_Integration {
 
 	/**
 	 * Configure Yii application with WordPress-friendly settings.

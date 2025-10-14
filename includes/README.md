@@ -18,7 +18,7 @@ WordPress-native database wrapper class that replaces Yii framework database ope
 
 **Usage**:
 ```php
-$db = new V_WP_SEO_Audit_DB();
+$db = new V_WPSA_DB();
 $website = $db->get_website_by_domain('example.com');
 ```
 

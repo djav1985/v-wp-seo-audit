@@ -12,9 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class V_WP_SEO_Audit_Validation
+ * Class V_WPSA_Validation
  */
-class V_WP_SEO_Audit_Validation {
+class V_WPSA_Validation {
 
 	/**
 	 * Validate domain using WordPress patterns.

@@ -11,12 +11,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class V_WP_SEO_Audit_DB
+ * Class V_WPSA_DB
  *
  * WordPress-native database wrapper to replace Yii database operations.
  * Maintains the same table structure and schema while using $wpdb.
  */
-class V_WP_SEO_Audit_DB {
+class V_WPSA_DB {
 
 	/**
 	 * WordPress database object.

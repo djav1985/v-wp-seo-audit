@@ -88,7 +88,7 @@ class WebsiteForm extends CFormModel {
 
 		if ( ! $this->hasErrors()) {
 			// Use WordPress-native class method directly.
-			$banned = class_exists( 'V_WP_SEO_Audit_Helpers' ) ? V_WP_SEO_Audit_Helpers::get_config( 'domain_restriction' ) : array();
+			$banned = class_exists( 'V_WPSA_Helpers' ) ? V_WPSA_Helpers::get_config( 'domain_restriction' ) : array();
 			if ( ! is_array( $banned ) ) {
 				$banned = array();
 			}
@@ -150,12 +150,12 @@ class WebsiteForm extends CFormModel {
 			$this->domain = str_replace( 'www.', '', $this->domain );
 
 			// Use WordPress native database class.
-			if ( ! class_exists( 'V_WP_SEO_Audit_DB' ) ) {
+			if ( ! class_exists( 'V_WPSA_DB' ) ) {
 				$this->addError( 'domain', 'Database error' );
 				return false;
 			}
 
-			$db = new V_WP_SEO_Audit_DB();
+			$db = new V_WPSA_DB();
 			// Check if website already exists in the database.
 			$website = $db->get_website_by_domain( $this->domain, array( 'modified', 'id' ) );
 
@@ -176,9 +176,9 @@ class WebsiteForm extends CFormModel {
 			// If website exists but needs update, delete old PDFs.
 			if ( $website && ! $notUpd ) {
 				// Use WordPress-native class method directly.
-				if ( class_exists( 'V_WP_SEO_Audit_Helpers' ) ) {
-					V_WP_SEO_Audit_Helpers::delete_pdf( $this->domain );
-					V_WP_SEO_Audit_Helpers::delete_pdf( $this->domain . '_pagespeed' );
+				if ( class_exists( 'V_WPSA_Helpers' ) ) {
+					V_WPSA_Helpers::delete_pdf( $this->domain );
+					V_WPSA_Helpers::delete_pdf( $this->domain . '_pagespeed' );
 				}
 				$wid = $website['id'];
 			} else {
@@ -186,12 +186,12 @@ class WebsiteForm extends CFormModel {
 			}
 
 			// Call WordPress-native analysis function.
-			if ( ! function_exists( 'v_wp_seo_audit_analyze_website' ) ) {
-				$this->addError( 'domain', 'Analysis function not available' );
+			if ( ! class_exists( 'V_WPSA_DB' ) ) {
+				$this->addError( 'domain', 'Analysis class not available' );
 				return false;
 			}
 
-			$result = v_wp_seo_audit_analyze_website( $this->domain, $this->idn, $this->ip, $wid );
+			$result = V_WPSA_DB::analyze_website( $this->domain, $this->idn, $this->ip, $wid );
 
 			if ( is_wp_error( $result ) ) {
 				$this->addError( 'domain', $result->get_error_message() );

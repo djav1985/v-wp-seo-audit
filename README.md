@@ -134,8 +134,8 @@ This plugin was converted from a standalone Yii PHP application to a WordPress p
 - ✅ Changed class loading order to avoid triggering Yii autoloader prematurely
 
 **WordPress-Native Conversions:**
-- ✅ `Utils::deletePdf()` → `v_wp_seo_audit_delete_pdf()` (uses `wp_upload_dir()`, `wp_delete_file()`)
-- ✅ `Utils::getLocalConfigIfExists()` → `v_wp_seo_audit_get_config()` (uses plugin constants)
+- ✅ `Utils::deletePdf()` → `V_WPSA_Helpers::delete_pdf()` (uses `wp_upload_dir()`, `wp_delete_file()`)
+- ✅ `Utils::getLocalConfigIfExists()` → `V_WPSA_Helpers::load_config_file()` (uses plugin constants)
 - ✅ `Yii::app()->params['analyzer.cache_time']` → WordPress filter `v_wp_seo_audit_cache_time`
 
 **Files Modified:**
@@ -148,7 +148,7 @@ This plugin was converted from a standalone Yii PHP application to a WordPress p
 
 ### Phase 3 (Completed)
 - ✅ Website analysis migrated to WordPress-native
-- ✅ Database operations via V_WP_SEO_Audit_DB class
+- ✅ Database operations via V_WPSA_DB class
 
 ### Phase 2 (Completed)
 - ✅ WordPress Cron for cleanup

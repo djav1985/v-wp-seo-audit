@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Deactivation hook (optional - for cleanup on deactivation).
 /**
- * V_wp_seo_audit_deactivate function.
+ * V_wpsa_deactivate function.
  */
-function v_wp_seo_audit_deactivate() {
+function v_wpsa_deactivate() {
 	// Clear scheduled cron job.
 	$timestamp = wp_next_scheduled( 'v_wp_seo_audit_daily_cleanup' );
 	if ( $timestamp ) {

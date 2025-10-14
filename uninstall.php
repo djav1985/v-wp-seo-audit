@@ -41,9 +41,9 @@ foreach ( $tables as $table ) {
 // Delete plugin options.
 delete_option( 'v_wp_seo_audit_version' );
 // For multisite installations, delete options from all sites.
-if (is_multisite()) {
+if ( is_multisite() ) {
 	$sites = get_sites();
-	foreach ($sites as $site) {
+	foreach ( $sites as $site ) {
 		switch_to_blog( $site->blog_id );
 		delete_option( 'v_wp_seo_audit_version' );
 		restore_current_blog();
