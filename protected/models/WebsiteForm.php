@@ -87,8 +87,11 @@ class WebsiteForm extends CFormModel {
 	public function bannedWebsites() {
 
 		if ( ! $this->hasErrors()) {
-			// Use WordPress-native config function instead of Utils::getLocalConfigIfExists().
-			$banned = function_exists( 'v_wp_seo_audit_get_config' ) ? v_wp_seo_audit_get_config( 'domain_restriction' ) : array();
+			// Use WordPress-native class method directly.
+			$banned = class_exists( 'V_WP_SEO_Audit_Helpers' ) ? V_WP_SEO_Audit_Helpers::get_config( 'domain_restriction' ) : array();
+			if ( ! is_array( $banned ) ) {
+				$banned = array();
+			}
 			foreach ($banned as $pattern) {
 				if (preg_match( "#{$pattern}#i", $this->idn )) {
 					$this->addError( 'domain', 'Website contains bad words' );
@@ -172,10 +175,10 @@ class WebsiteForm extends CFormModel {
 
 			// If website exists but needs update, delete old PDFs.
 			if ( $website && ! $notUpd ) {
-				// Use WordPress-native delete function instead of Utils::deletePdf().
-				if ( function_exists( 'v_wp_seo_audit_delete_pdf' ) ) {
-					v_wp_seo_audit_delete_pdf( $this->domain );
-					v_wp_seo_audit_delete_pdf( $this->domain . '_pagespeed' );
+				// Use WordPress-native class method directly.
+				if ( class_exists( 'V_WP_SEO_Audit_Helpers' ) ) {
+					V_WP_SEO_Audit_Helpers::delete_pdf( $this->domain );
+					V_WP_SEO_Audit_Helpers::delete_pdf( $this->domain . '_pagespeed' );
 				}
 				$wid = $website['id'];
 			} else {

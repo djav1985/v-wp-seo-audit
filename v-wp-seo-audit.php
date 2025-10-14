@@ -46,27 +46,9 @@ mb_internal_encoding( 'UTF-8' );
 global $v_wp_seo_audit_app;
 $v_wp_seo_audit_app = null;
 
-/**
- * V_wp_seo_audit_configure_yii_app function.
- *
- * Wrapper function for backward compatibility.
- *
- * @param mixed $app Parameter.
- */
-function v_wp_seo_audit_configure_yii_app( $app ) {
-	V_WP_SEO_Audit_Yii_Integration::configure_yii_app( $app );
-}
-
 // Plugin initialization - only when needed (not on every page load).
-/**
- * V_wp_seo_audit_init function.
- *
- * Wrapper function for backward compatibility.
- */
-function v_wp_seo_audit_init() {
-	V_WP_SEO_Audit_Yii_Integration::init();
-}
-add_action( 'wp', 'v_wp_seo_audit_init' ); // Use 'wp' instead of 'init' to have access to $post.
+// Use 'wp' instead of 'init' to have access to $post.
+add_action( 'wp', array( 'V_WP_SEO_Audit_Yii_Integration', 'init' ) );
 
 // Enqueue styles and scripts for front-end.
 /**
@@ -411,82 +393,8 @@ function v_wp_seo_audit_uninstall() {
 }
 register_uninstall_hook( __FILE__, 'v_wp_seo_audit_uninstall' );
 
-// WordPress-native domain validation functions.
-/**
- * V_wp_seo_audit_validate_domain function.
- *
- * Wrapper function for backward compatibility.
- *
- * @param string $domain The domain to validate.
- * @return array Array with 'valid' boolean, 'domain', 'idn', 'ip', and 'errors' array.
- */
-function v_wp_seo_audit_validate_domain( $domain ) {
-	return V_WP_SEO_Audit_Validation::validate_domain( $domain );
-}
-
-/**
- * Sanitize domain input.
- *
- * Wrapper function for backward compatibility.
- *
- * @param string $domain The domain to sanitize.
- * @return string Sanitized domain.
- */
-function v_wp_seo_audit_sanitize_domain( $domain ) {
-	return V_WP_SEO_Audit_Validation::sanitize_domain( $domain );
-}
-
-/**
- * Encode IDN domain to punycode.
- *
- * Wrapper function for backward compatibility.
- *
- * @param string $domain The domain to encode.
- * @return string Punycode-encoded domain.
- */
-function v_wp_seo_audit_encode_idn( $domain ) {
-	return V_WP_SEO_Audit_Validation::encode_idn( $domain );
-}
-
-/**
- * Validate domain format.
- *
- * Wrapper function for backward compatibility.
- *
- * @param string $domain The domain to validate.
- * @return bool True if valid, false otherwise.
- */
-function v_wp_seo_audit_is_valid_domain_format( $domain ) {
-	return V_WP_SEO_Audit_Validation::is_valid_domain_format( $domain );
-}
-
-/**
- * Check if domain is banned.
- *
- * Wrapper function for backward compatibility.
- *
- * @param string $domain The domain to check.
- * @return string|false Error message if banned, false otherwise.
- */
-function v_wp_seo_audit_check_banned_domain( $domain ) {
-	return V_WP_SEO_Audit_Validation::check_banned_domain( $domain );
-}
-
 // Initialize AJAX handlers.
 V_WP_SEO_Audit_Ajax_Handlers::init();
-
-/**
- * WordPress-native function to delete PDF files for a domain.
- * Replaces Utils::deletePdf() with WordPress-native implementation.
- *
- * Wrapper function for backward compatibility.
- *
- * @param string $domain The domain name.
- * @return bool True on success.
- */
-function v_wp_seo_audit_delete_pdf( $domain ) {
-	return V_WP_SEO_Audit_Helpers::delete_pdf( $domain );
-}
 
 /**
  * WordPress-native function to get config file value.
