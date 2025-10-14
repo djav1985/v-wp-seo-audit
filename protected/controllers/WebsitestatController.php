@@ -20,7 +20,7 @@ class WebsitestatController extends Controller {
 	/**
 	 * Database command object.
 	 *
-	 * @var V_WP_SEO_Audit_DB
+	 * @var V_WPSA_DB
 	 */
 	protected $command;
 
@@ -128,11 +128,11 @@ class WebsitestatController extends Controller {
 		parent::init();
 
 		// Use WordPress native database class.
-		if ( ! class_exists( 'V_WP_SEO_Audit_DB' ) ) {
+		if ( ! class_exists( 'V_WPSA_DB' ) ) {
 			throw new CHttpException( 500, 'Database class not available' );
 		}
 
-		$this->command = new V_WP_SEO_Audit_DB();
+		$this->command = new V_WPSA_DB();
 		$this->domain  = isset( $_GET['domain'] ) ? $_GET['domain'] : null;
 
 		if (

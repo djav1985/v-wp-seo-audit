@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Activation hook - create database tables.
 /**
- * V_wp_seo_audit_activate function.
+ * V_wpsa_activate function.
  */
-function v_wp_seo_audit_activate() {
+function v_wpsa_activate() {
 	global $wpdb;
 
 	// Get the table prefix from WordPress.
@@ -142,7 +142,7 @@ function v_wp_seo_audit_activate() {
 
 	// Execute all SQL statements.
 	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-	foreach ($sql as $query) {
+	foreach ( $sql as $query ) {
 		dbDelta( $query );
 	}
 
@@ -150,19 +150,19 @@ function v_wp_seo_audit_activate() {
 	add_option( 'v_wp_seo_audit_version', V_WP_SEO_AUDIT_VERSION );
 
 	// Schedule daily cleanup cron job.
-	if ( ! wp_next_scheduled( 'v_wp_seo_audit_daily_cleanup' )) {
+	if ( ! wp_next_scheduled( 'v_wp_seo_audit_daily_cleanup' ) ) {
 		wp_schedule_event( time(), 'daily', 'v_wp_seo_audit_daily_cleanup' );
 	}
 }
 
 // WordPress Cron cleanup function.
 /**
- * V_wp_seo_audit_cleanup function.
+ * V_wpsa_cleanup function.
  *
  * Cleans up old PDF files, thumbnails, and database records.
  * Runs daily via WordPress cron.
  */
-function v_wp_seo_audit_cleanup() {
+function v_wpsa_cleanup() {
 	global $wpdb;
 
 	// Get cache time from config (default 24 hours).
@@ -183,7 +183,7 @@ function v_wp_seo_audit_cleanup() {
 		ARRAY_A
 	);
 
-	if ( ! empty( $old_websites )) {
+	if ( ! empty( $old_websites ) ) {
 		$plugin_dir = V_WP_SEO_AUDIT_PLUGIN_DIR;
 		$pdf_dir    = $plugin_dir . 'pdf/';
 

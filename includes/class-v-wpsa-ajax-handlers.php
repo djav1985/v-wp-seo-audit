@@ -12,9 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class V_WP_SEO_Audit_Ajax_Handlers
+ * Class V_WPSA_Ajax_Handlers
  */
-class V_WP_SEO_Audit_Ajax_Handlers {
+class V_WPSA_Ajax_Handlers {
 
 	/**
 	 * Register all AJAX handlers.
@@ -45,11 +45,11 @@ class V_WP_SEO_Audit_Ajax_Handlers {
 		check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
 
 		// Get domain from request.
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitization handled in V_WP_SEO_Audit_Validation.
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitization handled in V_WPSA_Validation.
 		$domain = isset( $_POST['domain'] ) ? wp_unslash( $_POST['domain'] ) : '';
 
 		// Use WordPress-native validation.
-		$validation = V_WP_SEO_Audit_Validation::validate_domain( $domain );
+		$validation = V_WPSA_Validation::validate_domain( $domain );
 
 		if ( ! $validation['valid'] ) {
 			wp_send_json_error( array( 'message' => implode( '<br>', $validation['errors'] ) ) );
@@ -86,7 +86,7 @@ class V_WP_SEO_Audit_Ajax_Handlers {
 			}
 		}
 
-		V_WP_SEO_Audit_Yii_Integration::configure_yii_app( $v_wp_seo_audit_app );
+		V_WPSA_Yii_Integration::configure_yii_app( $v_wp_seo_audit_app );
 
 		// Get domain from request.
 		$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
@@ -184,7 +184,7 @@ class V_WP_SEO_Audit_Ajax_Handlers {
 			}
 		}
 
-		V_WP_SEO_Audit_Yii_Integration::configure_yii_app( $v_wp_seo_audit_app );
+		V_WPSA_Yii_Integration::configure_yii_app( $v_wp_seo_audit_app );
 
 		// Check if thumbnail proxy is enabled (it's disabled by default).
 		if ( ! isset( $v_wp_seo_audit_app->params['thumbnail.proxy'] ) || ! $v_wp_seo_audit_app->params['thumbnail.proxy'] ) {
@@ -230,7 +230,7 @@ class V_WP_SEO_Audit_Ajax_Handlers {
 			}
 		}
 
-		V_WP_SEO_Audit_Yii_Integration::configure_yii_app( $v_wp_seo_audit_app );
+		V_WPSA_Yii_Integration::configure_yii_app( $v_wp_seo_audit_app );
 
 		// Get domain from request.
 		$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';

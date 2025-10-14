@@ -52,7 +52,7 @@ class ParseController extends Controller {
 		$domain = Yii::app()->request->getQuery( 'domain' );
 		
 		// Use WordPress native database class.
-		if ( ! class_exists( 'V_WP_SEO_Audit_DB' ) ) {
+		if ( ! class_exists( 'V_WPSA_DB' ) ) {
 			$this->jsonResponse(
 				array(
 					'error' => array( 'Database error' ),
@@ -61,7 +61,7 @@ class ParseController extends Controller {
 			return;
 		}
 		
-		$db      = new V_WP_SEO_Audit_DB();
+		$db      = new V_WPSA_DB();
 		$website = $db->get_website_by_domain( $domain );
 		
 		if ( ! $website) {
@@ -137,11 +137,11 @@ class ParseController extends Controller {
 	 */
 	protected function getPageSpeedResults( $wid) {
 		// Use WordPress native database class.
-		if ( ! class_exists( 'V_WP_SEO_Audit_DB' ) ) {
+		if ( ! class_exists( 'V_WPSA_DB' ) ) {
 			return array();
 		}
 		
-		$db      = new V_WP_SEO_Audit_DB();
+		$db      = new V_WPSA_DB();
 		$results = $db->get_pagespeed_data( $wid, 'en' );
 		return @json_decode( $results, true );
 	}

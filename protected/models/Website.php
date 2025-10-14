@@ -37,13 +37,13 @@ class Website extends CActiveRecord {
 	 */
 	public static function removeByDomain( $domain) {
 		// Use WordPress native database class.
-		if ( ! class_exists( 'V_WP_SEO_Audit_DB' ) ) {
+		if ( ! class_exists( 'V_WPSA_DB' ) ) {
 			return false;
 		}
 
 		$idn    = new IDN();
 		$domain = $idn->encode( $domain );
-		$db     = new V_WP_SEO_Audit_DB();
+		$db     = new V_WPSA_DB();
 
 		// Get website by domain.
 		$website = $db->get_website_by_domain( $domain );
