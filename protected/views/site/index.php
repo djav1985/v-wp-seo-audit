@@ -10,56 +10,56 @@ echo $this->renderPartial( '//site/request_form' ); ?>
 
 <div class="row">
 	<div class="col-md-6 mb-3">
-		<h5 class="mb-3"><?php echo Yii::t( 'app', 'Content analysis' ); ?></h5>
-		<img class="marketing-img float-left" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/content.png" alt="<?php echo Yii::t( 'app', 'Content analysis' ); ?>" />
+		<h5 class="mb-3">Content analysis</h5>
+		<img class="marketing-img float-left" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/content.png" alt="Content analysis" />
 		<p>
-			<?php echo Yii::t( 'app', 'Marketing speak - content' ); ?>
+			View a content  analysis. Check your text/html ratio, headings and etc.
 		</p>
 	</div>
 
 	<div class="col-md-6 mb-3">
-		<h5 class="mb-3"><?php echo Yii::t( 'app', 'Meta Tags' ); ?></h5>
-		<img class="marketing-img float-left" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/tags.png" alt="<?php echo Yii::t( 'app', 'Meta Tags' ); ?>" />
+		<h5 class="mb-3">Meta Tags</h5>
+		<img class="marketing-img float-left" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/tags.png" alt="Meta Tags" />
 		<p>
-			<?php echo Yii::t( 'app', 'Marketing speak - metatags' ); ?>
+			Get full list of meta-tags from web page. View site's title, keywords, og properties and more.
 		</p>
 	</div>
 
 	<div class="col-md-6 mb-3">
-		<h5 class="mb-3"><?php echo Yii::t( 'app', 'Link Extractor' ); ?></h5>
-		<img class="marketing-img float-left" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/link.png" alt="<?php echo Yii::t( 'app', 'Link Extractor' ); ?>" />
+		<h5 class="mb-3">Link Extractor</h5>
+		<img class="marketing-img float-left" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/link.png" alt="Link Extractor" />
 		<p>
-			<?php echo Yii::t( 'app', 'Marketing speak - links' ); ?>
+			Extract links from your website with anchors, url and find out internal and external links percentage.
 		</p>
 	</div>
 
 	<div class="col-md-6 mb-3">
-		<h5 class="mb-3"><?php echo Yii::t( 'app', 'Speed Test' ); ?></h5>
-		<img class="marketing-img float-left" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/speed.png" alt="<?php echo Yii::t( 'app', 'Speed Test' ); ?>" />
+		<h5 class="mb-3">Speed Test</h5>
+		<img class="marketing-img float-left" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/speed.png" alt="Speed Test" />
 		<p>
-			<?php echo Yii::t( 'app', 'Marketing speak - speed test' ); ?>
+			Speed-up your website load time by finding most slowest page's parts.
 		</p>
 	</div>
 
 	<div class="col-md-6 mb-3">
-		<h5 class="mb-3"><?php echo Yii::t( 'app', 'Get Advice' ); ?></h5>
-		<img class="marketing-img float-left" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/advice.png" alt="<?php echo Yii::t( 'app', 'Get Advice' ); ?>" />
+		<h5 class="mb-3">Get Advice</h5>
+		<img class="marketing-img float-left" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/advice.png" alt="Get Advice" />
 		<p>
-			<?php echo Yii::t( 'app', 'Marketing speak - advice' ); ?>
+			The system automatically shows you vulnerabilities and gives advice.
 		</p>
 	</div>
 
 	<div class="col-md-6 mb-3">
-		<h5 class="mb-3"><?php echo Yii::t( 'app', 'Website Review' ); ?></h5>
-		<img class="marketing-img float-left" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/review.png" alt="<?php echo Yii::t( 'app', 'Website Review' ); ?>" />
+		<h5 class="mb-3">Website Review</h5>
+		<img class="marketing-img float-left" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/review.png" alt="Website Review" />
 		<p>
-			<?php echo Yii::t( 'app', 'Marketing speak - review' ); ?>
+			Get a full website review absolutely free.
 		</p>
 	</div>
 </div>
 
 <?php if ( ! empty( $widget )) : ?>
 	<hr>
-	<h3 class="mb-4"><?php echo Yii::t( 'app', 'Latest Reviews' ); ?></h3>
+	<h3 class="mb-4">Latest Reviews</h3>
 	<?php echo $widget; ?>
 <?php endif; ?>

@@ -34,7 +34,7 @@
 								<ul class="list-group list-group-flush">
 										<li class="list-group-item">
 												<p class="card-text">
-													<?php echo 'The score is ' . $website->score . '/100'; ?>
+													<?php echo Yii::t( 'app', 'The score is {Score}/100', array( '{Score}' => $website->score ) ); ?>
 												</p>
 												<a class="v-wp-seo-audit-view-report" href="<?php echo $url; ?>" data-domain="<?php echo $domain; ?>">
 														<div class="progress mb-3">
@@ -47,7 +47,7 @@
 
 								<div class="card-body">
 										<a class="btn btn-primary v-wp-seo-audit-view-report" href="<?php echo $url; ?>" data-domain="<?php echo $domain; ?>" role="button">
-											Review
+											<?php echo Yii::t( 'app', 'View analysis' ); ?>
 										</a>
 								</div>
 						</div>
