@@ -899,11 +899,11 @@ function v_wp_seo_audit_analyze_website( $domain, $idn, $ip, $wid = null ) {
 	global $wpdb;
 
 	// Load required Yii vendor classes.
-	if ( ! class_exists( 'Helper' ) ) {
-		$helper_path = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/vendors/Webmaster/Utils/Helper.php';
-		if ( file_exists( $helper_path ) ) {
-			require_once $helper_path;
-		}
+	// Note: We must load files directly before any class_exists() checks to avoid
+	// triggering Yii's autoloader which will try to find the class in the wrong path.
+	$helper_path = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/vendors/Webmaster/Utils/Helper.php';
+	if ( file_exists( $helper_path ) ) {
+		require_once $helper_path;
 	}
 
 	try {
