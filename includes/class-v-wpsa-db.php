@@ -409,7 +409,8 @@ class V_WPSA_DB {
 			}
 
 			// Analyze content if classes are available.
-			if ( class_exists( 'Content' ) ) {
+			// Use false parameter to prevent autoloader from triggering.
+			if ( class_exists( 'Content', false ) ) {
 				$content_analyzer = new Content( $html );
 				$content_data     = array(
 					'wid' => $wid,
@@ -428,7 +429,8 @@ class V_WPSA_DB {
 			}
 
 			// Analyze document structure.
-			if ( class_exists( 'Document' ) ) {
+			// Use false parameter to prevent autoloader from triggering.
+			if ( class_exists( 'Document', false ) ) {
 				$doc_analyzer = new Document( $html );
 				$doc_data     = array(
 					'wid'     => $wid,
@@ -447,7 +449,8 @@ class V_WPSA_DB {
 			}
 
 			// Analyze links - Pass $idn as third parameter.
-			if ( class_exists( 'Links' ) ) {
+			// Use false parameter to prevent autoloader from triggering.
+			if ( class_exists( 'Links', false ) ) {
 				$links_analyzer = new Links( $html, $domain, $idn );
 				$links_data     = array(
 					'wid'      => $wid,
@@ -467,7 +470,8 @@ class V_WPSA_DB {
 			}
 
 			// Analyze meta tags.
-			if ( class_exists( 'MetaTags' ) ) {
+			// Use false parameter to prevent autoloader from triggering.
+			if ( class_exists( 'MetaTags', false ) ) {
 				$meta_analyzer = new MetaTags( $html );
 				$meta_data     = array(
 					'wid'         => $wid,
