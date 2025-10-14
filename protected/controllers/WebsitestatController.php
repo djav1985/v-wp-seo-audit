@@ -64,56 +64,56 @@ class WebsitestatController extends Controller {
 	 *
 	 * @var array
 	 */
-	protected $cloud     = array();
+	protected $cloud = array();
 
 	/**
 	 * Content analysis data.
 	 *
 	 * @var array
 	 */
-	protected $content   = array();
+	protected $content = array();
 
 	/**
 	 * Document structure data.
 	 *
 	 * @var array
 	 */
-	protected $document  = array();
+	protected $document = array();
 
 	/**
 	 * Set flags for various checks.
 	 *
 	 * @var array
 	 */
-	protected $isseter   = array();
+	protected $isseter = array();
 
 	/**
 	 * Links analysis data.
 	 *
 	 * @var array
 	 */
-	protected $links     = array();
+	protected $links = array();
 
 	/**
 	 * W3C validation data.
 	 *
 	 * @var array
 	 */
-	protected $w3c       = array();
+	protected $w3c = array();
 
 	/**
 	 * Meta tags data.
 	 *
 	 * @var array
 	 */
-	protected $meta      = array();
+	protected $meta = array();
 
 	/**
 	 * Miscellaneous data.
 	 *
 	 * @var array
 	 */
-	protected $misc      = array();
+	protected $misc = array();
 
 	/**
 	 * Generated timestamps and metadata.
