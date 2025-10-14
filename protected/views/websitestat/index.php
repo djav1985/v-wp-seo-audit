@@ -870,7 +870,16 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
 							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
-							<td><?php echo 'Gzip - $advice'; ?></td>
+							<td>
+								<?php
+								echo 'Gzip Compression';
+								if ( $advice === 'success' ) {
+									echo ' - Enabled! Your server is using Gzip compression to reduce file sizes and improve page load times.';
+								} else {
+									echo ' - Not detected. Enable Gzip compression to reduce file sizes and improve page load speed.';
+								}
+								?>
+							</td>
 						</tr>
 
 					</tbody>
@@ -932,7 +941,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-8">
 			<?php if ( ! empty( $misc['sitemap'] ) ) : ?>
 				<p>
-					<?php echo 'XML Sitemap - $advice'; ?>
+					<?php
+					if ( $advice === 'success' ) {
+						echo 'Great! We found an XML sitemap on your website. Sitemaps help search engines discover and index your pages more efficiently.';
+					} else {
+						echo 'Your website has an XML sitemap.';
+					}
+					?>
 				</p>
 				<div class="table-responsive">
 					<table class="table table-striped table-items">
@@ -953,7 +968,9 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 					<strong><?php echo 'Missing'; ?></strong>
 				</p>
 				<p>
-					<?php echo 'XML Sitemap - $advice'; ?>
+					<?php
+					echo 'Your website does not have an XML sitemap. Creating and submitting a sitemap helps search engines discover and index all your important pages.';
+					?>
 				</p>
 			<?php endif; ?>
 		</div>
@@ -971,10 +988,22 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-8">
 			<?php if ( $isseter['robotstxt'] ) : ?>
 				<p><?php echo 'http://' . $website['domain'] . '/robots.txt'; ?></p>
-				<p><?php echo 'Robots txt - $advice'; ?></p>
+				<p>
+					<?php
+					if ( $advice === 'success' ) {
+						echo 'Great! Your website has a robots.txt file. This helps search engines understand which pages to crawl and index.';
+					} else {
+						echo 'Your website has a robots.txt file.';
+					}
+					?>
+				</p>
 			<?php else : ?>
 				<p><strong><?php echo 'Missing'; ?></strong></p>
-				<p><?php echo 'Robots txt - $advice'; ?></p>
+				<p>
+					<?php
+					echo 'Your website does not have a robots.txt file. While not always required, a robots.txt file helps control how search engines access your site.';
+					?>
+				</p>
 			<?php endif; ?>
 		</div>
 	</div>
@@ -990,7 +1019,15 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<?php if ( ! empty( $misc['analytics'] ) ) : ?>
-				<p><?php echo 'Analytics - $advice'; ?></p>
+				<p>
+					<?php
+					if ( $advice === 'success' ) {
+						echo 'Great! We detected analytics tracking on your website. Analytics help you understand visitor behavior and improve your site.';
+					} else {
+						echo 'Your website has analytics tracking enabled.';
+					}
+					?>
+				</p>
 				<div class="table-responsive">
 					<table class="table table-striped table-items">
 						<tbody>
@@ -1008,7 +1045,11 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 				</div>
 			<?php else : ?>
 				<p><strong><?php echo 'Missing'; ?></strong></p>
-				<p><?php echo 'Analytics - $advice'; ?></p>
+				<p>
+					<?php
+					echo 'Your website does not have analytics tracking installed. Consider adding analytics to gain insights into your visitors and improve your site performance.';
+					?>
+				</p>
 			<?php endif; ?>
 		</div>
 	</div>
