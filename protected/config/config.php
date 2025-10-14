@@ -10,6 +10,7 @@ return array(
 	'app.timezone'               => 'America/New_york', // https://www.php.net/manual/en/timezones.php
 	'app.host'                   => 'https://vontainment.com',
 	'app.base_url'               => '/scripts/seo/',
+	// Language settings - multilingual support removed, English only.
 	'app.default_language'       => 'en',
 	'app.languages'              => array(
 		'en' => 'English',

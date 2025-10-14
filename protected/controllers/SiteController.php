@@ -11,13 +11,14 @@ class SiteController extends Controller {
 	 * actionIndex function.
 	 */
 	public function actionIndex() {
-		$this->title = Yii::t( 'meta', 'Index page title', array( '{Brandname}' => Yii::app()->name ) );
+		$brandname = Yii::app()->name;
+		$this->title = $brandname . ' free seo tool';
 
-		Yii::app()->clientScript->registerMetaTag( Yii::t( 'meta', 'Index page keywords' ), 'keywords' );
-		Yii::app()->clientScript->registerMetaTag( Yii::t( 'meta', 'Index page description', array( '{Brandname}' => Yii::app()->name ) ), 'description' );
+		Yii::app()->clientScript->registerMetaTag( 'website review, website content analyser, free seo tool, content checker, content analysis, content analyzer', 'keywords' );
+		Yii::app()->clientScript->registerMetaTag( $brandname . ' is a free seo tool which will help you analyse your web page', 'description' );
 
-		Yii::app()->clientScript->registerMetaTag( Yii::t( 'meta', 'Og property title', array( '{Brandname}' => Yii::app()->name ) ), null, null, array( 'property' => 'og:title' ) );
-		Yii::app()->clientScript->registerMetaTag( Yii::t( 'meta', 'Og property description', array( '{Brandname}' => Yii::app()->name ) ), null, null, array( 'property' => 'og:description' ) );
+		Yii::app()->clientScript->registerMetaTag( $brandname . ' free seo tool', null, null, array( 'property' => 'og:title' ) );
+		Yii::app()->clientScript->registerMetaTag( $brandname . ' is a free seo tool which will help you analyse your web page', null, null, array( 'property' => 'og:description' ) );
 		Yii::app()->clientScript->registerMetaTag( Yii::app()->name, null, null, array( 'property' => 'og:site_name' ) );
 		Yii::app()->clientScript->registerMetaTag( Yii::app()->getBaseUrl( true ) . '/assets/img/logo.png', null, null, array( 'property' => 'og:image' ) );
 

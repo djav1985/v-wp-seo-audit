@@ -7,7 +7,7 @@
 
 if ( empty( $website ) || ! is_array( $website ) ) : ?>
 	<div class="alert alert-danger mt-5 mb-5">
-		<?php echo Yii::t( 'app', 'No report available. The domain could not be analyzed or the record was not created. Please try again or check your domain input.' ); ?>
+		<?php echo 'No report available. The domain could not be analyzed or the record was not created. Please try again or check your domain input.'; ?>
 	</div>
 	<?php return; ?>
 <?php endif; ?>
@@ -21,17 +21,17 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 		var pie_data = [];
 		pie_data[0] = {
-			label: '<?php echo Yii::t( 'app', 'External Links' ); ?> : <?php echo Yii::t( 'app', 'nofollow' ); ?> <?php echo Utils::proportion( $linkcount, $links['external_nofollow'] ); ?>%',
+			label: '<?php echo 'External Links'; ?> : <?php echo 'noFollow'; ?> <?php echo Utils::proportion( $linkcount, $links['external_nofollow'] ); ?>%',
 			data: <?php echo $links['external_nofollow']; ?>,
 			color: '#6A93BA'
 		};
 		pie_data[1] = {
-			label: '<?php echo Yii::t( 'app', 'External Links' ); ?> : <?php echo Yii::t( 'app', 'dofollow' ); ?> <?php echo Utils::proportion( $linkcount, $links['external_dofollow'] ); ?>%',
+			label: '<?php echo 'External Links'; ?> : <?php echo 'Passing Juice'; ?> <?php echo Utils::proportion( $linkcount, $links['external_dofollow'] ); ?>%',
 			data: <?php echo $links['external_dofollow']; ?>,
 			color: '#315D86'
 		};
 		pie_data[2] = {
-			label: '<?php echo Yii::t( 'app', 'Internal Links' ); ?> <?php echo Utils::proportion( $linkcount, $links['internal'] ); ?>%',
+			label: '<?php echo 'Internal Links'; ?> <?php echo Utils::proportion( $linkcount, $links['internal'] ); ?>%',
 			data: <?php echo $links['internal']; ?>,
 			color: '#ddd'
 		};
@@ -90,8 +90,8 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			<?php
 			echo CJSON::encode(
 				array(
-					'i18nEnterFullscreen' => Yii::t( 'app', 'Enter fullscreen mode' ),
-					'i18nExitFullscreen'  => Yii::t( 'app', 'Exit fullscreen mode' ),
+					'i18nEnterFullscreen' => 'Enter fullscreen mode',
+					'i18nExitFullscreen'  => 'Exit fullscreen mode',
 					'runInstantly'        => Yii::app()->params['psi.run_instantly'],
 					'url'                 => ! empty( $website['final_url'] ) ? $website['final_url'] : 'http://' . $website['domain'],
 					'locale'              => Yii::app()->language,
@@ -110,23 +110,14 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8 col-lg-7 col-sm-12 text-left">
 			<h1 class="text-break">
-				<?php echo Yii::t( 'app', 'Analyse of {Domain}', array( '{Domain}' => $website['idn'] ) ); ?>
+				<?php echo 'Website review {Domain}'; ?>
 			</h1>
 
 			<p>
-				<i class="fas fa-clock"></i>&nbsp;<small><?php echo Yii::t( 'app', 'Generated on' ); ?> <?php
-				echo Yii::t(
-					'app',
-					'Generated format',
-					array(
-						'{Month}'  => Yii::t( 'app', $generated['M'] ),
-						'{Day}'    => $generated['d'],
-						'{Year}'   => $generated['Y'],
-						'{Hour}'   => $generated['H'],
-						'{Minute}' => $generated['i'],
-						'{Ante}'   => $generated['A'],
-					)
-				);
+				<i class="fas fa-clock"></i>&nbsp;<small><?php echo 'Generated on'; ?> <?php
+				$monthNames = array('Jan' => 'January', 'Feb' => 'February', 'Mar' => 'March', 'Apr' => 'April', 'May' => 'May', 'Jun' => 'June', 'Jul' => 'July', 'Aug' => 'August', 'Sep' => 'September', 'Oct' => 'October', 'Nov' => 'November', 'Dec' => 'December');
+				$month = isset($monthNames[$generated['M']]) ? $monthNames[$generated['M']] : $generated['M'];
+				echo $month . ' ' . $generated['d'] . ' ' . $generated['Y'] . ' ' . $generated['H'] . ':' . $generated['i'] . ' ' . $generated['A'];
 				?>
 				</small>
 			</p>
@@ -135,13 +126,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			<?php if ( $diff > Yii::app()->params['analyzer.cache_time'] ) : ?>
 				<p>
 					<?php
-					echo Yii::t(
-						'app',
-						'Old statistics? UPDATE!',
-						array(
-							'{UPDATE}' => '<a href="' . $updUrl . '" class="btn btn-success" id="update_stat">' . Yii::t( 'app', 'UPDATE' ) . '</a>',
-						)
-					)
+					echo 'Old data? <a href="' . $updUrl . '" class="btn btn-success" id="update_stat">UPDATE</a> !';
 					?>
 				</p>
 			<?php endif; ?>
@@ -150,14 +135,14 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 
 			<p class="mt-3">
-				<strong><?php echo Yii::t( 'app', 'The score is {Score}/100', array( '{Score}' => $website['score'] ) ); ?></strong>
+				<strong><?php echo 'The score is {Score}/100'; ?></strong>
 			</p>
 			<div class="progress-score progress mb-3">
 				<div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $website['score']; ?>%;"></div>
 			</div>
 
 			<a href="#" class="btn btn-primary v-wp-seo-audit-download-pdf" data-domain="<?php echo CHtml::encode( $website['domain'] ); ?>">
-				<?php echo Yii::t( 'app', 'Download PDF version' ); ?>
+				<?php echo 'Download PDF Version'; ?>
 			</a>
 
 		</div>
@@ -165,7 +150,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 </div>
 
 
-<h3 id="section_content" class="mt-5 mb-3"><?php echo Yii::t( 'app', 'SEO Content' ); ?></h3>
+<h3 id="section_content" class="mt-5 mb-3"><?php echo 'SEO Content'; ?></h3>
 <div class="category-wrapper">
 	<!-- Title -->
 	<?php $advice = $rateprovider->addCompareArray( 'title', mb_strlen( Utils::html_decode( $meta['title'] ) ) ); ?>
@@ -173,7 +158,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Title' ); ?>
+				<?php echo 'Title'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
@@ -182,19 +167,12 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			</p>
 			<p>
 				<strong>
-					<?php echo Yii::t( 'app', 'Length' ); ?> : <?php echo mb_strlen( Utils::html_decode( $meta['title'] ) ); ?>
+					<?php echo 'Length'; ?> : <?php echo mb_strlen( Utils::html_decode( $meta['title'] ) ); ?>
 				</strong>
 			</p>
 			<p>
 				<?php
-				echo Yii::t(
-					'advice',
-					"Title advice - $advice",
-					array(
-						'{1}' => _RATE_TITLE_GOOD,
-						'{2}' => _RATE_TITLE_BEST,
-					)
-				);
+				echo 'Title advice - $advice';
 				?>
 			</p>
 		</div>
@@ -206,7 +184,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Description' ); ?>
+				<?php echo 'Description'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
@@ -215,19 +193,12 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			</p>
 			<p>
 				<strong>
-					<strong><?php echo Yii::t( 'app', 'Length' ); ?> : <?php echo mb_strlen( Utils::html_decode( $meta['description'] ) ); ?></strong>
+					<strong><?php echo 'Length'; ?> : <?php echo mb_strlen( Utils::html_decode( $meta['description'] ) ); ?></strong>
 				</strong>
 			</p>
 			<p>
 				<?php
-				echo Yii::t(
-					'advice',
-					"Description advice - $advice",
-					array(
-						'{1}' => _RATE_DESC_GOOD,
-						'{2}' => _RATE_DESC_BEST,
-					)
-				);
+				echo 'Description advice - $advice';
 				?>
 			</p>
 		</div>
@@ -239,12 +210,12 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Og Meta Properties' ); ?>
+				<?php echo 'Og Meta Properties'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'advice', "Og Meta Properties advice - $advice" ); ?>
+				<?php echo 'Og Meta Properties advice - $advice'; ?>
 			</p>
 
 			<?php if ( ! empty( $meta['ogproperties'] ) ) : ?>
@@ -252,8 +223,8 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 					<table class="table table-striped">
 						<thead>
 							<tr>
-								<th><?php echo Yii::t( 'app', 'Property' ); ?></th>
-								<th><?php echo Yii::t( 'app', 'Content' ); ?></th>
+								<th><?php echo 'Property'; ?></th>
+								<th><?php echo 'Content'; ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -266,8 +237,8 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 						</tbody>
 					</table>
 
-					<button class="expand-task btn btn-primary float-right"><?php echo Yii::t( 'app', 'Expand' ); ?></button>
-					<button class="collapse-task btn btn-primary float-right"><?php echo Yii::t( 'app', 'Collapse' ); ?></button>
+					<button class="expand-task btn btn-primary float-right"><?php echo 'Expand'; ?></button>
+					<button class="collapse-task btn btn-primary float-right"><?php echo 'Collapse'; ?></button>
 				</div>
 			<?php endif; ?>
 		</div>
@@ -279,7 +250,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-neutral"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Headings' ); ?>
+				<?php echo 'Headings'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
@@ -320,8 +291,8 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 						?>
 					</ul>
 					<?php if ( $i > $over_max ) : ?>
-						<button class="expand-task btn btn-primary float-right"><?php echo Yii::t( 'app', 'Expand' ); ?></button>
-						<button class="collapse-task btn btn-primary float-right"><?php echo Yii::t( 'app', 'Collapse' ); ?></button>
+						<button class="expand-task btn btn-primary float-right"><?php echo 'Expand'; ?></button>
+						<button class="collapse-task btn btn-primary float-right"><?php echo 'Collapse'; ?></button>
 					<?php endif; ?>
 				</div>
 
@@ -335,15 +306,15 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Images' ); ?>
+				<?php echo 'Images'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'app', 'We found {Count} images on this web page.', array( '{Count}' => $content['total_img'] ) ); ?>
+				<?php echo 'We found {Count} images on this web page.'; ?>
 			</p>
 			<p>
-				<?php echo Yii::t( 'advice', "Image advice - $advice", array( '{Number}' => $content['total_img'] - $content['total_alt'] ) ); ?>
+				<?php echo 'Image advice - $advice'; ?>
 			</p>
 		</div>
 	</div>
@@ -354,24 +325,16 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Text/HTML Ratio' ); ?>
+				<?php echo 'Text/HTML Ratio'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'app', 'Ratio' ); ?> : <strong><?php echo $document['htmlratio']; ?>%</strong>
+				<?php echo 'Ratio'; ?> : <strong><?php echo $document['htmlratio']; ?>%</strong>
 			</p>
 			<p>
 				<?php
-				echo Yii::t(
-					'advice',
-					"HTML ratio advice - $advice",
-					array(
-						'{GoodNr}' => _RATE_HRATIO_GOOD,
-						'{BestNr}' => _RATE_HRATIO_BEST,
-						'{BadNr}'  => _RATE_HRATIO_BAD,
-					)
-				);
+				echo 'HTML ratio advice - $advice';
 				?>
 			</p>
 		</div>
@@ -383,12 +346,12 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Flash' ); ?>
+				<?php echo 'Flash'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'advice', "Flash advice - $advice" ); ?>
+				<?php echo 'Flash advice - $advice'; ?>
 			</p>
 		</div>
 	</div>
@@ -399,19 +362,19 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Iframe' ); ?>
+				<?php echo 'Iframe'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'advice', "Iframe advice - $advice" ); ?>
+				<?php echo 'Iframe advice - $advice'; ?>
 			</p>
 		</div>
 	</div>
 </div>
 
 
-<h3 id="section_links" class="mt-5 mb-3"><?php echo Yii::t( 'app', 'SEO Links' ); ?></h3>
+<h3 id="section_links" class="mt-5 mb-3"><?php echo 'SEO Links'; ?></h3>
 <div class="category-wrapper">
 	<!-- Friendly url -->
 	<?php $advice = $rateprovider->addCompare( 'isFriendlyUrl', $links['friendly'] ); ?>
@@ -419,12 +382,12 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'URL Rewrite' ); ?>
+				<?php echo 'URL Rewrite'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'advice', "Friendly url advice - $advice" ); ?>
+				<?php echo 'Friendly url advice - $advice'; ?>
 			</p>
 		</div>
 	</div>
@@ -435,12 +398,12 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Underscores in the URLs' ); ?>
+				<?php echo 'Underscores in the URLs'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'advice', "Underscore advice - $advice" ); ?>
+				<?php echo 'Underscore advice - $advice'; ?>
 			</p>
 		</div>
 	</div>
@@ -451,20 +414,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'In-page links' ); ?>
+				<?php echo 'In-page links'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p class="mb-3">
 				<?php
-				echo Yii::t(
-					'app',
-					'We found a total of {Links} links including {Files} link(s) to files',
-					array(
-						'{Links}' => $linkcount,
-						'{Files}' => $links['files_count'],
-					)
-				);
+				echo 'We found a total of {Links} links including {Files} link(s) to files';
 				?>
 			</p>
 			<div class="row">
@@ -479,9 +435,9 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 				<table class="table table-striped">
 					<thead>
 						<tr>
-							<th><?php echo Yii::t( 'app', 'Anchor' ); ?></th>
-							<th><?php echo Yii::t( 'app', 'Type' ); ?></th>
-							<th><?php echo Yii::t( 'app', 'Juice' ); ?></th>
+							<th><?php echo 'Anchor'; ?></th>
+							<th><?php echo 'Type'; ?></th>
+							<th><?php echo 'Juice'; ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -493,19 +449,19 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 							<tr <?php echo $i > $over_max ? 'class="over-max"' : null; ?>>
 								<td class="text-break">
 									<a href="<?php echo $link['Link']; ?>" target="_blank" rel="nofollow">
-										<?php echo ! empty( $link['Name'] ) ? CHtml::encode( Utils::html_decode( $link['Name'] ) ) : Yii::t( 'app', '-' ); ?>
+										<?php echo ! empty( $link['Name'] ) ? CHtml::encode( Utils::html_decode( $link['Name'] ) ) : '-'; ?>
 									</a>
 								</td>
-								<td><?php echo Yii::t( 'app', $link['Type'] ); ?></td>
-								<td><?php echo Yii::t( 'app', $link['Juice'] ); ?></td>
+								<td><?php echo ($link['Type'] === 'internal' ? 'Internal' : 'External'); ?></td>
+								<td><?php echo ($link['Juice'] === 'nofollow' ? 'noFollow' : 'Passing Juice'); ?></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
 				</table>
 
 				<?php if ( $i > $over_max ) : ?>
-					<button class="expand-task btn btn-primary float-right"><?php echo Yii::t( 'app', 'Expand' ); ?></button>
-					<button class="collapse-task btn btn-primary float-right"><?php echo Yii::t( 'app', 'Collapse' ); ?></button>
+					<button class="expand-task btn btn-primary float-right"><?php echo 'Expand'; ?></button>
+					<button class="collapse-task btn btn-primary float-right"><?php echo 'Collapse'; ?></button>
 				<?php endif; ?>
 			</div>
 		</div>
@@ -514,14 +470,14 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 
 
-<h3 id="section_keywords" class="mt-5 mb-3"><?php echo Yii::t( 'app', 'SEO Keywords' ); ?></h3>
+<h3 id="section_keywords" class="mt-5 mb-3"><?php echo 'SEO Keywords'; ?></h3>
 <div class="category-wrapper">
 	<!-- Tag cloud -->
 	<div class="row pt-3 pb-3 row-advice">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-neutral"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Keywords Cloud' ); ?>
+				<?php echo 'Keywords Cloud'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
@@ -538,7 +494,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-neutral"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Keywords Consistency' ); ?>
+				<?php echo 'Keywords Consistency'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
@@ -546,11 +502,11 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 				<table class="table table-striped">
 					<thead class="thead-dark">
 						<tr>
-							<th><?php echo Yii::t( 'app', 'Keyword' ); ?></th>
-							<th><?php echo Yii::t( 'app', 'Content' ); ?></th>
-							<th><?php echo Yii::t( 'app', 'Title' ); ?></th>
-							<th><?php echo Yii::t( 'app', 'Description' ); ?></th>
-							<th><?php echo Yii::t( 'app', 'Headings' ); ?></th>
+							<th><?php echo 'Keyword'; ?></th>
+							<th><?php echo 'Content'; ?></th>
+							<th><?php echo 'Title'; ?></th>
+							<th><?php echo 'Description'; ?></th>
+							<th><?php echo 'Headings'; ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -570,22 +526,22 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 	</div>
 </div>
 
-<h3 id="section_usability" class="mt-5 mb-3"><?php echo Yii::t( 'app', 'Usability' ); ?></h3>
+<h3 id="section_usability" class="mt-5 mb-3"><?php echo 'Usability'; ?></h3>
 <div class="category-wrapper">
 	<!-- Url -->
 	<div class="row pt-3 pb-3 row-advice">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-neutral"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Url' ); ?>
+				<?php echo 'Url'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'app', 'Domain' ); ?> : <?php echo $website['idn']; ?>
+				<?php echo 'Domain'; ?> : <?php echo $website['idn']; ?>
 			</p>
 			<p>
-				<?php echo Yii::t( 'app', 'Length' ); ?> : <?php echo mb_strlen( $website['idn'] ); ?>
+				<?php echo 'Length'; ?> : <?php echo mb_strlen( $website['idn'] ); ?>
 			</p>
 		</div>
 	</div>
@@ -596,12 +552,12 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Favicon' ); ?>
+				<?php echo 'Favicon'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'advice', "Favicon advice - $advice" ); ?>
+				<?php echo 'Favicon advice - $advice'; ?>
 			</p>
 		</div>
 	</div>
@@ -612,12 +568,12 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Language' ); ?>
+				<?php echo 'Language'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'advice', "Language advice - $advice", array( '{Language}' => '<strong>' . $document['lang'] . '</strong>' ) ); ?>
+				<?php echo 'Language advice - $advice'; ?>
 			</p>
 		</div>
 	</div>
@@ -628,19 +584,19 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Dublin Core' ); ?>
+				<?php echo 'Dublin Core'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'advice', "Dublin Core advice - $advice" ); ?>
+				<?php echo 'Dublin Core advice - $advice'; ?>
 			</p>
 		</div>
 	</div>
 </div>
 
 
-<h3 id="section_document" class="mt-5 mb-3"><?php echo Yii::t( 'app', 'Document' ); ?></h3>
+<h3 id="section_document" class="mt-5 mb-3"><?php echo 'Document'; ?></h3>
 <div class="category-wrapper">
 	<!-- Doctype -->
 	<?php $advice = $rateprovider->addCompare( 'doctype', $document['doctype'] ); ?>
@@ -648,7 +604,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Doctype' ); ?>
+				<?php echo 'Doctype'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
@@ -657,7 +613,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 				if ( $document['doctype'] ) :
 					echo $document['doctype'];
 				else :
-					echo Yii::t( 'app', 'Missing doctype' );
+					echo 'Missing doctype';
 				endif;
 				?>
 			</p>
@@ -670,12 +626,12 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Encoding' ); ?>
+				<?php echo 'Encoding'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'advice', "Encoding advice - $advice", array( '{Charset}' => $document['charset'] ) ); ?>
+				<?php echo 'Encoding advice - $advice'; ?>
 			</p>
 		</div>
 	</div>
@@ -686,15 +642,15 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'W3C Validity' ); ?>
+				<?php echo 'W3C Validity'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo Yii::t( 'app', 'Errors' ); ?> : <strong><?php echo (int) $w3c['errors']; ?></strong>
+				<?php echo 'Errors'; ?> : <strong><?php echo (int) $w3c['errors']; ?></strong>
 			</p>
 			<p>
-				<?php echo Yii::t( 'app', 'Warnings' ); ?> : <strong><?php echo (int) $w3c['warnings']; ?></strong>
+				<?php echo 'Warnings'; ?> : <strong><?php echo (int) $w3c['warnings']; ?></strong>
 			</p>
 		</div>
 	</div>
@@ -705,7 +661,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Deprecated HTML' ); ?>
+				<?php echo 'Deprecated HTML'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
@@ -714,8 +670,8 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 					<table class="table table-striped table-items">
 						<thead>
 							<tr>
-								<th><?php echo Yii::t( 'app', 'Deprecated tags' ); ?></th>
-								<th><?php echo Yii::t( 'app', 'Occurrences' ); ?></th>
+								<th><?php echo 'Deprecated tags'; ?></th>
+								<th><?php echo 'Occurrences'; ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -731,7 +687,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			</div>
 
 			<p>
-				<?php echo Yii::t( 'advice', "Deprecated advice - $advice" ); ?>
+				<?php echo 'Deprecated advice - $advice'; ?>
 			</p>
 		</div>
 	</div>
@@ -741,7 +697,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-neutral"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Speed Tips' ); ?>
+				<?php echo 'Speed Tips'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
@@ -751,31 +707,31 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] ); ?>
 							<td width="50px"><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
-							<td><?php echo Yii::t( 'advice', "Nested tables advice - $advice" ); ?></td>
+							<td><?php echo 'Nested tables advice - $advice'; ?></td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] ); ?>
 							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
-							<td><?php echo Yii::t( 'advice', "Inline CSS advice - $advice" ); ?></td>
+							<td><?php echo 'Inline CSS advice - $advice'; ?></td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
 							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
-							<td><?php echo Yii::t( 'advice', "CSS count advice - $advice", array( '{MoreNr}' => _RATE_CSS_COUNT ) ); ?></td>
+							<td><?php echo 'CSS count advice - $advice'; ?></td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
 							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
-							<td><?php echo Yii::t( 'advice', "JS count advice - $advice", array( '{MoreNr}' => _RATE_JS_COUNT ) ); ?></td>
+							<td><?php echo 'JS count advice - $advice'; ?></td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
 							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
-							<td><?php echo Yii::t( 'advice', "Gzip - $advice" ); ?></td>
+							<td><?php echo 'Gzip - $advice'; ?></td>
 						</tr>
 
 					</tbody>
@@ -786,13 +742,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 </div>
 
 
-<h3 id="section_mobile" class="mt-5 mb-3"><?php echo Yii::t( 'app', 'Mobile' ); ?></h3>
+<h3 id="section_mobile" class="mt-5 mb-3"><?php echo 'Mobile'; ?></h3>
 <div class="category-wrapper">
 	<div class="row pt-3 pb-3 row-advice">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-neutral"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Mobile Optimization' ); ?>
+				<?php echo 'Mobile Optimization'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
@@ -802,17 +758,17 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 						<tr class="no-top-line">
 							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
-							<td><?php echo Yii::t( 'app', 'Apple Icon' ); ?></td>
+							<td><?php echo 'Apple Icon'; ?></td>
 						</tr>
 
 						<tr>
 							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
-							<td><?php echo Yii::t( 'app', 'Meta Viewport Tag' ); ?></td>
+							<td><?php echo 'Meta Viewport Tag'; ?></td>
 						</tr>
 
 						<tr>
 							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
-							<td><?php echo Yii::t( 'app', 'Flash content' ); ?></td>
+							<td><?php echo 'Flash content'; ?></td>
 						</tr>
 
 					</tbody>
@@ -823,7 +779,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 </div>
 
-<h3 id="section_optimization" class="mt-5 mb-3"><?php echo Yii::t( 'app', 'Optimization' ); ?></h3>
+<h3 id="section_optimization" class="mt-5 mb-3"><?php echo 'Optimization'; ?></h3>
 <div class="category-wrapper">
 	<!-- Sitemap -->
 	<?php $advice = $rateprovider->addCompare( 'hasSitemap', ! empty( $misc['sitemap'] ) ); ?>
@@ -831,13 +787,13 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'XML Sitemap' ); ?>
+				<?php echo 'XML Sitemap'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<?php if ( ! empty( $misc['sitemap'] ) ) : ?>
 				<p>
-					<?php echo Yii::t( 'advice', "XML Sitemap - $advice" ); ?>
+					<?php echo 'XML Sitemap - $advice'; ?>
 				</p>
 				<div class="table-responsive">
 					<table class="table table-striped table-items">
@@ -855,10 +811,10 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 			<?php else : ?>
 				<p>
-					<strong><?php echo Yii::t( 'app', 'Missing' ); ?></strong>
+					<strong><?php echo 'Missing'; ?></strong>
 				</p>
 				<p>
-					<?php echo Yii::t( 'advice', "XML Sitemap - $advice" ); ?>
+					<?php echo 'XML Sitemap - $advice'; ?>
 				</p>
 			<?php endif; ?>
 		</div>
@@ -870,16 +826,16 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Robots.txt' ); ?>
+				<?php echo 'Robots.txt'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<?php if ( $isseter['robotstxt'] ) : ?>
 				<p><?php echo 'http://' . $website['domain'] . '/robots.txt'; ?></p>
-				<p><?php echo Yii::t( 'advice', "Robots txt - $advice" ); ?></p>
+				<p><?php echo 'Robots txt - $advice'; ?></p>
 			<?php else : ?>
-				<p><strong><?php echo Yii::t( 'app', 'Missing' ); ?></strong></p>
-				<p><?php echo Yii::t( 'advice', "Robots txt - $advice" ); ?></p>
+				<p><strong><?php echo 'Missing'; ?></strong></p>
+				<p><?php echo 'Robots txt - $advice'; ?></p>
 			<?php endif; ?>
 		</div>
 	</div>
@@ -890,12 +846,12 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
 			<p class="lead">
-				<?php echo Yii::t( 'app', 'Analytics' ); ?>
+				<?php echo 'Analytics'; ?>
 			</p>
 		</div>
 		<div class="col-md-8">
 			<?php if ( ! empty( $misc['analytics'] ) ) : ?>
-				<p><?php echo Yii::t( 'advice', "Analytics - $advice" ); ?></p>
+				<p><?php echo 'Analytics - $advice'; ?></p>
 				<div class="table-responsive">
 					<table class="table table-striped table-items">
 						<tbody>
@@ -912,75 +868,75 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 					</table>
 				</div>
 			<?php else : ?>
-				<p><strong><?php echo Yii::t( 'app', 'Missing' ); ?></strong></p>
-				<p><?php echo Yii::t( 'advice', "Analytics - $advice" ); ?></p>
+				<p><strong><?php echo 'Missing'; ?></strong></p>
+				<p><?php echo 'Analytics - $advice'; ?></p>
 			<?php endif; ?>
 		</div>
 	</div>
 </div>
 
 <?php if ( Yii::app()->params['psi.show'] ) : ?>
-	<h4 id="section_page_speed" class="mt-5 mb-3"><?php echo Yii::t( 'app', 'Page speed' ); ?></h4>
+	<h4 id="section_page_speed" class="mt-5 mb-3"><?php echo 'PageSpeed Insights'; ?></h4>
 	<div class="category-wrapper">
 		<div class="row pagespeed">
 			<div class="col-md-6 mb-3">
-				<h5><?php echo Yii::t( 'app', 'Device' ); ?></h5>
+				<h5><?php echo 'Device'; ?></h5>
 
 				<div class="form-check">
 					<input type="radio" name="psi__strategy" id="psi_strategy_desktop" class="form-check-input" value="desktop" <?php echo Utils::isPsiActive( 'device', 'desktop' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_strategy_desktop">
-						<?php echo Yii::t( 'app', 'Desktop' ); ?>
+						<?php echo 'Desktop'; ?>
 					</label>
 				</div>
 
 				<div class="form-check">
 					<input type="radio" name="psi__strategy" id="psi_strategy_mobile" class="form-check-input" value="mobile" <?php echo Utils::isPsiActive( 'device', 'mobile' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_strategy_mobile">
-						<?php echo Yii::t( 'app', 'Mobile' ); ?>
+						<?php echo 'Mobile'; ?>
 					</label>
 				</div>
 			</div>
 
 			<div class="col-md-6 mb-3">
-				<h5><?php echo Yii::t( 'app', 'Categories' ); ?></h5>
+				<h5><?php echo 'Categories'; ?></h5>
 
 				<div class="form-check">
 					<input type="checkbox" class="form-check-input" id="psi_category_performance" data-psi-category="performance" value="performance" <?php echo Utils::isPsiActive( 'categories', 'performance' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_category_performance">
-						<?php echo Yii::t( 'app', 'Performance' ); ?>
+						<?php echo 'Performance'; ?>
 					</label>
 				</div>
 
 				<div class="form-check">
 					<input type="checkbox" class="form-check-input" id="psi_category_accessibility" data-psi-category="accessibility" value="accessibility" <?php echo Utils::isPsiActive( 'categories', 'accessibility' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_category_accessibility">
-						<?php echo Yii::t( 'app', 'Accessibility' ); ?>
+						<?php echo 'Accessibility'; ?>
 					</label>
 				</div>
 
 				<div class="form-check">
 					<input type="checkbox" class="form-check-input" id="psi_category_bestpr" data-psi-category="best-practices" value="best-practices" <?php echo Utils::isPsiActive( 'categories', 'best-practices' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_category_bestpr">
-						<?php echo Yii::t( 'app', 'Best Practices' ); ?>
+						<?php echo 'Best Practices'; ?>
 					</label>
 				</div>
 
 				<div class="form-check">
 					<input type="checkbox" class="form-check-input" id="psi_category_seo" data-psi-category="seo" value="seo" <?php echo Utils::isPsiActive( 'categories', 'seo' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_category_seo">
-						<?php echo Yii::t( 'app', 'SEO' ); ?>
+						<?php echo 'SEO'; ?>
 					</label>
 				</div>
 
 				<div class="form-check">
 					<input type="checkbox" class="form-check-input" id="psi_category_pwa" data-psi-category="pwa" value="pwa" <?php echo Utils::isPsiActive( 'categories', 'pwa' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_category_pwa">
-						<?php echo Yii::t( 'app', 'PWA' ); ?>
+						<?php echo 'Progressive Web App'; ?>
 					</label>
 				</div>
 			</div>
 			<button class="psi__analyze-btn btn btn-primary mt-3">
-				<?php echo Yii::t( 'app', 'Analyze' ); ?>
+				<?php echo 'Analyze'; ?>
 			</button>
 		</div>
 
