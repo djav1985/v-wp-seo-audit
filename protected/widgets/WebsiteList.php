@@ -1,4 +1,12 @@
 <?php
+/**
+ * WebsiteList widget for V_WP_SEO_Audit plugin.
+ *
+ * Renders a paginated list of analyzed websites with thumbnails and scores.
+ * Used in Yii-based views, typically injected via AJAX in WordPress plugin context.
+ *
+ * @package V_WP_SEO_Audit
+ */
 
 /**
  * Created by PhpStorm.
@@ -25,7 +33,7 @@ class WebsiteList extends CWidget {
 	public $template = 'website_list';
 
 	/**
-	 * init function.
+	 * Init function.
 	 */
 	public function init() {
 		$config       = array(
@@ -42,7 +50,7 @@ class WebsiteList extends CWidget {
 	}
 
 	/**
-	 * run function.
+	 * Run function.
 	 */
 	public function run() {
 		$dataProvider = new CActiveDataProvider( 'Website', $this->config );

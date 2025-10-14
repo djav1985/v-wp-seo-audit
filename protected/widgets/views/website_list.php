@@ -8,13 +8,14 @@
  *
  * @package V_WP_SEO_Audit
  */
+
 ?>
 
 <script type="text/javascript">
 	"use strict";
 
 	jQuery(function($){
-		var urls = <?php echo json_encode( $thumbnailStack ?: new stdClass() ); ?>;
+		var urls = <?php echo json_encode( ! empty( $thumbnailStack ) ? $thumbnailStack : new stdClass() ); ?>;
 		dynamicThumbnail(urls);
 	});
 </script>
