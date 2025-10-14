@@ -28,6 +28,9 @@ The following files have been removed as they are not needed for WordPress plugi
 #### Controller Files
 - `protected/controllers/ManageController.php` - Management interface requiring secret key (not integrated with WordPress)
 
+#### Configuration Files
+- `.htaccess` - Apache rewrite rules for standalone app (WordPress handles routing)
+
 ### Rationale
 
 1. **CLI Commands are not needed**: WordPress plugins operate through web requests, admin pages, and cron jobs. The Yii CLI commands were designed for standalone operation and are not accessible or useful within WordPress.
