@@ -913,11 +913,7 @@ if ( $advice === 'success' ) {
 <td class="td-result">
 	<?php if ( ! empty( $misc['sitemap'] )) : ?>
 		<?php
-		if ( $advice === 'success' ) {
-			echo 'Great! We found an XML sitemap on your website. Sitemaps help search engines discover and index your pages more efficiently.';
-		} else {
-			echo 'Your website has an XML sitemap.';
-		}
+		echo 'Great! We found an XML sitemap on your website. Sitemaps help search engines discover and index your pages more efficiently.';
 		?>
 <br><br>
 
@@ -958,11 +954,7 @@ if ( $advice === 'success' ) {
 		<?php echo 'http://' . $website['domain'] . '/robots.txt'; ?>
 <br><br>
 		<?php
-		if ( $advice === 'success' ) {
-			echo 'Great! Your website has a robots.txt file. This helps search engines understand which pages to crawl and index.';
-		} else {
-			echo 'Your website has a robots.txt file.';
-		}
+		echo 'Great! Your website has a robots.txt file. This helps search engines understand which pages to crawl and index.';
 		?>
 	<?php else : ?>
 		<?php echo 'Missing'; ?>
@@ -984,11 +976,7 @@ if ( $advice === 'success' ) {
 <td class="td-result">
 	<?php if ( ! empty( $misc['analytics'] )) : ?>
 		<?php
-		if ( $advice === 'success' ) {
-			echo 'Great! We detected analytics tracking on your website. Analytics help you understand visitor behavior and improve your site.';
-		} else {
-			echo 'Your website has analytics tracking enabled.';
-		}
+		echo 'Great! We detected analytics tracking on your website. Analytics help you understand visitor behavior and improve your site.';
 		?>
 <br><br>
 <table class="table table-striped table-fluid table-inner" cellpadding="5">

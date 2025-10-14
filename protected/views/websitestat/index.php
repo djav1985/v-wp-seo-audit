@@ -942,11 +942,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			<?php if ( ! empty( $misc['sitemap'] ) ) : ?>
 				<p>
 					<?php
-					if ( $advice === 'success' ) {
-						echo 'Great! We found an XML sitemap on your website. Sitemaps help search engines discover and index your pages more efficiently.';
-					} else {
-						echo 'Your website has an XML sitemap.';
-					}
+					echo 'Great! We found an XML sitemap on your website. Sitemaps help search engines discover and index your pages more efficiently.';
 					?>
 				</p>
 				<div class="table-responsive">
@@ -990,11 +986,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 				<p><?php echo 'http://' . $website['domain'] . '/robots.txt'; ?></p>
 				<p>
 					<?php
-					if ( $advice === 'success' ) {
-						echo 'Great! Your website has a robots.txt file. This helps search engines understand which pages to crawl and index.';
-					} else {
-						echo 'Your website has a robots.txt file.';
-					}
+					echo 'Great! Your website has a robots.txt file. This helps search engines understand which pages to crawl and index.';
 					?>
 				</p>
 			<?php else : ?>
@@ -1021,11 +1013,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			<?php if ( ! empty( $misc['analytics'] ) ) : ?>
 				<p>
 					<?php
-					if ( $advice === 'success' ) {
-						echo 'Great! We detected analytics tracking on your website. Analytics help you understand visitor behavior and improve your site.';
-					} else {
-						echo 'Your website has analytics tracking enabled.';
-					}
+					echo 'Great! We detected analytics tracking on your website. Analytics help you understand visitor behavior and improve your site.';
 					?>
 				</p>
 				<div class="table-responsive">
