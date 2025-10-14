@@ -83,6 +83,27 @@ class V_WP_SEO_Audit_Helpers {
 	}
 
 	/**
+	 * Load configuration file.
+	 * Replaces Utils::getLocalConfigIfExists() with WordPress-native implementation.
+	 *
+	 * @param string $config_name The config file name (without extension).
+	 * @return mixed The config value or empty array on failure.
+	 */
+	public static function load_config_file( $config_name ) {
+		$config_dir   = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/';
+		$config_local = $config_dir . $config_name . '_local.php';
+		$config_prod  = $config_dir . $config_name . '.php';
+
+		if ( file_exists( $config_local ) ) {
+			return require $config_local;
+		} elseif ( file_exists( $config_prod ) ) {
+			return require $config_prod;
+		}
+
+		return array();
+	}
+
+	/**
 	 * Analyze website using WordPress-native approach.
 	 *
 	 * This function bridges between WordPress and the Yii-based analysis system.
