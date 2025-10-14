@@ -34,6 +34,12 @@ This document provides an overview of the V-WP-SEO-Audit plugin architecture aft
 - `v_wp_seo_audit_check_banned_domain()` - Banned domain checking
 - `v_wp_seo_audit_cleanup()` - Automated cleanup of old files and records
 
+**WordPress Native Classes:**
+- `V_WP_SEO_Audit_DB` - Database operations class (`includes/class-v-wp-seo-audit-db.php`)
+  - Provides WordPress-native database access using `$wpdb`
+  - Replaces Yii CDbCommand and CActiveRecord for database operations
+  - Maintains existing schema and table structure
+
 ### Layer 2: Yii Framework Layer
 
 **Directory Structure:**
