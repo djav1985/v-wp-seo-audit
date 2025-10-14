@@ -134,9 +134,20 @@ class V_WP_SEO_Audit_Report {
 			);
 		}
 
+		// Allow plugins to intercept before generation.
+		do_action( 'v_wp_seo_audit_before_generate_html', $this->domain );
+
 		// For now, delegate to existing Yii controller.
 		// This allows incremental migration - we can replace this later.
-		return $this->generate_html_via_yii();
+		$result = $this->generate_html_via_yii();
+
+		// Allow plugins to modify the result.
+		$result = apply_filters( 'v_wp_seo_audit_html_result', $result, $this->domain );
+
+		// Fire action after generation.
+		do_action( 'v_wp_seo_audit_after_generate_html', $this->domain, $result );
+
+		return $result;
 	}
 
 	/**

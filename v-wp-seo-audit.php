@@ -188,6 +188,17 @@ function v_wp_seo_audit_enqueue_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'v_wp_seo_audit_enqueue_assets' );
 
+/**
+ * Allow other plugins to modify enqueued assets.
+ * 
+ * Usage:
+ * add_filter( 'v_wp_seo_audit_enqueue_assets', function( $assets ) {
+ *     $assets['custom_css'] = 'path/to/custom.css';
+ *     return $assets;
+ * } );
+ */
+do_action( 'v_wp_seo_audit_assets_loaded' );
+
 // Register shortcode.
 /**
  * V_wp_seo_audit_shortcode function.
@@ -208,6 +219,9 @@ function v_wp_seo_audit_shortcode( $atts) {
 		// Process the request through Yii.
 		$v_wp_seo_audit_app->run();
 		$content = ob_get_clean();
+
+		// Allow other plugins to modify the content.
+		$content = apply_filters( 'v_wp_seo_audit_shortcode_content', $content, $atts );
 
 		// Create a fresh nonce for the container to support PDF downloads.
 		$nonce = wp_create_nonce( 'v_wp_seo_audit_nonce' );
