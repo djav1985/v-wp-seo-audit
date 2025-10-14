@@ -88,7 +88,7 @@ echo Yii::t(
 <tr class="<?php echo $advice; ?>">
 <td class="td-icon">
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo Yii::t( 'app', 'Title' ); ?>
@@ -117,7 +117,7 @@ echo Yii::t(
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo Yii::t( 'app', 'Description' ); ?>
@@ -146,7 +146,7 @@ echo Yii::t(
 
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 
 <td class="td-compare" align="center" valign="middle">
@@ -185,7 +185,7 @@ echo Yii::t(
 <tr class="odd">
 <td>
 <br/><br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo Yii::t( 'app', 'Headings' ); ?>
@@ -235,7 +235,7 @@ if ($content['isset_headings']) :
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo Yii::t( 'app', 'Images' ); ?>
@@ -254,7 +254,7 @@ if ($content['isset_headings']) :
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo Yii::t( 'app', 'Text/HTML Ratio' ); ?>
@@ -282,7 +282,7 @@ echo Yii::t(
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo Yii::t( 'app', 'Flash' ); ?>
@@ -297,7 +297,7 @@ echo Yii::t(
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo Yii::t( 'app', 'Iframe' ); ?>
@@ -326,7 +326,7 @@ echo Yii::t(
 <tr class="<?php echo $advice; ?>">
 <td class="td-icon">
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
 <?php echo Yii::t( 'app', 'URL Rewrite' ); ?>
@@ -341,7 +341,7 @@ echo Yii::t(
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo Yii::t( 'app', 'Underscores in the URLs' ); ?>
@@ -356,7 +356,7 @@ echo Yii::t(
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo Yii::t( 'app', 'In-page links' ); ?>
@@ -380,7 +380,7 @@ echo Yii::t(
 <tr class="odd">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo Yii::t( 'app', 'Statistics' ); ?>
@@ -444,7 +444,7 @@ endforeach;
 <tr class="odd">
 <td class="td-icon">
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
 <?php echo Yii::t( 'app', 'Keywords Cloud' ); ?>
@@ -484,10 +484,10 @@ foreach ($cloud['matrix'] as $word => $object) :
 <tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 <td><?php echo CHtml::encode( $word ); ?></td>
 <td><?php echo (int) $cloud['words'][ $word ]['count']; ?></td>
-<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) $object['title']; ?>.png" /></td>
-<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) $object['keywords']; ?>.png" /></td>
-<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) $object['description']; ?>.png" /></td>
-<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) $object['headings']; ?>.png" /></td>
+<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $object['title']; ?>.png" /></td>
+<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $object['keywords']; ?>.png" /></td>
+<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $object['description']; ?>.png" /></td>
+<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $object['headings']; ?>.png" /></td>
 </tr>
 	<?php
 	$i++;
@@ -511,7 +511,7 @@ endforeach;
 <tr class="odd">
 <td class="td-icon">
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
 <?php echo Yii::t( 'app', 'Url' ); ?>
@@ -528,7 +528,7 @@ endforeach;
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo Yii::t( 'app', 'Favicon' ); ?>
@@ -543,7 +543,7 @@ endforeach;
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo Yii::t( 'app', 'Language' ); ?>
@@ -558,7 +558,7 @@ endforeach;
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo Yii::t( 'app', 'Dublin Core' ); ?>
@@ -587,7 +587,7 @@ endforeach;
 <tr class="<?php echo $advice; ?>">
 <td class="td-icon">
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
 <?php echo Yii::t( 'app', 'Doctype' ); ?>
@@ -608,7 +608,7 @@ endif;
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo Yii::t( 'app', 'Encoding' ); ?>
@@ -623,7 +623,7 @@ endif;
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo Yii::t( 'app', 'W3C Validity' ); ?>
@@ -640,7 +640,7 @@ endif;
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo Yii::t( 'app', 'Deprecated HTML' ); ?>
@@ -675,7 +675,7 @@ endif;
 <tr class="odd">
 <td>
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo Yii::t( 'app', 'Speed Tips' ); ?>
@@ -687,34 +687,34 @@ endif;
 
 <tr class="no-top-line even">
 <?php $advice = $rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] ); ?>
-<td width="20px"><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
+<td width="20px"><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
 <td width="330px"><?php echo Yii::t( 'advice', "Nested tables advice - $advice" ); ?></td>
 </tr>
 
 <tr class="odd">
 <?php $advice = $rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] ); ?>
-<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
+<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
 <td><?php echo Yii::t( 'advice', "Inline CSS advice - $advice" ); ?></td>
 </tr>
 
 <tr class="even">
 <?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
 <?php list($img_advice,) = explode( ' ', $advice ); ?>
-<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
+<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
 <td><?php echo Yii::t( 'advice', "CSS count advice - $advice", array( '{MoreNr}' => _RATE_CSS_COUNT ) ); ?></td>
 </tr>
 
 <tr class="odd">
 <?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
 <?php list($img_advice,) = explode( ' ', $advice ); ?>
-<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
+<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
 <td><?php echo Yii::t( 'advice', "JS count advice - $advice", array( '{MoreNr}' => _RATE_JS_COUNT ) ); ?></td>
 </tr>
 
 <tr class="even">
 	<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
 	<?php list($img_advice,) = explode( ' ', $advice ); ?>
-	<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
+	<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
 	<td><?php echo Yii::t( 'advice', "Gzip - $advice" ); ?></td>
 </tr>
 
@@ -743,7 +743,7 @@ endif;
 <tr class="odd">
 <td class="td-icon">
 <br/>
-<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
 <?php echo Yii::t( 'app', 'Mobile Optimization' ); ?>
@@ -754,17 +754,17 @@ endif;
 <tbody>
 
 <tr class="even">
-<td width="20px"><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
+<td width="20px"><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
 <td width="330px"><?php echo Yii::t( 'app', 'Apple Icon' ); ?></td>
 </tr>
 
 <tr class="odd">
-<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
+<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
 <td><?php echo Yii::t( 'app', 'Meta Viewport Tag' ); ?></td>
 </tr>
 
 <tr class="even">
-<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
+<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
 <td><?php echo Yii::t( 'app', 'Flash content' ); ?></td>
 </tr>
 
@@ -793,7 +793,7 @@ endif;
 	<?php $advice = $rateprovider->addCompare( 'hasSitemap', ! empty( $misc['sitemap'] ) ); ?>
 <tr class="<?php echo $advice; ?>">
 <td class="td-icon">
-<img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
 	<?php echo Yii::t( 'app', 'XML Sitemap' ); ?>
@@ -829,7 +829,7 @@ endif;
 <tr class="<?php echo $advice; ?>">
 <td class="td-icon">
 <br/>
-<img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 	<?php echo Yii::t( 'app', 'Robots.txt' ); ?>
@@ -851,7 +851,7 @@ endif;
 	<?php $advice = $rateprovider->addCompare( 'hasAnalytics', ! empty( $misc['analytics'] ) ); ?>
 <tr class="<?php echo $advice; ?>">
 <td class="td-icon">
-<img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 	<?php echo Yii::t( 'app', 'Analytics' ); ?>
@@ -867,7 +867,7 @@ endif;
 			?>
 <tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 <td>
-<img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/analytics/<?php echo $analytics; ?>.png" />
+<img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/analytics/<?php echo $analytics; ?>.png" />
 &nbsp;&nbsp;
 			<?php echo CHtml::encode( AnalyticsFinder::getProviderName( $analytics ) ); ?>
 </td>

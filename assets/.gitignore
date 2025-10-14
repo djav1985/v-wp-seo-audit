@@ -1,3 +1,6 @@
 *
 !.gitignore
 !.htaccess
+!css/
+!img/
+!js/
