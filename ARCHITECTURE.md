@@ -17,13 +17,22 @@ This document provides an overview of the V-WP-SEO-Audit plugin architecture aft
 **WordPress Hooks Used:**
 1. `wp` - Initialize Yii app when shortcode detected
 2. `wp_enqueue_scripts` - Load CSS/JS assets
-3. `wp_ajax_v_wp_seo_audit_validate` - Domain validation
-4. `wp_ajax_nopriv_v_wp_seo_audit_validate` - Public validation
+3. `wp_ajax_v_wp_seo_audit_validate` - Domain validation (WordPress-native)
+4. `wp_ajax_nopriv_v_wp_seo_audit_validate` - Public validation (WordPress-native)
 5. `wp_ajax_v_wp_seo_audit_generate_report` - Report generation
 6. `wp_ajax_nopriv_v_wp_seo_audit_generate_report` - Public report
 7. `wp_ajax_v_wp_seo_audit_pagepeeker` - Thumbnail proxy (deprecated)
 8. `wp_ajax_nopriv_v_wp_seo_audit_pagepeeker` - Public proxy (deprecated)
-9. Shortcode: `[v_wp_seo_audit]` - Display form
+9. `v_wp_seo_audit_daily_cleanup` - Daily cleanup cron job
+10. Shortcode: `[v_wp_seo_audit]` - Display form
+
+**WordPress Native Functions:**
+- `v_wp_seo_audit_validate_domain()` - Domain validation orchestrator
+- `v_wp_seo_audit_sanitize_domain()` - Domain sanitization
+- `v_wp_seo_audit_encode_idn()` - IDN/punycode encoding
+- `v_wp_seo_audit_is_valid_domain_format()` - Format validation
+- `v_wp_seo_audit_check_banned_domain()` - Banned domain checking
+- `v_wp_seo_audit_cleanup()` - Automated cleanup of old files and records
 
 ### Layer 2: Yii Framework Layer
 
@@ -258,11 +267,45 @@ Located in `protected/vendors/Webmaster/`:
 - ❌ `requirements.php` - Yii requirements checker
 - ❌ `.htaccess` - Standalone app routing rules
 
+## Phase 2 Enhancements (Completed)
+
+### WordPress Cron Integration ✅
+**Status:** Implemented
+**Feature:** Automated cleanup of old files and database records
+**Implementation:**
+- `v_wp_seo_audit_cleanup()` - Main cleanup function
+- Runs daily via WordPress cron (`wp_schedule_event`)
+- Cleans PDFs, thumbnails, and database records older than cache time
+- Removes orphaned records from related tables
+- Scheduled on activation, unscheduled on deactivation
+
+**Code Location:** `v-wp-seo-audit.php` (lines ~370-455)
+
+### WordPress-Native Form Validation ✅
+**Status:** Implemented
+**Feature:** Domain validation without Yii dependency
+**Implementation:**
+- `v_wp_seo_audit_validate_domain()` - Main validation orchestrator
+- `v_wp_seo_audit_sanitize_domain()` - Input sanitization
+- `v_wp_seo_audit_encode_idn()` - IDN/punycode encoding
+- `v_wp_seo_audit_is_valid_domain_format()` - Regex validation
+- `v_wp_seo_audit_check_banned_domain()` - Restriction checking
+
+**Benefits:**
+- No Yii initialization required for validation
+- Faster response times
+- Lower memory footprint
+- Pure WordPress code
+- Better i18n integration
+
+**Code Location:** `v-wp-seo-audit.php` (lines ~485-640)
+
 ## Future Enhancement Opportunities
 
-### Phase 1: Native WordPress Forms
-**Current:** Yii forms with custom validation
-**Future:** WordPress form API or popular form plugins
+### Phase 1: Native WordPress Forms ✅ PARTIALLY COMPLETED
+**Previous:** Yii forms with custom validation
+**Current:** WordPress-native validation for domain input
+**Remaining:** Report generation still uses Yii WebsiteForm
 **Benefits:**
 - Better integration with WordPress ecosystem
 - Familiar interface for WordPress users
@@ -295,9 +338,16 @@ Located in `protected/vendors/Webmaster/`:
 - Bulk operations
 - Export capabilities
 
-### Phase 5: Scheduled Tasks
-**Current:** No scheduled tasks (removed with CLI)
-**Future:** WordPress Cron for maintenance
+### Phase 5: Scheduled Tasks ✅ COMPLETED
+**Previous:** No scheduled tasks (removed with CLI in Phase 1)
+**Current:** WordPress Cron for automated maintenance
+**Implementation:**
+- Daily cleanup cron job via `wp_schedule_event()`
+- Automatic removal of old PDFs (older than cache time)
+- Cleanup of old database records and orphaned data
+- Thumbnail cleanup for expired domains
+- Registered on plugin activation, unregistered on deactivation
+
 **Benefits:**
 - Automatic cache cleanup
 - Periodic report updates
