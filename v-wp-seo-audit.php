@@ -480,6 +480,163 @@ function v_wp_seo_audit_uninstall() {
 }
 register_uninstall_hook( __FILE__, 'v_wp_seo_audit_uninstall' );
 
+// WordPress-native domain validation functions.
+/**
+ * V_wp_seo_audit_validate_domain function.
+ *
+ * Validates and sanitizes domain input using WordPress patterns.
+ *
+ * @param string $domain The domain to validate.
+ * @return array Array with 'valid' boolean, 'domain', 'idn', 'ip', and 'errors' array.
+ */
+function v_wp_seo_audit_validate_domain( $domain ) {
+	$errors = array();
+	$result = array(
+		'valid'  => false,
+		'domain' => '',
+		'idn'    => '',
+		'ip'     => '',
+		'errors' => array(),
+	);
+
+	// Sanitize and trim domain.
+	$domain = v_wp_seo_audit_sanitize_domain( $domain );
+
+	if ( empty( $domain ) ) {
+		$errors[]         = __( 'Please enter a domain name', 'v-wp-seo-audit' );
+		$result['errors'] = $errors;
+		return $result;
+	}
+
+	// Store IDN (unicode) version before punycode encoding.
+	$idn = $domain;
+
+	// Convert IDN to punycode if needed.
+	$domain = v_wp_seo_audit_encode_idn( $domain );
+
+	// Validate domain format.
+	if ( ! v_wp_seo_audit_is_valid_domain_format( $domain ) ) {
+		$errors[]         = __( 'Invalid domain format. Please enter a valid domain name (e.g., example.com)', 'v-wp-seo-audit' );
+		$result['errors'] = $errors;
+		return $result;
+	}
+
+	// Check banned websites.
+	$banned_error = v_wp_seo_audit_check_banned_domain( $idn );
+	if ( $banned_error ) {
+		$errors[]         = $banned_error;
+		$result['errors'] = $errors;
+		return $result;
+	}
+
+	// Check if domain is reachable.
+	$ip   = gethostbyname( $domain );
+	$long = ip2long( $ip );
+	if ( -1 === $long || false === $long ) {
+		/* translators: %s: domain name */
+		$errors[]         = sprintf( __( 'Could not reach host: %s', 'v-wp-seo-audit' ), $domain );
+		$result['errors'] = $errors;
+		return $result;
+	}
+
+	// All validations passed.
+	$result['valid']  = true;
+	$result['domain'] = $domain;
+	$result['idn']    = $idn;
+	$result['ip']     = $ip;
+
+	return $result;
+}
+
+/**
+ * Sanitize domain input.
+ *
+ * @param string $domain The domain to sanitize.
+ * @return string Sanitized domain.
+ */
+function v_wp_seo_audit_sanitize_domain( $domain ) {
+	// Basic sanitization.
+	$domain = sanitize_text_field( $domain );
+	$domain = trim( $domain );
+	$domain = trim( $domain, '/' );
+	$domain = mb_strtolower( $domain );
+
+	// Remove protocol.
+	$domain = preg_replace( '#^(https?://)#i', '', $domain );
+
+	// Remove www prefix.
+	$domain = preg_replace( '#^www\.#i', '', $domain );
+
+	return $domain;
+}
+
+/**
+ * Encode IDN domain to punycode.
+ *
+ * @param string $domain The domain to encode.
+ * @return string Punycode-encoded domain.
+ */
+function v_wp_seo_audit_encode_idn( $domain ) {
+	// Check if IDN class is available from Yii vendors.
+	$idn_file = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/vendors/Webmaster/Utils/IDN.php';
+
+	if ( file_exists( $idn_file ) ) {
+		require_once $idn_file;
+		$idn = new IDN();
+		return $idn->encode( $domain );
+	}
+
+	// Fallback: use PHP's idn_to_ascii if available.
+	if ( function_exists( 'idn_to_ascii' ) ) {
+		$encoded = idn_to_ascii( $domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46 );
+		return $encoded ? $encoded : $domain;
+	}
+
+	// No encoding available, return as-is.
+	return $domain;
+}
+
+/**
+ * Validate domain format.
+ *
+ * @param string $domain The domain to validate.
+ * @return bool True if valid, false otherwise.
+ */
+function v_wp_seo_audit_is_valid_domain_format( $domain ) {
+	// Domain regex: alphanumeric and hyphens, with dots separating parts.
+	// Each part can be 1-62 characters.
+	$pattern = '/^[a-z\d-]{1,62}\.[a-z\d-]{1,62}(\.[a-z\d-]{1,62})*$/i';
+	return (bool) preg_match( $pattern, $domain );
+}
+
+/**
+ * Check if domain is banned.
+ *
+ * @param string $domain The domain to check.
+ * @return string|false Error message if banned, false otherwise.
+ */
+function v_wp_seo_audit_check_banned_domain( $domain ) {
+	$restriction_file = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/domain_restriction.php';
+
+	if ( ! file_exists( $restriction_file ) ) {
+		return false;
+	}
+
+	$banned_patterns = include $restriction_file;
+
+	if ( ! is_array( $banned_patterns ) ) {
+		return false;
+	}
+
+	foreach ( $banned_patterns as $pattern ) {
+		if ( preg_match( "#{$pattern}#i", $domain ) ) {
+			return __( 'Error Code 103: This domain is not allowed', 'v-wp-seo-audit' );
+		}
+	}
+
+	return false;
+}
+
 // WordPress AJAX handler for domain validation.
 /**
  * V_wp_seo_audit_ajax_validate_domain function.
@@ -488,52 +645,18 @@ function v_wp_seo_audit_ajax_validate_domain() {
 	// Verify nonce for security.
 	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
 
-	global $v_wp_seo_audit_app;
+	// Get domain from request.
+	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitization handled in v_wp_seo_audit_validate_domain.
+	$domain = isset( $_POST['domain'] ) ? wp_unslash( $_POST['domain'] ) : '';
 
-	// Initialize Yii if not already initialized.
-	if ( null === $v_wp_seo_audit_app) {
-			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+	// Use WordPress-native validation.
+	$validation = v_wp_seo_audit_validate_domain( $domain );
 
-		if (file_exists( $yii ) && file_exists( $config )) {
-				require_once $yii;
-				$v_wp_seo_audit_app = Yii::createWebApplication( $config );
-
-			if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
-				$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
-			}
-		} else {
-				wp_send_json_error( array( 'message' => 'Application not initialized' ) );
-				return;
-		}
-	}
-
-		v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
-
-		// Get domain from request.
-		$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
-
-	if (empty( $domain )) {
-		wp_send_json_error( array( 'message' => 'Please enter a domain name' ) );
-		return;
-	}
-
-	// Create and validate the model.
-	$model         = new WebsiteForm();
-	$model->domain = $domain;
-
-	if ( ! $model->validate()) {
-		$errors        = $model->getErrors();
-		$errorMessages = array();
-		foreach ($errors as $field => $fieldErrors) {
-			foreach ($fieldErrors as $error) {
-				$errorMessages[] = $error;
-			}
-		}
-		wp_send_json_error( array( 'message' => implode( '<br>', $errorMessages ) ) );
+	if ( ! $validation['valid'] ) {
+		wp_send_json_error( array( 'message' => implode( '<br>', $validation['errors'] ) ) );
 	} else {
 		// Domain is valid, return success with domain.
-		wp_send_json_success( array( 'domain' => $model->domain ) );
+		wp_send_json_success( array( 'domain' => $validation['domain'] ) );
 	}
 }
 add_action( 'wp_ajax_v_wp_seo_audit_validate', 'v_wp_seo_audit_ajax_validate_domain' );
