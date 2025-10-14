@@ -155,18 +155,6 @@ function v_wp_seo_audit_activate() {
 	}
 }
 
-// Deactivation hook (optional - for cleanup on deactivation).
-/**
- * V_wp_seo_audit_deactivate function.
- */
-function v_wp_seo_audit_deactivate() {
-	// Clear scheduled cron job.
-	$timestamp = wp_next_scheduled( 'v_wp_seo_audit_daily_cleanup' );
-	if ( $timestamp ) {
-		wp_unschedule_event( $timestamp, 'v_wp_seo_audit_daily_cleanup' );
-	}
-}
-
 // WordPress Cron cleanup function.
 /**
  * V_wp_seo_audit_cleanup function.

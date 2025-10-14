@@ -26,6 +26,9 @@ define( 'V_WP_SEO_AUDIT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 // Load installation hooks.
 require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'install.php';
 
+// Load deactivation hooks.
+require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'deactivation.php';
+
 // Register activation and deactivation hooks.
 register_activation_hook( __FILE__, 'v_wp_seo_audit_activate' );
 register_deactivation_hook( __FILE__, 'v_wp_seo_audit_deactivate' );
