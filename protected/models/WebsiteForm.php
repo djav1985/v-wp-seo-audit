@@ -124,7 +124,7 @@ class WebsiteForm extends CFormModel {
 		if ( ! $this->hasErrors()) {
 			$this->ip = gethostbyname( $this->domain );
 			$long     = ip2long( $this->ip );
-			if ($long === -1 or $long === false) {
+			if ( -1 === $long || false === $long ) {
 				$this->addError( 'domain', 'Could not reach host: ' . $this->domain );
 
 			}
@@ -135,6 +135,9 @@ class WebsiteForm extends CFormModel {
 
 	/**
 	 * tryToAnalyse function.
+	 *
+	 * WordPress-native implementation: performs website analysis inline
+	 * instead of calling removed CLI commands.
 	 */
 	public function tryToAnalyse() {
 
@@ -153,36 +156,41 @@ class WebsiteForm extends CFormModel {
 			$website = $db->get_website_by_domain( $this->domain, array( 'modified', 'id' ) );
 
 			// If website exists and we do not need to update data then exit from method.
-			if ($website and ( $notUpd = ( strtotime( $website['modified'] ) + Yii::app()->params['analyzer.cache_time'] > time() ) )) {
+			$notUpd = false;
+			if ( $website && ( strtotime( $website['modified'] ) + Yii::app()->params['analyzer.cache_time'] > time() ) ) {
+				$notUpd = true;
 				return true;
-			} elseif ($website and ! $notUpd) {
+			}
+
+			// If website exists but needs update, delete old PDFs.
+			if ( $website && ! $notUpd ) {
 				Utils::deletePdf( $this->domain );
 				Utils::deletePdf( $this->domain . '_pagespeed' );
-				$args = array( 'yiic', 'parse', 'update', "--domain={$this -> domain}", "--idn={$this -> idn}", "--ip={$this -> ip}", "--wid={$website['id']}" );
+				$wid = $website['id'];
 			} else {
-				$args = array( 'yiic', 'parse', 'insert', "--domain={$this -> domain}", "--idn={$this -> idn}", "--ip={$this -> ip}" );
+				$wid = null;
 			}
 
-			// Get command path.
-			$commandPath = Yii::app()->getBasePath() . DIRECTORY_SEPARATOR . 'commands';
-			// Create new console command runner.
-			$runner = new CConsoleCommandRunner();
-			// Adding commands.
-			$runner->addCommands( $commandPath );
-			// If something goes wrong return error.
-			if ($error = $runner->run( $args )) {
-				$this->addError( 'domain', "Error Code $error" );
-			} else {
-				// After analysis, check if DB record exists.
-				$websiteCheck = $db->get_website_by_domain( $this->domain, array( 'id' ) );
-				if ( ! $websiteCheck) {
-					$this->addError( 'domain', 'Analysis failed: domain record not created. Please try again or check your domain input.' );
-					return false;
-				}
-				return true;
-
+			// Call WordPress-native analysis function.
+			if ( ! function_exists( 'v_wp_seo_audit_analyze_website' ) ) {
+				$this->addError( 'domain', 'Analysis function not available' );
+				return false;
 			}
 
+			$result = v_wp_seo_audit_analyze_website( $this->domain, $this->idn, $this->ip, $wid );
+
+			if ( is_wp_error( $result ) ) {
+				$this->addError( 'domain', $result->get_error_message() );
+				return false;
+			}
+
+			// After analysis, check if DB record exists.
+			$websiteCheck = $db->get_website_by_domain( $this->domain, array( 'id' ) );
+			if ( ! $websiteCheck) {
+				$this->addError( 'domain', 'Analysis failed: domain record not created. Please try again or check your domain input.' );
+				return false;
+			}
+			return true;
 		}
 
 	}
