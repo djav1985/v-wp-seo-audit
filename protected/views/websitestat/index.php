@@ -9,8 +9,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 	<div class="alert alert-danger mt-5 mb-5">
 		<?php echo 'No report available. The domain could not be analyzed or the record was not created. Please try again or check your domain input.'; ?>
 	</div>
-	<?php return; ?>
-<?php endif; ?>
+<?php return; endif; ?>
 <script type="text/javascript">
 	"use strict";
 
@@ -41,9 +40,9 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			drawPie();
 		};
 
-  /**
-   * drawPie function.
-   */
+		/**
+		 * drawPie function.
+		 */
 		function drawPie() {
 			$.plot($("#links-pie"), pie_data, {
 				series: {
