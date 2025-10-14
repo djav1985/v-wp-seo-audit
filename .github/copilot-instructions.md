@@ -9,7 +9,7 @@ Purpose (one-liner)
 Quick architecture summary
 - Shortcode `[v_wp_seo_audit]` renders the UI. Client JS ( `js/base.js` ) uses `admin-ajax.php` to call plugin actions implemented in `v-wp-seo-audit.php`.
 - Server-side analysis logic lives under `protected/` and `framework/` (Yii). AJAX handlers bootstrap Yii as needed and call controller actions (e.g., `WebsitestatController::actionGenerateHTML`, `actionGeneratePDF`).
-- Persistent data uses custom `ca_*` tables created on activation (`v_wp_seo_audit_activate`).
+- Persistent data uses custom `ca_*` tables created on activation (`v_wpsa_activate`).
 
 Key files to inspect first
 - `v-wp-seo-audit.php` — plugin entry, shortcode registration, AJAX handlers, enqueued assets, activation/uninstall hooks, WordPress Cron cleanup, and native validation functions.
@@ -33,7 +33,7 @@ Project-specific patterns and gotchas
 - Domain validation now uses WordPress-native functions (`v_wp_seo_audit_validate_domain()` and helpers) and does NOT require Yii initialization. Only report generation requires Yii.
 - Views under `protected/views` are Yii templates using `CHtml::encode()` / `Yii::t()` — when updating views, prefer escaping with `CHtml::encode()` or WordPress equivalents if you migrate to WP templating.
 - PDF download: frontend sends XHR POST expecting a PDF blob. If the page injects HTML via AJAX, the global inline nonce may be missing; the generate_report handler was updated to return a fresh nonce. When modifying AJAX flows, ensure a valid nonce is available to the client.
-- WordPress Cron: A daily cleanup job (`v_wp_seo_audit_cleanup`) runs automatically to remove old PDFs, thumbnails, and database records. This is registered on plugin activation and unregistered on deactivation.
+- WordPress Cron: A daily cleanup job (`v_wpsa_cleanup`) runs automatically to remove old PDFs, thumbnails, and database records. This is registered on plugin activation and unregistered on deactivation.
 
 Security and maintenance notes
 - Nonces: use `wp_create_nonce('v_wp_seo_audit_nonce')` on the page and `check_ajax_referer()` server-side. When returning server-injected HTML via AJAX, include a fresh nonce (e.g., response.data.nonce) or add `data-nonce` on the container.
