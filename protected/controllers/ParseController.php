@@ -65,7 +65,7 @@ class ParseController extends Controller {
 		$website = $db->get_website_by_domain( $domain );
 		
 		if ( ! $website) {
-			throw new CHttpException( 404, Yii::t( 'app', "The page you are looking for doesn't exists" ) );
+			throw new CHttpException( 404, "The page you are looking for doesn't exists" );
 		}
 		$wid = $website['id'];
 
@@ -124,7 +124,7 @@ class ParseController extends Controller {
 		} catch (Exception $e) {
 			$this->jsonResponse(
 				array(
-					'error' => array( Yii::t( 'app', 'Error Code 101' ) ),
+					'error' => array( 'Server temporary unavailable' ),
 				)
 			);
 		}

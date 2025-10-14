@@ -64,7 +64,7 @@ class WebsiteForm extends CFormModel {
 	 */
 	public function attributeLabels() {
 
-		return array( 'domain' => Yii::t( 'app', 'Domain' ) );
+		return array( 'domain' => 'Domain' );
 
 	}
 
@@ -90,7 +90,7 @@ class WebsiteForm extends CFormModel {
 			$banned = Utils::getLocalConfigIfExists( 'domain_restriction' );
 			foreach ($banned as $pattern) {
 				if (preg_match( "#{$pattern}#i", $this->idn )) {
-					$this->addError( 'domain', Yii::t( 'app', 'Error Code 103' ) );
+					$this->addError( 'domain', 'Website contains bad words' );
 
 				}
 
@@ -125,7 +125,7 @@ class WebsiteForm extends CFormModel {
 			$this->ip = gethostbyname( $this->domain );
 			$long     = ip2long( $this->ip );
 			if ($long === -1 or $long === false) {
-				$this->addError( 'domain', Yii::t( 'app', 'Could not reach host: {Host}', array( '{Host}' => $this->domain ) ) );
+				$this->addError( 'domain', 'Could not reach host: ' . $this->domain );
 
 			}
 
@@ -144,7 +144,7 @@ class WebsiteForm extends CFormModel {
 			
 			// Use WordPress native database class.
 			if ( ! class_exists( 'V_WP_SEO_Audit_DB' ) ) {
-				$this->addError( 'domain', Yii::t( 'app', 'Database error' ) );
+				$this->addError( 'domain', 'Database error' );
 				return false;
 			}
 			
@@ -171,12 +171,12 @@ class WebsiteForm extends CFormModel {
 			$runner->addCommands( $commandPath );
 			// If something goes wrong return error.
 			if ($error = $runner->run( $args )) {
-				$this->addError( 'domain', Yii::t( 'app', "Error Code $error" ) );
+				$this->addError( 'domain', "Error Code $error" );
 			} else {
 				// After analysis, check if DB record exists.
 				$websiteCheck = $db->get_website_by_domain( $this->domain, array( 'id' ) );
 				if ( ! $websiteCheck) {
-					$this->addError( 'domain', Yii::t( 'app', 'Analysis failed: domain record not created. Please try again or check your domain input.' ) );
+					$this->addError( 'domain', 'Analysis failed: domain record not created. Please try again or check your domain input.' );
 					return false;
 				}
 				return true;

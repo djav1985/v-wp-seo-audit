@@ -12,12 +12,12 @@ class PagePeekerProxyController extends Controller {
 	 */
 	public function actionIndex() {
 		if ( ! Yii::app()->params['thumbnail.proxy']) {
-			 throw new CHttpException( 404, Yii::t( 'notification', "The page you are looking for doesn't exists" ) );
+			 throw new CHttpException( 404, "The page you are looking for doesn't exists" );
 
 		}
 		$method = 'exec' . Yii::app()->request->getQuery( 'method' );
 		if ( ! method_exists( $this, $method )) {
-			throw new CHttpException( 404, Yii::t( 'notification', "The page you are looking for doesn't exists" ) );
+			throw new CHttpException( 404, "The page you are looking for doesn't exists" );
 
 		}
 		return $this->$method();
