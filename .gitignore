@@ -1,23 +1,6 @@
 # Composer dependencies
 /vendor/
 
-# Build artifacts (allow css, img, js in assets)
-/assets/*
-!/assets/.gitignore
-!/assets/.htaccess
-!/assets/css/
-!/assets/img/
-!/assets/js/
-/pdf/*.pdf
-
-# Runtime files
-/protected/runtime/*
-!/protected/runtime/.gitignore
-
-# Configuration files (keep template)
-/protected/config/main.php
-!/protected/config/main.php.dist
-
 # Node modules (if any)
 node_modules/
 
@@ -35,4 +18,3 @@ Thumbs.db
 .idea/
 *.sublime-project
 *.sublime-workspace
-wp-db-config.php
