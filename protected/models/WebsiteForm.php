@@ -141,17 +141,17 @@ class WebsiteForm extends CFormModel {
 		if ( ! $this->hasErrors()) {
 			// Remove "www" from domain.
 			$this->domain = str_replace( 'www.', '', $this->domain );
-			
+
 			// Use WordPress native database class.
 			if ( ! class_exists( 'V_WP_SEO_Audit_DB' ) ) {
 				$this->addError( 'domain', 'Database error' );
 				return false;
 			}
-			
+
 			$db = new V_WP_SEO_Audit_DB();
 			// Check if website already exists in the database.
 			$website = $db->get_website_by_domain( $this->domain, array( 'modified', 'id' ) );
-			
+
 			// If website exists and we do not need to update data then exit from method.
 			if ($website and ( $notUpd = ( strtotime( $website['modified'] ) + Yii::app()->params['analyzer.cache_time'] > time() ) )) {
 				return true;

@@ -126,15 +126,15 @@ class WebsitestatController extends Controller {
 	 */
 	public function init() {
 		parent::init();
-		
+
 		// Use WordPress native database class.
 		if ( ! class_exists( 'V_WP_SEO_Audit_DB' ) ) {
 			throw new CHttpException( 500, 'Database class not available' );
 		}
-		
+
 		$this->command = new V_WP_SEO_Audit_DB();
 		$this->domain  = isset( $_GET['domain'] ) ? $_GET['domain'] : null;
-		
+
 		if (
 		! $this->website = $this->command->get_website_by_domain( $this->domain, array( 'id', 'domain', 'modified', 'idn', 'score', 'final_url' ) )
 		) {
@@ -332,7 +332,7 @@ class WebsitestatController extends Controller {
 
 		// Get all report data using WordPress native database.
 		$data = $this->command->get_website_report_data( $this->wid );
-		
+
 		$this->cloud    = $data['cloud'];
 		$this->content  = $data['content'];
 		$this->document = $data['document'];
