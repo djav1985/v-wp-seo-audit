@@ -43,10 +43,6 @@ require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-validation.php';
 require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-helpers.php';
 require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-ajax-handlers.php';
 
-// Initialize Yii framework.
-// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_error_reporting, WordPress.PHP.DevelopmentFunctions.error_log_error_reporting, WordPress.Security.PluginMenuSlug.Using error_reporting
-error_reporting( E_ALL & ~( E_NOTICE | E_DEPRECATED | E_STRICT ) );
-
 // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 if ( ! @ini_get( 'date.timezone' ) ) {
 	// phpcs:ignore WordPress.DateTime.RestrictedFunctions.timezone_change_date_default_timezone_set

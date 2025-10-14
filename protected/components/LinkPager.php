@@ -1,14 +1,21 @@
 <?php
 /**
- * File: LinkPager.php
+ * LinkPager component for V_WP_SEO_Audit plugin.
+ *
+ * Extends CLinkPager to add Bootstrap-compatible page-link classes.
  *
  * @package V_WP_SEO_Audit
  */
 
+/**
+ * File: LinkPager.php
+ *
+ * @package V_WP_SEO_Audit
+ */
 class LinkPager extends CLinkPager {
 
 	/**
-	 * createPageButton function.
+	 * CreatePageButton function.
 	 *
 	 * @param mixed $label Parameter.
 	 * @param mixed $page Parameter.
