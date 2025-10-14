@@ -26,6 +26,9 @@ define( 'V_WP_SEO_AUDIT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 // Load WordPress-native database class.
 require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wp-seo-audit-db.php';
 
+// Load WordPress-native report class.
+require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wp-seo-audit-report.php';
+
 // Initialize Yii framework.
 // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_error_reporting, WordPress.PHP.DevelopmentFunctions.error_log_error_reporting, WordPress.Security.PluginMenuSlug.Using error_reporting
 error_reporting( E_ALL & ~( E_NOTICE | E_DEPRECATED | E_STRICT ) );
@@ -678,33 +681,33 @@ function v_wp_seo_audit_ajax_generate_report() {
 
 	global $v_wp_seo_audit_app;
 
-	// Initialize Yii if not already initialized.
-	if ( null === $v_wp_seo_audit_app) {
-			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+	// Get domain from request.
+	$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
 
-		if (file_exists( $yii ) && file_exists( $config )) {
+	if ( empty( $domain ) ) {
+		wp_send_json_error( array( 'message' => __( 'Domain is required', 'v-wp-seo-audit' ) ) );
+		return;
+	}
+
+	// Initialize Yii if not already initialized (still needed for analysis and rendering).
+	if ( null === $v_wp_seo_audit_app ) {
+		$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
+		$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+
+		if ( file_exists( $yii ) && file_exists( $config ) ) {
 			require_once $yii;
 			$v_wp_seo_audit_app = Yii::createWebApplication( $config );
 
-			if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
+			if ( isset( $v_wp_seo_audit_app->params['app.timezone'] ) ) {
 				$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
 			}
 		} else {
-			wp_send_json_error( array( 'message' => 'Application not initialized' ) );
+			wp_send_json_error( array( 'message' => __( 'Application not initialized', 'v-wp-seo-audit' ) ) );
 			return;
 		}
 	}
 
-		v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
-
-		// Get domain from request.
-	$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
-
-	if (empty( $domain )) {
-		wp_send_json_error( array( 'message' => 'Domain is required' ) );
-		return;
-	}
+	v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
 
 	// Create and validate the model to trigger analysis if needed.
 	// The WebsiteForm::validate() will automatically call tryToAnalyse()
@@ -712,59 +715,36 @@ function v_wp_seo_audit_ajax_generate_report() {
 	$model         = new WebsiteForm();
 	$model->domain = $domain;
 
-	if ( ! $model->validate()) {
+	if ( ! $model->validate() ) {
 		// Validation failed (domain invalid, unreachable, or analysis error).
-		$errors        = $model->getErrors();
-		$errorMessages = array();
-		foreach ($errors as $field => $fieldErrors) {
-			foreach ($fieldErrors as $error) {
-				$errorMessages[] = $error;
+		$errors         = $model->getErrors();
+		$error_messages = array();
+		foreach ( $errors as $field => $field_errors ) {
+			foreach ( $field_errors as $error ) {
+				$error_messages[] = $error;
 			}
 		}
-		wp_send_json_error( array( 'message' => implode( '<br>', $errorMessages ) ) );
+		wp_send_json_error( array( 'message' => implode( '<br>', $error_messages ) ) );
 		return;
 	}
 
-	// At this point, the domain has been validated and analyzed (if needed)
-	// The website record now exists in the database.
-	// Set the domain in GET for the controller.
-	$_GET['domain'] = $model->domain;
+	// Use WordPress-native report class wrapper.
+	$report = new V_WP_SEO_Audit_Report( $model->domain );
+	$result = $report->generate_html();
 
-	// Import the controller class (Yii doesn't auto-load controllers).
-	Yii::import( 'application.controllers.WebsitestatController' );
-
-	// Start output buffering to capture the controller output.
-	ob_start();
-
-	try {
-			// Create the controller and render the view.
-			$controller = new WebsitestatController( 'websitestat' );
-			$controller->init();
-
-			$previous = Yii::app()->getController();
-			Yii::app()->setController( $controller );
-
-		try {
-				$controller->actionGenerateHTML( $model->domain );
-		} finally {
-				Yii::app()->setController( $previous );
-		}
-
-			$content = ob_get_clean();
-
-			// Also provide a fresh nonce in case the frontend lost the original one
-			// (for example when HTML is injected via AJAX into pages without the inline script).
-			$response_data = array(
-				'html'  => $content,
-				'nonce' => wp_create_nonce( 'v_wp_seo_audit_nonce' ),
-			);
-
-			// Return the HTML content and the helper nonce.
-			wp_send_json_success( $response_data );
-	} catch (Exception $e) {
-		ob_end_clean();
-		wp_send_json_error( array( 'message' => $e->getMessage() ) );
+	if ( ! $result['success'] ) {
+		wp_send_json_error( array( 'message' => $result['error'] ) );
+		return;
 	}
+
+	// Also provide a fresh nonce in case the frontend lost the original one.
+	$response_data = array(
+		'html'  => $result['html'],
+		'nonce' => wp_create_nonce( 'v_wp_seo_audit_nonce' ),
+	);
+
+	// Return the HTML content and the helper nonce.
+	wp_send_json_success( $response_data );
 }
 add_action( 'wp_ajax_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax_generate_report' );
 add_action( 'wp_ajax_nopriv_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax_generate_report' );
@@ -851,35 +831,19 @@ function v_wp_seo_audit_ajax_download_pdf() {
 	// Get domain from request.
 	$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
 
-	if (empty( $domain )) {
-		wp_send_json_error( array( 'message' => 'Domain is required' ) );
+	if ( empty( $domain ) ) {
+		wp_send_json_error( array( 'message' => __( 'Domain is required', 'v-wp-seo-audit' ) ) );
 		return;
 	}
 
-	// Set the domain in GET for the controller.
-	$_GET['domain'] = $domain;
+	// Use WordPress-native report class wrapper.
+	$report = new V_WP_SEO_Audit_Report( $domain );
+	$result = $report->generate_pdf();
 
-	// Import the controller class.
-	Yii::import( 'application.controllers.WebsitestatController' );
-
-	try {
-		// Create the controller.
-		$controller = new WebsitestatController( 'websitestat' );
-		$controller->init();
-
-		$previous = Yii::app()->getController();
-		Yii::app()->setController( $controller );
-
-		try {
-			// Generate and output the PDF.
-			// This will set headers and output the PDF directly.
-			$controller->actionGeneratePDF( $domain );
-			// The actionGeneratePDF method calls Yii::app()->end() which exits.
-		} finally {
-			Yii::app()->setController( $previous );
-		}
-	} catch (Exception $e) {
-		wp_send_json_error( array( 'message' => $e->getMessage() ) );
+	// Note: PDF generation outputs directly and exits via Yii::app()->end().
+	// If we reach here, something went wrong.
+	if ( ! $result['success'] ) {
+		wp_send_json_error( array( 'message' => $result['error'] ) );
 	}
 }
 add_action( 'wp_ajax_v_wp_seo_audit_download_pdf', 'v_wp_seo_audit_ajax_download_pdf' );
