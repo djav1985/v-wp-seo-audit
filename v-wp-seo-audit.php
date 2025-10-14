@@ -23,8 +23,12 @@ define( 'V_WP_SEO_AUDIT_VERSION', '1.0.0' );
 define( 'V_WP_SEO_AUDIT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'V_WP_SEO_AUDIT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Load WordPress-native database class.
+// Load organized includes files.
 require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wp-seo-audit-db.php';
+require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-yii-integration.php';
+require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-validation.php';
+require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-helpers.php';
+require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-ajax-handlers.php';
 
 // Initialize Yii framework.
 // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_error_reporting, WordPress.PHP.DevelopmentFunctions.error_log_error_reporting, WordPress.Security.PluginMenuSlug.Using error_reporting
@@ -45,101 +49,22 @@ $v_wp_seo_audit_app = null;
 /**
  * V_wp_seo_audit_configure_yii_app function.
  *
+ * Wrapper function for backward compatibility.
+ *
  * @param mixed $app Parameter.
  */
 function v_wp_seo_audit_configure_yii_app( $app ) {
-	if ( ! $app) {
-			return;
-	}
-
-	if ($app->hasComponent( 'request' )) {
-			$request      = $app->getRequest();
-			$plugin_parts = wp_parse_url( rtrim( V_WP_SEO_AUDIT_PLUGIN_URL, '/' ) );
-		if ( ! is_array( $plugin_parts )) {
-				$plugin_parts = array();
-		}
-
-			$host_info = '';
-		if ( ! empty( $plugin_parts['scheme'] ) && ! empty( $plugin_parts['host'] )) {
-				$host_info = $plugin_parts['scheme'] . '://' . $plugin_parts['host'];
-			if ( ! empty( $plugin_parts['port'] )) {
-					$host_info .= ':' . $plugin_parts['port'];
-			}
-		} else {
-				$site_parts = wp_parse_url( get_site_url() );
-			if ( ! is_array( $site_parts )) {
-					$site_parts = array();
-			}
-			if ( ! empty( $site_parts['scheme'] ) && ! empty( $site_parts['host'] )) {
-					$host_info = $site_parts['scheme'] . '://' . $site_parts['host'];
-				if ( ! empty( $site_parts['port'] )) {
-						$host_info .= ':' . $site_parts['port'];
-				}
-			}
-		}
-
-		if ($host_info) {
-				$request->setHostInfo( $host_info );
-		}
-
-			$path = '';
-		if ( ! empty( $plugin_parts['path'] )) {
-				$path = '/' . ltrim( $plugin_parts['path'], '/' );
-		}
-
-			$path = rtrim( $path, '/' );
-
-			$request->setBaseUrl( $path );
-			$request->setScriptUrl( ( $path ? $path : '' ) . '/index.php' );
-	}
-
-	if ($app->hasComponent( 'urlManager' )) {
-			$urlManager                 = $app->getUrlManager();
-			$urlManager->urlFormat      = 'get';
-			$urlManager->showScriptName = true;
-	}
+	V_WP_SEO_Audit_Yii_Integration::configure_yii_app( $app );
 }
 
 // Plugin initialization - only when needed (not on every page load).
 /**
  * V_wp_seo_audit_init function.
+ *
+ * Wrapper function for backward compatibility.
  */
 function v_wp_seo_audit_init() {
-	global $v_wp_seo_audit_app, $post;
-
-	// Only initialize if not already initialized and shortcode is present.
-	if ( null !== $v_wp_seo_audit_app) {
-		return;
-	}
-
-	// Check if we need to initialize (shortcode present or admin area).
-	$should_init = false;
-	if (is_admin()) {
-		$should_init = false; // Don't init in admin to avoid conflicts.
-	} elseif (is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'v_wp_seo_audit' )) {
-		$should_init = true;
-	}
-
-	if ( ! $should_init) {
-		return;
-	}
-
-	// Initialize Yii framework.
-	$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-	$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
-
-	if (file_exists( $yii ) && file_exists( $config )) {
-			require_once $yii;
-
-			// Create Yii application but don't run it yet.
-			$v_wp_seo_audit_app = Yii::createWebApplication( $config );
-
-			// Set timezone from config.
-		if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
-				$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
-		}
-			v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
-	}
+	V_WP_SEO_Audit_Yii_Integration::init();
 }
 add_action( 'wp', 'v_wp_seo_audit_init' ); // Use 'wp' instead of 'init' to have access to $post.
 
@@ -490,437 +415,77 @@ register_uninstall_hook( __FILE__, 'v_wp_seo_audit_uninstall' );
 /**
  * V_wp_seo_audit_validate_domain function.
  *
- * Validates and sanitizes domain input using WordPress patterns.
+ * Wrapper function for backward compatibility.
  *
  * @param string $domain The domain to validate.
  * @return array Array with 'valid' boolean, 'domain', 'idn', 'ip', and 'errors' array.
  */
 function v_wp_seo_audit_validate_domain( $domain ) {
-	$errors = array();
-	$result = array(
-		'valid'  => false,
-		'domain' => '',
-		'idn'    => '',
-		'ip'     => '',
-		'errors' => array(),
-	);
-
-	// Sanitize and trim domain.
-	$domain = v_wp_seo_audit_sanitize_domain( $domain );
-
-	if ( empty( $domain ) ) {
-		$errors[]         = __( 'Please enter a domain name', 'v-wp-seo-audit' );
-		$result['errors'] = $errors;
-		return $result;
-	}
-
-	// Store IDN (unicode) version before punycode encoding.
-	$idn = $domain;
-
-	// Convert IDN to punycode if needed.
-	$domain = v_wp_seo_audit_encode_idn( $domain );
-
-	// Validate domain format.
-	if ( ! v_wp_seo_audit_is_valid_domain_format( $domain ) ) {
-		$errors[]         = __( 'Invalid domain format. Please enter a valid domain name (e.g., example.com)', 'v-wp-seo-audit' );
-		$result['errors'] = $errors;
-		return $result;
-	}
-
-	// Check banned websites.
-	$banned_error = v_wp_seo_audit_check_banned_domain( $idn );
-	if ( $banned_error ) {
-		$errors[]         = $banned_error;
-		$result['errors'] = $errors;
-		return $result;
-	}
-
-	// Check if domain is reachable.
-	$ip   = gethostbyname( $domain );
-	$long = ip2long( $ip );
-	if ( -1 === $long || false === $long ) {
-		/* translators: %s: domain name */
-		$errors[]         = sprintf( __( 'Could not reach host: %s', 'v-wp-seo-audit' ), $domain );
-		$result['errors'] = $errors;
-		return $result;
-	}
-
-	// All validations passed.
-	$result['valid']  = true;
-	$result['domain'] = $domain;
-	$result['idn']    = $idn;
-	$result['ip']     = $ip;
-
-	return $result;
+	return V_WP_SEO_Audit_Validation::validate_domain( $domain );
 }
 
 /**
  * Sanitize domain input.
  *
+ * Wrapper function for backward compatibility.
+ *
  * @param string $domain The domain to sanitize.
  * @return string Sanitized domain.
  */
 function v_wp_seo_audit_sanitize_domain( $domain ) {
-	// Basic sanitization.
-	$domain = sanitize_text_field( $domain );
-	$domain = trim( $domain );
-	$domain = trim( $domain, '/' );
-	$domain = mb_strtolower( $domain );
-
-	// Remove protocol.
-	$domain = preg_replace( '#^(https?://)#i', '', $domain );
-
-	// Remove www prefix.
-	$domain = preg_replace( '#^www\.#i', '', $domain );
-
-	return $domain;
+	return V_WP_SEO_Audit_Validation::sanitize_domain( $domain );
 }
 
 /**
  * Encode IDN domain to punycode.
  *
+ * Wrapper function for backward compatibility.
+ *
  * @param string $domain The domain to encode.
  * @return string Punycode-encoded domain.
  */
 function v_wp_seo_audit_encode_idn( $domain ) {
-	// Check if IDN class is available from Yii vendors.
-	$idn_file = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/vendors/Webmaster/Utils/IDN.php';
-
-	if ( file_exists( $idn_file ) ) {
-		require_once $idn_file;
-		$idn = new IDN();
-		return $idn->encode( $domain );
-	}
-
-	// Fallback: use PHP's idn_to_ascii if available.
-	if ( function_exists( 'idn_to_ascii' ) ) {
-		$encoded = idn_to_ascii( $domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46 );
-		return $encoded ? $encoded : $domain;
-	}
-
-	// No encoding available, return as-is.
-	return $domain;
+	return V_WP_SEO_Audit_Validation::encode_idn( $domain );
 }
 
 /**
  * Validate domain format.
  *
+ * Wrapper function for backward compatibility.
+ *
  * @param string $domain The domain to validate.
  * @return bool True if valid, false otherwise.
  */
 function v_wp_seo_audit_is_valid_domain_format( $domain ) {
-	// Domain regex: alphanumeric and hyphens, with dots separating parts.
-	// Each part can be 1-62 characters.
-	$pattern = '/^[a-z\d-]{1,62}\.[a-z\d-]{1,62}(\.[a-z\d-]{1,62})*$/i';
-	return (bool) preg_match( $pattern, $domain );
+	return V_WP_SEO_Audit_Validation::is_valid_domain_format( $domain );
 }
 
 /**
  * Check if domain is banned.
  *
+ * Wrapper function for backward compatibility.
+ *
  * @param string $domain The domain to check.
  * @return string|false Error message if banned, false otherwise.
  */
 function v_wp_seo_audit_check_banned_domain( $domain ) {
-	$restriction_file = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/domain_restriction.php';
-
-	if ( ! file_exists( $restriction_file ) ) {
-		return false;
-	}
-
-	$banned_patterns = include $restriction_file;
-
-	if ( ! is_array( $banned_patterns ) ) {
-		return false;
-	}
-
-	foreach ( $banned_patterns as $pattern ) {
-		if ( preg_match( "#{$pattern}#i", $domain ) ) {
-			return __( 'Error Code 103: This domain is not allowed', 'v-wp-seo-audit' );
-		}
-	}
-
-	return false;
+	return V_WP_SEO_Audit_Validation::check_banned_domain( $domain );
 }
 
-// WordPress AJAX handler for domain validation.
-/**
- * V_wp_seo_audit_ajax_validate_domain function.
- */
-function v_wp_seo_audit_ajax_validate_domain() {
-	// Verify nonce for security.
-	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
-
-	// Get domain from request.
-	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitization handled in v_wp_seo_audit_validate_domain.
-	$domain = isset( $_POST['domain'] ) ? wp_unslash( $_POST['domain'] ) : '';
-
-	// Use WordPress-native validation.
-	$validation = v_wp_seo_audit_validate_domain( $domain );
-
-	if ( ! $validation['valid'] ) {
-		wp_send_json_error( array( 'message' => implode( '<br>', $validation['errors'] ) ) );
-	} else {
-		// Domain is valid, return success with domain.
-		wp_send_json_success( array( 'domain' => $validation['domain'] ) );
-	}
-}
-add_action( 'wp_ajax_v_wp_seo_audit_validate', 'v_wp_seo_audit_ajax_validate_domain' );
-add_action( 'wp_ajax_nopriv_v_wp_seo_audit_validate', 'v_wp_seo_audit_ajax_validate_domain' );
-
-// WordPress AJAX handler for generating HTML report.
-/**
- * V_wp_seo_audit_ajax_generate_report function.
- */
-function v_wp_seo_audit_ajax_generate_report() {
-	// Verify nonce for security.
-	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
-
-	global $v_wp_seo_audit_app;
-
-	// Initialize Yii if not already initialized.
-	if ( null === $v_wp_seo_audit_app) {
-			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
-
-		if (file_exists( $yii ) && file_exists( $config )) {
-			require_once $yii;
-			$v_wp_seo_audit_app = Yii::createWebApplication( $config );
-
-			if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
-				$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
-			}
-		} else {
-			wp_send_json_error( array( 'message' => 'Application not initialized' ) );
-			return;
-		}
-	}
-
-		v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
-
-		// Get domain from request.
-	$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
-
-	if (empty( $domain )) {
-		wp_send_json_error( array( 'message' => 'Domain is required' ) );
-		return;
-	}
-
-	// Create and validate the model to trigger analysis if needed.
-	// The WebsiteForm::validate() will automatically call tryToAnalyse()
-	// which will create/update the website record in the database.
-	$model         = new WebsiteForm();
-	$model->domain = $domain;
-
-	if ( ! $model->validate()) {
-		// Validation failed (domain invalid, unreachable, or analysis error).
-		$errors        = $model->getErrors();
-		$errorMessages = array();
-		foreach ($errors as $field => $fieldErrors) {
-			foreach ($fieldErrors as $error) {
-				$errorMessages[] = $error;
-			}
-		}
-		wp_send_json_error( array( 'message' => implode( '<br>', $errorMessages ) ) );
-		return;
-	}
-
-	// At this point, the domain has been validated and analyzed (if needed)
-	// The website record now exists in the database.
-	// Set the domain in GET for the controller.
-	$_GET['domain'] = $model->domain;
-
-	// Import the controller class (Yii doesn't auto-load controllers).
-	Yii::import( 'application.controllers.WebsitestatController' );
-
-	// Start output buffering to capture the controller output.
-	ob_start();
-
-	try {
-			// Create the controller and render the view.
-			$controller = new WebsitestatController( 'websitestat' );
-			$controller->init();
-
-			$previous = Yii::app()->getController();
-			Yii::app()->setController( $controller );
-
-		try {
-				$controller->actionGenerateHTML( $model->domain );
-		} finally {
-				Yii::app()->setController( $previous );
-		}
-
-			$content = ob_get_clean();
-
-			// Also provide a fresh nonce in case the frontend lost the original one
-			// (for example when HTML is injected via AJAX into pages without the inline script).
-			$response_data = array(
-				'html'  => $content,
-				'nonce' => wp_create_nonce( 'v_wp_seo_audit_nonce' ),
-			);
-
-			// Return the HTML content and the helper nonce.
-			wp_send_json_success( $response_data );
-	} catch (Exception $e) {
-		ob_end_clean();
-		wp_send_json_error( array( 'message' => $e->getMessage() ) );
-	}
-}
-add_action( 'wp_ajax_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax_generate_report' );
-add_action( 'wp_ajax_nopriv_v_wp_seo_audit_generate_report', 'v_wp_seo_audit_ajax_generate_report' );
-
-// WordPress AJAX handler for PagePeeker proxy (legacy - thumbnail proxy is disabled by default).
-/**
- * V_wp_seo_audit_ajax_pagepeeker function.
- */
-function v_wp_seo_audit_ajax_pagepeeker() {
-	// Verify nonce for security.
-	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
-
-	global $v_wp_seo_audit_app;
-
-	// Initialize Yii if not already initialized.
-	if ( null === $v_wp_seo_audit_app) {
-		$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-		$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
-
-		if (file_exists( $yii ) && file_exists( $config )) {
-			require_once $yii;
-			$v_wp_seo_audit_app = Yii::createWebApplication( $config );
-
-			if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
-				$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
-			}
-		} else {
-						wp_send_json_error( array( 'message' => 'Application not initialized' ) );
-						return;
-		}
-	}
-
-		v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
-
-		// Check if thumbnail proxy is enabled (it's disabled by default).
-	if ( ! isset( $v_wp_seo_audit_app->params['thumbnail.proxy'] ) || ! $v_wp_seo_audit_app->params['thumbnail.proxy']) {
-		// Thumbnail proxy is disabled, use direct thum.io URLs instead.
-		$url = isset( $_GET['url'] ) ? sanitize_text_field( wp_unslash( $_GET['url'] ) ) : '';
-		if ($url) {
-			// Return success with a message that thumbnails are served directly.
-			wp_send_json_success( array( 'message' => 'Thumbnails are served directly from thum.io' ) );
-		} else {
-			wp_send_json_error( array( 'message' => 'Thumbnail proxy is not enabled' ) );
-		}
-		return;
-	}
-
-	// Legacy PagePeeker proxy code (not used with current thum.io implementation).
-	wp_send_json_error( array( 'message' => 'PagePeeker proxy is deprecated' ) );
-}
-add_action( 'wp_ajax_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker' );
-add_action( 'wp_ajax_nopriv_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker' );
-
-// WordPress AJAX handler for PDF download.
-/**
- * V_wp_seo_audit_ajax_download_pdf function.
- */
-function v_wp_seo_audit_ajax_download_pdf() {
-	// Verify nonce for security.
-	check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
-
-	global $v_wp_seo_audit_app;
-
-	// Initialize Yii if not already initialized.
-	if ( null === $v_wp_seo_audit_app) {
-		$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-		$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
-
-		if (file_exists( $yii ) && file_exists( $config )) {
-			require_once $yii;
-			$v_wp_seo_audit_app = Yii::createWebApplication( $config );
-
-			if (isset( $v_wp_seo_audit_app->params['app.timezone'] )) {
-				$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
-			}
-		} else {
-			wp_send_json_error( array( 'message' => 'Application not initialized' ) );
-			return;
-		}
-	}
-
-	v_wp_seo_audit_configure_yii_app( $v_wp_seo_audit_app );
-
-	// Get domain from request.
-	$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
-
-	if (empty( $domain )) {
-		wp_send_json_error( array( 'message' => 'Domain is required' ) );
-		return;
-	}
-
-	// Set the domain in GET for the controller.
-	$_GET['domain'] = $domain;
-
-	// Import the controller class.
-	Yii::import( 'application.controllers.WebsitestatController' );
-
-	try {
-		// Create the controller.
-		$controller = new WebsitestatController( 'websitestat' );
-		$controller->init();
-
-		$previous = Yii::app()->getController();
-		Yii::app()->setController( $controller );
-
-		try {
-			// Generate and output the PDF.
-			// This will set headers and output the PDF directly.
-			$controller->actionGeneratePDF( $domain );
-			// The actionGeneratePDF method calls Yii::app()->end() which exits.
-		} finally {
-			Yii::app()->setController( $previous );
-		}
-	} catch (Exception $e) {
-		wp_send_json_error( array( 'message' => $e->getMessage() ) );
-	}
-}
-add_action( 'wp_ajax_v_wp_seo_audit_download_pdf', 'v_wp_seo_audit_ajax_download_pdf' );
-add_action( 'wp_ajax_nopriv_v_wp_seo_audit_download_pdf', 'v_wp_seo_audit_ajax_download_pdf' );
+// Initialize AJAX handlers.
+V_WP_SEO_Audit_Ajax_Handlers::init();
 
 /**
  * WordPress-native function to delete PDF files for a domain.
  * Replaces Utils::deletePdf() with WordPress-native implementation.
  *
+ * Wrapper function for backward compatibility.
+ *
  * @param string $domain The domain name.
  * @return bool True on success.
  */
 function v_wp_seo_audit_delete_pdf( $domain ) {
-	// Get WordPress upload directory.
-	$upload_dir = wp_upload_dir();
-	$pdf_base   = $upload_dir['basedir'] . '/seo-audit/pdf/';
-
-	// Get available languages from config or use default.
-	global $v_wp_seo_audit_app;
-	$languages = array( 'en' ); // Default language.
-
-	if ( null !== $v_wp_seo_audit_app && isset( $v_wp_seo_audit_app->params['app.languages'] ) ) {
-		$languages = array_keys( $v_wp_seo_audit_app->params['app.languages'] );
-	}
-
-	// Delete PDF for each language.
-	foreach ( $languages as $lang ) {
-		$subfolder = mb_substr( $domain, 0, 1 );
-		$pdf_path  = $pdf_base . $lang . '/' . $subfolder . '/' . $domain . '.pdf';
-
-		if ( file_exists( $pdf_path ) ) {
-			wp_delete_file( $pdf_path );
-		}
-	}
-
-	// Also delete the cached thumbnail if the class is available.
-	if ( class_exists( 'WebsiteThumbnail' ) ) {
-		WebsiteThumbnail::deleteThumbnail( $domain );
-	}
-
-	return true;
+	return V_WP_SEO_Audit_Helpers::delete_pdf( $domain );
 }
 
 /**
