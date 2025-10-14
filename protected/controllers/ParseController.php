@@ -49,17 +49,21 @@ class ParseController extends Controller {
 	public function actionPagespeed() {
 		Yii::import( 'application.vendors.Webmaster.Google.*' );
 
-		$domain  = Yii::app()->request->getQuery( 'domain' );
-		$website = Yii::app()->db->createCommand()
-			->select( '*' )
-			->from( '{{website}}' )
-			->where(
-				'md5domain=:md5domain',
+		$domain = Yii::app()->request->getQuery( 'domain' );
+		
+		// Use WordPress native database class.
+		if ( ! class_exists( 'V_WP_SEO_Audit_DB' ) ) {
+			$this->jsonResponse(
 				array(
-					':md5domain' => md5( $domain ),
+					'error' => array( 'Database error' ),
 				)
-			)
-			->queryRow();
+			);
+			return;
+		}
+		
+		$db      = new V_WP_SEO_Audit_DB();
+		$website = $db->get_website_by_domain( $domain );
+		
 		if ( ! $website) {
 			throw new CHttpException( 404, Yii::t( 'app', "The page you are looking for doesn't exists" ) );
 		}
@@ -96,12 +100,7 @@ class ParseController extends Controller {
 		$jsonResult = @json_encode( $results );
 
 		try {
-			$sql     = 'INSERT INTO {{pagespeed}} (wid, data, lang_id) VALUES (:wid, :data, :lang_id) ON DUPLICATE KEY UPDATE data=:data';
-			$command = Yii::app()->db->createCommand( $sql );
-			$command->bindParam( ':wid', $wid );
-			$command->bindParam( ':data', $jsonResult );
-			$command->bindParam( ':lang_id', $lang_id );
-			$command->execute();
+			$db->upsert_pagespeed( $wid, $jsonResult, $lang_id );
 			if ( ! empty( $results )) {
 				$this->jsonResponse(
 					array(
@@ -137,13 +136,13 @@ class ParseController extends Controller {
 	 * @param mixed $wid Parameter.
 	 */
 	protected function getPageSpeedResults( $wid) {
-		$results = Yii::app()->db->createCommand()->select( 'data' )->from( '{{pagespeed}}' )->where(
-			'wid=:wid AND lang_id=:lang_id',
-			array(
-				':wid'     => $wid,
-				':lang_id' => Yii::app()->language,
-			)
-		)->queryScalar();
+		// Use WordPress native database class.
+		if ( ! class_exists( 'V_WP_SEO_Audit_DB' ) ) {
+			return array();
+		}
+		
+		$db      = new V_WP_SEO_Audit_DB();
+		$results = $db->get_pagespeed_data( $wid, Yii::app()->language );
 		return @json_decode( $results, true );
 	}
 }

@@ -141,10 +141,17 @@ class WebsiteForm extends CFormModel {
 		if ( ! $this->hasErrors()) {
 			// Remove "www" from domain.
 			$this->domain = str_replace( 'www.', '', $this->domain );
-			// Get command instance.
-			$command = Yii::app()->db->createCommand();
+			
+			// Use WordPress native database class.
+			if ( ! class_exists( 'V_WP_SEO_Audit_DB' ) ) {
+				$this->addError( 'domain', Yii::t( 'app', 'Database error' ) );
+				return false;
+			}
+			
+			$db = new V_WP_SEO_Audit_DB();
 			// Check if website already exists in the database.
-			$website = $command->select( 'modified, id' )->from( '{{website}}' )->where( 'md5domain=:id', array( ':id' => md5( $this->domain ) ) )->queryRow();
+			$website = $db->get_website_by_domain( $this->domain, array( 'modified', 'id' ) );
+			
 			// If website exists and we do not need to update data then exit from method.
 			if ($website and ( $notUpd = ( strtotime( $website['modified'] ) + Yii::app()->params['analyzer.cache_time'] > time() ) )) {
 				return true;
@@ -167,7 +174,7 @@ class WebsiteForm extends CFormModel {
 				$this->addError( 'domain', Yii::t( 'app', "Error Code $error" ) );
 			} else {
 				// After analysis, check if DB record exists.
-				$websiteCheck = $command->select( 'id' )->from( '{{website}}' )->where( 'md5domain=:id', array( ':id' => md5( $this->domain ) ) )->queryRow();
+				$websiteCheck = $db->get_website_by_domain( $this->domain, array( 'id' ) );
 				if ( ! $websiteCheck) {
 					$this->addError( 'domain', Yii::t( 'app', 'Analysis failed: domain record not created. Please try again or check your domain input.' ) );
 					return false;
