@@ -1,8 +1,18 @@
 <?php
 /**
  * File: requirements.php
+ * Yii framework requirements checker.
  *
  * @package V_WP_SEO_Audit
+ */
+
+/**
+ * Check PHP extension version.
+ *
+ * @param string $extensionName Extension name.
+ * @param string $version       Version to compare.
+ * @param string $compare       Comparison operator.
+ * @return bool True if check passes.
  */
 function checkPhpExtensionVersion( $extensionName, $version, $compare = '>=') {
 	if ( ! extension_loaded( $extensionName )) {
@@ -20,7 +30,7 @@ function checkPhpExtensionVersion( $extensionName, $version, $compare = '>=') {
 }
 
 /**
- * checkServerVar function.
+ * CheckServerVar function.
  */
 function checkServerVar() {
 	$vars    = array( 'HTTP_HOST', 'SERVER_NAME', 'SERVER_PORT', 'SCRIPT_NAME', 'SCRIPT_FILENAME', 'PHP_SELF', 'HTTP_ACCEPT', 'HTTP_USER_AGENT' );
@@ -50,7 +60,7 @@ function checkServerVar() {
 }
 
 /**
- * checkIcu function.
+ * CheckIcu function.
  */
 function checkIcu() {
 	if ( ! extension_loaded( 'intl' )) {
@@ -73,7 +83,7 @@ function checkIcu() {
 }
 
 /**
- * checkPhpIniOn function.
+ * CheckPhpIniOn function.
  *
  * @param mixed $name Parameter.
  */
@@ -83,11 +93,11 @@ function checkPhpIniOn( $name) {
 		return false;
 	}
 
-	return ( (int) $value === 1 || strtolower( $value ) === 'on' );
+	return ( 1 === (int) $value || 'on' === strtolower( $value ) );
 }
 
 /**
- * checkPhpIniOff function.
+ * CheckPhpIniOff function.
  *
  * @param mixed $name Parameter.
  */
@@ -97,22 +107,23 @@ function checkPhpIniOff( $name) {
 		return true;
 	}
 
-	return ( strtolower( $value ) === 'off' );
+	return ( 'off' === strtolower( $value ) );
 }
 
 /**
- * getServerInfo function.
+ * GetServerInfo function.
  */
 function getServerInfo() {
 	$info[] = isset( $_SERVER['SERVER_SOFTWARE'] ) ? $_SERVER['SERVER_SOFTWARE'] : '';
-	$info[] = @strftime( '%Y-%m-%d %H:%M', time() );
+	// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.DateTime.RestrictedFunctions.date_date
+	$info[] = @date( 'Y-m-d H:i', time() );
 	return implode( ' ', $info );
 }
 
 /**
- * checkPhpFunctions function.
+ * CheckPhpFunctions function.
  *
- * @param mixed $functions Parameter.
+ * @param array $functions Parameter.
  */
 function checkPhpFunctions( array $functions) {
 	$not_available = array();
@@ -135,6 +146,7 @@ $requirements = array(
 	),
 	array(
 		'rule'        => '$_SERVER variable',
+		// phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.Found
 		'result'      => '' === $message = checkServerVar(),
 		'explanation' => $message,
 		'mandatory'   => true,
@@ -214,6 +226,7 @@ $requirements = array(
 	),
 	array(
 		'rule'        => 'Intl extension && ICU library',
+		// phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.Found
 		'result'      => '' === $messageIcu = checkIcu(),
 		'explanation' => $messageIcu,
 		'mandatory'   => true,
@@ -226,6 +239,7 @@ $requirements = array(
 	),
 	array(
 		'rule'        => 'Socket functions',
+		// phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.Found
 		'result'      => ( '' === $email_func = checkPhpFunctions( array( 'stream_socket_client', 'socket_set_timeout', 'stream_socket_enable_crypto', 'socket_get_status', 'fsockopen' ) ) ),
 		'explanation' => $email_func . '. These functions must be available in order to send email notifications.',
 		'mandatory'   => true,
@@ -245,7 +259,7 @@ foreach ($requirements as $i => $requirement) {
 	}
 	$requirements[ $i ]['cell_class'] = $requirement['result'] ? 'passed' : ( $requirement['mandatory'] ? 'failed' : 'warning' );
 
-	if ($requirement['explanation'] === '') {
+	if ( '' === $requirement['explanation']) {
 		$requirements[ $i ]['explanation'] = '&nbsp;';
 	}
 }

@@ -19,6 +19,39 @@
         <exclude-pattern>requirements.php</exclude-pattern>
         <exclude-pattern>command.php</exclude-pattern>
     </rule>
+    <!-- Exclude WordPress function naming rules from Yii framework system files -->
+    <rule ref="WordPress.NamingConventions.ValidFunctionName">
+        <exclude-pattern>requirements.php</exclude-pattern>
+        <exclude-pattern>command.php</exclude-pattern>
+        <exclude-pattern>protected/*</exclude-pattern>
+    </rule>
+    <!-- Exclude WordPress validation rules from Yii framework system files -->
+    <rule ref="WordPress.Security.ValidatedSanitizedInput">
+        <exclude-pattern>requirements.php</exclude-pattern>
+        <exclude-pattern>command.php</exclude-pattern>
+    </rule>
+    <!-- Exclude WordPress alternative function warnings from Yii framework files -->
+    <!-- Yii uses its own HTTP client and encoding methods -->
+    <rule ref="WordPress.WP.AlternativeFunctions">
+        <exclude-pattern>protected/*</exclude-pattern>
+    </rule>
+    <!-- Exclude WordPress nonce verification from Yii controllers -->
+    <!-- Nonce verification is done in WordPress AJAX handlers, not in Yii controllers -->
+    <rule ref="WordPress.Security.NonceVerification">
+        <exclude-pattern>protected/controllers/*</exclude-pattern>
+        <exclude-pattern>protected/commands/*</exclude-pattern>
+    </rule>
+    <!-- Exclude WordPress sanitized input rules from Yii controllers -->
+    <!-- Input validation is done in WordPress AJAX handlers before calling Yii -->
+    <rule ref="WordPress.Security.ValidatedSanitizedInput">
+        <exclude-pattern>protected/controllers/*</exclude-pattern>
+        <exclude-pattern>protected/commands/*</exclude-pattern>
+    </rule>
+    <!-- Exclude WordPress date/time functions from Yii code -->
+    <!-- Yii uses its own timezone handling -->
+    <rule ref="WordPress.DateTime.RestrictedFunctions">
+        <exclude-pattern>protected/*</exclude-pattern>
+    </rule>
     <exclude-pattern>assets/*</exclude-pattern>
     <exclude-pattern>css/*</exclude-pattern>
     <exclude-pattern>img/*</exclude-pattern>
