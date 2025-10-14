@@ -23,7 +23,7 @@ class DownloadPdfForm extends CFormModel {
 				'validation',
 				'ext.recaptcha2.ReCaptcha2Validator',
 				'privateKey' => Yii::app()->params['recaptcha.private'],
-				'message'    => Yii::t( 'app', "Please confirm you're not a robot" ),
+				'message'    => "Please confirm you're not a robot",
 			);
 		}
 		return $rules;
@@ -34,7 +34,7 @@ class DownloadPdfForm extends CFormModel {
 	 */
 	public function attributeLabels() {
 		return array(
-			'validation' => Yii::t( 'app', "Please confirm you're not a robot" ),
+			'validation' => "Please confirm you're not a robot",
 		);
 	}
 }

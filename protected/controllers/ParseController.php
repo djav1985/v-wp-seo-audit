@@ -65,7 +65,7 @@ class ParseController extends Controller {
 		$website = $db->get_website_by_domain( $domain );
 		
 		if ( ! $website) {
-			throw new CHttpException( 404, Yii::t( 'app', "The page you are looking for doesn't exists" ) );
+			throw new CHttpException( 404, "The page you are looking for doesn't exists" );
 		}
 		$wid = $website['id'];
 
@@ -92,10 +92,10 @@ class ParseController extends Controller {
 			}
 		}
 
-		$lang_id = Yii::app()->language;
+		$lang_id = 'en';
 
 		$p = new PageSpeedInsights( $domain, Yii::app()->params['googleApiKey'] );
-		$p->setLocale( Yii::app()->language );
+		$p->setLocale( 'en' );
 		$results    = $p->getResults();
 		$jsonResult = @json_encode( $results );
 
@@ -124,7 +124,7 @@ class ParseController extends Controller {
 		} catch (Exception $e) {
 			$this->jsonResponse(
 				array(
-					'error' => array( Yii::t( 'app', 'Error Code 101' ) ),
+					'error' => array( 'Server temporary unavailable' ),
 				)
 			);
 		}
@@ -142,7 +142,7 @@ class ParseController extends Controller {
 		}
 		
 		$db      = new V_WP_SEO_Audit_DB();
-		$results = $db->get_pagespeed_data( $wid, Yii::app()->language );
+		$results = $db->get_pagespeed_data( $wid, 'en' );
 		return @json_decode( $results, true );
 	}
 }

@@ -146,7 +146,7 @@ class WebsitestatController extends Controller {
 				}
 
 			}
-			throw new CHttpException( 404, Yii::t( 'app', "The page you are looking for doesn't exists" ) );
+			throw new CHttpException( 404, "The page you are looking for doesn't exists" );
 
 		}
 		$this->wid = $this->website['id'];
@@ -169,10 +169,10 @@ class WebsitestatController extends Controller {
 			}
 		}
 
-		$this->title = Yii::t( 'meta', 'Webstat page title', array( '{Domain}' => $this->website['idn'] ) );
-		$description = Yii::t( 'meta', 'Webstat page description', array( '{Domain}' => $this->website['idn'] ) );
+		$this->title = 'Website review | ' . $this->website['idn'];
+		$description = 'Website review | ' . $this->website['idn'];
 		$cs          = Yii::app()->clientScript;
-		$cs->registerMetaTag( Yii::t( 'meta', 'Webstat page keywords', array( '{Domain}' => $this->website['idn'] ) ), 'keywords' );
+		$cs->registerMetaTag( 'Website review | ' . $this->website['idn'], 'keywords' );
 		$cs->registerMetaTag( $description, 'description' );
 
 		$cs->registerScriptFile( Yii::app()->request->getBaseUrl( true ) . '/assets/js/jquery.flot.js' );
@@ -305,8 +305,8 @@ class WebsitestatController extends Controller {
 		$pdf = Yii::createComponent( 'application.extensions.tcpdf.ETcPdf', 'P', 'cm', 'A4', true, 'UTF-8' );
 		$pdf->SetCreator( PDF_CREATOR );
 		$pdf->SetAuthor( 'http://website-review.php8developer.com' );
-		$pdf->SetTitle( Yii::t( 'app', 'Analyse of {Domain}', array( '{Domain}' => $this->website['idn'] ) ) );
-		$pdf->SetSubject( Yii::t( 'app', 'Analyse of {Domain}', array( '{Domain}' => $this->website['idn'] ) ) );
+		$pdf->SetTitle( 'Website review ' . $this->website['idn'] );
+		$pdf->SetSubject( 'Website review ' . $this->website['idn'] );
 		$pdf->setPrintHeader( false );
 		$pdf->setPrintFooter( false );
 		$pdf->AddPage();

@@ -87,11 +87,7 @@ return array(
 			'enableParamLogging'    => defined( 'YII_DEBUG' ) ? YII_DEBUG : false,
 		),
 
-		// Error handler.
-		'errorHandler'    => array(
-			// ControllerID/ActionID custom page to handle errors.
-			'errorAction' => 'site/error',
-		),
+		// Error handler - removed custom error view, WordPress will handle 404s
 
 		// Log errors into ~/root/website_review/runtime/application.log file.
 		'log'             => array(
