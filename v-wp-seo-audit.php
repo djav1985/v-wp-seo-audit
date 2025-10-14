@@ -999,8 +999,7 @@ function v_wp_seo_audit_analyze_website( $domain, $idn, $ip, $wid = null ) {
 		if ( class_exists( 'Content' ) ) {
 			$content_analyzer = new Content( $html );
 			$content_data     = array(
-				'wid'        => $wid,
-				'text_count' => method_exists( $content_analyzer, 'getTextCount' ) ? $content_analyzer->getTextCount() : 0,
+				'wid' => $wid,
 			);
 
 			// Check if record exists.
@@ -1020,7 +1019,7 @@ function v_wp_seo_audit_analyze_website( $domain, $idn, $ip, $wid = null ) {
 			$doc_analyzer = new Document( $html );
 			$doc_data     = array(
 				'wid'     => $wid,
-				'doctype' => method_exists( $doc_analyzer, 'getDoctype' ) ? substr( $doc_analyzer->getDoctype(), 0, 255 ) : '',
+				'doctype' => method_exists( $doc_analyzer, 'getDoctype' ) ? substr( (string) $doc_analyzer->getDoctype(), 0, 255 ) : '',
 			);
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -1034,13 +1033,13 @@ function v_wp_seo_audit_analyze_website( $domain, $idn, $ip, $wid = null ) {
 			}
 		}
 
-		// Analyze links.
+		// Analyze links - Pass $idn as third parameter.
 		if ( class_exists( 'Links' ) ) {
-			$links_analyzer = new Links( $html, $domain );
+			$links_analyzer = new Links( $html, $domain, $idn );
 			$links_data     = array(
 				'wid'      => $wid,
-				'internal' => method_exists( $links_analyzer, 'getInternal' ) ? $links_analyzer->getInternal() : 0,
-				'external' => method_exists( $links_analyzer, 'getExternal' ) ? $links_analyzer->getExternal() : 0,
+				'internal' => method_exists( $links_analyzer, 'getInternalCount' ) ? $links_analyzer->getInternalCount() : 0,
+				'external' => method_exists( $links_analyzer, 'getExternalDofollowCount' ) ? $links_analyzer->getExternalDofollowCount() : 0,
 			);
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
