@@ -297,4 +297,215 @@ class V_WP_SEO_Audit_DB {
 		}
 		return implode( ' AND ', $conditions );
 	}
+
+	/**
+	 * WordPress-native website analysis function.
+	 * Replaces the removed CLI commands with inline analysis.
+	 *
+	 * @param string   $domain The domain to analyze (ASCII/punycode).
+	 * @param string   $idn The internationalized domain name (Unicode).
+	 * @param string   $ip The IP address of the domain.
+	 * @param int|null $wid Optional. Existing website ID for updates.
+	 * @return int|WP_Error Website ID on success, WP_Error on failure.
+	 */
+	public static function analyze_website( $domain, $idn, $ip, $wid = null ) {
+		global $wpdb;
+
+		// Load required Yii vendor classes.
+		// Note: We must load files directly before any class_exists() checks to avoid
+		// triggering Yii's autoloader which will try to find the class in the wrong path.
+		$helper_path = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/vendors/Webmaster/Utils/Helper.php';
+		if ( file_exists( $helper_path ) ) {
+			require_once $helper_path;
+		}
+
+		try {
+			// Fetch website HTML.
+			$url      = 'http://' . $domain;
+			$response = wp_remote_get(
+				$url,
+				array(
+					'timeout'     => 30,
+					'user-agent'  => 'Mozilla/5.0 (compatible; V-WP-SEO-Audit/1.0; +http://yoursite.com)',
+					'sslverify'   => false,
+					'redirection' => 5,
+				)
+			);
+
+			if ( is_wp_error( $response ) ) {
+				return new WP_Error( 'fetch_failed', 'Could not fetch website: ' . $response->get_error_message() );
+			}
+
+			$response_code = wp_remote_retrieve_response_code( $response );
+			if ( 200 !== $response_code ) {
+				return new WP_Error( 'fetch_failed', 'Website returned HTTP ' . $response_code );
+			}
+
+			$html = wp_remote_retrieve_body( $response );
+			if ( empty( $html ) ) {
+				return new WP_Error( 'empty_response', 'Website returned empty content' );
+			}
+
+			// Load analysis classes.
+			$source_path     = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/vendors/Webmaster/Source/';
+			$classes_to_load = array(
+				'Content.php',
+				'Document.php',
+				'Links.php',
+				'MetaTags.php',
+				'Optimization.php',
+				'SeoAnalyse.php',
+				'Validation.php',
+			);
+
+			foreach ( $classes_to_load as $class_file ) {
+				$class_path = $source_path . $class_file;
+				if ( file_exists( $class_path ) ) {
+					require_once $class_path;
+				}
+			}
+
+			// Perform analysis.
+			$table_prefix = $wpdb->prefix . 'ca_';
+			$now          = current_time( 'mysql' );
+
+			// Create or update website record.
+			if ( $wid ) {
+				// Update existing website.
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->update(
+					$table_prefix . 'website',
+					array(
+						'domain'   => $domain,
+						'idn'      => $idn,
+						'ip'       => $ip,
+						'modified' => $now,
+						'score'    => 0, // Will be calculated later.
+					),
+					array( 'id' => $wid ),
+					array( '%s', '%s', '%s', '%s', '%d' ),
+					array( '%d' )
+				);
+			} else {
+				// Insert new website.
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->insert(
+					$table_prefix . 'website',
+					array(
+						'domain'    => $domain,
+						'idn'       => $idn,
+						'ip'        => $ip,
+						'md5domain' => md5( $domain ),
+						'modified'  => $now,
+						'score'     => 0,
+					),
+					array( '%s', '%s', '%s', '%s', '%s', '%d' )
+				);
+				$wid = $wpdb->insert_id;
+			}
+
+			if ( ! $wid ) {
+				return new WP_Error( 'db_error', 'Failed to create website record' );
+			}
+
+			// Analyze content if classes are available.
+			if ( class_exists( 'Content' ) ) {
+				$content_analyzer = new Content( $html );
+				$content_data     = array(
+					'wid' => $wid,
+				);
+
+				// Check if record exists.
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}content WHERE wid = %d", $wid ) );
+				if ( $exists ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->update( $table_prefix . 'content', $content_data, array( 'wid' => $wid ) );
+				} else {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->insert( $table_prefix . 'content', $content_data );
+				}
+			}
+
+			// Analyze document structure.
+			if ( class_exists( 'Document' ) ) {
+				$doc_analyzer = new Document( $html );
+				$doc_data     = array(
+					'wid'     => $wid,
+					'doctype' => method_exists( $doc_analyzer, 'getDoctype' ) ? substr( (string) $doc_analyzer->getDoctype(), 0, 255 ) : '',
+				);
+
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}document WHERE wid = %d", $wid ) );
+				if ( $exists ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->update( $table_prefix . 'document', $doc_data, array( 'wid' => $wid ) );
+				} else {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->insert( $table_prefix . 'document', $doc_data );
+				}
+			}
+
+			// Analyze links - Pass $idn as third parameter.
+			if ( class_exists( 'Links' ) ) {
+				$links_analyzer = new Links( $html, $domain, $idn );
+				$links_data     = array(
+					'wid'      => $wid,
+					'internal' => method_exists( $links_analyzer, 'getInternalCount' ) ? $links_analyzer->getInternalCount() : 0,
+					'external' => method_exists( $links_analyzer, 'getExternalDofollowCount' ) ? $links_analyzer->getExternalDofollowCount() : 0,
+				);
+
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}links WHERE wid = %d", $wid ) );
+				if ( $exists ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->update( $table_prefix . 'links', $links_data, array( 'wid' => $wid ) );
+				} else {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->insert( $table_prefix . 'links', $links_data );
+				}
+			}
+
+			// Analyze meta tags.
+			if ( class_exists( 'MetaTags' ) ) {
+				$meta_analyzer = new MetaTags( $html );
+				$meta_data     = array(
+					'wid'         => $wid,
+					'title'       => method_exists( $meta_analyzer, 'getTitle' ) ? substr( $meta_analyzer->getTitle(), 0, 255 ) : '',
+					'description' => method_exists( $meta_analyzer, 'getDescription' ) ? substr( $meta_analyzer->getDescription(), 0, 500 ) : '',
+				);
+
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}metatags WHERE wid = %d", $wid ) );
+				if ( $exists ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->update( $table_prefix . 'metatags', $meta_data, array( 'wid' => $wid ) );
+				} else {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->insert( $table_prefix . 'metatags', $meta_data );
+				}
+			}
+
+			// Store misc data.
+			$misc_data = array(
+				'wid'      => $wid,
+				'loadtime' => 0, // Could be calculated from response time.
+			);
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}misc WHERE wid = %d", $wid ) );
+			if ( $exists ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->update( $table_prefix . 'misc', $misc_data, array( 'wid' => $wid ) );
+			} else {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->insert( $table_prefix . 'misc', $misc_data );
+			}
+
+			return $wid;
+
+		} catch ( Exception $e ) {
+			return new WP_Error( 'analysis_error', 'Analysis failed: ' . $e->getMessage() );
+		}
+	}
 }
