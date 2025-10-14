@@ -526,8 +526,15 @@ function v_wp_seo_audit_ajax_generate_report() {
 
 			$content = ob_get_clean();
 
-			// Return the HTML content.
-			wp_send_json_success( array( 'html' => $content ) );
+			// Also provide a fresh nonce in case the frontend lost the original one
+			// (for example when HTML is injected via AJAX into pages without the inline script).
+			$response_data = array(
+				'html'  => $content,
+				'nonce' => wp_create_nonce( 'v_wp_seo_audit_nonce' ),
+			);
+
+			// Return the HTML content and the helper nonce.
+			wp_send_json_success( $response_data );
 	} catch (Exception $e) {
 		ob_end_clean();
 		wp_send_json_error( array( 'message' => $e->getMessage() ) );

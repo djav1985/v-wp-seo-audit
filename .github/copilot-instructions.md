@@ -1,51 +1,51 @@
 # Copilot Instructions for V-WP-SEO-Audit Plugin
 
-## Project Overview
-- This is a WordPress plugin for SEO auditing. Users submit a domain via a form; the plugin analyzes the domain and displays a report. If the domain exists in the DB and is not expired, the cached report is shown.
-- The codebase was converted from a standalone Yii PHP app and now runs solely as a WordPress plugin. Direct file access is forbidden; all logic is routed through WordPress hooks and AJAX endpoints.
+```instructions
+# Copilot Instructions for V-WP-SEO-Audit Plugin
 
-## Key Architecture & Data Flow
-- **Entry Point:** Use the `[v_wp_seo_audit]` shortcode to render the audit form on any page/post.
-- **AJAX Endpoints:** All client-server communication uses WordPress's `admin-ajax.php`:
-  - `v_wp_seo_audit_validate`: Validates domain input
-  - `v_wp_seo_audit_generate_report`: Generates and returns the SEO report
-  - `v_wp_seo_audit_pagepeeker`: (Legacy) Thumbnail proxy, now disabled; uses thum.io for screenshots
-- **Security:** All AJAX handlers require nonce verification (`check_ajax_referer`). Inputs are sanitized using WordPress functions.
-- **Database:** Custom tables (e.g., `ca_website`, `ca_content`, etc.) store analysis results. If a domain is already present and not expired, the cached result is used.
-- **Framework:** Relies on Yii (see `framework/` and `protected/` folders) for legacy model/controller logic. Do not bypass WordPress hooks.
+Purpose (one-liner)
+- Convert and maintain a legacy Yii SEO-audit app running as a WordPress plugin. UI is provided via a shortcode; heavy work is performed by legacy Yii models/controllers invoked from WP AJAX handlers.
 
-## Developer Workflows
-- **Linting:** Use PHP_CodeSniffer (`phpcs .`) with rules in `phpcs.xml` (PSR12 + WordPress standards, assets/static excluded).
-- **Auto-fix:** Use `phpcbf .` to auto-correct coding standard violations.
-- **Manual Testing:** No automated tests. Use `TESTING_GUIDE.md` for step-by-step manual QA in a WordPress environment.
-- **Debugging:** Check browser console for AJAX requests; ensure all go to `admin-ajax.php` (never direct PHP files).
+Quick architecture summary
+- Shortcode `[v_wp_seo_audit]` renders the UI. Client JS ( `js/base.js` ) uses `admin-ajax.php` to call plugin actions implemented in `v-wp-seo-audit.php`.
+- Server-side analysis logic lives under `protected/` and `framework/` (Yii). AJAX handlers bootstrap Yii as needed and call controller actions (e.g., `WebsitestatController::actionGenerateHTML`, `actionGeneratePDF`).
+- Persistent data uses custom `ca_*` tables created on activation (`v_wp_seo_audit_activate`).
 
-## Project-Specific Patterns
-- **Never access PHP files directly** (e.g., `index.php`). All logic must be routed via WordPress AJAX and hooks.
-- **AJAX responses** must be JSON and include `success` and `data` keys for client-side handling.
-- **Shortcode is the only supported entry point** for the UI.
-- **Legacy Yii code** is only invoked via WordPress AJAX handlers, not directly.
-- **Thumbnails:** Use thum.io for screenshots; PagePeeker proxy is disabled by default.
+Key files to inspect first
+- `v-wp-seo-audit.php` — plugin entry, shortcode registration, AJAX handlers, enqueued assets, activation/uninstall hooks.
+- `js/base.js` — primary frontend logic, validation, AJAX calls, and the PDF downloader (uses XHR blob download).
+- `protected/views/` — UI templates (Yii view files). These files are rendered by Yii controllers and injected into the page via AJAX.
+- `protected/commands`, `protected/controllers`, `protected/models` — legacy logic used by the plugin; find commands invoked via `yiic` or programmatically.
+- `framework/` — Yii framework bootstrap and `yiic` console wrappers.
+- `TESTING_GUIDE.md` — manual QA instructions; useful to reproduce user flows.
 
-## Key Files & Directories
-- `v-wp-seo-audit.php`: Main plugin logic, AJAX handlers, shortcode registration
-- `index.php`: Exists only for WordPress plugin structure; shows error if accessed directly
-- `js/base.js`: Handles form submission, client-side validation, AJAX requests
-- `framework/`, `protected/`: Yii framework and legacy app code
-- `TESTING_GUIDE.md`: Manual QA steps
-- `phpcs.xml`: Coding standards
+Developer workflows and commands
+- Linting: `vendor\bin\phpcbf .` (auto-fix), then `vendor\bin\phpcs .` (report). The repo includes `phpcs.xml` configured for WordPress rules.
+- Manual test flow: follow `TESTING_GUIDE.md` to validate AJAX flows (validation → generate_report → download PDF).
+- Local debugging: use browser devtools to inspect XHR to `admin-ajax.php`. Check that each AJAX POST includes `action`, fields, and `nonce`.
 
-## Example: AJAX Workflow
-1. User submits domain via form
-2. JS validates and sends AJAX to `admin-ajax.php?action=v_wp_seo_audit_validate`
-3. If valid, JS sends AJAX to `admin-ajax.php?action=v_wp_seo_audit_generate_report`
-4. Server returns HTML report in JSON; JS injects into page
+Project-specific patterns and gotchas
+- All client-server communication must go through WP AJAX endpoints (no direct file access). Handlers use `check_ajax_referer('v_wp_seo_audit_nonce','nonce')`.
+- AJAX responses are JSON shaped as `{ success: bool, data: { ... } }` (client expects this exact shape).
+- The plugin bootstraps Yii on demand. Many handlers do `require_once framework/yii.php` and `Yii::createWebApplication($config)` — be mindful of side effects and performance when calling from high-traffic pages.
+- Views under `protected/views` are Yii templates using `CHtml::encode()` / `Yii::t()` — when updating views, prefer escaping with `CHtml::encode()` or WordPress equivalents if you migrate to WP templating.
+- PDF download: frontend sends XHR POST expecting a PDF blob. If the page injects HTML via AJAX, the global inline nonce may be missing; the generate_report handler was updated to return a fresh nonce. When modifying AJAX flows, ensure a valid nonce is available to the client.
 
-## Integration Points
-- **WordPress hooks**: All plugin logic must use hooks and AJAX endpoints
-- **Yii framework**: Used for legacy model/controller logic, but only via WordPress AJAX
-- **Thum.io**: Used for domain screenshots
+Security and maintenance notes
+- Nonces: use `wp_create_nonce('v_wp_seo_audit_nonce')` on the page and `check_ajax_referer()` server-side. When returning server-injected HTML via AJAX, include a fresh nonce (e.g., response.data.nonce) or add `data-nonce` on the container.
+- Protect CLI scripts: `protected/yiic.php`, `protected/yiic` and `command.php` are leftovers from the standalone app. Either keep them for cron/CLI usage and guard against HTTP access, or migrate jobs to WP-Cron/WP-CLI.
+- Sensitive output: `command.php` prints PHP binary and paths — treat it as informational only and do not expose in production.
 
----
+Examples (patterns to follow)
+- AJAX handler skeleton (server): see `v_wp_seo_audit_ajax_generate_report` in `v-wp-seo-audit.php` — bootstraps Yii, validates input with `sanitize_text_field( wp_unslash() )`, runs controller action, and returns `wp_send_json_success( array( 'html' => $content ) )`.
+- Frontend XHR blob download (client): see `js/base.js` — uses XMLHttpRequest with `responseType='blob'` and tests Content-Type for `application/pdf` before triggering a download.
 
-For unclear or incomplete sections, please provide feedback to improve these instructions.
+When to refactor vs keep legacy
+- Keep Yii code if the migration cost is high and behavior is well-tested. Wrap any new WP-native code behind the same AJAX endpoints to avoid breaking clients.
+- Prefer incremental migration: add WP-CLI commands and WP-Cron wrappers for the main tasks (parse, sitemap, clear PDF), then replace `exec('yiic ...')` call sites with in-process calls or WP-CLI triggers.
+
+Where to ask for clarification
+- If a controller/action is unclear, look in `protected/controllers/` for the implementation. If behavior depends on Yii params, inspect `protected/config/main.php` and `protected/config/console.php`.
+
+If anything here is unclear or you want a follow-up (e.g., add WP-CLI skeletons, migrate one command to WP-Cron, or harden public files), tell me which area to expand.
+```

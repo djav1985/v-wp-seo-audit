@@ -144,8 +144,12 @@ var WrHelper = (function () {
         request.done(function(response) {
             finalize();
 
-            if (response && response.success) {
+                if (response && response.success) {
                 var html = response.data && response.data.html ? response.data.html : '';
+                // If the server provided a fresh nonce, update our local nonce variable
+                if (response.data && response.data.nonce) {
+                    settings.nonce = response.data.nonce;
+                }
                 var $targetContainer = $container;
 
                 if ($targetContainer.length) {
@@ -234,6 +238,12 @@ var WrHelper = (function () {
 
             var ajaxUrl = getAjaxUrl();
             var nonce = getNonce();
+
+            // If the container has a data-nonce attribute (server-injected), prefer it
+            var $container = resolveContainer($submit);
+            if ($container && $container.length && $container.data('nonce')) {
+                nonce = $container.data('nonce');
+            }
 
             $.ajax({
                 url: ajaxUrl,
@@ -334,6 +344,12 @@ var WrHelper = (function () {
 
             var ajaxUrl = getAjaxUrl();
             var nonce = getNonce();
+
+            // If the container has a data-nonce attribute (server-injected), prefer it
+            var $container = resolveContainer($trigger);
+            if ($container && $container.length && $container.data('nonce')) {
+                nonce = $container.data('nonce');
+            }
             
             // Debug: Check if nonce is available
             if (!nonce) {
