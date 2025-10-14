@@ -169,8 +169,8 @@ class WebsitestatController extends Controller {
 		$cs->registerMetaTag( Yii::t( 'meta', 'Webstat page keywords', array( '{Domain}' => $this->website['idn'] ) ), 'keywords' );
 		$cs->registerMetaTag( $description, 'description' );
 
-		$cs->registerScriptFile( Yii::app()->request->getBaseUrl( true ) . '/js/jquery.flot.js' );
-		$cs->registerScriptFile( Yii::app()->request->getBaseUrl( true ) . '/js/jquery.flot.pie.js' );
+		$cs->registerScriptFile( Yii::app()->request->getBaseUrl( true ) . '/assets/js/jquery.flot.js' );
+		$cs->registerScriptFile( Yii::app()->request->getBaseUrl( true ) . '/assets/js/jquery.flot.pie.js' );
 
 		$url = $this->createAbsoluteUrl( 'websitestat/generateHTML', array( 'domain' => $this->domain ) );
 		$cs->registerMetaTag( $this->title, null, null, array( 'property' => 'og:title' ) );
@@ -190,7 +190,7 @@ class WebsitestatController extends Controller {
 				'encode'   => false,
 			)
 		);
-		$cs->registerCssFile( Yii::app()->request->getBaseUrl( true ) . '/css/fontawesome.min.css' );
+		$cs->registerCssFile( Yii::app()->request->getBaseUrl( true ) . '/assets/css/fontawesome.min.css' );
 
 		if ( ! Yii::app()->params['param.instant_redirect']) {
 			$updUrl = $this->createUrl(

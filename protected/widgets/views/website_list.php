@@ -29,7 +29,7 @@
 						<div class="card mb-3">
 								<h5 class="card-header"><?php echo Utils::cropDomain( $website->idn ); ?></h5>
 								<a class="v-wp-seo-audit-view-report" href="<?php echo $url; ?>" data-domain="<?php echo $domain; ?>">
-										<img class="card-img-top" id="thumb_<?php echo $website->id; ?>" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/loader.gif" alt="<?php echo $website->idn; ?>" />
+										<img class="card-img-top" id="thumb_<?php echo $website->id; ?>" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/loader.gif" alt="<?php echo $website->idn; ?>" />
 								</a>
 								<ul class="list-group list-group-flush">
 										<li class="list-group-item">

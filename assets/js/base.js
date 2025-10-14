@@ -10,7 +10,7 @@ function dynamicThumbnail(url) {
             });
         };
         var onError = function(img) {
-            img.attr("src", _global.baseUrl + "/img/not-available.png");
+            img.attr("src", _global.baseUrl + "/assets/img/not-available.png");
         };
         var image = jQuery('#thumb_'+key);
         // Use the thumbnail URL directly since we're now caching on the server
@@ -149,16 +149,28 @@ var WrHelper = (function () {
                 // If the server provided a fresh nonce, update our local nonce variable
                 if (response.data && response.data.nonce) {
                     settings.nonce = response.data.nonce;
+                    // Also update the global nonce if available
+                    if (typeof _global !== 'undefined') {
+                        _global.nonce = response.data.nonce;
+                    }
                 }
                 var $targetContainer = $container;
 
                 if ($targetContainer.length) {
                     $targetContainer.html(html);
+                    // Store the fresh nonce on the container for later use (e.g., PDF download)
+                    if (response.data && response.data.nonce) {
+                        $targetContainer.attr('data-nonce', response.data.nonce);
+                    }
                 } else {
                     var $form = $('#website-form');
                     if ($form.length) {
                         var $parent = $form.parent();
                         $targetContainer = $('<div class="v-wp-seo-audit-container"></div>').html(html);
+                        // Store the fresh nonce on the container for later use (e.g., PDF download)
+                        if (response.data && response.data.nonce) {
+                            $targetContainer.attr('data-nonce', response.data.nonce);
+                        }
                         $parent.html($targetContainer);
                         settings.$container = $targetContainer;
                     }

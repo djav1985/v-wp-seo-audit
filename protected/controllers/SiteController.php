@@ -19,7 +19,7 @@ class SiteController extends Controller {
 		Yii::app()->clientScript->registerMetaTag( Yii::t( 'meta', 'Og property title', array( '{Brandname}' => Yii::app()->name ) ), null, null, array( 'property' => 'og:title' ) );
 		Yii::app()->clientScript->registerMetaTag( Yii::t( 'meta', 'Og property description', array( '{Brandname}' => Yii::app()->name ) ), null, null, array( 'property' => 'og:description' ) );
 		Yii::app()->clientScript->registerMetaTag( Yii::app()->name, null, null, array( 'property' => 'og:site_name' ) );
-		Yii::app()->clientScript->registerMetaTag( Yii::app()->getBaseUrl( true ) . '/img/logo.png', null, null, array( 'property' => 'og:image' ) );
+		Yii::app()->clientScript->registerMetaTag( Yii::app()->getBaseUrl( true ) . '/assets/img/logo.png', null, null, array( 'property' => 'og:image' ) );
 
 		$widget = $this->widget(
 			'application.widgets.WebsiteList',

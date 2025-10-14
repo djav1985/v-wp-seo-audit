@@ -106,7 +106,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 <div class="jumbotron">
 	<div class="row">
 		<div class="col-md-4 col-lg-5 col-sm-12">
-			<img class="img-responsive img-thumbnail mb-20" id="thumb_main_<?php echo $website['id']; ?>" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/loader.gif" alt="<?php echo $website['idn']; ?>" />
+			<img class="img-responsive img-thumbnail mb-20" id="thumb_main_<?php echo $website['id']; ?>" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/loader.gif" alt="<?php echo $website['idn']; ?>" />
 		</div>
 		<div class="col-md-8 col-lg-7 col-sm-12 text-left">
 			<h1 class="text-break">
@@ -558,9 +558,9 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 							<tr>
 								<td><?php echo CHtml::encode( $word ); ?></td>
 								<td><?php echo (int) $cloud['words'][ $word ]['count']; ?></td>
-								<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) $object['title']; ?>.png" /></td>
-								<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) $object['description']; ?>.png" /></td>
-								<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) $object['headings']; ?>.png" /></td>
+								<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $object['title']; ?>.png" /></td>
+								<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $object['description']; ?>.png" /></td>
+								<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $object['headings']; ?>.png" /></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -750,31 +750,31 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 					<tbody>
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] ); ?>
-							<td width="50px"><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
+							<td width="50px"><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
 							<td><?php echo Yii::t( 'advice', "Nested tables advice - $advice" ); ?></td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] ); ?>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
+							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
 							<td><?php echo Yii::t( 'advice', "Inline CSS advice - $advice" ); ?></td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
 							<td><?php echo Yii::t( 'advice', "CSS count advice - $advice", array( '{MoreNr}' => _RATE_CSS_COUNT ) ); ?></td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
 							<td><?php echo Yii::t( 'advice', "JS count advice - $advice", array( '{MoreNr}' => _RATE_JS_COUNT ) ); ?></td>
 						</tr>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
 							<td><?php echo Yii::t( 'advice', "Gzip - $advice" ); ?></td>
 						</tr>
 
@@ -801,17 +801,17 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 					<tbody>
 
 						<tr class="no-top-line">
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
+							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
 							<td><?php echo Yii::t( 'app', 'Apple Icon' ); ?></td>
 						</tr>
 
 						<tr>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
+							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
 							<td><?php echo Yii::t( 'app', 'Meta Viewport Tag' ); ?></td>
 						</tr>
 
 						<tr>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
+							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
 							<td><?php echo Yii::t( 'app', 'Flash content' ); ?></td>
 						</tr>
 
@@ -902,7 +902,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 							<?php foreach ( $misc['analytics'] as $analytics ) : ?>
 								<tr>
 									<td>
-										<img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/img/analytics/<?php echo $analytics; ?>.png" />
+										<img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/analytics/<?php echo $analytics; ?>.png" />
 										&nbsp;&nbsp;
 										<?php echo CHtml::encode( AnalyticsFinder::getProviderName( $analytics ) ); ?>
 									</td>

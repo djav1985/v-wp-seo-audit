@@ -1,8 +1,13 @@
 # Composer dependencies
 /vendor/
 
-# Build artifacts
-/assets/
+# Build artifacts (allow css, img, js in assets)
+/assets/*
+!/assets/.gitignore
+!/assets/.htaccess
+!/assets/css/
+!/assets/img/
+!/assets/js/
 /pdf/*.pdf
 
 # Runtime files
