@@ -10,6 +10,7 @@ return array(
 	'app.timezone'               => 'America/New_york', // https://www.php.net/manual/en/timezones.php
 	'app.host'                   => 'https://vontainment.com',
 	'app.base_url'               => '/scripts/seo/',
+	// Language settings (hardcoded to English - multilingual support removed).
 	'app.default_language'       => 'en',
 	'app.languages'              => array(
 		'en' => 'English',
@@ -20,7 +21,7 @@ return array(
 	'app.manage_key'             => 'then2now',
 
 	// Url settings.
-	'url.multi_language_links'   => false,
+	'url.multi_language_links'   => false,  // Multilingual support removed.
 	'url.show_script_name'       => false,
 
 	// Database settings.

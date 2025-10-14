@@ -79,11 +79,10 @@ class Utils {
 	 */
 	public static function deletePdf( $domain) {
 
-		foreach (Yii::app()->params['app.languages'] as $langId => $language) {
-			$pdf = self::getPdfFile( $domain, $langId );
-			if (file_exists( $pdf )) {
-				unlink( $pdf );
-			}
+		// Only English is supported now.
+		$pdf = self::getPdfFile( $domain, 'en' );
+		if (file_exists( $pdf )) {
+			unlink( $pdf );
 		}
 		// Also delete the cached thumbnail.
 		WebsiteThumbnail::deleteThumbnail( $domain );
