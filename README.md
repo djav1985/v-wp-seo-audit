@@ -123,6 +123,29 @@ wongjn.php-sniffer
 
 Configure the extension to use your global or local phpcs path if needed.
 
+## Plugin Conversion
+
+This plugin was converted from a standalone Yii PHP application to a WordPress plugin. **Phase 1 cleanup completed**: Removed 11 unused files (~1,600 lines of code) that were specific to standalone operation.
+
+### Recent Changes (Phase 1 - Oct 2025)
+
+**Removed unused code:**
+- ✅ CLI/Console commands (7 files) - Not needed for WordPress plugin
+- ✅ Management controller (1 file) - Not integrated with WordPress auth  
+- ✅ Utility files (2 files) - WordPress has its own equivalents
+- ✅ Configuration files (1 file) - Deprecated standalone routing
+
+**See detailed documentation:**
+- [CONVERSION_NOTES.md](CONVERSION_NOTES.md) - What was removed and why
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Plugin architecture and data flow
+- [TESTING_GUIDE.md](TESTING_GUIDE.md) - Complete testing procedures
+
+### Removed Features
+- Command-line interface (CLI) commands for batch operations
+- Cron job utilities (use WordPress cron instead)
+- Yii requirements checker (WordPress handles plugin requirements)
+- Management controller (not integrated with WordPress auth)
+
 ## Testing
 
 ### Manual Testing

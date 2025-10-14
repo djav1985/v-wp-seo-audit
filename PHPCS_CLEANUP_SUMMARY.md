@@ -28,23 +28,13 @@ This document summarizes the PHPCS (PHP CodeSniffer) cleanup performed on the V-
      - Added phpcs:ignore for necessary Yii framework patterns
      - Fixed database query security comments
 
-2. **requirements.php**
-   - Fixed: 35 errors
-   - Status: ✅ All errors resolved
-   - Changes:
-     - Added file and function documentation
-     - Fixed Yoda conditions
-     - Replaced deprecated strftime() with date()
-     - Added phpcs:ignore for intentional assignment patterns
+2. **requirements.php** (REMOVED - see CONVERSION_NOTES.md)
+   - This file was removed during WordPress plugin conversion
+   - No longer needed - WordPress handles plugin requirements
 
-3. **command.php**
-   - Fixed: 17 errors  
-   - Status: ✅ All errors resolved
-   - Changes:
-     - Added file and class documentation
-     - Fixed parameter documentation
-     - Added phpcs:ignore for short ternaries and assignments
-     - Fixed strict array comparison
+3. **command.php** (REMOVED - see CONVERSION_NOTES.md)
+   - This file was removed during WordPress plugin conversion
+   - No longer needed - WordPress has its own cron system
 
 ## PHPCS Configuration Updates
 
