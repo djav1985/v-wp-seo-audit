@@ -17,7 +17,6 @@ return array(
 	),
 	'app.encryption_key'         => 'KA1E3ewqsdx0A9OdsTip50182A8mYhFm',
 	'app.validation_key'         => 'D5TgCD0BAZTDoP823daEEv3ZRue6ZAQR',
-	'app.cookie_validation'      => false,
 	'app.manage_key'             => 'then2now',
 
 	// Url settings.
@@ -30,10 +29,6 @@ return array(
 	'db.username'                => 'vontainment_review',
 	'db.password'                => '7=Y?_%K[&-m;TYj)',
 	'db.port'                    => 3306,
-
-	// Cookie settings.
-	'cookie.secure'              => false,
-	'cookie.same_site'           => 'Lax',
 
 	// Pagepeeker settings.
 	'thumbnail.proxy'            => false,
