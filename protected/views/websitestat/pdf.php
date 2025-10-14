@@ -40,13 +40,13 @@ a { color:#315D86; text-decoration: underline; }
 <img class="thumbnail" id="thumb_<?php echo $website['id']; ?>" src="<?php echo $thumbnail; ?>" alt="<?php echo $website['idn']; ?>" />
 </td>
 <td>
-<h1 class="h-review"><?php echo Yii::t( 'app', 'Analyse of {Domain}', array( '{Domain}' => $website['idn'] ) ); ?></h1>
-<i class="icon-time"></i>&nbsp;<small><?php echo Yii::t( 'app', 'Generated on' ); ?> <?php
+<h1 class="h-review"><?php echo 'Website review ' . $website['idn']; ?></h1>
+<i class="icon-time"></i>&nbsp;<small><?php echo 'Generated on'; ?> <?php
 echo Yii::t(
 	'app',
 	'Generated format',
 	array(
-		'{Month}'  => Yii::t( 'app', $generated['M'] ),
+		'{Month}'  => $generated['M'],
 		'{Day}'    => $generated['d'],
 		'{Year}'   => $generated['Y'],
 		'{Hour}'   => $generated['H'],
@@ -57,7 +57,7 @@ echo Yii::t(
 ?>
 </small><br/><br/>
 
-<strong><?php echo Yii::t( 'app', 'The score is {Score}/100', array( '{Score}' => $website['score'] ) ); ?></strong>
+<strong><?php echo 'The score is ' . $website['score'] . '/100'; ?></strong>
 <br/><br/>
 
 <table width="180px" cellspacing="0" cellpadding="0">
@@ -77,7 +77,7 @@ echo Yii::t(
 <table class="table table-striped table-fluid" cellspacing="3" cellpadding="5">
 <thead>
 <tr>
-<th colspan="3" align="center"><h4 class="header"><?php echo Yii::t( 'app', 'SEO Content' ); ?></h4><br/><br/></th>
+<th colspan="3" align="center"><h4 class="header"><?php echo 'SEO Content'; ?></h4><br/><br/></th>
 </tr>
 </thead>
 <tbody>
@@ -91,22 +91,15 @@ echo Yii::t(
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
-<?php echo Yii::t( 'app', 'Title' ); ?>
+<?php echo 'Title'; ?>
 </td>
 <td class="td-result">
 <?php echo CHtml::encode( $meta['title'] ); ?>
 <br/><br/>
-<strong><?php echo Yii::t( 'app', 'Length' ); ?> : <?php echo mb_strlen( (string) $meta['title'] ); ?></strong>
+<strong><?php echo 'Length'; ?> : <?php echo mb_strlen( (string) $meta['title'] ); ?></strong>
 <br/><br/>
 <?php
-echo Yii::t(
-	'advice',
-	"Title advice - $advice",
-	array(
-		'{1}' => _RATE_TITLE_GOOD,
-		'{2}' => _RATE_TITLE_BEST,
-	)
-);
+echo '/* Title advice - see original translation files */';
 ?>
 </td>
 </tr>
@@ -120,22 +113,15 @@ echo Yii::t(
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
-<?php echo Yii::t( 'app', 'Description' ); ?>
+<?php echo 'Description'; ?>
 </td>
 <td>
 <?php echo CHtml::encode( $meta['description'] ); ?>
 <br/><br/>
-<strong><?php echo Yii::t( 'app', 'Length' ); ?> : <?php echo mb_strlen( (string) $meta['description'] ); ?></strong>
+<strong><?php echo 'Length'; ?> : <?php echo mb_strlen( (string) $meta['description'] ); ?></strong>
 <br/><br/>
 <?php
-echo Yii::t(
-	'advice',
-	"Description advice - $advice",
-	array(
-		'{1}' => _RATE_DESC_GOOD,
-		'{2}' => _RATE_DESC_BEST,
-	)
-);
+echo '/* Description advice - see original translation files */';
 ?>
 </td>
 </tr>
@@ -150,17 +136,17 @@ echo Yii::t(
 </td>
 
 <td class="td-compare" align="center" valign="middle">
-<?php echo Yii::t( 'app', 'Og Meta Properties' ); ?>
+<?php echo 'Og Meta Properties'; ?>
 </td>
 
 <td>
-<?php echo Yii::t( 'advice', "Og Meta Properties advice - $advice" ); ?>
+<?php echo '/* Og Meta Properties advice - see original translation files */'; ?>
 <br/><br/>
 <?php if ( ! empty( $meta['ogproperties'] )) : ?>
 <table class="table table-striped table-fluid table-inner" cellpadding="5">
 <tr nobr="true" class="odd">
-<td width="100px"><span class="suh-header"><?php echo Yii::t( 'app', 'Property' ); ?></span><br/><br/></td>
-<td width="250px"><span class="suh-header"><?php echo Yii::t( 'app', 'Content' ); ?></span><br/><br/></td>
+<td width="100px"><span class="suh-header"><?php echo 'Property'; ?></span><br/><br/></td>
+<td width="250px"><span class="suh-header"><?php echo 'Content'; ?></span><br/><br/></td>
 </tr>
 	<?php
 	$i = 0;
@@ -188,7 +174,7 @@ echo Yii::t(
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
-<?php echo Yii::t( 'app', 'Headings' ); ?>
+<?php echo 'Headings'; ?>
 </td>
 <td>
 
@@ -238,13 +224,13 @@ if ($content['isset_headings']) :
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
-<?php echo Yii::t( 'app', 'Images' ); ?>
+<?php echo 'Images'; ?>
 </td>
 <td>
-<?php echo Yii::t( 'app', 'We found {Count} images on this web page.', array( '{Count}' => $content['total_img'] ) ); ?>
+<?php echo 'We found ' . $content['total_img'] . ' images on this web page.'; ?>
 <br/>
 <br/>
-<?php echo Yii::t( 'advice', "Image advice - $advice", array( '{Number}' => $content['total_img'] - $content['total_alt'] ) ); ?>
+<?php echo '/* Image advice */'; ?>
 </td>
 </tr>
 
@@ -257,22 +243,14 @@ if ($content['isset_headings']) :
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
-<?php echo Yii::t( 'app', 'Text/HTML Ratio' ); ?>
+<?php echo 'Text/HTML Ratio'; ?>
 </td>
 <td>
-<?php echo Yii::t( 'app', 'Ratio' ); ?> : <strong><?php echo $document['htmlratio']; ?>%</strong>
+<?php echo 'Ratio'; ?> : <strong><?php echo $document['htmlratio']; ?>%</strong>
 <br/>
 <br/>
 <?php
-echo Yii::t(
-	'advice',
-	"HTML ratio advice - $advice",
-	array(
-		'{GoodNr}' => _RATE_HRATIO_GOOD,
-		'{BestNr}' => _RATE_HRATIO_BEST,
-		'{BadNr}'  => _RATE_HRATIO_BAD,
-	)
-);
+echo '/* HTML ratio advice - see original translation files */';
 ?>
 </td>
 </tr>
@@ -285,10 +263,10 @@ echo Yii::t(
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
-<?php echo Yii::t( 'app', 'Flash' ); ?>
+<?php echo 'Flash'; ?>
 </td>
 <td>
-<?php echo Yii::t( 'advice', "Flash advice - $advice" ); ?>
+<?php echo '/* Flash advice - dynamic */'; ?>
 </td>
 </tr>
 
@@ -300,10 +278,10 @@ echo Yii::t(
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
-<?php echo Yii::t( 'app', 'Iframe' ); ?>
+<?php echo 'Iframe'; ?>
 </td>
 <td>
-<?php echo Yii::t( 'advice', "Iframe advice - $advice" ); ?>
+<?php echo '/* Iframe advice - dynamic */'; ?>
 </td>
 </tr>
 
@@ -317,7 +295,7 @@ echo Yii::t(
 <table class="table table-striped table-fluid" cellspacing="3" cellpadding="5">
 <thead>
 <tr>
-<th colspan="3" align="center"><h4 class="header"><?php echo Yii::t( 'app', 'SEO Links' ); ?></h4></th>
+<th colspan="3" align="center"><h4 class="header"><?php echo 'SEO Links'; ?></h4></th>
 </tr>
 </thead>
 <tbody>
@@ -329,10 +307,10 @@ echo Yii::t(
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
-<?php echo Yii::t( 'app', 'URL Rewrite' ); ?>
+<?php echo 'URL Rewrite'; ?>
 </td>
 <td class="td-result">
-<?php echo Yii::t( 'advice', "Friendly url advice - $advice" ); ?>
+<?php echo '/* Friendly url advice - see original translation files */'; ?>
 </td>
 </tr>
 
@@ -344,10 +322,10 @@ echo Yii::t(
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
-<?php echo Yii::t( 'app', 'Underscores in the URLs' ); ?>
+<?php echo 'Underscores in the URLs'; ?>
 </td>
 <td>
-<?php echo Yii::t( 'advice', "Underscore advice - $advice" ); ?>
+<?php echo '/* Underscore advice - dynamic */'; ?>
 </td>
 </tr>
 
@@ -359,7 +337,7 @@ echo Yii::t(
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
-<?php echo Yii::t( 'app', 'In-page links' ); ?>
+<?php echo 'In-page links'; ?>
 </td>
 <td>
 <?php
@@ -386,9 +364,9 @@ echo Yii::t(
 <?php echo Yii::t( 'app', 'Statistics' ); ?>
 </td>
 <td>
-<?php echo Yii::t( 'app', 'External Links' ); ?> : <?php echo Yii::t( 'app', 'nofollow' ); ?> <?php echo Utils::proportion( $linkcount, $links['external_nofollow'] ); ?>%<br/><br/>
-<?php echo Yii::t( 'app', 'External Links' ); ?> : <?php echo Yii::t( 'app', 'dofollow' ); ?> <?php echo Utils::proportion( $linkcount, $links['external_dofollow'] ); ?>%<br/><br/>
-<?php echo Yii::t( 'app', 'Internal Links' ); ?> <?php echo Utils::proportion( $linkcount, $links['internal'] ); ?>%
+<?php echo 'External Links'; ?> : <?php echo 'noFollow'; ?> <?php echo Utils::proportion( $linkcount, $links['external_nofollow'] ); ?>%<br/><br/>
+<?php echo 'External Links'; ?> : <?php echo 'Passing Juice'; ?> <?php echo Utils::proportion( $linkcount, $links['external_dofollow'] ); ?>%<br/><br/>
+<?php echo 'Internal Links'; ?> <?php echo Utils::proportion( $linkcount, $links['internal'] ); ?>%
 </td>
 </tr>
 </tbody>
@@ -399,15 +377,15 @@ echo Yii::t(
 <table class="table table-striped table-fluid" cellspacing="3" cellpadding="5">
 <thead>
 <tr>
-<th colspan="3" align="center"><h4 class="header"><?php echo Yii::t( 'app', 'In-page links' ); ?></h4></th>
+<th colspan="3" align="center"><h4 class="header"><?php echo 'In-page links'; ?></h4></th>
 </tr>
 </thead>
 <tbody>
 
 <tr class="odd">
-<td width="60%"><span class="suh-header"><?php echo Yii::t( 'app', 'Anchor' ); ?></span></td>
-<td width="20%"><span class="suh-header"><?php echo Yii::t( 'app', 'Type' ); ?></span></td>
-<td width="20%"><span class="suh-header"><?php echo Yii::t( 'app', 'Juice' ); ?></span></td>
+<td width="60%"><span class="suh-header"><?php echo 'Anchor'; ?></span></td>
+<td width="20%"><span class="suh-header"><?php echo 'Type'; ?></span></td>
+<td width="20%"><span class="suh-header"><?php echo 'Juice'; ?></span></td>
 </tr>
 <?php
 $i = 0;
@@ -417,11 +395,11 @@ foreach ($links['links'] as $link) :
 <tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 <td>
 <a href="<?php echo $link['Link']; ?>" target="_blank">
-	<?php echo ! empty( $link['Name'] ) ? CHtml::encode( $link['Name'] ) : Yii::t( 'app', '-' ); ?>
+	<?php echo ! empty( $link['Name'] ) ? CHtml::encode( $link['Name'] ) : '-'; ?>
 </a>
 </td>
-<td><?php echo Yii::t( 'app', $link['Type'] ); ?></td>
-<td><?php echo Yii::t( 'app', $link['Juice'] ); ?></td>
+<td><?php echo $link['Type']; ?></td>
+<td><?php echo $link['Juice']; ?></td>
 </tr>
 	<?php
 	$i++;
@@ -436,7 +414,7 @@ endforeach;
 <table class="table table-striped table-fluid" cellspacing="3" cellpadding="5">
 <thead>
 <tr>
-<th colspan="3" align="center"><h4 class="header"><?php echo Yii::t( 'app', 'SEO Keywords' ); ?></h4></th>
+<th colspan="3" align="center"><h4 class="header"><?php echo 'SEO Keywords'; ?></h4></th>
 </tr>
 </thead>
 <tbody>
@@ -447,7 +425,7 @@ endforeach;
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
-<?php echo Yii::t( 'app', 'Keywords Cloud' ); ?>
+<?php echo 'Keywords Cloud'; ?>
 </td>
 <td class="cloud-container td-result">
 <?php foreach ($cloud['words'] as $word => $stat) : ?>
@@ -464,17 +442,17 @@ endforeach;
 <table class="table table-striped table-fluid" cellspacing="3" cellpadding="5">
 <thead>
 <tr>
-<th colspan="6" align="center"><h4 class="header"><?php echo Yii::t( 'app', 'Keywords Consistency' ); ?></h4></th>
+<th colspan="6" align="center"><h4 class="header"><?php echo 'Keywords Consistency'; ?></h4></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td width="20%"><span class="suh-header"><?php echo Yii::t( 'app', 'Keyword' ); ?></span></td>
-<td width="15%"><span class="suh-header"><?php echo Yii::t( 'app', 'Content' ); ?></span></td>
-<td width="15%"><span class="suh-header"><?php echo Yii::t( 'app', 'Title' ); ?></span></td>
-<td width="15%"><span class="suh-header"><?php echo Yii::t( 'app', 'Keywords' ); ?></span></td>
-<td width="15%"><span class="suh-header"><?php echo Yii::t( 'app', 'Description' ); ?></span></td>
-<td width="15%"><span class="suh-header"><?php echo Yii::t( 'app', 'Headings' ); ?></span></td>
+<td width="20%"><span class="suh-header"><?php echo 'Keyword'; ?></span></td>
+<td width="15%"><span class="suh-header"><?php echo 'Content'; ?></span></td>
+<td width="15%"><span class="suh-header"><?php echo 'Title'; ?></span></td>
+<td width="15%"><span class="suh-header"><?php echo 'Keywords'; ?></span></td>
+<td width="15%"><span class="suh-header"><?php echo 'Description'; ?></span></td>
+<td width="15%"><span class="suh-header"><?php echo 'Headings'; ?></span></td>
 </tr>
 <?php
 $i = 0;
@@ -502,7 +480,7 @@ endforeach;
 <table class="table table-striped table-fluid" cellspacing="3" cellpadding="5">
 <thead>
 <tr>
-<th colspan="3" align="center"><h4 class="header"><?php echo Yii::t( 'app', 'Usability' ); ?></h4></th>
+<th colspan="3" align="center"><h4 class="header"><?php echo 'Usability'; ?></h4></th>
 </tr>
 </thead>
 <tbody>
@@ -514,12 +492,12 @@ endforeach;
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
-<?php echo Yii::t( 'app', 'Url' ); ?>
+<?php echo 'Url'; ?>
 </td>
 <td class="td-result">
-<?php echo Yii::t( 'app', 'Domain' ); ?> : <?php echo $website['idn']; ?>
+<?php echo 'Domain'; ?> : <?php echo $website['idn']; ?>
 <br />
-<?php echo Yii::t( 'app', 'Length' ); ?> : <?php echo mb_strlen( $website['idn'] ); ?>
+<?php echo 'Length'; ?> : <?php echo mb_strlen( $website['idn'] ); ?>
 </td>
 </tr>
 
@@ -531,10 +509,10 @@ endforeach;
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
-<?php echo Yii::t( 'app', 'Favicon' ); ?>
+<?php echo 'Favicon'; ?>
 </td>
 <td>
-<?php echo Yii::t( 'advice', "Favicon advice - $advice" ); ?>
+<?php echo '/* Favicon advice - dynamic */'; ?>
 </td>
 </tr>
 
@@ -546,10 +524,10 @@ endforeach;
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
-<?php echo Yii::t( 'app', 'Language' ); ?>
+<?php echo 'Language'; ?>
 </td>
 <td>
-<?php echo Yii::t( 'advice', "Language advice - $advice", array( '{Language}' => $document['lang'] ) ); ?>
+<?php echo '/* Language advice - see original translation files */'; ?>
 </td>
 </tr>
 
@@ -561,10 +539,10 @@ endforeach;
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
-<?php echo Yii::t( 'app', 'Dublin Core' ); ?>
+<?php echo 'Dublin Core'; ?>
 </td>
 <td>
-<?php echo Yii::t( 'advice', "Dublin Core advice - $advice" ); ?>
+<?php echo '/* Dublin Core advice - see original translation files */'; ?>
 </td>
 </tr>
 
@@ -577,7 +555,7 @@ endforeach;
 <table class="table table-striped table-fluid" cellspacing="3" cellpadding="5">
 <thead>
 <tr>
-<th colspan="3" align="center"><h4 class="header"><?php echo Yii::t( 'app', 'Document' ); ?></h4></th>
+<th colspan="3" align="center"><h4 class="header"><?php echo 'Document'; ?></h4></th>
 </tr>
 </thead>
 <tbody>
@@ -590,14 +568,14 @@ endforeach;
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
-<?php echo Yii::t( 'app', 'Doctype' ); ?>
+<?php echo 'Doctype'; ?>
 </td>
 <td class="td-result">
 <?php
 if ($document['doctype']) :
 	echo $document['doctype'];
 else :
-	echo Yii::t( 'app', 'Missing doctype' );
+	echo 'Missing doctype';
 endif;
 ?>
 </td>
@@ -611,10 +589,10 @@ endif;
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
-<?php echo Yii::t( 'app', 'Encoding' ); ?>
+<?php echo 'Encoding'; ?>
 </td>
 <td>
-<?php echo Yii::t( 'advice', "Encoding advice - $advice", array( '{Charset}' => $document['charset'] ) ); ?>
+<?php echo '/* Encoding advice - see original translation files */'; ?>
 </td>
 </tr>
 
@@ -626,12 +604,12 @@ endif;
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
-<?php echo Yii::t( 'app', 'W3C Validity' ); ?>
+<?php echo 'W3C Validity'; ?>
 </td>
 <td>
-<?php echo Yii::t( 'app', 'Errors' ); ?> : <?php echo (int) $w3c['errors']; ?>
+<?php echo 'Errors'; ?> : <?php echo (int) $w3c['errors']; ?>
 <br/>
-<?php echo Yii::t( 'app', 'Warnings' ); ?> : <?php echo (int) $w3c['warnings']; ?>
+<?php echo 'Warnings'; ?> : <?php echo (int) $w3c['warnings']; ?>
 </td>
 </tr>
 
@@ -643,14 +621,14 @@ endif;
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
-<?php echo Yii::t( 'app', 'Deprecated HTML' ); ?>
+<?php echo 'Deprecated HTML'; ?>
 </td>
 <td width="70%">
 <?php if ( ! empty( $content['deprecated'] )) : ?>
 <table class="table table-striped table-fluid table-inner" cellpadding="5">
 <tr class="odd">
-<td align="center"><span class="suh-header"><?php echo Yii::t( 'app', 'Deprecated tags' ); ?></span></td>
-<td align="center"><span class="suh-header"><?php echo Yii::t( 'app', 'Occurrences' ); ?></span></td>
+<td align="center"><span class="suh-header"><?php echo 'Deprecated tags'; ?></span></td>
+<td align="center"><span class="suh-header"><?php echo 'Occurrences'; ?></span></td>
 </tr>
 	<?php
 	$i = 0;
@@ -667,7 +645,7 @@ endif;
 	?>
 </table>
 <?php endif; ?>
-<?php echo Yii::t( 'advice', "Deprecated advice - $advice" ); ?>
+<?php echo '/* Deprecated advice - dynamic */'; ?>
 </td>
 </tr>
 
@@ -678,7 +656,7 @@ endif;
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
-<?php echo Yii::t( 'app', 'Speed Tips' ); ?>
+<?php echo 'Speed Tips'; ?>
 </td>
 <td>
 
@@ -688,27 +666,27 @@ endif;
 <tr class="no-top-line even">
 <?php $advice = $rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] ); ?>
 <td width="20px"><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
-<td width="330px"><?php echo Yii::t( 'advice', "Nested tables advice - $advice" ); ?></td>
+<td width="330px"><?php echo '/* Nested tables advice - see original translation files */'; ?></td>
 </tr>
 
 <tr class="odd">
 <?php $advice = $rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] ); ?>
 <td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
-<td><?php echo Yii::t( 'advice', "Inline CSS advice - $advice" ); ?></td>
+<td><?php echo '/* Inline CSS advice - see original translation files */'; ?></td>
 </tr>
 
 <tr class="even">
 <?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
 <?php list($img_advice,) = explode( ' ', $advice ); ?>
 <td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
-<td><?php echo Yii::t( 'advice', "CSS count advice - $advice", array( '{MoreNr}' => _RATE_CSS_COUNT ) ); ?></td>
+<td><?php echo '/* CSS count advice - see original translation files */'; ?></td>
 </tr>
 
 <tr class="odd">
 <?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
 <?php list($img_advice,) = explode( ' ', $advice ); ?>
 <td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
-<td><?php echo Yii::t( 'advice', "JS count advice - $advice", array( '{MoreNr}' => _RATE_JS_COUNT ) ); ?></td>
+<td><?php echo '/* JS count advice - see original translation files */'; ?></td>
 </tr>
 
 <tr class="even">
@@ -735,7 +713,7 @@ endif;
 <table class="table table-striped table-fluid" cellspacing="3" cellpadding="5">
 <thead>
 <tr>
-<th colspan="3" align="center"><h4 class="header"><?php echo Yii::t( 'app', 'Mobile' ); ?></h4></th>
+<th colspan="3" align="center"><h4 class="header"><?php echo 'Mobile'; ?></h4></th>
 </tr>
 </thead>
 <tbody>
@@ -746,7 +724,7 @@ endif;
 <img src = "<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
-<?php echo Yii::t( 'app', 'Mobile Optimization' ); ?>
+<?php echo 'Mobile Optimization'; ?>
 </td>
 <td class="td-result">
 
@@ -755,17 +733,17 @@ endif;
 
 <tr class="even">
 <td width="20px"><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
-<td width="330px"><?php echo Yii::t( 'app', 'Apple Icon' ); ?></td>
+<td width="330px"><?php echo 'Apple Icon'; ?></td>
 </tr>
 
 <tr class="odd">
 <td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
-<td><?php echo Yii::t( 'app', 'Meta Viewport Tag' ); ?></td>
+<td><?php echo 'Meta Viewport Tag'; ?></td>
 </tr>
 
 <tr class="even">
 <td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
-<td><?php echo Yii::t( 'app', 'Flash content' ); ?></td>
+<td><?php echo 'Flash content'; ?></td>
 </tr>
 
 </tbody>
@@ -784,7 +762,7 @@ endif;
 <table class="table table-striped table-fluid" cellspacing="3" cellpadding="5">
 <thead>
 <tr>
-<th colspan="3" align="center"><h4 class="header"><?php echo Yii::t( 'app', 'Optimization' ); ?></h4></th>
+<th colspan="3" align="center"><h4 class="header"><?php echo 'Optimization'; ?></h4></th>
 </tr>
 </thead>
 <tbody>
@@ -796,7 +774,7 @@ endif;
 <img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
-	<?php echo Yii::t( 'app', 'XML Sitemap' ); ?>
+	<?php echo 'XML Sitemap'; ?>
 </td>
 <td class="td-result">
 	<?php if ( ! empty( $misc['sitemap'] )) : ?>
@@ -817,7 +795,7 @@ endif;
 		?>
 </table>
 	<?php else : ?>
-		<?php echo Yii::t( 'app', 'Missing' ); ?>
+		<?php echo 'Missing'; ?>
 <br><br>
 		<?php echo Yii::t( 'advice', "XML Sitemap - $advice" ); ?>
 	<?php endif; ?>
@@ -840,7 +818,7 @@ endif;
 <br><br>
 		<?php echo Yii::t( 'advice', "Robots txt - $advice" ); ?>
 	<?php else : ?>
-		<?php echo Yii::t( 'app', 'Missing' ); ?>
+		<?php echo 'Missing'; ?>
 <br><br>
 		<?php echo Yii::t( 'advice', "Robots txt - $advice" ); ?>
 	<?php endif; ?>
@@ -854,7 +832,7 @@ endif;
 <img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
-	<?php echo Yii::t( 'app', 'Analytics' ); ?>
+	<?php echo 'Analytics'; ?>
 </td>
 <td class="td-result">
 	<?php if ( ! empty( $misc['analytics'] )) : ?>
@@ -878,7 +856,7 @@ endif;
 		?>
 </table>
 	<?php else : ?>
-		<?php echo Yii::t( 'app', 'Missing' ); ?>
+		<?php echo 'Missing'; ?>
 <br><br>
 		<?php echo Yii::t( 'advice', "Analytics - $advice" ); ?>
 	<?php endif; ?>
