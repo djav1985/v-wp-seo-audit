@@ -23,6 +23,9 @@ define( 'V_WP_SEO_AUDIT_VERSION', '1.0.0' );
 define( 'V_WP_SEO_AUDIT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'V_WP_SEO_AUDIT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
+// Load WordPress-native database class.
+require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wp-seo-audit-db.php';
+
 // Initialize Yii framework.
 // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_error_reporting, WordPress.PHP.DevelopmentFunctions.error_log_error_reporting, WordPress.Security.PluginMenuSlug.Using error_reporting
 error_reporting( E_ALL & ~( E_NOTICE | E_DEPRECATED | E_STRICT ) );

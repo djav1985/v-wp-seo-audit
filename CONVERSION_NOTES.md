@@ -145,14 +145,54 @@ If the removed functionality is needed, it should be re-implemented using WordPr
 - Better integration with WordPress i18n system
 - Follows WordPress coding standards
 
+#### 3. WordPress-Native Database Operations (✅ Completed)
+
+**Implementation:**
+- Created `V_WP_SEO_Audit_DB` class in `includes/class-v-wp-seo-audit-db.php`
+- Provides WordPress-native database access methods using `$wpdb`
+- Maintains existing database schema and table structure
+- Updated all models and controllers to use new database class
+
+**Converted Operations:**
+- Website model: `removeByDomain()` method
+- WebsiteForm model: `tryToAnalyse()` method
+- WebsitestatController: `init()` and `collectInfo()` methods
+- ParseController: `actionPagespeed()` and `getPageSpeedResults()` methods
+
+**Database Methods Available:**
+- `get_table_name()` - Get full table name with prefix
+- `get_by_wid()` - Get row by website ID
+- `get_website_by_md5()` - Get website by MD5 hash
+- `get_website_by_domain()` - Get website by domain
+- `delete_website()` - Delete website and all related records
+- `upsert_pagespeed()` - Insert or update PageSpeed data
+- `get_pagespeed_data()` - Get PageSpeed data
+- `get_website_report_data()` - Get all report data for a website
+- `get_website_count()` - Get total website count
+
+**Files Modified:**
+- `v-wp-seo-audit.php` - Added require for database class
+- `protected/models/Website.php` - Converted to use $wpdb
+- `protected/models/WebsiteForm.php` - Converted to use $wpdb
+- `protected/controllers/WebsitestatController.php` - Converted to use $wpdb
+- `protected/controllers/ParseController.php` - Converted to use $wpdb
+
+**Benefits:**
+- No dependency on Yii CDbCommand or CActiveRecord for basic operations
+- Uses WordPress native $wpdb with proper escaping and preparation
+- Maintains exact same database schema (no breaking changes)
+- Simplified database queries with dedicated methods
+- Better performance for common operations (single method call for report data)
+- Follows WordPress coding standards and best practices
+
 ### Remaining Work
 
 The following Yii components are still in use and could be converted in future phases:
 
-1. **Report Generation** - Still uses Yii controllers and models
-2. **Database Operations** - Still uses Yii ActiveRecord (could use $wpdb)
-3. **PDF Generation** - Still uses Yii-integrated TCPDF
-4. **Views/Templates** - Still uses Yii view rendering
+1. **Report Generation** - Still uses Yii controllers for rendering
+2. **PDF Generation** - Still uses Yii-integrated TCPDF
+3. **Views/Templates** - Still uses Yii view rendering
+4. **ActiveRecord for Website model** - The `model()` and `tableName()` methods still exist for backward compatibility
 
 ---
 

@@ -20,7 +20,7 @@ class WebsitestatController extends Controller {
 	/**
 	 * Database command object.
 	 *
-	 * @var CDbCommand
+	 * @var V_WP_SEO_Audit_DB
 	 */
 	protected $command;
 
@@ -126,10 +126,17 @@ class WebsitestatController extends Controller {
 	 */
 	public function init() {
 		parent::init();
-		$this->command = Yii::app()->db->createCommand();
+		
+		// Use WordPress native database class.
+		if ( ! class_exists( 'V_WP_SEO_Audit_DB' ) ) {
+			throw new CHttpException( 500, 'Database class not available' );
+		}
+		
+		$this->command = new V_WP_SEO_Audit_DB();
 		$this->domain  = isset( $_GET['domain'] ) ? $_GET['domain'] : null;
+		
 		if (
-		! $this->website = $this->command->select( 'id, domain, modified, idn, score, final_url' )->from( '{{website}}' )->where( 'md5domain=:md5', array( ':md5' => md5( $this->domain ) ) )->queryRow()
+		! $this->website = $this->command->get_website_by_domain( $this->domain, array( 'id', 'domain', 'modified', 'idn', 'score', 'final_url' ) )
 		) {
 			if ( ! Yii::app()->params['param.instant_redirect']) {
 				$form         = new WebsiteForm();
@@ -142,7 +149,6 @@ class WebsitestatController extends Controller {
 			throw new CHttpException( 404, Yii::t( 'app', "The page you are looking for doesn't exists" ) );
 
 		}
-		$this->command->reset();
 		$this->wid = $this->website['id'];
 		$this->collectInfo();
 
@@ -324,22 +330,17 @@ class WebsitestatController extends Controller {
 			)
 		);
 
-		$this->cloud = $this->command->select( '*' )->from( '{{cloud}}' )->where( 'wid=:wid', array( ':wid' => $this->wid ) )->queryRow();
-		$this->command->reset();
-		$this->content = $this->command->select( '*' )->from( '{{content}}' )->where( 'wid=:wid', array( ':wid' => $this->wid ) )->queryRow();
-		$this->command->reset();
-		$this->document = $this->command->select( '*' )->from( '{{document}}' )->where( 'wid=:wid', array( ':wid' => $this->wid ) )->queryRow();
-		$this->command->reset();
-		$this->isseter = $this->command->select( '*' )->from( '{{issetobject}}' )->where( 'wid=:wid', array( ':wid' => $this->wid ) )->queryRow();
-		$this->command->reset();
-		$this->links = $this->command->select( '*' )->from( '{{links}}' )->where( 'wid=:wid', array( ':wid' => $this->wid ) )->queryRow();
-		$this->command->reset();
-		$this->meta = $this->command->select( '*' )->from( '{{metatags}}' )->where( 'wid=:wid', array( ':wid' => $this->wid ) )->queryRow();
-		$this->command->reset();
-		$this->w3c = $this->command->select( '*' )->from( '{{w3c}}' )->where( 'wid=:wid', array( ':wid' => $this->wid ) )->queryRow();
-		$this->command->reset();
-		$this->misc = $this->command->select( '*' )->from( '{{misc}}' )->where( 'wid=:wid', array( ':wid' => $this->wid ) )->queryRow();
-		$this->command->reset();
+		// Get all report data using WordPress native database.
+		$data = $this->command->get_website_report_data( $this->wid );
+		
+		$this->cloud    = $data['cloud'];
+		$this->content  = $data['content'];
+		$this->document = $data['document'];
+		$this->isseter  = $data['issetobject'];
+		$this->links    = $data['links'];
+		$this->meta     = $data['metatags'];
+		$this->w3c      = $data['w3c'];
+		$this->misc     = $data['misc'];
 
 		// Initialize as empty arrays if query returned false/null.
 		if ( ! $this->cloud) {
