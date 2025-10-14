@@ -123,6 +123,16 @@ wongjn.php-sniffer
 
 Configure the extension to use your global or local phpcs path if needed.
 
+## Plugin Conversion
+
+This plugin was converted from a standalone Yii PHP application to a WordPress plugin. See [CONVERSION_NOTES.md](CONVERSION_NOTES.md) for details about what was removed and why.
+
+### Removed Features
+- Command-line interface (CLI) commands for batch operations
+- Cron job utilities (use WordPress cron instead)
+- Yii requirements checker (WordPress handles plugin requirements)
+- Management controller (not integrated with WordPress auth)
+
 ## Testing
 
 ### Manual Testing
