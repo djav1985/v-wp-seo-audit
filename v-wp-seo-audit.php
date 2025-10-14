@@ -55,16 +55,16 @@ mb_internal_encoding( 'UTF-8' );
 global $v_wp_seo_audit_app;
 $v_wp_seo_audit_app = null;
 
-// Plugin initialization - only when needed (not on every page load).
-// Use 'wp' instead of 'init' to have access to $post.
-add_action( 'wp', array( 'V_WPSA_Yii_Integration', 'init' ) );
+// NOTE: Yii initialization is NO LONGER done on page load.
+// Yii is only initialized when needed by AJAX handlers (generate_report, download_pdf, pagepeeker_proxy).
+// This prevents Yii from running on common page requests, improving performance and avoiding conflicts.
 
 // Enqueue styles and scripts for front-end.
 /**
  * V_wpsa_enqueue_assets function.
  */
 function v_wpsa_enqueue_assets() {
-	global $post, $v_wp_seo_audit_app;
+	global $post;
 
 	// Only load if shortcode is present on the page.
 	if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'v_wp_seo_audit' ) ) {
@@ -81,7 +81,7 @@ function v_wpsa_enqueue_assets() {
 		wp_enqueue_script( 'v-wp-seo-audit-base', V_WP_SEO_AUDIT_PLUGIN_URL . 'assets/js/base.js', array( 'jquery' ), V_WP_SEO_AUDIT_VERSION, true );
 
 		// Add global JavaScript variables needed by the plugin.
-		// Get the base URL from Yii app if initialized, otherwise use plugin URL.
+		// Use plugin URL directly (no Yii dependency).
 		$base_url = rtrim( V_WP_SEO_AUDIT_PLUGIN_URL, '/' );
 
 		// Inject global variables into the page.
@@ -99,32 +99,30 @@ add_action( 'wp_enqueue_scripts', 'v_wpsa_enqueue_assets' );
 /**
  * V_wpsa_shortcode function.
  *
+ * Renders the plugin form WITHOUT loading Yii framework on page load.
+ * Yii is only loaded via AJAX handlers when needed for report generation.
+ *
  * @param mixed $atts Parameter.
  */
 function v_wpsa_shortcode( $atts ) {
-	global $v_wp_seo_audit_app;
-
-	if ( ! $v_wp_seo_audit_app ) {
-		return '<div class="v-wp-seo-audit-error"><p>Error: Application not initialized.</p></div>';
-	}
-
-	// Start output buffering to capture Yii output.
+	// Load WordPress-native request form template.
+	// This does NOT require Yii initialization.
 	ob_start();
 
-	try {
-		// Process the request through Yii.
-		$v_wp_seo_audit_app->run();
-		$content = ob_get_clean();
-
-		// Create a fresh nonce for the container to support PDF downloads.
-		$nonce = wp_create_nonce( 'v_wp_seo_audit_nonce' );
-
-		// Wrap in container with data-nonce attribute.
-		return '<div class="v-wp-seo-audit-container" data-nonce="' . esc_attr( $nonce ) . '">' . $content . '</div>';
-	} catch ( Exception $e ) {
-		ob_end_clean();
-		return '<div class="v-wp-seo-audit-error"><p>Error: ' . esc_html( $e->getMessage() ) . '</p></div>';
+	$template_path = V_WP_SEO_AUDIT_PLUGIN_DIR . 'templates/request-form.php';
+	if ( file_exists( $template_path ) ) {
+		include $template_path;
+	} else {
+		echo '<div class="v-wp-seo-audit-error"><p>Error: Template not found.</p></div>';
 	}
+
+	$content = ob_get_clean();
+
+	// Create a fresh nonce for the container to support AJAX operations.
+	$nonce = wp_create_nonce( 'v_wp_seo_audit_nonce' );
+
+	// Wrap in container with data-nonce attribute.
+	return '<div class="v-wp-seo-audit-container" data-nonce="' . esc_attr( $nonce ) . '">' . $content . '</div>';
 }
 add_shortcode( 'v_wp_seo_audit', 'v_wpsa_shortcode' );
 
