@@ -64,8 +64,8 @@ class V_WP_SEO_Audit_Helpers {
 	public static function get_config( $config_name ) {
 		// Map old Yii config names to WordPress equivalents.
 		$config_map = array(
-			'analyzer.cache_time'      => apply_filters( 'v_wp_seo_audit_cache_time', 86400 ), // 24 hours default.
-			'param.rating_per_page'    => apply_filters( 'v_wp_seo_audit_rating_per_page', 12 ),
+			'analyzer.cache_time'       => apply_filters( 'v_wp_seo_audit_cache_time', 86400 ), // 24 hours default.
+			'param.rating_per_page'     => apply_filters( 'v_wp_seo_audit_rating_per_page', 12 ),
 			'param.index_website_count' => apply_filters( 'v_wp_seo_audit_index_website_count', 30 ),
 		);
 
