@@ -19,6 +19,17 @@
         <exclude-pattern>requirements.php</exclude-pattern>
         <exclude-pattern>command.php</exclude-pattern>
     </rule>
+    <!-- Exclude WordPress function naming rules from Yii framework system files -->
+    <rule ref="WordPress.NamingConventions.ValidFunctionName">
+        <exclude-pattern>requirements.php</exclude-pattern>
+        <exclude-pattern>command.php</exclude-pattern>
+        <exclude-pattern>protected/*</exclude-pattern>
+    </rule>
+    <!-- Exclude WordPress validation rules from Yii framework system files -->
+    <rule ref="WordPress.Security.ValidatedSanitizedInput">
+        <exclude-pattern>requirements.php</exclude-pattern>
+        <exclude-pattern>command.php</exclude-pattern>
+    </rule>
     <exclude-pattern>assets/*</exclude-pattern>
     <exclude-pattern>css/*</exclude-pattern>
     <exclude-pattern>img/*</exclude-pattern>
