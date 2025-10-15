@@ -520,6 +520,18 @@ class V_WPSA_DB {
 		if ( ! isset( $data['document']['htmlratio'] ) ) {
 			$data['document']['htmlratio'] = 0;
 		}
+		if ( ! isset( $data['document']['doctype'] ) ) {
+			$data['document']['doctype'] = '';
+		}
+		if ( ! isset( $data['document']['lang'] ) ) {
+			$data['document']['lang'] = '';
+		}
+		if ( ! isset( $data['document']['charset'] ) ) {
+			$data['document']['charset'] = '';
+		}
+		if ( ! isset( $data['document']['favicon'] ) ) {
+			$data['document']['favicon'] = '';
+		}
 
 		// Links defaults.
 		if ( empty( $data['links'] ) || ! is_array( $data['links'] ) ) {
@@ -559,6 +571,12 @@ class V_WPSA_DB {
 		if ( ! isset( $data['links']['external_nofollow'] ) ) {
 			$data['links']['external_nofollow'] = 0;
 		}
+		if ( ! isset( $data['links']['friendly'] ) ) {
+			$data['links']['friendly'] = 0;
+		}
+		if ( ! isset( $data['links']['isset_underscore'] ) ) {
+			$data['links']['isset_underscore'] = 0;
+		}
 
 		// Meta defaults.
 		if ( empty( $data['meta'] ) || ! is_array( $data['meta'] ) ) {
@@ -566,6 +584,15 @@ class V_WPSA_DB {
 		}
 		if ( ! isset( $data['meta']['ogproperties'] ) || ! is_array( $data['meta']['ogproperties'] ) ) {
 			$data['meta']['ogproperties'] = array();
+		}
+		if ( ! isset( $data['meta']['title'] ) ) {
+			$data['meta']['title'] = '';
+		}
+		if ( ! isset( $data['meta']['description'] ) ) {
+			$data['meta']['description'] = '';
+		}
+		if ( ! isset( $data['meta']['keyword'] ) ) {
+			$data['meta']['keyword'] = '';
 		}
 
 		// Cloud defaults.
