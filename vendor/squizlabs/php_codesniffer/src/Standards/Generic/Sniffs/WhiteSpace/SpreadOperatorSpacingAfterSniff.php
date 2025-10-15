@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Verifies spacing between the spread operator and the variable/function call it applies to.
  *
  * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2019 Juliette Reinders Folmer. All rights reserved.
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 namespace PHP_CodeSniffer\Standards\Generic\Sniffs\WhiteSpace;
@@ -16,108 +15,122 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class SpreadOperatorSpacingAfterSniff implements Sniff
 {
-	/**
-	 * The number of spaces desired after a spread token.
-	 *
-	 * @var integer
-	 */
-	public $spacing = 0;
 
-	/**
-	 * Allow newlines instead of spaces.
-	 *
-	 * @var boolean
-	 */
-	public $ignoreNewlines = false;
+    /**
+     * The number of spaces desired after a spread token.
+     *
+     * @var integer
+     */
+    public $spacing = 0;
 
-
-	/**
-	 * Returns an array of tokens this test wants to listen for.
-	 *
-	 * @return array
-	 */
-	public function register()
-	{
-		return array( T_ELLIPSIS );
-	}//end register()
+    /**
+     * Allow newlines instead of spaces.
+     *
+     * @var boolean
+     */
+    public $ignoreNewlines = false;
 
 
-	/**
-	 * Processes this test, when one of its tokens is encountered.
-	 *
-	 * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
-	 * @param int                         $stackPtr  The position of the current token in
-	 *                                               the stack passed in $tokens.
-	 *
-	 * @return void
-	 */
-	public function process( File $phpcsFile, $stackPtr)
-	{
-		$tokens        = $phpcsFile->getTokens();
-		$this->spacing = (int) $this->spacing;
+    /**
+     * Returns an array of tokens this test wants to listen for.
+     *
+     * @return array<int|string>
+     */
+    public function register()
+    {
+        return [T_ELLIPSIS];
 
-		$nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ( $stackPtr + 1 ), null, true);
-		if ($nextNonEmpty === false) {
-			return;
-		}
+    }//end register()
 
-		if (
-		$this->ignoreNewlines === true
-			&& $tokens[ $stackPtr ]['line'] !== $tokens[ $nextNonEmpty ]['line']
-		) {
-			$phpcsFile->recordMetric($stackPtr, 'Spacing after spread operator', 'newline');
-			return;
-		}
 
-		if ($this->spacing === 0 && $nextNonEmpty === ( $stackPtr + 1 )) {
-			$phpcsFile->recordMetric($stackPtr, 'Spacing after spread operator', 0);
-			return;
-		}
+    /**
+     * Processes this test, when one of its tokens is encountered.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
+     *
+     * @return void
+     */
+    public function process(File $phpcsFile, $stackPtr)
+    {
+        $tokens         = $phpcsFile->getTokens();
+        $this->spacing  = (int) $this->spacing;
+        $pluralizeSpace = 's';
+        if ($this->spacing === 1) {
+            $pluralizeSpace = '';
+        }
 
-		$nextNonWhitespace = $phpcsFile->findNext(T_WHITESPACE, ( $stackPtr + 1 ), null, true);
-		if ($nextNonEmpty !== $nextNonWhitespace) {
-			$error = 'Expected %s space(s) after the spread operator; comment found';
-			$data  = array( $this->spacing );
-			$phpcsFile->addError($error, $stackPtr, 'CommentFound', $data);
+        $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        if ($nextNonEmpty === false) {
+            return;
+        }
 
-			if ($tokens[ ( $stackPtr + 1 ) ]['code'] === T_WHITESPACE) {
-				$phpcsFile->recordMetric($stackPtr, 'Spacing after spread operator', $tokens[ ( $stackPtr + 1 ) ]['length']);
-			} else {
-				$phpcsFile->recordMetric($stackPtr, 'Spacing after spread operator', 0);
-			}
+        if ($tokens[$nextNonEmpty]['code'] === T_CLOSE_PARENTHESIS) {
+            // Ignore PHP 8.1 first class callable syntax.
+            return;
+        }
 
-			return;
-		}
+        if ($this->ignoreNewlines === true
+            && $tokens[$stackPtr]['line'] !== $tokens[$nextNonEmpty]['line']
+        ) {
+            $phpcsFile->recordMetric($stackPtr, 'Spacing after spread operator', 'newline');
+            return;
+        }
 
-		$found = 0;
-		if ($tokens[ $stackPtr ]['line'] !== $tokens[ $nextNonEmpty ]['line']) {
-			$found = 'newline';
-		} elseif ($tokens[ ( $stackPtr + 1 ) ]['code'] === T_WHITESPACE) {
-			$found = $tokens[ ( $stackPtr + 1 ) ]['length'];
-		}
+        if ($this->spacing === 0 && $nextNonEmpty === ($stackPtr + 1)) {
+            $phpcsFile->recordMetric($stackPtr, 'Spacing after spread operator', 0);
+            return;
+        }
 
-		$phpcsFile->recordMetric($stackPtr, 'Spacing after spread operator', $found);
+        $nextNonWhitespace = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
+        if ($nextNonEmpty !== $nextNonWhitespace) {
+            $error = 'Expected %s space%s after the spread operator; comment found';
+            $data  = [
+                $this->spacing,
+                $pluralizeSpace,
+            ];
+            $phpcsFile->addError($error, $stackPtr, 'CommentFound', $data);
 
-		if ($found === $this->spacing) {
-			return;
-		}
+            if ($tokens[($stackPtr + 1)]['code'] === T_WHITESPACE) {
+                $phpcsFile->recordMetric($stackPtr, 'Spacing after spread operator', $tokens[($stackPtr + 1)]['length']);
+            } else {
+                $phpcsFile->recordMetric($stackPtr, 'Spacing after spread operator', 0);
+            }
 
-		$error = 'Expected %s space(s) after the spread operator; %s found';
-		$data  = array(
-			$this->spacing,
-			$found,
-		);
+            return;
+        }
 
-		$errorCode = 'TooMuchSpace';
-		if ($this->spacing !== 0) {
-			if ($found === 0) {
-				$errorCode = 'NoSpace';
-			} elseif ($found !== 'newline' && $found < $this->spacing) {
-				$errorCode = 'TooLittleSpace';
-			}
-		}
+        $found = 0;
+        if ($tokens[$stackPtr]['line'] !== $tokens[$nextNonEmpty]['line']) {
+            $found = 'newline';
+        } else if ($tokens[($stackPtr + 1)]['code'] === T_WHITESPACE) {
+            $found = $tokens[($stackPtr + 1)]['length'];
+        }
 
-		$fix = $phpcsFile->addFixableError($error, $stackPtr, $errorCode, $data);
+        $phpcsFile->recordMetric($stackPtr, 'Spacing after spread operator', $found);
+
+        if ($found === $this->spacing) {
+            return;
+        }
+
+        $error = 'Expected %s space%s after the spread operator; %s found';
+        $data  = [
+            $this->spacing,
+            $pluralizeSpace,
+            $found,
+        ];
+
+        $errorCode = 'TooMuchSpace';
+        if ($this->spacing !== 0) {
+            if ($found === 0) {
+                $errorCode = 'NoSpace';
+            } else if ($found !== 'newline' && $found < $this->spacing) {
+                $errorCode = 'TooLittleSpace';
+            }
+        }
+
+        $fix = $phpcsFile->addFixableError($error, $stackPtr, $errorCode, $data);
 
         if ($fix === true) {
             $padding = str_repeat(' ', $this->spacing);
@@ -125,7 +138,7 @@ class SpreadOperatorSpacingAfterSniff implements Sniff
                 $phpcsFile->fixer->addContent($stackPtr, $padding);
             } else {
                 $phpcsFile->fixer->beginChangeset();
-                $start = ( $stackPtr + 1 );
+                $start = ($stackPtr + 1);
 
                 if ($this->spacing > 0) {
                     $phpcsFile->fixer->replaceToken($start, $padding);
@@ -139,5 +152,8 @@ class SpreadOperatorSpacingAfterSniff implements Sniff
                 $phpcsFile->fixer->endChangeset();
             }
         }
+
     }//end process()
+
+
 }//end class
