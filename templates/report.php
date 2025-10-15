@@ -33,7 +33,10 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 	<div class="alert alert-danger mt-5 mb-5">
 		<?php echo 'No report available. The domain could not be analyzed or the record was not created. Please try again or check your domain input.'; ?>
 	</div>
-<?php return; endif; ?>
+	<?php
+	return;
+endif;
+?>
 <script type="text/javascript">
 	"use strict";
 
@@ -108,16 +111,16 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			return false;
 		});
 
-		<?php if ( V_WPSA_Config::get('psi.show') ) : ?>
+		<?php if ( V_WPSA_Config::get( 'psi.show' ) ) : ?>
 			WrPsi(
 			<?php
 			echo wp_json_encode(
 				array(
 					'i18nEnterFullscreen' => 'Enter fullscreen mode',
 					'i18nExitFullscreen'  => 'Exit fullscreen mode',
-					'runInstantly'        => V_WPSA_Config::get('psi.run_instantly'),
+					'runInstantly'        => V_WPSA_Config::get( 'psi.run_instantly' ),
 					'url'                 => ! empty( $website['final_url'] ) ? $website['final_url'] : 'http://' . $website['domain'],
-					'locale'              => "en",
+					'locale'              => 'en',
 				)
 			)
 			?>
@@ -129,7 +132,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 <div class="jumbotron">
 	<div class="row">
 		<div class="col-md-4 col-lg-5 col-sm-12">
-			<img class="img-responsive img-thumbnail mb-20" id="thumb_main_<?php echo $website['id']; ?>" src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/loader.gif" alt="<?php echo $website['idn']; ?>" />
+			<img class="img-responsive img-thumbnail mb-20" id="thumb_main_<?php echo $website['id']; ?>" src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/loader.gif" alt="<?php echo $website['idn']; ?>" />
 		</div>
 		<div class="col-md-8 col-lg-7 col-sm-12 text-left">
 			<h1 class="text-break">
@@ -137,7 +140,8 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			</h1>
 
 			<p>
-				<i class="fas fa-clock"></i>&nbsp;<small><?php echo 'Generated on'; ?> <?php
+				<i class="fas fa-clock"></i>&nbsp;<small><?php echo 'Generated on'; ?>
+				<?php
 				$monthNames = array(
 					'Jan' => 'January',
 					'Feb' => 'February',
@@ -159,7 +163,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			</p>
 
 
-			<?php if ( $diff > V_WPSA_Config::get('analyzer.cache_time') ) : ?>
+			<?php if ( $diff > V_WPSA_Config::get( 'analyzer.cache_time' ) ) : ?>
 				<p>
 					<?php
 					echo 'Old data? <a href="' . $updUrl . '" class="btn btn-success" id="update_stat">UPDATE</a> !';
@@ -167,7 +171,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 				</p>
 			<?php endif; ?>
 
-			<?php echo V_WPSA_Config::get('param.addthis'); ?>
+			<?php echo V_WPSA_Config::get( 'param.addthis' ); ?>
 
 
 			<p class="mt-3">
@@ -618,9 +622,9 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 							<tr>
 								<td><?php echo esc_html( $word ); ?></td>
 								<td><?php echo (int) $cloud['words'][ $word ]['count']; ?></td>
-								<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $object['title']; ?>.png" /></td>
-								<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $object['description']; ?>.png" /></td>
-								<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $object['headings']; ?>.png" /></td>
+								<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['title']; ?>.png" /></td>
+								<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['description']; ?>.png" /></td>
+								<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['headings']; ?>.png" /></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -840,7 +844,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 					<tbody>
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] ); ?>
-							<td width="50px"><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
+							<td width="50px"><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
 							<td>
 								<?php
 								if ( $advice === 'success' ) {
@@ -854,7 +858,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
 							<td>
 								<?php
 								if ( $advice === 'success' ) {
@@ -868,10 +872,10 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
-								$css_count = is_array( $document['css'] ) ? count( $document['css'] ) : 0;
+								$css_count = (int) $document['css'];
 								if ( $advice === 'success' ) {
 									echo 'Great! Your page has an optimal number of CSS files (' . $css_count . '). Keep stylesheets minimal for better performance.';
 								} else {
@@ -883,10 +887,10 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
-								$js_count = is_array( $document['js'] ) ? count( $document['js'] ) : 0;
+								$js_count = (int) $document['js'];
 								if ( $advice === 'success' ) {
 									echo 'Excellent! Your page has an optimal number of JavaScript files (' . $js_count . '). Keep scripts minimal for better performance.';
 								} else {
@@ -898,7 +902,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								echo 'Gzip Compression';
@@ -934,17 +938,17 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 					<tbody>
 
 						<tr class="no-top-line">
-							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
 							<td><?php echo 'Apple Icon'; ?></td>
 						</tr>
 
 						<tr>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
 							<td><?php echo 'Meta Viewport Tag'; ?></td>
 						</tr>
 
 						<tr>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
 							<td><?php echo 'Flash content'; ?></td>
 						</tr>
 
@@ -1051,7 +1055,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 							<?php foreach ( $misc['analytics'] as $analytics ) : ?>
 								<tr>
 									<td>
-										<img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/analytics/<?php echo $analytics; ?>.png" />
+										<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/analytics/<?php echo $analytics; ?>.png" />
 										&nbsp;&nbsp;
 										<?php echo esc_html( AnalyticsFinder::getProviderName( $analytics ) ); ?>
 									</td>
@@ -1072,7 +1076,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 	</div>
 </div>
 
-<?php if ( V_WPSA_Config::get('psi.show') ) : ?>
+<?php if ( V_WPSA_Config::get( 'psi.show' ) ) : ?>
 	<h4 id="section_page_speed" class="mt-5 mb-3"><?php echo 'PageSpeed Insights'; ?></h4>
 	<div class="category-wrapper">
 		<div class="row pagespeed">
@@ -1148,15 +1152,15 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<!-- JS is enqueued via WordPress plugin file. Remove direct <script> and rely on enqueued assets. -->
 
 		<div class="jumbotron">
-			<h1><?php echo V_WPSA_Config::get("app.name"); ?></h1>
+			<h1><?php echo V_WPSA_Config::get( 'app.name' ); ?></h1>
 			<p class="lead mb-4">
-				<?php echo V_WPSA_Config::get("app.name"); ?> is a free SEO tool which provides you content analysis of the website.
+				<?php echo V_WPSA_Config::get( 'app.name' ); ?> is a free SEO tool which provides you content analysis of the website.
 			</p>
 			<form id="website-form">
 				<div class="form-row">
 					<div class="form-group col-md-6">
 						<div class="input-group mb-3">
-							<input type="text"  name="Website[domain]" id="domain" class="form-control form-control-lg" placeholder="<?php echo V_WPSA_Config::get('param.placeholder'); ?>">
+							<input type="text"  name="Website[domain]" id="domain" class="form-control form-control-lg" placeholder="<?php echo V_WPSA_Config::get( 'param.placeholder' ); ?>">
 							<div class="input-group-append">
 								<button class="btn btn-primary" type="button" id="submit">
 									Analyze

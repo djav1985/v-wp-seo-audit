@@ -507,11 +507,15 @@ class V_WPSA_DB {
 		if ( empty( $data['document'] ) || ! is_array( $data['document'] ) ) {
 			$data['document'] = array();
 		}
-		if ( ! isset( $data['document']['css'] ) || ! is_array( $data['document']['css'] ) ) {
-			$data['document']['css'] = array();
+		// Note: css and js are integer counts, not arrays.
+		if ( ! isset( $data['document']['css'] ) ) {
+			$data['document']['css'] = 0;
 		}
-		if ( ! isset( $data['document']['js'] ) || ! is_array( $data['document']['js'] ) ) {
-			$data['document']['js'] = array();
+		if ( ! isset( $data['document']['js'] ) ) {
+			$data['document']['js'] = 0;
+		}
+		if ( ! isset( $data['document']['htmlratio'] ) ) {
+			$data['document']['htmlratio'] = 0;
 		}
 
 		// Links defaults.
