@@ -72,6 +72,9 @@ class V_WPSA_Ajax_Handlers {
 			return;
 		}
 
+		// Check if this is a forced update (from update button).
+		$force_update = isset( $_POST['force'] ) && '1' === $_POST['force'];
+
 		// Validate domain using WordPress-native validation.
 		$validation = V_WPSA_Validation::validate_domain( $domain_raw );
 
@@ -98,6 +101,14 @@ class V_WPSA_Ajax_Handlers {
 		if ( ! $website ) {
 			// Website doesn't exist - needs analysis.
 			$needs_analysis = true;
+		} elseif ( $force_update ) {
+			// Force update requested - always re-analyze and clear old data.
+			$needs_analysis = true;
+			$wid            = $website['id'];
+
+			// Delete old PDFs when force updating.
+			V_WPSA_Helpers::delete_pdf( $domain );
+			V_WPSA_Helpers::delete_pdf( $domain . '_pagespeed' );
 		} elseif ( strtotime( $website['modified'] ) + $cache_time <= time() ) {
 			// Website exists but data is stale - needs re-analysis.
 			$needs_analysis = true;
