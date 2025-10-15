@@ -37,6 +37,7 @@ register_deactivation_hook( __FILE__, 'v_wpsa_deactivate' );
 add_action( 'v_wp_seo_audit_daily_cleanup', 'v_wpsa_cleanup' );
 
 // Load organized includes files.
+require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-config.php';
 require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-db.php';
 require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-yii-integration.php';
 require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-validation.php';
