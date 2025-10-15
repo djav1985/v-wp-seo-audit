@@ -856,6 +856,7 @@ class V_WPSA_DB {
 					'Accept'                    => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 					'Accept-Language'           => 'en-US,en;q=0.5',
 					'Accept-Encoding'           => 'gzip, deflate, br, zstd',
+					'Accept-Encoding'           => 'gzip, deflate',
 					'DNT'                       => '1',
 					'Connection'                => 'keep-alive',
 					'Upgrade-Insecure-Requests' => '1',
@@ -890,10 +891,10 @@ class V_WPSA_DB {
 				}
 			}
 
-			$html = wp_remote_retrieve_body( $response );
-			if ( empty( $html ) ) {
-				return new WP_Error( 'empty_response', 'Website returned empty content' );
-			}
+					$html = wp_remote_retrieve_body( $response );
+					if ( empty( $html ) ) {
+						return new WP_Error( 'empty_response', 'Website returned empty content' );
+					}
 
 			// Perform analysis.
 			$table_prefix = $wpdb->prefix . 'ca_';
