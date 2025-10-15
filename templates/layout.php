@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="row">
 		<div class="col">
 			<?php echo V_WPSA_Config::get('template.footer'); ?>
-			<?php echo V_WPSA_Config::get('pagepeeker.verify'); ?>
+
 		</div>
 	</div>
 </div>

@@ -23,27 +23,15 @@ return array(
 	'url.multi_language_links'   => false,
 	'url.show_script_name'       => false,
 
-	// Database settings.
-	'db.host'                    => 'localhost',
-	'db.dbname'                  => 'vontainment_review',
-	'db.username'                => 'vontainment_review',
-	'db.password'                => '7=Y?_%K[&-m;TYj)',
-	'db.port'                    => 3306,
-
-	// Pagepeeker settings.
-	'thumbnail.proxy'            => false,
-	'pagepeeker.verify'          => "<a href='https://pagepeeker.com/' target='_blank'>Website Screenshots by PagePeeker</a>",
-	'pagepeeker.api_key'         => 'd3ec9c309b',
-
 	// PageSpeed Insights.
 	'psi.categories'             => array( 'performance' | 'accessibility' | 'best-practices' | 'seo' | 'pwa' ), // Values: 'performance' | 'accessibility' | 'best-practices' | 'seo' | 'pwa'.
-	'psi.device'                 => 'desktop' | 'mobile', // Values: 'desktop' | 'mobile'
-	'psi.run_instantly'          => true, // Whether to run analysis instantly after user opens review page. Values: true | false
-	'psi.show'                   => true, // Whether to show Pagespeed Insight Section
+	'psi.device'                 => 'desktop' | 'mobile', // Values: 'desktop' | 'mobile'.
+	'psi.run_instantly'          => true, // Whether to run analysis instantly after user opens review page. Values: true | false.
+	'psi.show'                   => true, // Whether to show Pagespeed Insight Section.
 
 	// Analyzer.
-	'analyzer.cache_time'        => 60 * 60 * 24, // Review cache time in seconds
-	'analyzer.tag_cloud'         => 10, // Total words in a tag cloud
+	'analyzer.cache_time'        => 60 * 60 * 24, // Review cache time in seconds.
+	'analyzer.tag_cloud'         => 10, // Total words in a tag cloud.
 	'analyzer.consistency_count' => 5, // Use 5 most consistent words from tagCloud to generate consistency matrix.
 
 	// Other params.
