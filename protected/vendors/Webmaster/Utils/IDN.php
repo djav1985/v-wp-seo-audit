@@ -74,6 +74,13 @@ class IDN
     protected $_tcount = 28;
     protected $_ncount = 588;   // _vcount * _tcount
     protected $_scount = 11172; // _lcount * _tcount * _vcount
+    /**
+     * Last scalar value used by algorithm. Declared to avoid dynamic property creation
+     * under PHP 8.2+ where creating dynamic properties is deprecated.
+     *
+     * @var int
+     */
+    protected $slast;
     protected $_error = false;
 
     protected static $_mb_string_overload = null;
