@@ -307,7 +307,7 @@ class WebsitestatController extends Controller {
 	* @param mixed $filename Parameter.
 	* @param bool  $stream Whether to stream the PDF directly to the client (default: true).
 	 */
-	protected function createPdfFromHtml( $html, $pdfFile, $filename, $stream = true ) {
+	public function createPdfFromHtml( $html, $pdfFile, $filename, $stream = true ) {
 		$pdf = Yii::createComponent( 'application.extensions.tcpdf.ETcPdf', 'P', 'cm', 'A4', true, 'UTF-8' );
 		$pdf->SetCreator( PDF_CREATOR );
 		$pdf->SetAuthor( 'http://website-review.php8developer.com' );
@@ -320,8 +320,25 @@ class WebsitestatController extends Controller {
 
 		// $pdf->writeHTML($html, true, false, true, false, '');
 		@$pdf->writeHTML( $html, 2 );
-		// Save PDF to disk.
-		$pdf->Output( $pdfFile, 'F' );
+		// Save PDF to disk. Convert PHP warnings (e.g., fopen failures) into exceptions
+		// so they can be handled by the caller and returned as JSON errors.
+		$prev_handler = set_error_handler( function( $errno, $errstr, $errfile, $errline ) {
+			throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
+		} );
+		try {
+			$pdf->Output( $pdfFile, 'F' );
+		} finally {
+			// Restore previous error handler even if Output() threw.
+			if ( $prev_handler !== null ) {
+				set_error_handler( $prev_handler );
+			} else {
+				restore_error_handler();
+			}
+		}
+		// Ensure the file was written successfully.
+		if ( ! file_exists( $pdfFile ) ) {
+			throw new Exception( 'PDF engine failed to create file' );
+		}
 		// If requested, stream the PDF directly to the client and end execution.
 		if ( $stream ) {
 			$this->outputPDF( $pdfFile, $filename );

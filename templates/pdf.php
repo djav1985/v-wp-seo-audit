@@ -157,10 +157,11 @@ if ( $advice === 'success' ) {
 	echo 'Perfect! Your meta description has an optimal length (' . $desc_length . ' characters).';
 } elseif ( $advice === 'warning' ) {
 	echo 'Your meta description length (' . $desc_length . ' characters) could be improved. Aim for 70-160 characters.';
+</p>
+<?php
 } else {
 	echo 'Your meta description needs attention. Current length is ' . $desc_length . ' characters. Optimal length is 70-160 characters.';
 }
-?>
 ?>
 </td>
 </tr>
