@@ -97,12 +97,29 @@ endif;
 			p.find('.collapse-task').show();
 		});
 
-		$('#update_stat').click(function() {
+		$('#update_stat').on('click', function(e) {
 			var href = $(this).attr("href");
+			// If href points to external location, follow it.
 			if (href.indexOf("#") < 0) {
 				return true;
 			}
-			$('#domain').val('<?php echo $website['domain']; ?>');
+			e.preventDefault();
+			// Fill domain input and trigger the same flow as the Analyze button.
+			var $domain = $("#domain");
+			if ($domain.length) {
+				$domain.val('<?php echo esc_js( $website['domain'] ); ?>');
+				// Trigger the same validation -> generateReport flow wired to #submit
+				$('#submit').trigger('click');
+			} else {
+				// Fallback: call generateReport directly if form is not present.
+				if (window.vWpSeoAudit && typeof window.vWpSeoAudit.generateReport === 'function') {
+					window.vWpSeoAudit.generateReport('<?php echo esc_js( $website['domain'] ); ?>', {
+						$container: $('.v-wpsa-container').first(),
+						$errors: $('#errors'),
+						$progressBar: $('#progress-bar')
+					});
+				}
+			}
 		});
 
 				$('body').on("click", ".pdf_review", function() {
@@ -163,13 +180,12 @@ endif;
 			</p>
 
 
-			<?php if ( $diff > V_WPSA_Config::get( 'analyzer.cache_time' ) ) : ?>
-				<p>
-					<?php
-					echo 'Old data? <a href="' . $updUrl . '" class="btn btn-success" id="update_stat">UPDATE</a> !';
-					?>
-				</p>
-			<?php endif; ?>
+			<p>
+				<?php
+				// Always show UPDATE button; clicking fills the domain input and allows re-analysis.
+				echo 'Old data? <a href="' . $updUrl . '" class="btn btn-success" id="update_stat">UPDATE</a> !';
+				?>
+			</p>
 
 			<?php echo V_WPSA_Config::get( 'param.addthis' ); ?>
 
