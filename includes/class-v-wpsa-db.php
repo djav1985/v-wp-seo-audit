@@ -428,6 +428,9 @@ class V_WPSA_DB {
 		if ( ! isset( $data['content']['total_alt'] ) ) {
 			$data['content']['total_alt'] = 0;
 		}
+		if ( ! isset( $data['content']['deprecated'] ) || ! is_array( $data['content']['deprecated'] ) ) {
+			$data['content']['deprecated'] = array();
+		}
 
 		// Document defaults.
 		if ( empty( $data['document'] ) || ! is_array( $data['document'] ) ) {
@@ -504,6 +507,12 @@ class V_WPSA_DB {
 		// Misc defaults.
 		if ( ! isset( $data['misc'] ) || ! is_array( $data['misc'] ) ) {
 			$data['misc'] = array();
+		}
+		if ( ! isset( $data['misc']['sitemap'] ) || ! is_array( $data['misc']['sitemap'] ) ) {
+			$data['misc']['sitemap'] = array();
+		}
+		if ( ! isset( $data['misc']['analytics'] ) || ! is_array( $data['misc']['analytics'] ) ) {
+			$data['misc']['analytics'] = array();
 		}
 
 		return $data;

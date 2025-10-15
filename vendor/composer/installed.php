@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-copilot/fix-undefined-array-key-error',
-        'version' => 'dev-copilot/fix-undefined-array-key-error',
-        'reference' => '77e0fde7e3ffeb693eca34e2e4947c8c39acb37c',
+        'pretty_version' => 'dev-copilot/fix-foreach-argument-error',
+        'version' => 'dev-copilot/fix-foreach-argument-error',
+        'reference' => '34db0315b954026458217660e6686b8ebabf2ca2',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-copilot/fix-undefined-array-key-error',
-            'version' => 'dev-copilot/fix-undefined-array-key-error',
-            'reference' => '77e0fde7e3ffeb693eca34e2e4947c8c39acb37c',
+            'pretty_version' => 'dev-copilot/fix-foreach-argument-error',
+            'version' => 'dev-copilot/fix-foreach-argument-error',
+            'reference' => '34db0315b954026458217660e6686b8ebabf2ca2',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
