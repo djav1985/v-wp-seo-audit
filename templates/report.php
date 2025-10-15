@@ -284,8 +284,12 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ( $meta['ogproperties'] as $property => $c ) : ?>
-								<tr class="over-max">
+							<?php
+							$i = 0;
+							foreach ( $meta['ogproperties'] as $property => $c ) :
+								$i++;
+								?>
+								<tr <?php echo $i > $over_max ? 'class="over-max"' : ''; ?>>
 									<td><?php echo esc_html( $property ); ?></td>
 									<td class="text-break"><?php echo esc_html( $c ); ?></td>
 								</tr>
@@ -293,8 +297,10 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 						</tbody>
 					</table>
 
-					<button class="expand-task btn btn-primary float-right"><?php echo 'Expand'; ?></button>
-					<button class="collapse-task btn btn-primary float-right"><?php echo 'Collapse'; ?></button>
+					<?php if ( $i > $over_max ) : ?>
+						<button class="expand-task btn btn-primary float-right"><?php echo 'Expand'; ?></button>
+						<button class="collapse-task btn btn-primary float-right"><?php echo 'Collapse'; ?></button>
+					<?php endif; ?>
 				</div>
 			<?php endif; ?>
 		</div>
