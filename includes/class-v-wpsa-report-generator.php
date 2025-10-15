@@ -34,13 +34,8 @@ class V_WPSA_Report_Generator {
 			throw new Exception( 'Website not found: ' . $domain );
 		}
 
-		// Ensure Utils class is available for templates that reference it.
-		if ( ! class_exists( 'Utils' ) ) {
-			$utils_path = v_wpsa_PLUGIN_DIR . 'protected/components/Utils.php';
-			if ( file_exists( $utils_path ) ) {
-				require_once $utils_path;
-			}
-		}
+		// Classes are now loaded in main plugin file via includes/class-v-wpsa-*.php
+		// with backward compatibility aliases (Utils, WebsiteThumbnail).
 
 		// Ensure AnalyticsFinder is available (legacy vendor class used in templates).
 		$analytics_path = v_wpsa_PLUGIN_DIR . 'protected/vendors/Webmaster/Source/AnalyticsFinder.php';
