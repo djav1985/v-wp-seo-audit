@@ -260,10 +260,81 @@ class V_WPSA_DB {
 
 		foreach ( $tables as $table ) {
 			$result         = $this->get_by_wid( $table, $wid );
-			$data[ $table ] = $result ? $result : array();
+			$data[ $table ] = $result ? $this->decode_json_fields( $table, $result ) : array();
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Decode JSON-encoded fields in a database row based on table name.
+	 *
+	 * @param string $table Table name (without prefix).
+	 * @param array  $row Database row as associative array.
+	 * @return array Row with JSON fields decoded to arrays.
+	 */
+	protected function decode_json_fields( $table, $row ) {
+		if ( ! is_array( $row ) ) {
+			return $row;
+		}
+
+		// Define which fields contain JSON data for each table.
+		$json_fields = array(
+			'cloud'    => array( 'words', 'matrix' ),
+			'content'  => array( 'headings', 'deprecated' ),
+			'links'    => array( 'links' ),
+			'metatags' => array( 'ogproperties' ),
+			'misc'     => array( 'sitemap', 'analytics' ),
+		);
+
+		// If this table has JSON fields, decode them.
+		if ( isset( $json_fields[ $table ] ) ) {
+			foreach ( $json_fields[ $table ] as $field ) {
+				if ( isset( $row[ $field ] ) ) {
+					$row[ $field ] = $this->decode_json_field( $row[ $field ] );
+				}
+			}
+		}
+
+		return $row;
+	}
+
+	/**
+	 * Decode a single JSON field value.
+	 *
+	 * @param mixed $value The field value (may be JSON string, serialized data, or already decoded).
+	 * @return array Decoded array or empty array if decoding fails.
+	 */
+	protected function decode_json_field( $value ) {
+		// Already an array.
+		if ( is_array( $value ) ) {
+			return $value;
+		}
+
+		// Null or empty.
+		if ( null === $value || '' === $value ) {
+			return array();
+		}
+
+		// Try JSON decode.
+		if ( is_string( $value ) ) {
+			$trimmed = trim( $value );
+			$decoded = json_decode( $trimmed, true );
+			if ( JSON_ERROR_NONE === json_last_error() && ( is_array( $decoded ) || is_object( $decoded ) ) ) {
+				return (array) $decoded;
+			}
+
+			// Try PHP serialized string.
+			if ( function_exists( 'maybe_unserialize' ) && maybe_unserialize( $trimmed ) !== $trimmed ) {
+				$maybe = maybe_unserialize( $trimmed );
+				if ( is_array( $maybe ) || is_object( $maybe ) ) {
+					return (array) $maybe;
+				}
+			}
+		}
+
+		// Fallback to empty array.
+		return array();
 	}
 
 	/**
@@ -366,15 +437,15 @@ class V_WPSA_DB {
 			$upd_url = V_WPSA_Config::get( 'param.instant_redirect' ) ? '#update_form' : '#';
 		}
 
-		// Normalize report sections (some DB fields store JSON/serialized strings).
-		$cloud    = $this->normalize_report_section( $report_data['cloud'] );
-		$content  = $this->normalize_report_section( $report_data['content'] );
-		$document = $this->normalize_report_section( $report_data['document'] );
-		$issetobj = $this->normalize_report_section( $report_data['issetobject'] );
-		$links    = $this->normalize_report_section( $report_data['links'] );
-		$meta     = $this->normalize_report_section( $report_data['metatags'] );
-		$w3c      = $this->normalize_report_section( $report_data['w3c'] );
-		$misc     = $this->normalize_report_section( $report_data['misc'] );
+		// Extract report sections (JSON fields already decoded in get_website_report_data).
+		$cloud    = ! empty( $report_data['cloud'] ) ? $report_data['cloud'] : array();
+		$content  = ! empty( $report_data['content'] ) ? $report_data['content'] : array();
+		$document = ! empty( $report_data['document'] ) ? $report_data['document'] : array();
+		$issetobj = ! empty( $report_data['issetobject'] ) ? $report_data['issetobject'] : array();
+		$links    = ! empty( $report_data['links'] ) ? $report_data['links'] : array();
+		$meta     = ! empty( $report_data['metatags'] ) ? $report_data['metatags'] : array();
+		$w3c      = ! empty( $report_data['w3c'] ) ? $report_data['w3c'] : array();
+		$misc     = ! empty( $report_data['misc'] ) ? $report_data['misc'] : array();
 
 		// Assemble full data array matching WebsitestatController structure.
 		$full_data = array(
@@ -431,16 +502,35 @@ class V_WPSA_DB {
 		if ( ! isset( $data['content']['deprecated'] ) || ! is_array( $data['content']['deprecated'] ) ) {
 			$data['content']['deprecated'] = array();
 		}
+		if ( ! isset( $data['content']['isset_headings'] ) ) {
+			$data['content']['isset_headings'] = 0;
+		}
 
 		// Document defaults.
 		if ( empty( $data['document'] ) || ! is_array( $data['document'] ) ) {
 			$data['document'] = array();
 		}
-		if ( ! isset( $data['document']['css'] ) || ! is_array( $data['document']['css'] ) ) {
-			$data['document']['css'] = array();
+		// Note: css and js are integer counts, not arrays.
+		if ( ! isset( $data['document']['css'] ) ) {
+			$data['document']['css'] = 0;
 		}
-		if ( ! isset( $data['document']['js'] ) || ! is_array( $data['document']['js'] ) ) {
-			$data['document']['js'] = array();
+		if ( ! isset( $data['document']['js'] ) ) {
+			$data['document']['js'] = 0;
+		}
+		if ( ! isset( $data['document']['htmlratio'] ) ) {
+			$data['document']['htmlratio'] = 0;
+		}
+		if ( ! isset( $data['document']['doctype'] ) ) {
+			$data['document']['doctype'] = '';
+		}
+		if ( ! isset( $data['document']['lang'] ) ) {
+			$data['document']['lang'] = '';
+		}
+		if ( ! isset( $data['document']['charset'] ) ) {
+			$data['document']['charset'] = '';
+		}
+		if ( ! isset( $data['document']['favicon'] ) ) {
+			$data['document']['favicon'] = '';
 		}
 
 		// Links defaults.
@@ -481,6 +571,12 @@ class V_WPSA_DB {
 		if ( ! isset( $data['links']['external_nofollow'] ) ) {
 			$data['links']['external_nofollow'] = 0;
 		}
+		if ( ! isset( $data['links']['friendly'] ) ) {
+			$data['links']['friendly'] = 0;
+		}
+		if ( ! isset( $data['links']['isset_underscore'] ) ) {
+			$data['links']['isset_underscore'] = 0;
+		}
 
 		// Meta defaults.
 		if ( empty( $data['meta'] ) || ! is_array( $data['meta'] ) ) {
@@ -488,6 +584,15 @@ class V_WPSA_DB {
 		}
 		if ( ! isset( $data['meta']['ogproperties'] ) || ! is_array( $data['meta']['ogproperties'] ) ) {
 			$data['meta']['ogproperties'] = array();
+		}
+		if ( ! isset( $data['meta']['title'] ) ) {
+			$data['meta']['title'] = '';
+		}
+		if ( ! isset( $data['meta']['description'] ) ) {
+			$data['meta']['description'] = '';
+		}
+		if ( ! isset( $data['meta']['keyword'] ) ) {
+			$data['meta']['keyword'] = '';
 		}
 
 		// Cloud defaults.
@@ -513,6 +618,31 @@ class V_WPSA_DB {
 		}
 		if ( ! isset( $data['misc']['analytics'] ) || ! is_array( $data['misc']['analytics'] ) ) {
 			$data['misc']['analytics'] = array();
+		}
+
+		// Isseter defaults (boolean flags).
+		if ( ! isset( $data['isseter'] ) || ! is_array( $data['isseter'] ) ) {
+			$data['isseter'] = array();
+		}
+		$isseter_flags = array( 'flash', 'iframe', 'nestedtables', 'inlinecss', 'viewport', 'dublincore', 'appleicons', 'robotstxt', 'gzip' );
+		foreach ( $isseter_flags as $flag ) {
+			if ( ! isset( $data['isseter'][ $flag ] ) ) {
+				$data['isseter'][ $flag ] = 0;
+			}
+		}
+
+		// W3C defaults.
+		if ( ! isset( $data['w3c'] ) || ! is_array( $data['w3c'] ) ) {
+			$data['w3c'] = array();
+		}
+		if ( ! isset( $data['w3c']['valid'] ) ) {
+			$data['w3c']['valid'] = 0;
+		}
+		if ( ! isset( $data['w3c']['errors'] ) ) {
+			$data['w3c']['errors'] = 0;
+		}
+		if ( ! isset( $data['w3c']['warnings'] ) ) {
+			$data['w3c']['warnings'] = 0;
 		}
 
 		return $data;
