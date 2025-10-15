@@ -48,8 +48,8 @@ class V_WPSA_Helpers {
 		}
 
 		foreach ( $languages as $lang ) {
-			$subfolder = mb_substr( $domain, 0, 1 );
-			$legacy_base = rtrim( $upload_dir['basedir'], '\/' ) . '/seo-audit/pdf/' . $lang . '/' . $subfolder . '/';
+			$subfolder    = mb_substr( $domain, 0, 1 );
+			$legacy_base  = rtrim( $upload_dir['basedir'], '\/' ) . '/seo-audit/pdf/' . $lang . '/' . $subfolder . '/';
 			$legacy_paths = array(
 				$legacy_base . $domain . '.pdf',
 				$legacy_base . $domain . '_pagespeed.pdf',
@@ -141,6 +141,10 @@ class V_WPSA_Helpers {
 
 			if ( file_exists( $yii ) && file_exists( $config ) ) {
 				require_once $yii;
+
+				// Configure Yii autoloader to skip WordPress classes.
+				V_WPSA_Yii_Integration::configure_yii_autoloader();
+
 				$v_wpsa_app = Yii::createWebApplication( $config );
 
 				if ( isset( $v_wpsa_app->params['app.timezone'] ) ) {
