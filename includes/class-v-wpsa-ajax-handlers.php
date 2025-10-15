@@ -115,32 +115,9 @@ class V_WPSA_Ajax_Handlers {
 			return;
 		}
 
-		// At this point, the domain has been validated and analyzed (if needed)
-		// The website record now exists in the database.
-		// Set the domain in GET for the controller.
-		$_GET['domain'] = $model->domain;
-
-		// Import the controller class (Yii doesn't auto-load controllers).
-		Yii::import( 'application.controllers.WebsitestatController' );
-
-		// Start output buffering to capture the controller output.
-		ob_start();
-
 		try {
-			// Create the controller and render the view.
-			$controller = new WebsitestatController( 'websitestat' );
-			$controller->init();
-
-			$previous = Yii::app()->getController();
-			Yii::app()->setController( $controller );
-
-			try {
-				$controller->actionGenerateHTML( $model->domain );
-			} finally {
-				Yii::app()->setController( $previous );
-			}
-
-			$content = ob_get_clean();
+			// Generate report using WordPress-native template system.
+			$content = V_WPSA_Report_Generator::generate_html_report( $model->domain );
 
 			// Also provide a fresh nonce in case the frontend lost the original one
 			// (for example when HTML is injected via AJAX into pages without the inline script).
@@ -152,7 +129,6 @@ class V_WPSA_Ajax_Handlers {
 			// Return the HTML content and the helper nonce.
 			wp_send_json_success( $response_data );
 		} catch ( Exception $e ) {
-			ob_end_clean();
 			wp_send_json_error( array( 'message' => $e->getMessage() ) );
 		}
 	}
@@ -240,28 +216,25 @@ class V_WPSA_Ajax_Handlers {
 			return;
 		}
 
-		// Set the domain in GET for the controller.
-		$_GET['domain'] = $domain;
-
-		// Import the controller class.
-		Yii::import( 'application.controllers.WebsitestatController' );
-
 		try {
-			// Create the controller.
-			$controller = new WebsitestatController( 'websitestat' );
-			$controller->init();
+			// Generate PDF using WordPress-native template system.
+			$pdf_data = V_WPSA_Report_Generator::generate_pdf_report( $domain );
 
-			$previous = Yii::app()->getController();
-			Yii::app()->setController( $controller );
-
-			try {
-				// Generate and output the PDF.
-				// This will set headers and output the PDF directly.
-				$controller->actionGeneratePDF( $domain );
-				// The actionGeneratePDF method calls Yii::app()->end() which exits.
-			} finally {
-				Yii::app()->setController( $previous );
+			// Read the PDF file.
+			if ( ! file_exists( $pdf_data['file'] ) ) {
+				throw new Exception( 'PDF file not found' );
 			}
+
+			// Output the PDF with proper headers.
+			header( 'Content-Type: application/pdf' );
+			header( 'Content-Disposition: attachment; filename="' . $pdf_data['filename'] . '"' );
+			header( 'Content-Length: ' . filesize( $pdf_data['file'] ) );
+			header( 'Cache-Control: private, max-age=0, must-revalidate' );
+			header( 'Pragma: public' );
+
+			// Output file and exit.
+			readfile( $pdf_data['file'] );
+			exit;
 		} catch ( Exception $e ) {
 			wp_send_json_error( array( 'message' => $e->getMessage() ) );
 		}

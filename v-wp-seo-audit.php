@@ -42,6 +42,7 @@ require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-db.php';
 require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-yii-integration.php';
 require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-validation.php';
 require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-helpers.php';
+require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-report-generator.php';
 require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-ajax-handlers.php';
 
 // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
