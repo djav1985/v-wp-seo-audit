@@ -153,7 +153,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 				<div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $website['score']; ?>%;"></div>
 			</div>
 
-			<a href="#" class="btn btn-primary v-wp-seo-audit-download-pdf" data-domain="<?php echo CHtml::encode( $website['domain'] ); ?>">
+			<a href="#" class="btn btn-primary v-wpsa-download-pdf" data-domain="<?php echo CHtml::encode( $website['domain'] ); ?>">
 				<?php echo 'Download PDF Version'; ?>
 			</a>
 

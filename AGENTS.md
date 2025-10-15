@@ -19,7 +19,7 @@ The V-WP-SEO-Audit WordPress plugin had several issues:
 
 ### 1. Added Missing PagePeeker AJAX Handler
 
-**File**: `v-wp-seo-audit.php` (lines 422-461)
+**File**: `v-wpsa.php` (lines 422-461)
 
 ```php
 function v_wp_seo_audit_ajax_pagepeeker() {
@@ -35,7 +35,7 @@ add_action('wp_ajax_nopriv_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_page
 
 ### 2. Added Nonce Verification for Security
 
-**File**: `v-wp-seo-audit.php`
+**File**: `v-wpsa.php`
 
 Added security checks to all three AJAX handlers using WordPress's recommended `check_ajax_referer()` function:
 
@@ -85,7 +85,7 @@ Changed from a simple `die('Direct access not allowed')` to a comprehensive erro
 
 ### 5. PDF Download Button Fix (Updated Implementation)
 
-**File**: `v-wp-seo-audit.php` (line 558) and `js/base.js` (lines 320-405)
+**File**: `v-wpsa.php` (line 558) and `js/base.js` (lines 320-405)
 
 **Original Problem**: The PDF download button gave a `{"success":false,"data":{"message":"Security check failed"}}` error when clicked.
 
@@ -116,7 +116,7 @@ Changed from a simple `die('Direct access not allowed')` to a comprehensive erro
   }
   ```
 
-**PHP Changes** (`v-wp-seo-audit.php`):
+**PHP Changes** (`v-wpsa.php`):
 - Simplified to use standard `check_ajax_referer('v_wp_seo_audit_nonce', 'nonce')`
 - Consistent with other AJAX handlers
 - No special handling needed
@@ -139,7 +139,7 @@ Changed from a simple `die('Direct access not allowed')` to a comprehensive erro
 
 ## Files Modified
 
-1. **v-wp-seo-audit.php** 
+1. **v-wpsa.php** 
    - Added PagePeeker AJAX handler
    - Added nonce verification to all AJAX handlers
    - Updated PDF download handler to use standard `check_ajax_referer()`
@@ -332,10 +332,10 @@ User sees report on same page ✓
 ┌─────────────────────────────────────────────────────────────┐
 │                        WordPress                             │
 │  ┌───────────────────────────────────────────────────────┐  │
-│  │                  Plugin: v-wp-seo-audit               │  │
+│  │                  Plugin: v-wpsa               │  │
 │  │                                                       │  │
 │  │  ┌─────────────────────────────────────────────┐    │  │
-│  │  │          v-wp-seo-audit.php                 │    │  │
+│  │  │          v-wpsa.php                 │    │  │
 │  │  │                                              │    │  │
 │  │  │  • Registers AJAX handlers                  │    │  │
 │  │  │  • Initializes Yii framework               │    │  │

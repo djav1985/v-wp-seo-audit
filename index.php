@@ -40,7 +40,7 @@ if ( ! isset( $_GET['r'] ) && ! isset( $_POST['r'] ) ) {
 		<div class="notice">
 			<h1>Direct Access Not Allowed</h1>
 			<p>This file should not be accessed directly. The V-WP-SEO-Audit plugin now uses WordPress AJAX handlers.</p>
-			<p>Please use the plugin shortcode <code>[v_wp_seo_audit]</code> on a WordPress page instead.</p>
+			<p>Please use the plugin shortcode <code>[v_wpsa]</code> on a WordPress page instead.</p>
 			<p><a href="<?php echo esc_url( home_url( '/' ) ); ?>">Return to Homepage</a></p>
 		</div>
 	</body>
@@ -91,20 +91,20 @@ if ( ! class_exists( 'Yii', false ) ) {
 }
 
 // Check if app is already created.
-global $v_wp_seo_audit_app;
-if ( null === $v_wp_seo_audit_app ) {
+global $v_wpsa_app;
+if ( null === $v_wpsa_app ) {
 	// Create Yii application.
-	$v_wp_seo_audit_app = Yii::createWebApplication( $config );
+	$v_wpsa_app = Yii::createWebApplication( $config );
 
 	// Set timezone from config.
-	if ( isset( $v_wp_seo_audit_app->params['app.timezone'] ) ) {
-		$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
+	if ( isset( $v_wpsa_app->params['app.timezone'] ) ) {
+		$v_wpsa_app->setTimeZone( $v_wpsa_app->params['app.timezone'] );
 
 	}
 
 	// Configure request component to use WordPress plugin URL.
-	if ( $v_wp_seo_audit_app->hasComponent( 'request' ) ) {
-		$request = $v_wp_seo_audit_app->getRequest();
+	if ( $v_wpsa_app->hasComponent( 'request' ) ) {
+		$request = $v_wpsa_app->getRequest();
 		// Set base URL to plugin's relative path (from site root).
 		$plugin_relative_url = str_replace( get_site_url(), '', rtrim( V_WP_SEO_AUDIT_PLUGIN_URL, '/' ) );
 		$request->setBaseUrl( $plugin_relative_url );
@@ -113,8 +113,8 @@ if ( null === $v_wp_seo_audit_app ) {
 	}
 
 	// Configure URL manager for WordPress context.
-	if ( $v_wp_seo_audit_app->hasComponent( 'urlManager' ) ) {
-		$url_manager = $v_wp_seo_audit_app->getUrlManager();
+	if ( $v_wpsa_app->hasComponent( 'urlManager' ) ) {
+		$url_manager = $v_wpsa_app->getUrlManager();
 		// Force GET format in WordPress since we can't use pretty URLs.
 		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$url_manager->urlFormat      = 'get';
@@ -125,5 +125,5 @@ if ( null === $v_wp_seo_audit_app ) {
 }
 
 // Run the application.
-$v_wp_seo_audit_app->run();
+$v_wpsa_app->run();
 

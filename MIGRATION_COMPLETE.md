@@ -9,7 +9,7 @@ All Yii framework views have been successfully migrated to WordPress-native temp
 ### 1. Created New Templates Directory Structure
 ```
 templates/
-├── request-form.php    (Replaces protected/views/site/index.php)
+├── main.php    (Replaces protected/views/site/index.php)
 ├── report.php          (Replaces protected/views/websitestat/index.php)
 ├── pdf.php             (Replaces protected/views/websitestat/pdf.php)
 └── layout.php          (Replaces protected/views/layouts/main.php)
@@ -108,7 +108,7 @@ The implementation is complete and ready for testing in a full WordPress environ
 ## 📦 Files Added/Modified
 
 ### New Files (10)
-- `templates/request-form.php`
+- `templates/main.php`
 - `templates/report.php`
 - `templates/pdf.php`
 - `templates/layout.php`
@@ -117,7 +117,7 @@ The implementation is complete and ready for testing in a full WordPress environ
 - `VIEWS_MIGRATION.md`
 
 ### Modified Files (2)
-- `v-wp-seo-audit.php` - Added helper class includes
+- `v-wpsa.php` - Added helper class includes
 - `includes/class-v-wpsa-ajax-handlers.php` - Updated to use report generator
 
 ### Deprecated Files (4)

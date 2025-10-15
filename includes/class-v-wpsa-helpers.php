@@ -28,11 +28,11 @@ class V_WPSA_Helpers {
 		$pdf_base   = $upload_dir['basedir'] . '/seo-audit/pdf/';
 
 		// Get available languages from config or use default.
-		global $v_wp_seo_audit_app;
+		global $v_wpsa_app;
 		$languages = array( 'en' ); // Default language.
 
-		if ( null !== $v_wp_seo_audit_app && isset( $v_wp_seo_audit_app->params['app.languages'] ) ) {
-			$languages = array_keys( $v_wp_seo_audit_app->params['app.languages'] );
+		if ( null !== $v_wpsa_app && isset( $v_wpsa_app->params['app.languages'] ) ) {
+			$languages = array_keys( $v_wpsa_app->params['app.languages'] );
 		}
 
 		// Delete PDF for each language.
@@ -65,9 +65,9 @@ class V_WPSA_Helpers {
 	public static function get_config( $config_name ) {
 		// Map old Yii config names to WordPress equivalents.
 		$config_map = array(
-			'analyzer.cache_time'       => apply_filters( 'v_wp_seo_audit_cache_time', 86400 ), // 24 hours default.
-			'param.rating_per_page'     => apply_filters( 'v_wp_seo_audit_rating_per_page', 12 ),
-			'param.index_website_count' => apply_filters( 'v_wp_seo_audit_index_website_count', 30 ),
+			'analyzer.cache_time'       => apply_filters( 'v_wpsa_cache_time', 86400 ), // 24 hours default.
+			'param.rating_per_page'     => apply_filters( 'v_wpsa_rating_per_page', 12 ),
+			'param.index_website_count' => apply_filters( 'v_wpsa_index_website_count', 30 ),
 		);
 
 		if ( isset( $config_map[ $config_name ] ) ) {
@@ -75,9 +75,9 @@ class V_WPSA_Helpers {
 		}
 
 		// Try to get from global Yii app if still available (legacy fallback).
-		global $v_wp_seo_audit_app;
-		if ( $v_wp_seo_audit_app && isset( $v_wp_seo_audit_app->params[ $config_name ] ) ) {
-			return $v_wp_seo_audit_app->params[ $config_name ];
+		global $v_wpsa_app;
+		if ( $v_wpsa_app && isset( $v_wpsa_app->params[ $config_name ] ) ) {
+			return $v_wpsa_app->params[ $config_name ];
 		}
 
 		return null;
@@ -116,22 +116,22 @@ class V_WPSA_Helpers {
 	 * @return array|false Analysis result or false on failure.
 	 */
 	public static function analyze_website( $domain, $idn, $ip, $wid = null ) {
-		global $v_wp_seo_audit_app;
+		global $v_wpsa_app;
 
 		// Ensure Yii is initialized for analysis.
-		if ( null === $v_wp_seo_audit_app ) {
+		if ( null === $v_wpsa_app ) {
 			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
 			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
 
 			if ( file_exists( $yii ) && file_exists( $config ) ) {
 				require_once $yii;
-				$v_wp_seo_audit_app = Yii::createWebApplication( $config );
+				$v_wpsa_app = Yii::createWebApplication( $config );
 
-				if ( isset( $v_wp_seo_audit_app->params['app.timezone'] ) ) {
-					$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
+				if ( isset( $v_wpsa_app->params['app.timezone'] ) ) {
+					$v_wpsa_app->setTimeZone( $v_wpsa_app->params['app.timezone'] );
 				}
 
-				V_WPSA_Yii_Integration::configure_yii_app( $v_wp_seo_audit_app );
+				V_WPSA_Yii_Integration::configure_yii_app( $v_wpsa_app );
 			} else {
 				return false;
 			}

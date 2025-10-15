@@ -26,9 +26,9 @@ class V_WPSA_Report_Generator {
 	public static function generate_html_report( $domain ) {
 		// Still need to use Yii for data collection temporarily.
 		// This will be migrated in a future phase.
-		global $v_wp_seo_audit_app;
+		global $v_wpsa_app;
 
-		if ( null === $v_wp_seo_audit_app ) {
+		if ( null === $v_wpsa_app ) {
 			throw new Exception( 'Yii application not initialized' );
 		}
 
@@ -56,9 +56,9 @@ class V_WPSA_Report_Generator {
 	 */
 	public static function generate_pdf_report( $domain ) {
 		// Still need to use Yii for data collection and PDF generation temporarily.
-		global $v_wp_seo_audit_app;
+		global $v_wpsa_app;
 
-		if ( null === $v_wp_seo_audit_app ) {
+		if ( null === $v_wpsa_app ) {
 			throw new Exception( 'Yii application not initialized' );
 		}
 

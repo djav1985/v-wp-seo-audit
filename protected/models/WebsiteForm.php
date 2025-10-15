@@ -162,10 +162,10 @@ class WebsiteForm extends CFormModel {
 			// If website exists and we do not need to update data then exit from method.
 			$notUpd = false;
 			// Get cache time - use WordPress filter with default of 24 hours.
-			$cache_time = apply_filters( 'v_wp_seo_audit_cache_time', DAY_IN_SECONDS );
-			global $v_wp_seo_audit_app;
-			if ( null !== $v_wp_seo_audit_app && isset( $v_wp_seo_audit_app->params['analyzer.cache_time'] ) ) {
-				$cache_time = $v_wp_seo_audit_app->params['analyzer.cache_time'];
+			$cache_time = apply_filters( 'v_wpsa_cache_time', DAY_IN_SECONDS );
+			global $v_wpsa_app;
+			if ( null !== $v_wpsa_app && isset( $v_wpsa_app->params['analyzer.cache_time'] ) ) {
+				$cache_time = $v_wpsa_app->params['analyzer.cache_time'];
 			}
 
 			if ( $website && ( strtotime( $website['modified'] ) + $cache_time > time() ) ) {

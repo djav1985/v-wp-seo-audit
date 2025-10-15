@@ -29,7 +29,7 @@
 				<div class="col col-12 col-md-6 col-lg-4 mb-4">
 						<div class="card mb-3">
 								<h5 class="card-header"><?php echo Utils::cropDomain( $website->idn ); ?></h5>
-								<a class="v-wp-seo-audit-view-report" href="<?php echo $url; ?>" data-domain="<?php echo $domain; ?>">
+								<a class="v-wpsa-view-report" href="<?php echo $url; ?>" data-domain="<?php echo $domain; ?>">
 										<img class="card-img-top" id="thumb_<?php echo $website->id; ?>" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/loader.gif" alt="<?php echo $website->idn; ?>" />
 								</a>
 								<ul class="list-group list-group-flush">
@@ -37,7 +37,7 @@
 												<p class="card-text">
 													The score is <?php echo $website->score; ?>/100
 												</p>
-												<a class="v-wp-seo-audit-view-report" href="<?php echo $url; ?>" data-domain="<?php echo $domain; ?>">
+												<a class="v-wpsa-view-report" href="<?php echo $url; ?>" data-domain="<?php echo $domain; ?>">
 														<div class="progress mb-3">
 																<div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $website->score; ?>%;"></div>
 														</div>
@@ -47,7 +47,7 @@
 								</ul>
 
 								<div class="card-body">
-										<a class="btn btn-primary v-wp-seo-audit-view-report" href="<?php echo $url; ?>" data-domain="<?php echo $domain; ?>" role="button">
+										<a class="btn btn-primary v-wpsa-view-report" href="<?php echo $url; ?>" data-domain="<?php echo $domain; ?>" role="button">
 											Review
 										</a>
 								</div>

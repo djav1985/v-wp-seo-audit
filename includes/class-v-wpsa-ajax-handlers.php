@@ -21,20 +21,20 @@ class V_WPSA_Ajax_Handlers {
 	 */
 	public static function init() {
 		// Domain validation handler.
-		add_action( 'wp_ajax_v_wp_seo_audit_validate', array( __CLASS__, 'validate_domain' ) );
-		add_action( 'wp_ajax_nopriv_v_wp_seo_audit_validate', array( __CLASS__, 'validate_domain' ) );
+		add_action( 'wp_ajax_v_wpsa_validate', array( __CLASS__, 'validate_domain' ) );
+		add_action( 'wp_ajax_nopriv_v_wpsa_validate', array( __CLASS__, 'validate_domain' ) );
 
 		// Report generation handler.
-		add_action( 'wp_ajax_v_wp_seo_audit_generate_report', array( __CLASS__, 'generate_report' ) );
-		add_action( 'wp_ajax_nopriv_v_wp_seo_audit_generate_report', array( __CLASS__, 'generate_report' ) );
+		add_action( 'wp_ajax_v_wpsa_generate_report', array( __CLASS__, 'generate_report' ) );
+		add_action( 'wp_ajax_nopriv_v_wpsa_generate_report', array( __CLASS__, 'generate_report' ) );
 
 		// PagePeeker proxy handler (legacy).
-		add_action( 'wp_ajax_v_wp_seo_audit_pagepeeker', array( __CLASS__, 'pagepeeker_proxy' ) );
-		add_action( 'wp_ajax_nopriv_v_wp_seo_audit_pagepeeker', array( __CLASS__, 'pagepeeker_proxy' ) );
+		add_action( 'wp_ajax_v_wpsa_pagepeeker', array( __CLASS__, 'pagepeeker_proxy' ) );
+		add_action( 'wp_ajax_nopriv_v_wpsa_pagepeeker', array( __CLASS__, 'pagepeeker_proxy' ) );
 
 		// PDF download handler.
-		add_action( 'wp_ajax_v_wp_seo_audit_download_pdf', array( __CLASS__, 'download_pdf' ) );
-		add_action( 'wp_ajax_nopriv_v_wp_seo_audit_download_pdf', array( __CLASS__, 'download_pdf' ) );
+		add_action( 'wp_ajax_v_wpsa_download_pdf', array( __CLASS__, 'download_pdf' ) );
+		add_action( 'wp_ajax_nopriv_v_wpsa_download_pdf', array( __CLASS__, 'download_pdf' ) );
 	}
 
 	/**
@@ -42,7 +42,7 @@ class V_WPSA_Ajax_Handlers {
 	 */
 	public static function validate_domain() {
 		// Verify nonce for security.
-		check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
+		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
 
 		// Get domain from request.
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitization handled in V_WPSA_Validation.
@@ -64,21 +64,21 @@ class V_WPSA_Ajax_Handlers {
 	 */
 	public static function generate_report() {
 		// Verify nonce for security.
-		check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
+		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
 
-		global $v_wp_seo_audit_app;
+		global $v_wpsa_app;
 
 		// Initialize Yii if not already initialized.
-		if ( null === $v_wp_seo_audit_app ) {
+		if ( null === $v_wpsa_app ) {
 			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
 			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
 
 			if ( file_exists( $yii ) && file_exists( $config ) ) {
 				require_once $yii;
-				$v_wp_seo_audit_app = Yii::createWebApplication( $config );
+				$v_wpsa_app = Yii::createWebApplication( $config );
 
-				if ( isset( $v_wp_seo_audit_app->params['app.timezone'] ) ) {
-					$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
+				if ( isset( $v_wpsa_app->params['app.timezone'] ) ) {
+					$v_wpsa_app->setTimeZone( $v_wpsa_app->params['app.timezone'] );
 				}
 			} else {
 				wp_send_json_error( array( 'message' => 'Application not initialized' ) );
@@ -86,7 +86,7 @@ class V_WPSA_Ajax_Handlers {
 			}
 		}
 
-		V_WPSA_Yii_Integration::configure_yii_app( $v_wp_seo_audit_app );
+		V_WPSA_Yii_Integration::configure_yii_app( $v_wpsa_app );
 
 		// Get domain from request.
 		$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
@@ -123,7 +123,7 @@ class V_WPSA_Ajax_Handlers {
 			// (for example when HTML is injected via AJAX into pages without the inline script).
 			$response_data = array(
 				'html'  => $content,
-				'nonce' => wp_create_nonce( 'v_wp_seo_audit_nonce' ),
+				'nonce' => wp_create_nonce( 'v_wpsa_nonce' ),
 			);
 
 			// Return the HTML content and the helper nonce.
@@ -138,21 +138,21 @@ class V_WPSA_Ajax_Handlers {
 	 */
 	public static function pagepeeker_proxy() {
 		// Verify nonce for security.
-		check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
+		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
 
-		global $v_wp_seo_audit_app;
+		global $v_wpsa_app;
 
 		// Initialize Yii if not already initialized.
-		if ( null === $v_wp_seo_audit_app ) {
+		if ( null === $v_wpsa_app ) {
 			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
 			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
 
 			if ( file_exists( $yii ) && file_exists( $config ) ) {
 				require_once $yii;
-				$v_wp_seo_audit_app = Yii::createWebApplication( $config );
+				$v_wpsa_app = Yii::createWebApplication( $config );
 
-				if ( isset( $v_wp_seo_audit_app->params['app.timezone'] ) ) {
-					$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
+				if ( isset( $v_wpsa_app->params['app.timezone'] ) ) {
+					$v_wpsa_app->setTimeZone( $v_wpsa_app->params['app.timezone'] );
 				}
 			} else {
 				wp_send_json_error( array( 'message' => 'Application not initialized' ) );
@@ -160,10 +160,10 @@ class V_WPSA_Ajax_Handlers {
 			}
 		}
 
-		V_WPSA_Yii_Integration::configure_yii_app( $v_wp_seo_audit_app );
+		V_WPSA_Yii_Integration::configure_yii_app( $v_wpsa_app );
 
 		// Check if thumbnail proxy is enabled (it's disabled by default).
-		if ( ! isset( $v_wp_seo_audit_app->params['thumbnail.proxy'] ) || ! $v_wp_seo_audit_app->params['thumbnail.proxy'] ) {
+		if ( ! isset( $v_wpsa_app->params['thumbnail.proxy'] ) || ! $v_wpsa_app->params['thumbnail.proxy'] ) {
 			// Thumbnail proxy is disabled, use direct thum.io URLs instead.
 			$url = isset( $_GET['url'] ) ? sanitize_text_field( wp_unslash( $_GET['url'] ) ) : '';
 			if ( $url ) {
@@ -184,21 +184,21 @@ class V_WPSA_Ajax_Handlers {
 	 */
 	public static function download_pdf() {
 		// Verify nonce for security.
-		check_ajax_referer( 'v_wp_seo_audit_nonce', 'nonce' );
+		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
 
-		global $v_wp_seo_audit_app;
+		global $v_wpsa_app;
 
 		// Initialize Yii if not already initialized.
-		if ( null === $v_wp_seo_audit_app ) {
+		if ( null === $v_wpsa_app ) {
 			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
 			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
 
 			if ( file_exists( $yii ) && file_exists( $config ) ) {
 				require_once $yii;
-				$v_wp_seo_audit_app = Yii::createWebApplication( $config );
+				$v_wpsa_app = Yii::createWebApplication( $config );
 
-				if ( isset( $v_wp_seo_audit_app->params['app.timezone'] ) ) {
-					$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
+				if ( isset( $v_wpsa_app->params['app.timezone'] ) ) {
+					$v_wpsa_app->setTimeZone( $v_wpsa_app->params['app.timezone'] );
 				}
 			} else {
 				wp_send_json_error( array( 'message' => 'Application not initialized' ) );
@@ -206,7 +206,7 @@ class V_WPSA_Ajax_Handlers {
 			}
 		}
 
-		V_WPSA_Yii_Integration::configure_yii_app( $v_wp_seo_audit_app );
+		V_WPSA_Yii_Integration::configure_yii_app( $v_wpsa_app );
 
 		// Get domain from request.
 		$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';

@@ -4,7 +4,7 @@ This directory contains WordPress-native helper classes and utilities for the V-
 
 ## Files
 
-### class-v-wp-seo-audit-db.php
+### class-v-wpsa-db.php
 
 WordPress-native database wrapper class that replaces Yii framework database operations (CActiveRecord, CDbCommand).
 

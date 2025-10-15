@@ -43,7 +43,7 @@ Performance:
 │  │                                                     │ │
 │  │  ┌───────────────────────────────────────────┐   │ │
 │  │  │      WordPress Template Include           │   │ │
-│  │  │  • Load templates/request-form.php        │   │ │
+│  │  │  • Load templates/main.php        │   │ │
 │  │  │  • Use esc_html(), esc_url(), esc_attr() │   │ │
 │  │  │  • Use apply_filters() for hooks         │   │ │
 │  │  │  • Return HTML output                     │   │ │
@@ -98,7 +98,7 @@ function v_wpsa_shortcode($atts) {
     ob_start();
     $v_wp_seo_audit_app->run();  // Loads entire Yii
     $content = ob_get_clean();
-    return '<div class="v-wp-seo-audit-container">' . $content . '</div>';
+    return '<div class="v-wpsa-container">' . $content . '</div>';
 }
 ```
 
@@ -106,13 +106,13 @@ function v_wpsa_shortcode($atts) {
 ```php
 function v_wpsa_shortcode($atts) {
     ob_start();
-    $template_path = V_WP_SEO_AUDIT_PLUGIN_DIR . 'templates/request-form.php';
+    $template_path = V_WP_SEO_AUDIT_PLUGIN_DIR . 'templates/main.php';
     if (file_exists($template_path)) {
         include $template_path;  // Simple include, no Yii
     }
     $content = ob_get_clean();
     $nonce = wp_create_nonce('v_wp_seo_audit_nonce');
-    return '<div class="v-wp-seo-audit-container" data-nonce="' . 
+    return '<div class="v-wpsa-container" data-nonce="' . 
             esc_attr($nonce) . '">' . $content . '</div>';
 }
 ```
@@ -127,7 +127,7 @@ function v_wpsa_shortcode($atts) {
 <img src="<?php echo Yii::app()->getBaseUrl(true); ?>/assets/img/content.png" />
 ```
 
-**After (templates/request-form.php):**
+**After (templates/main.php):**
 ```php
 <h1><?php echo esc_html($app_name); ?></h1>
 <p><?php echo esc_html($app_name); ?> is a free SEO tool...</p>
@@ -230,8 +230,8 @@ Total:                    32 MB
 
 ### Before
 ```
-v-wp-seo-audit/
-├── v-wp-seo-audit.php (mixed WordPress/Yii)
+v-wpsa/
+├── v-wpsa.php (mixed WordPress/Yii)
 ├── framework/ (Yii framework - always loaded)
 └── protected/
     ├── controllers/ (Yii controllers)
@@ -242,10 +242,10 @@ v-wp-seo-audit/
 
 ### After
 ```
-v-wp-seo-audit/
-├── v-wp-seo-audit.php (pure WordPress)
+v-wpsa/
+├── v-wpsa.php (pure WordPress)
 ├── templates/
-│   └── request-form.php (WordPress template)
+│   └── main.php (WordPress template)
 ├── framework/ (Yii framework - AJAX only)
 └── protected/
     ├── controllers/ (Yii controllers - AJAX only)

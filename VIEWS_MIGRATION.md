@@ -8,7 +8,7 @@ This document describes the migration of Yii framework views to WordPress-native
 ### 1. New Templates Directory
 All view templates have been moved from `protected/views/` to `templates/`:
 
-- `templates/request-form.php` - Main SEO audit request form (shortcode)
+- `templates/main.php` - Main SEO audit request form (shortcode)
 - `templates/report.php` - HTML report generation
 - `templates/pdf.php` - PDF report generation
 - `templates/layout.php` - Layout wrapper
@@ -55,7 +55,7 @@ All templates now use WordPress-native functions:
 | `Yii::app()->language` | `'en'` (hardcoded) |
 | `CHtml::encode($text)` | `esc_html($text)` |
 | `CJSON::encode($data)` | `wp_json_encode($data)` |
-| `Yii::t('app', 'text')` | `esc_html_e('text', 'v-wp-seo-audit')` |
+| `Yii::t('app', 'text')` | `esc_html_e('text', 'v-wpsa')` |
 
 ### 4. AJAX Handler Updates
 
@@ -104,7 +104,7 @@ add_filter('v_wp_seo_audit_config', function($config) {
 
 ## Template Variables
 
-### request-form.php
+### main.php
 Variables available in template:
 - `$plugin_name` - Plugin name
 - `$placeholder` - Domain input placeholder
@@ -199,7 +199,7 @@ vendor/bin/phpcs templates/ includes/ --standard=WordPress
 ## Files Reference
 
 ### New Files
-- `templates/request-form.php`
+- `templates/main.php`
 - `templates/report.php`
 - `templates/pdf.php`
 - `templates/layout.php`
@@ -207,7 +207,7 @@ vendor/bin/phpcs templates/ includes/ --standard=WordPress
 - `includes/class-v-wpsa-report-generator.php`
 
 ### Modified Files
-- `v-wp-seo-audit.php` - Added config and report generator includes
+- `v-wpsa.php` - Added config and report generator includes
 - `includes/class-v-wpsa-ajax-handlers.php` - Updated to use new report generator
 
 ### Deprecated Files (kept for reference)

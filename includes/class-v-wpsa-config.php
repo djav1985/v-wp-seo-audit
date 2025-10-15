@@ -65,7 +65,7 @@ class V_WPSA_Config {
 		}
 
 		// Allow filtering of config values.
-		self::$config = apply_filters( 'v_wp_seo_audit_config', self::$config );
+		self::$config = apply_filters( 'v_wpsa_config', self::$config );
 	}
 
 	/**

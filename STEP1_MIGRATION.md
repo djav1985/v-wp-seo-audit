@@ -20,7 +20,7 @@ This document tracks the completion of Step 1: Immediate, low-risk migration to 
 **Problem:** The `[v_wp_seo_audit]` shortcode was calling `$v_wp_seo_audit_app->run()`, causing Yii to initialize on every page with the shortcode.
 
 **Solution:**
-- Created `templates/request-form.php` - WordPress-native template with proper escaping
+- Created `templates/main.php` - WordPress-native template with proper escaping
 - Updated `v_wpsa_shortcode()` to include the template instead of calling Yii
 - Removed `add_action('wp', array('V_WPSA_Yii_Integration', 'init'))` hook
 - Updated `v_wpsa_enqueue_assets()` to not depend on `$v_wp_seo_audit_app`
@@ -28,7 +28,7 @@ This document tracks the completion of Step 1: Immediate, low-risk migration to 
 **Impact:** Yii no longer loads on page views - only in AJAX handlers.
 
 #### 3. Template Migration (Phase 5 - Partial)
-**Created:** `templates/request-form.php`
+**Created:** `templates/main.php`
 - Replaces `protected/views/site/index.php` for the initial form
 - Uses WordPress functions: `esc_html()`, `esc_url()`, `esc_attr()`, `apply_filters()`
 - Includes hooks for customization: `v_wp_seo_audit_app_name`, `v_wp_seo_audit_placeholder`, `v_wp_seo_audit_marketing_texts`
@@ -53,7 +53,7 @@ These handlers:
 ### What Does NOT Use Yii
 
 - ✅ **Domain validation** - Uses `V_WPSA_Validation::validate_domain()` (WordPress-native)
-- ✅ **Initial form rendering** - Uses `templates/request-form.php`
+- ✅ **Initial form rendering** - Uses `templates/main.php`
 - ✅ **Asset enqueueing** - Pure WordPress hooks
 - ✅ **Normal page loads** - No Yii initialization
 
@@ -68,9 +68,9 @@ No CHtml: YES
 ```
 
 #### PHP Syntax Checks
-- ✅ v-wp-seo-audit.php: No errors
+- ✅ v-wpsa.php: No errors
 - ✅ includes/class-v-wpsa-ajax-handlers.php: No errors
-- ✅ templates/request-form.php: No errors
+- ✅ templates/main.php: No errors
 
 #### PHPCS Linting
 - ✅ All files pass WordPress coding standards
@@ -101,10 +101,10 @@ No CHtml: YES
 
 ### Files Modified
 
-1. `v-wp-seo-audit.php` - Shortcode and enqueue functions
+1. `v-wpsa.php` - Shortcode and enqueue functions
 2. `includes/class-v-wpsa-helpers.php` - class_exists() guard
 3. `includes/class-v-wpsa-db.php` - class_exists() guards
-4. `templates/request-form.php` - NEW WordPress-native template
+4. `templates/main.php` - NEW WordPress-native template
 
 ### Files NOT Modified (Intentionally)
 
