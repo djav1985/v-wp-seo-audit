@@ -502,6 +502,9 @@ class V_WPSA_DB {
 		if ( ! isset( $data['content']['deprecated'] ) || ! is_array( $data['content']['deprecated'] ) ) {
 			$data['content']['deprecated'] = array();
 		}
+		if ( ! isset( $data['content']['isset_headings'] ) ) {
+			$data['content']['isset_headings'] = 0;
+		}
 
 		// Document defaults.
 		if ( empty( $data['document'] ) || ! is_array( $data['document'] ) ) {
@@ -588,6 +591,31 @@ class V_WPSA_DB {
 		}
 		if ( ! isset( $data['misc']['analytics'] ) || ! is_array( $data['misc']['analytics'] ) ) {
 			$data['misc']['analytics'] = array();
+		}
+
+		// Isseter defaults (boolean flags).
+		if ( ! isset( $data['isseter'] ) || ! is_array( $data['isseter'] ) ) {
+			$data['isseter'] = array();
+		}
+		$isseter_flags = array( 'flash', 'iframe', 'nestedtables', 'inlinecss', 'viewport', 'dublincore', 'appleicons', 'robotstxt', 'gzip' );
+		foreach ( $isseter_flags as $flag ) {
+			if ( ! isset( $data['isseter'][ $flag ] ) ) {
+				$data['isseter'][ $flag ] = 0;
+			}
+		}
+
+		// W3C defaults.
+		if ( ! isset( $data['w3c'] ) || ! is_array( $data['w3c'] ) ) {
+			$data['w3c'] = array();
+		}
+		if ( ! isset( $data['w3c']['valid'] ) ) {
+			$data['w3c']['valid'] = 0;
+		}
+		if ( ! isset( $data['w3c']['errors'] ) ) {
+			$data['w3c']['errors'] = 0;
+		}
+		if ( ! isset( $data['w3c']['warnings'] ) ) {
+			$data['w3c']['warnings'] = 0;
 		}
 
 		return $data;
