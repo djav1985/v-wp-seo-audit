@@ -138,9 +138,7 @@ class V_WPSA_Report_Generator {
 		}
 
 		// Generate PDF file path.
-		if ( ! class_exists( 'Utils' ) ) {
-			require_once v_wpsa_PLUGIN_DIR . 'protected/components/Utils.php';
-		}
+		// Utils class is now loaded in main plugin file.
 		$pdf_file = Utils::createPdfFolder( $domain );
 
 		// Create PDF using TCPDF directly.
