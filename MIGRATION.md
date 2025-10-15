@@ -20,9 +20,9 @@ This document describes the changes made to migrate the plugin to WordPress stan
 - **Moved to old/protected/**:
   - `protected/models/` (DownloadPdfForm.php, Website.php)
   - `protected/components/` (Controller.php, LinkPager.php, UrlManager.php, Utils.php, WebsiteThumbnail.php)
-  - `protected/config/` (badwords.php, config.php, domain_restriction.php, main.php)
   - `protected/data/` (dump.sql)
 - **Remaining in protected/**: 
+  - `config/` (badwords.php, config.php, domain_restriction.php, main.php) - Still used by validation and config classes
   - `extensions/` (TCPDF library - still needed for PDF generation)
   - `vendors/` (AnalyticsFinder - still used in templates)
 - **Updated**: File paths in code to reference `old/protected/` where legacy files are still needed
@@ -45,11 +45,12 @@ This document describes the changes made to migrate the plugin to WordPress stan
 
 ## Thumbnail Handling
 
-The plugin already uses thum.io with local caching:
+The plugin uses thum.io with local caching:
 - **Service**: https://image.thum.io/
 - **Cache location**: `{uploads}/seo-audit/thumbnails/`
-- **Cache duration**: 7 days
+- **Cache duration**: 7 days (stale cache may be used if download fails)
 - **Implementation**: `V_WPSA_Thumbnail` class in `includes/class-v-wpsa-thumbnail.php`
+- **Behavior**: Thumbnails are always served from local cache. If cache doesn't exist and download fails, no thumbnail is displayed (empty string returned instead of direct external URL).
 
 ## Cleanup Cron
 

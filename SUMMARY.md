@@ -13,14 +13,14 @@ All 7 tasks from the problem statement have been successfully completed:
 - Thumbnails are now served directly from thum.io with local caching via `V_WPSA_Thumbnail` class
 
 ### ✅ 2. Load thumbnails from thum.io and save them using local versions
-**Status**: Already implemented, verified working
+**Status**: Implemented with local-only serving
 
-The plugin already has full thum.io integration with local caching:
+The plugin has thum.io integration with strict local caching:
 - Service: `https://image.thum.io/get/maxAge/350/width/{width}/https://{domain}`
 - Cache location: `{wp-uploads}/seo-audit/thumbnails/`
-- Cache duration: 7 days
+- Cache duration: 7 days (stale cache used if download fails)
 - Implementation: `V_WPSA_Thumbnail::download_thumbnail()` method
-- Fallback: Returns thum.io URL if download fails
+- Behavior: Thumbnails are always served from local cache only. If cache doesn't exist and download fails, no thumbnail is displayed (empty string returned)
 
 ### ✅ 3. The cleanup cron should remove DB, thumbnails and PDFs
 **Status**: Already implemented, verified working
@@ -66,10 +66,10 @@ The `v_wpsa_cleanup()` function in `install.php` handles:
 **Moved to old/protected/:**
 - `protected/models/` (DownloadPdfForm.php, Website.php)
 - `protected/components/` (Controller.php, LinkPager.php, UrlManager.php, Utils.php, WebsiteThumbnail.php)
-- `protected/config/` (badwords.php, config.php, domain_restriction.php, main.php)
 - `protected/data/` (dump.sql)
 
 **Kept in protected/:**
+- `config/` (badwords.php, config.php, domain_restriction.php, main.php) - Still used by validation and config classes
 - `extensions/tcpdf/` - Still needed for PDF generation
 - `vendors/Webmaster/Source/AnalyticsFinder.php` - Still used in templates
 
