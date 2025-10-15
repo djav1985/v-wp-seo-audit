@@ -39,13 +39,13 @@ foreach ( $tables as $table ) {
 // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 // Delete plugin options.
-delete_option( 'v_wp_seo_audit_version' );
+delete_option( 'v_wpsa_version' );
 // For multisite installations, delete options from all sites.
 if ( is_multisite() ) {
 	$sites = get_sites();
 	foreach ( $sites as $site ) {
 		switch_to_blog( $site->blog_id );
-		delete_option( 'v_wp_seo_audit_version' );
+		delete_option( 'v_wpsa_version' );
 		restore_current_blog();
 
 	}

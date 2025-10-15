@@ -17,7 +17,7 @@ Stop Yii framework from running on common page requests, improving performance a
 ## 🔑 Key Changes
 
 ### 1. Shortcode No Longer Loads Yii
-**File:** `v-wp-seo-audit.php`
+**File:** `v-wpsa.php`
 
 **Before:**
 ```php
@@ -32,13 +32,13 @@ function v_wpsa_shortcode($atts) {
 ```php
 function v_wpsa_shortcode($atts) {
     // Load WordPress-native template (no Yii)
-    include 'templates/request-form.php';
+    include 'templates/main.php';
     ...
 }
 ```
 
 ### 2. Created WordPress-Native Template
-**File:** `templates/request-form.php` (NEW)
+**File:** `templates/main.php` (NEW)
 
 - Uses WordPress escaping: `esc_html()`, `esc_url()`, `esc_attr()`
 - Uses WordPress filters: `apply_filters()`
@@ -59,7 +59,7 @@ if (class_exists('Content', false)) { // No autoloader
 ```
 
 ### 4. Removed Yii Init Hook
-**File:** `v-wp-seo-audit.php`
+**File:** `v-wpsa.php`
 
 **Before:**
 ```php

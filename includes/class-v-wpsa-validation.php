@@ -36,7 +36,7 @@ class V_WPSA_Validation {
 		$domain = self::sanitize_domain( $domain );
 
 		if ( empty( $domain ) ) {
-			$errors[]         = __( 'Please enter a domain name', 'v-wp-seo-audit' );
+			$errors[]         = __( 'Please enter a domain name', 'v-wpsa' );
 			$result['errors'] = $errors;
 			return $result;
 		}
@@ -49,7 +49,7 @@ class V_WPSA_Validation {
 
 		// Validate domain format.
 		if ( ! self::is_valid_domain_format( $domain ) ) {
-			$errors[]         = __( 'Invalid domain format. Please enter a valid domain name (e.g., example.com)', 'v-wp-seo-audit' );
+			$errors[]         = __( 'Invalid domain format. Please enter a valid domain name (e.g., example.com)', 'v-wpsa' );
 			$result['errors'] = $errors;
 			return $result;
 		}
@@ -67,7 +67,7 @@ class V_WPSA_Validation {
 		$long = ip2long( $ip );
 		if ( -1 === $long || false === $long ) {
 			/* translators: %s: domain name */
-			$errors[]         = sprintf( __( 'Could not reach host: %s', 'v-wp-seo-audit' ), $domain );
+			$errors[]         = sprintf( __( 'Could not reach host: %s', 'v-wpsa' ), $domain );
 			$result['errors'] = $errors;
 			return $result;
 		}
@@ -166,7 +166,7 @@ class V_WPSA_Validation {
 
 		foreach ( $banned_patterns as $pattern ) {
 			if ( preg_match( "#{$pattern}#i", $domain ) ) {
-				return __( 'Error Code 103: This domain is not allowed', 'v-wp-seo-audit' );
+				return __( 'Error Code 103: This domain is not allowed', 'v-wpsa' );
 			}
 		}
 

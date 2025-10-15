@@ -1,9 +1,33 @@
 <?php
 /**
- * File: index.php
+ * Report Template
+ * WordPress-native template for SEO audit report.
+ * Replaces protected/views/websitestat/index.php
+ *
+ * Variables available:
+ * - $website: Website data array
+ * - $thumbnail: Thumbnail URL
+ * - $generated: Generated date array
+ * - $diff: Time difference
+ * - $updUrl: Update URL
+ * - $rateprovider: Rate provider object
+ * - $meta: Meta data array
+ * - $content: Content data array
+ * - $document: Document data array
+ * - $links: Links data array
+ * - $linkcount: Total link count
+ * - $cloud: Keywords cloud data
+ * - $w3c: W3C validation data
+ * - $isseter: Various boolean flags
+ * - $misc: Miscellaneous data
+ * - $over_max: Maximum items to show before collapse
  *
  * @package V_WP_SEO_Audit
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( empty( $website ) || ! is_array( $website ) ) : ?>
 	<div class="alert alert-danger mt-5 mb-5">
@@ -84,16 +108,16 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			return false;
 		});
 
-		<?php if ( Yii::app()->params['psi.show'] ) : ?>
+		<?php if ( V_WPSA_Config::get('psi.show') ) : ?>
 			WrPsi(
 			<?php
-			echo CJSON::encode(
+			echo wp_json_encode(
 				array(
 					'i18nEnterFullscreen' => 'Enter fullscreen mode',
 					'i18nExitFullscreen'  => 'Exit fullscreen mode',
-					'runInstantly'        => Yii::app()->params['psi.run_instantly'],
+					'runInstantly'        => V_WPSA_Config::get('psi.run_instantly'),
 					'url'                 => ! empty( $website['final_url'] ) ? $website['final_url'] : 'http://' . $website['domain'],
-					'locale'              => Yii::app()->language,
+					'locale'              => "en",
 				)
 			)
 			?>
@@ -105,11 +129,11 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 <div class="jumbotron">
 	<div class="row">
 		<div class="col-md-4 col-lg-5 col-sm-12">
-			<img class="img-responsive img-thumbnail mb-20" id="thumb_main_<?php echo $website['id']; ?>" src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/loader.gif" alt="<?php echo $website['idn']; ?>" />
+			<img class="img-responsive img-thumbnail mb-20" id="thumb_main_<?php echo $website['id']; ?>" src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/loader.gif" alt="<?php echo $website['idn']; ?>" />
 		</div>
 		<div class="col-md-8 col-lg-7 col-sm-12 text-left">
 			<h1 class="text-break">
-				<?php echo 'Website review for ' . CHtml::encode( $website['idn'] ); ?>
+				<?php echo 'Website review for ' . esc_html( $website['idn'] ); ?>
 			</h1>
 
 			<p>
@@ -135,7 +159,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 			</p>
 
 
-			<?php if ( $diff > Yii::app()->params['analyzer.cache_time'] ) : ?>
+			<?php if ( $diff > V_WPSA_Config::get('analyzer.cache_time') ) : ?>
 				<p>
 					<?php
 					echo 'Old data? <a href="' . $updUrl . '" class="btn btn-success" id="update_stat">UPDATE</a> !';
@@ -143,7 +167,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 				</p>
 			<?php endif; ?>
 
-			<?php echo Yii::app()->params['param.addthis']; ?>
+			<?php echo V_WPSA_Config::get('param.addthis'); ?>
 
 
 			<p class="mt-3">
@@ -153,7 +177,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 				<div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $website['score']; ?>%;"></div>
 			</div>
 
-			<a href="#" class="btn btn-primary v-wpsa-download-pdf" data-domain="<?php echo CHtml::encode( $website['domain'] ); ?>">
+			<a href="#" class="btn btn-primary v-wpsa-download-pdf" data-domain="<?php echo esc_html( $website['domain'] ); ?>">
 				<?php echo 'Download PDF Version'; ?>
 			</a>
 
@@ -175,7 +199,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<p class="text-break">
-				<?php echo CHtml::encode( Utils::html_decode( $meta['title'] ) ); ?>
+				<?php echo esc_html( Utils::html_decode( $meta['title'] ) ); ?>
 			</p>
 			<p>
 				<strong>
@@ -208,7 +232,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		</div>
 		<div class="col-md-8">
 			<p class="text-break">
-				<?php echo CHtml::encode( Utils::html_decode( $meta['description'] ) ); ?>
+				<?php echo esc_html( Utils::html_decode( $meta['description'] ) ); ?>
 			</p>
 			<p>
 				<strong>
@@ -262,8 +286,8 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 						<tbody>
 							<?php foreach ( $meta['ogproperties'] as $property => $c ) : ?>
 								<tr class="over-max">
-									<td><?php echo CHtml::encode( $property ); ?></td>
-									<td class="text-break"><?php echo CHtml::encode( $c ); ?></td>
+									<td><?php echo esc_html( $property ); ?></td>
+									<td class="text-break"><?php echo esc_html( $c ); ?></td>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
@@ -315,7 +339,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 								foreach ( $headings as $h ) :
 									$i++;
 									?>
-									<li class="text-break<?php echo $i > $over_max ? ' over-max' : ''; ?>">[<?php echo mb_strtoupper( $heading ); ?>] <?php echo CHtml::encode( Utils::html_decode( $h ) ); ?></li>
+									<li class="text-break<?php echo $i > $over_max ? ' over-max' : ''; ?>">[<?php echo mb_strtoupper( $heading ); ?>] <?php echo esc_html( Utils::html_decode( $h ) ); ?></li>
 									<?php
 								endforeach;
 							endif;
@@ -523,7 +547,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 							<tr <?php echo $i > $over_max ? 'class="over-max"' : null; ?>>
 								<td class="text-break">
 									<a href="<?php echo $link['Link']; ?>" target="_blank" rel="nofollow">
-										<?php echo ! empty( $link['Name'] ) ? CHtml::encode( Utils::html_decode( $link['Name'] ) ) : '-'; ?>
+										<?php echo ! empty( $link['Name'] ) ? esc_html( Utils::html_decode( $link['Name'] ) ) : '-'; ?>
 									</a>
 								</td>
 								<td><?php echo ( $link['Type'] === 'internal' ? 'Internal' : 'External' ); ?></td>
@@ -557,7 +581,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<div class="col-md-8">
 			<p class="text-break cloud-container">
 				<?php foreach ( $cloud['words'] as $word => $stat ) : ?>
-					<span class="grade-<?php echo $stat['grade']; ?>"><?php echo CHtml::encode( Utils::html_decode( $word ) ); ?></span>
+					<span class="grade-<?php echo $stat['grade']; ?>"><?php echo esc_html( Utils::html_decode( $word ) ); ?></span>
 				<?php endforeach; ?>
 			</p>
 		</div>
@@ -586,11 +610,11 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 					<tbody>
 						<?php foreach ( $cloud['matrix'] as $word => $object ) : ?>
 							<tr>
-								<td><?php echo CHtml::encode( $word ); ?></td>
+								<td><?php echo esc_html( $word ); ?></td>
 								<td><?php echo (int) $cloud['words'][ $word ]['count']; ?></td>
-								<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $object['title']; ?>.png" /></td>
-								<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $object['description']; ?>.png" /></td>
-								<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $object['headings']; ?>.png" /></td>
+								<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $object['title']; ?>.png" /></td>
+								<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $object['description']; ?>.png" /></td>
+								<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $object['headings']; ?>.png" /></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -810,7 +834,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 					<tbody>
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] ); ?>
-							<td width="50px"><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
+							<td width="50px"><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
 							<td>
 								<?php
 								if ( $advice === 'success' ) {
@@ -824,7 +848,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] ); ?>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
 							<td>
 								<?php
 								if ( $advice === 'success' ) {
@@ -838,7 +862,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								$css_count = is_array( $document['css'] ) ? count( $document['css'] ) : 0;
@@ -853,7 +877,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								$js_count = is_array( $document['js'] ) ? count( $document['js'] ) : 0;
@@ -868,7 +892,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								echo 'Gzip Compression';
@@ -904,17 +928,17 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 					<tbody>
 
 						<tr class="no-top-line">
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
 							<td><?php echo 'Apple Icon'; ?></td>
 						</tr>
 
 						<tr>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
 							<td><?php echo 'Meta Viewport Tag'; ?></td>
 						</tr>
 
 						<tr>
-							<td><img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
 							<td><?php echo 'Flash content'; ?></td>
 						</tr>
 
@@ -950,7 +974,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 							<?php foreach ( $misc['sitemap'] as $sitemap ) : ?>
 								<tr>
 									<td class="text-break">
-										<?php echo CHtml::encode( $sitemap ); ?>
+										<?php echo esc_html( $sitemap ); ?>
 									</td>
 								</tr>
 							<?php endforeach; ?>
@@ -1021,9 +1045,9 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 							<?php foreach ( $misc['analytics'] as $analytics ) : ?>
 								<tr>
 									<td>
-										<img src="<?php echo Yii::app()->getBaseUrl( true ); ?>/assets/img/analytics/<?php echo $analytics; ?>.png" />
+										<img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/analytics/<?php echo $analytics; ?>.png" />
 										&nbsp;&nbsp;
-										<?php echo CHtml::encode( AnalyticsFinder::getProviderName( $analytics ) ); ?>
+										<?php echo esc_html( AnalyticsFinder::getProviderName( $analytics ) ); ?>
 									</td>
 								</tr>
 							<?php endforeach; ?>
@@ -1042,7 +1066,7 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 	</div>
 </div>
 
-<?php if ( Yii::app()->params['psi.show'] ) : ?>
+<?php if ( V_WPSA_Config::get('psi.show') ) : ?>
 	<h4 id="section_page_speed" class="mt-5 mb-3"><?php echo 'PageSpeed Insights'; ?></h4>
 	<div class="category-wrapper">
 		<div class="row pagespeed">
@@ -1118,15 +1142,15 @@ if ( empty( $website ) || ! is_array( $website ) ) : ?>
 		<!-- JS is enqueued via WordPress plugin file. Remove direct <script> and rely on enqueued assets. -->
 
 		<div class="jumbotron">
-			<h1><?php echo Yii::app()->name; ?></h1>
+			<h1><?php echo V_WPSA_Config::get("app.name"); ?></h1>
 			<p class="lead mb-4">
-				<?php echo Yii::app()->name; ?> is a free SEO tool which provides you content analysis of the website.
+				<?php echo V_WPSA_Config::get("app.name"); ?> is a free SEO tool which provides you content analysis of the website.
 			</p>
 			<form id="website-form">
 				<div class="form-row">
 					<div class="form-group col-md-6">
 						<div class="input-group mb-3">
-							<input type="text"  name="Website[domain]" id="domain" class="form-control form-control-lg" placeholder="<?php echo Yii::app()->params['param.placeholder']; ?>">
+							<input type="text"  name="Website[domain]" id="domain" class="form-control form-control-lg" placeholder="<?php echo V_WPSA_Config::get('param.placeholder'); ?>">
 							<div class="input-group-append">
 								<button class="btn btn-primary" type="button" id="submit">
 									Analyze

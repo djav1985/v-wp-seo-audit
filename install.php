@@ -147,11 +147,11 @@ function v_wpsa_activate() {
 	}
 
 	// Set plugin version option.
-	add_option( 'v_wp_seo_audit_version', V_WP_SEO_AUDIT_VERSION );
+	add_option( 'v_wpsa_version', V_WP_SEO_AUDIT_VERSION );
 
 	// Schedule daily cleanup cron job.
-	if ( ! wp_next_scheduled( 'v_wp_seo_audit_daily_cleanup' ) ) {
-		wp_schedule_event( time(), 'daily', 'v_wp_seo_audit_daily_cleanup' );
+	if ( ! wp_next_scheduled( 'v_wpsa_daily_cleanup' ) ) {
+		wp_schedule_event( time(), 'daily', 'v_wpsa_daily_cleanup' );
 	}
 }
 

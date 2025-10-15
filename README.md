@@ -8,7 +8,7 @@ This plugin provides comprehensive SEO audit functionality for WordPress. It ana
 
 ## Installation
 
-1. Upload the plugin files to the `/wp-content/plugins/v-wp-seo-audit` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/v-wpsa` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
 3. Add the shortcode `[v_wp_seo_audit]` to any page or post where you want to display the SEO audit tool
 
@@ -139,7 +139,7 @@ This plugin was converted from a standalone Yii PHP application to a WordPress p
 - ✅ `Yii::app()->params['analyzer.cache_time']` → WordPress filter `v_wp_seo_audit_cache_time`
 
 **Files Modified:**
-- `v-wp-seo-audit.php` - Added 3 new WordPress-native helper functions
+- `v-wpsa.php` - Added 3 new WordPress-native helper functions
 - `protected/models/WebsiteForm.php` - Updated to use WordPress functions
 
 **Documentation:**
@@ -213,7 +213,7 @@ To test the plugin functionality:
 ### Expected Behavior
 
 **Before Changes (Problem)**:
-- Form would redirect to URLs like `http://localhost/wp-content/plugins/v-wp-seo-audit/index.php/www/example.com`
+- Form would redirect to URLs like `http://localhost/wp-content/plugins/v-wpsa/index.php/www/example.com`
 - "Direct access not allowed" error
 - **"Helper.php not found" fatal error** (Phase 4 fix)
 - Page reloads on every action
