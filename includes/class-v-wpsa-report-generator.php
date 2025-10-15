@@ -34,15 +34,6 @@ class V_WPSA_Report_Generator {
 			throw new Exception( 'Website not found: ' . $domain );
 		}
 
-		// Classes are now loaded in main plugin file via includes/class-v-wpsa-*.php
-		// with backward compatibility aliases (Utils, WebsiteThumbnail).
-
-		// Ensure AnalyticsFinder is available (legacy vendor class used in templates).
-		$analytics_path = v_wpsa_PLUGIN_DIR . 'Webmaster/Source/AnalyticsFinder.php';
-		if ( file_exists( $analytics_path ) ) {
-			require_once $analytics_path;
-		}
-
 		// Render using WordPress template.
 		$html = self::render_template( 'report.php', $data );
 
@@ -116,20 +107,6 @@ class V_WPSA_Report_Generator {
 			} else {
 				$data['thumbnail'] = '';
 			}
-		}
-
-		// Ensure Utils class is available for templates that reference it.
-		if ( ! class_exists( 'Utils' ) ) {
-			$utils_path = v_wpsa_PLUGIN_DIR . 'old/protected/components/Utils.php';
-			if ( file_exists( $utils_path ) ) {
-				require_once $utils_path;
-			}
-		}
-
-		// Ensure AnalyticsFinder is available for PDF template usage.
-		$analytics_path = v_wpsa_PLUGIN_DIR . 'Webmaster/Source/AnalyticsFinder.php';
-		if ( file_exists( $analytics_path ) ) {
-			require_once $analytics_path;
 		}
 
 		// Render PDF template to HTML.

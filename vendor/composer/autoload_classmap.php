@@ -6,7 +6,22 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'AnalyticsFinder' => $baseDir . '/Webmaster/Source/AnalyticsFinder.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Content' => $baseDir . '/Webmaster/Source/Content.php',
+    'Document' => $baseDir . '/Webmaster/Source/Document.php',
+    'Favicon' => $baseDir . '/Webmaster/Source/Favicon.php',
+    'Helper' => $baseDir . '/Webmaster/Utils/Helper.php',
+    'IDN' => $baseDir . '/Webmaster/Utils/IDN.php',
+    'Image' => $baseDir . '/Webmaster/Source/Image.php',
+    'Links' => $baseDir . '/Webmaster/Source/Links.php',
+    'MetaTags' => $baseDir . '/Webmaster/Source/MetaTags.php',
+    'Optimization' => $baseDir . '/Webmaster/Source/Optimization.php',
+    'PageSpeedInsights' => $baseDir . '/Webmaster/Google/PageSpeedInsights.php',
+    'RateProvider' => $baseDir . '/Webmaster/Rates/RateProvider.php',
+    'SearchMatrix' => $baseDir . '/Webmaster/Matrix/SearchMatrix.php',
+    'SeoAnalyse' => $baseDir . '/Webmaster/Source/SeoAnalyse.php',
+    'TagCloud' => $baseDir . '/Webmaster/TagCloud/TagCloud.php',
     'V_WPSA_Ajax_Handlers' => $baseDir . '/includes/class-v-wpsa-ajax-handlers.php',
     'V_WPSA_Config' => $baseDir . '/includes/class-v-wpsa-config.php',
     'V_WPSA_DB' => $baseDir . '/includes/class-v-wpsa-db.php',
@@ -16,4 +31,5 @@ return array(
     'V_WPSA_Utils' => $baseDir . '/includes/class-v-wpsa-utils.php',
     'V_WPSA_Validation' => $baseDir . '/includes/class-v-wpsa-validation.php',
     'V_WPSA_Website' => $baseDir . '/includes/class-v-wpsa-website.php',
+    'Validation' => $baseDir . '/Webmaster/Source/Validation.php',
 );

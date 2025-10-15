@@ -411,11 +411,8 @@ class V_WPSA_DB {
 		);
 
 		// Prepare RateProvider instance.
-		// Explicitly require the file to avoid Yii autoloader interference.
-		$rateprovider      = null;
-		$rateprovider_path = v_wpsa_PLUGIN_DIR . 'Webmaster/Rates/RateProvider.php';
-		if ( file_exists( $rateprovider_path ) ) {
-			require_once $rateprovider_path;
+		$rateprovider = null;
+		if ( class_exists( 'RateProvider' ) ) {
 			$rateprovider = new RateProvider();
 		}
 
@@ -835,14 +832,6 @@ class V_WPSA_DB {
 		// Create an instance to access instance helpers (schema introspection, etc.).
 		$db = new self();
 
-		// Load required Yii vendor classes.
-		// Note: We must load files directly before any class_exists() checks to avoid
-		// triggering Yii's autoloader which will try to find the class in the wrong path.
-		$helper_path = v_wpsa_PLUGIN_DIR . 'Webmaster/Utils/Helper.php';
-		if ( file_exists( $helper_path ) ) {
-			require_once $helper_path;
-		}
-
 		try {
 			// Fetch website HTML - try both HTTPS and HTTP.
 			// Use a more realistic user-agent to avoid being blocked.
@@ -894,25 +883,6 @@ class V_WPSA_DB {
 			$html = wp_remote_retrieve_body( $response );
 			if ( empty( $html ) ) {
 				return new WP_Error( 'empty_response', 'Website returned empty content' );
-			}
-
-			// Load analysis classes.
-			$source_path     = v_wpsa_PLUGIN_DIR . 'Webmaster/Source/';
-			$classes_to_load = array(
-				'Content.php',
-				'Document.php',
-				'Links.php',
-				'MetaTags.php',
-				'Optimization.php',
-				'SeoAnalyse.php',
-				'Validation.php',
-			);
-
-			foreach ( $classes_to_load as $class_file ) {
-				$class_path = $source_path . $class_file;
-				if ( file_exists( $class_path ) ) {
-					require_once $class_path;
-				}
 			}
 
 			// Perform analysis.

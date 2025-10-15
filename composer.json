@@ -1,7 +1,8 @@
 {
     "autoload": {
         "classmap": [
-            "includes/"
+            "includes/",
+            "Webmaster/"
         ]
     },
     "require-dev": {

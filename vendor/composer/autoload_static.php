@@ -7,7 +7,22 @@ namespace Composer\Autoload;
 class ComposerStaticInit9a1a82bf44fcc845760e65630423ab4e
 {
     public static $classMap = array (
+        'AnalyticsFinder' => __DIR__ . '/../..' . '/Webmaster/Source/AnalyticsFinder.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Content' => __DIR__ . '/../..' . '/Webmaster/Source/Content.php',
+        'Document' => __DIR__ . '/../..' . '/Webmaster/Source/Document.php',
+        'Favicon' => __DIR__ . '/../..' . '/Webmaster/Source/Favicon.php',
+        'Helper' => __DIR__ . '/../..' . '/Webmaster/Utils/Helper.php',
+        'IDN' => __DIR__ . '/../..' . '/Webmaster/Utils/IDN.php',
+        'Image' => __DIR__ . '/../..' . '/Webmaster/Source/Image.php',
+        'Links' => __DIR__ . '/../..' . '/Webmaster/Source/Links.php',
+        'MetaTags' => __DIR__ . '/../..' . '/Webmaster/Source/MetaTags.php',
+        'Optimization' => __DIR__ . '/../..' . '/Webmaster/Source/Optimization.php',
+        'PageSpeedInsights' => __DIR__ . '/../..' . '/Webmaster/Google/PageSpeedInsights.php',
+        'RateProvider' => __DIR__ . '/../..' . '/Webmaster/Rates/RateProvider.php',
+        'SearchMatrix' => __DIR__ . '/../..' . '/Webmaster/Matrix/SearchMatrix.php',
+        'SeoAnalyse' => __DIR__ . '/../..' . '/Webmaster/Source/SeoAnalyse.php',
+        'TagCloud' => __DIR__ . '/../..' . '/Webmaster/TagCloud/TagCloud.php',
         'V_WPSA_Ajax_Handlers' => __DIR__ . '/../..' . '/includes/class-v-wpsa-ajax-handlers.php',
         'V_WPSA_Config' => __DIR__ . '/../..' . '/includes/class-v-wpsa-config.php',
         'V_WPSA_DB' => __DIR__ . '/../..' . '/includes/class-v-wpsa-db.php',
@@ -17,6 +32,7 @@ class ComposerStaticInit9a1a82bf44fcc845760e65630423ab4e
         'V_WPSA_Utils' => __DIR__ . '/../..' . '/includes/class-v-wpsa-utils.php',
         'V_WPSA_Validation' => __DIR__ . '/../..' . '/includes/class-v-wpsa-validation.php',
         'V_WPSA_Website' => __DIR__ . '/../..' . '/includes/class-v-wpsa-website.php',
+        'Validation' => __DIR__ . '/../..' . '/Webmaster/Source/Validation.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
