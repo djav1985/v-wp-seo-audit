@@ -87,7 +87,7 @@ class V_WPSA_DB {
 	public function filter_columns( $table, array $data ) {
 		$cols = $this->get_table_columns( $table );
 		if ( empty( $cols ) ) {
-			return $data; // no schema info - return as-is
+			return $data; // No schema info - return as-is.
 		}
 		return array_intersect_key( $data, array_flip( $cols ) );
 	}
@@ -419,11 +419,28 @@ class V_WPSA_DB {
 		// Provide a minimal fallback RateProvider so templates can safely call methods
 		// even when the legacy RateProvider class/file is not available.
 		if ( null === $rateprovider ) {
-			$rateprovider = new class {
+			// phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid, Squiz.Commenting.FunctionComment.Missing
+			$rateprovider = new class() {
+				/**
+				 * Mock addCompare method for fallback.
+				 *
+				 * @param string $key Unused key parameter.
+				 * @param mixed  $value Value to check.
+				 * @return string Status string.
+				 */
+				// phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid, Squiz.Commenting.FunctionComment.Missing
 				public function addCompare( $key, $value ) {
 					return $value ? 'success' : 'neutral';
 				}
 
+				/**
+				 * Mock addCompareArray method for fallback.
+				 *
+				 * @param string $key Unused key parameter.
+				 * @param mixed  $value Value to check.
+				 * @return string Status string.
+				 */
+				// phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid, Squiz.Commenting.FunctionComment.Missing
 				public function addCompareArray( $key, $value ) {
 					if ( is_numeric( $value ) ) {
 						return ( $value > 0 ) ? 'success' : 'neutral';
@@ -484,16 +501,6 @@ class V_WPSA_DB {
 	protected function ensure_report_defaults( $data ) {
 		// Content defaults.
 		if ( empty( $data['content'] ) || ! is_array( $data['content'] ) ) {
-		// Ensure numeric link counters exist.
-		if ( ! isset( $data['links']['internal'] ) || ! is_numeric( $data['links']['internal'] ) ) {
-			$data['links']['internal'] = 0;
-		}
-		if ( ! isset( $data['links']['external_dofollow'] ) || ! is_numeric( $data['links']['external_dofollow'] ) ) {
-			$data['links']['external_dofollow'] = 0;
-		}
-		if ( ! isset( $data['links']['external_nofollow'] ) || ! is_numeric( $data['links']['external_nofollow'] ) ) {
-			$data['links']['external_nofollow'] = 0;
-		}
 			$data['content'] = array();
 		}
 		if ( ! isset( $data['content']['headings'] ) || ! is_array( $data['content']['headings'] ) ) {
@@ -623,7 +630,10 @@ class V_WPSA_DB {
 		// Normalize words entries to expected structure to avoid offset errors.
 		foreach ( $data['cloud']['words'] as $w => $stat ) {
 			if ( ! is_array( $stat ) ) {
-				$data['cloud']['words'][ $w ] = array( 'count' => 0, 'grade' => 0 );
+				$data['cloud']['words'][ $w ] = array(
+					'count' => 0,
+					'grade' => 0,
+				);
 			} else {
 				if ( ! isset( $stat['count'] ) ) {
 					$data['cloud']['words'][ $w ]['count'] = 0;
@@ -678,7 +688,7 @@ class V_WPSA_DB {
 			$data['w3c']['warnings'] = 0;
 		}
 
-		// Website defaults (ensure score and id exist for template usage)
+		// Website defaults (ensure score and id exist for template usage).
 		if ( ! isset( $data['website'] ) || ! is_array( $data['website'] ) ) {
 			$data['website'] = array();
 		}
@@ -695,7 +705,7 @@ class V_WPSA_DB {
 			$data['website']['domain'] = '';
 		}
 
-		// Ensure linkcount exists
+		// Ensure linkcount exists.
 		if ( ! isset( $data['linkcount'] ) || ! is_numeric( $data['linkcount'] ) ) {
 			$data['linkcount'] = 0;
 		}
