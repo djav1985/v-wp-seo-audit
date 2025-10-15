@@ -24,64 +24,15 @@ class V_WPSA_Report_Generator {
 	 * @throws Exception If report cannot be generated.
 	 */
 	public static function generate_html_report( $domain ) {
-		// Check if WP-native generation is enabled via feature flag.
-		$use_native = get_option( 'v_wpsa_use_native_generator', false );
-
-		if ( $use_native ) {
-			// Use WordPress-native data collection.
-			return self::generate_html_report_native( $domain );
-		}
-
-		// Legacy Yii-based generation (fallback).
-		return self::generate_html_report_legacy( $domain );
-	}
-
-	/**
-	 * Generate HTML report using WordPress-native data collection.
-	 *
-	 * @param string $domain Domain to generate report for.
-	 * @return string HTML content.
-	 * @throws Exception If report cannot be generated.
-	 */
-	private static function generate_html_report_native( $domain ) {
 		// Use WordPress-native database class for data collection.
 		$db = new V_WPSA_DB();
 
 		// Get full report data.
-		$data = $db->get_website_report_full_data( $domain );
+		$data = $db->get_full_report_data( $domain );
 
 		if ( ! $data ) {
 			throw new Exception( 'Website not found: ' . $domain );
 		}
-
-		// Render using WordPress template.
-		return self::render_template( 'report.php', $data );
-	}
-
-	/**
-	 * Generate HTML report using legacy Yii controller (fallback).
-	 *
-	 * @param string $domain Domain to generate report for.
-	 * @return string HTML content.
-	 * @throws Exception If report cannot be generated.
-	 */
-	private static function generate_html_report_legacy( $domain ) {
-		global $v_wpsa_app;
-
-		if ( null === $v_wpsa_app ) {
-			throw new Exception( 'Yii application not initialized' );
-		}
-
-		// Set domain in GET for compatibility with controller logic.
-		$_GET['domain'] = $domain;
-
-		// Import and instantiate controller to collect data.
-		Yii::import( 'application.controllers.WebsitestatController' );
-		$controller = new WebsitestatController( 'websitestat' );
-		$controller->init();
-
-		// Get all the data from controller protected properties.
-		$data = self::extract_controller_data( $controller );
 
 		// Render using WordPress template.
 		return self::render_template( 'report.php', $data );
@@ -94,32 +45,19 @@ class V_WPSA_Report_Generator {
 	 * @return array Array with 'file' => path to PDF file, 'filename' => suggested filename.
 	 * @throws Exception If PDF cannot be generated.
 	 */
-	public static function generate_pdf_report( $domain ) {
-		// Check if WP-native generation is enabled via feature flag.
-		$use_native = get_option( 'v_wpsa_use_native_generator', false );
-
-		if ( $use_native ) {
-			// Use WordPress-native PDF generation.
-			return self::generate_pdf_report_native( $domain );
-		}
-
-		// Legacy Yii-based generation (fallback).
-		return self::generate_pdf_report_legacy( $domain );
-	}
-
 	/**
-	 * Generate PDF report using WordPress-native methods.
+	 * Generate PDF report for a domain.
 	 *
 	 * @param string $domain Domain to generate PDF for.
 	 * @return array Array with 'file' => path to PDF file, 'filename' => suggested filename.
 	 * @throws Exception If PDF cannot be generated.
 	 */
-	private static function generate_pdf_report_native( $domain ) {
+	public static function generate_pdf_report( $domain ) {
 		// Use WordPress-native database class for data collection.
 		$db = new V_WPSA_DB();
 
 		// Get full report data.
-		$data = $db->get_website_report_full_data( $domain );
+		$data = $db->get_full_report_data( $domain );
 
 		if ( ! $data ) {
 			throw new Exception( 'Website not found: ' . $domain );
@@ -146,8 +84,8 @@ class V_WPSA_Report_Generator {
 		}
 		$pdf_file = Utils::createPdfFolder( $domain );
 
-		// Create PDF using TCPDF directly (WordPress-native).
-		self::create_pdf_from_html_native( $html, $pdf_file, $data['website']['idn'] );
+		// Create PDF using TCPDF directly.
+		self::create_pdf_from_html( $html, $pdf_file, $data['website']['idn'] );
 
 		// Ensure PDF was created.
 		if ( ! file_exists( $pdf_file ) ) {
@@ -161,73 +99,14 @@ class V_WPSA_Report_Generator {
 	}
 
 	/**
-	 * Generate PDF report using legacy Yii methods (fallback).
-	 *
-	 * @param string $domain Domain to generate PDF for.
-	 * @return array Array with 'file' => path to PDF file, 'filename' => suggested filename.
-	 * @throws Exception If PDF cannot be generated.
-	 */
-	private static function generate_pdf_report_legacy( $domain ) {
-		global $v_wpsa_app;
-
-		if ( null === $v_wpsa_app ) {
-			throw new Exception( 'Yii application not initialized' );
-		}
-
-		// Set domain in GET for compatibility.
-		$_GET['domain'] = $domain;
-
-		// Import and instantiate controller.
-		Yii::import( 'application.controllers.WebsitestatController' );
-		$controller = new WebsitestatController( 'websitestat' );
-		$controller->init();
-
-		// Get data from controller.
-		$data = self::extract_controller_data( $controller );
-
-		// Ensure thumbnail is a URL string for the PDF template.
-		if ( isset( $data['thumbnail'] ) && is_array( $data['thumbnail'] ) ) {
-			if ( isset( $data['thumbnail']['thumb'] ) && ! empty( $data['thumbnail']['thumb'] ) ) {
-				$data['thumbnail'] = $data['thumbnail']['thumb'];
-			} elseif ( isset( $data['thumbnail']['url'] ) && ! empty( $data['thumbnail']['url'] ) ) {
-				// Fallback: construct a thum.io URL when no cached thumb is present.
-				$data['thumbnail'] = 'https://image.thum.io/get/maxAge/350/width/350/https://' . $data['thumbnail']['url'];
-			} else {
-				$data['thumbnail'] = '';
-			}
-		}
-
-		// Render PDF template to HTML.
-		$html = self::render_template( 'pdf.php', $data );
-
-		// Generate PDF file.
-		$filename = $domain;
-		$pdf_file = Utils::createPdfFolder( $filename );
-
-		// Use Yii PDF generation but only save the file to disk (do not stream it).
-		// The AJAX handler will send the file to the client.
-		$controller->createPdfFromHtml( $html, $pdf_file, $data['website']['idn'], false );
-
-		// Ensure PDF was created.
-		if ( ! file_exists( $pdf_file ) ) {
-			throw new Exception( 'Failed to create PDF file' );
-		}
-
-		return array(
-			'file'     => $pdf_file,
-			'filename' => $data['website']['idn'] . '.pdf',
-		);
-	}
-
-	/**
-	 * Create PDF from HTML using TCPDF directly (WordPress-native).
+	 * Create PDF from HTML using TCPDF directly.
 	 *
 	 * @param string $html HTML content.
 	 * @param string $pdf_file Path to save PDF file.
 	 * @param string $title PDF title.
 	 * @throws Exception If PDF cannot be created.
 	 */
-	private static function create_pdf_from_html_native( $html, $pdf_file, $title ) {
+	private static function create_pdf_from_html( $html, $pdf_file, $title ) {
 		// Load TCPDF library directly.
 		$tcpdf_path = v_wpsa_PLUGIN_DIR . 'protected/extensions/tcpdf/tcpdf/tcpdf.php';
 		if ( ! file_exists( $tcpdf_path ) ) {
@@ -292,38 +171,6 @@ class V_WPSA_Report_Generator {
 		if ( ! file_exists( $pdf_file ) ) {
 			throw new Exception( 'PDF engine failed to create file' );
 		}
-	}
-
-	/**
-	 * Extract data from controller using reflection.
-	 *
-	 * @param object $controller WebsitestatController instance.
-	 * @return array Data array for template.
-	 */
-	private static function extract_controller_data( $controller ) {
-		// Use reflection to access protected properties.
-		$reflection = new ReflectionClass( $controller );
-
-		$data = array();
-
-		// List of properties to extract.
-		$properties = array( 'website', 'cloud', 'content', 'document', 'isseter', 'links', 'meta', 'w3c', 'generated', 'diff', 'thumbnail', 'misc' );
-
-		foreach ( $properties as $prop_name ) {
-			if ( $reflection->hasProperty( $prop_name ) ) {
-				$property = $reflection->getProperty( $prop_name );
-				$property->setAccessible( true );
-				$data[ $prop_name ] = $property->getValue( $controller );
-			}
-		}
-
-		// Add calculated values.
-		$data['over_max']     = 6;
-		$data['linkcount']    = isset( $data['links']['links'] ) ? count( $data['links']['links'] ) : 0;
-		$data['rateprovider'] = new RateProvider();
-		$data['updUrl']       = V_WPSA_Config::get( 'param.instant_redirect' ) ? '#update_form' : '#';
-
-		return $data;
 	}
 
 	/**

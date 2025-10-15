@@ -227,13 +227,13 @@ class V_WPSA_DB {
 
 	/**
 	 * Get full data for website report including metadata.
-	 * This is a WordPress-native replacement for WebsitestatController::collectInfo().
+	 * This replaces WebsitestatController::collectInfo().
 	 *
 	 * @param string $domain Domain name.
 	 * @return array|null Full report data or null if website not found.
 	 * @throws Exception If required classes are not available.
 	 */
-	public function get_website_report_full_data( $domain ) {
+	public function get_full_report_data( $domain ) {
 		// Get website record.
 		$website = $this->get_website_by_domain( $domain );
 		if ( ! $website ) {

@@ -66,66 +66,15 @@ class V_WPSA_Ajax_Handlers {
 		// Verify nonce for security.
 		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
 
-		// Get domain from request.
-		$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
-
-		if ( empty( $domain ) ) {
-			wp_send_json_error( array( 'message' => 'Domain is required' ) );
-			return;
-		}
-
-		// Check if WP-native generation is enabled via feature flag.
-		$use_native = get_option( 'v_wpsa_use_native_generator', false );
-
-		if ( $use_native ) {
-			// Use WordPress-native report generation (no Yii bootstrap required).
-			self::generate_report_native( $domain );
-		} else {
-			// Use legacy Yii-based report generation.
-			self::generate_report_legacy( $domain );
-		}
-	}
-
-	/**
-	 * Generate report using WordPress-native methods (no Yii required).
-	 *
-	 * @param string $domain Domain to generate report for.
-	 */
-	private static function generate_report_native( $domain ) {
-		try {
-			// Generate report using WordPress-native template system.
-			$content = V_WPSA_Report_Generator::generate_html_report( $domain );
-
-			// Also provide a fresh nonce in case the frontend lost the original one.
-			$response_data = array(
-				'html'  => $content,
-				'nonce' => wp_create_nonce( 'v_wpsa_nonce' ),
-			);
-
-			// Return the HTML content and the helper nonce.
-			wp_send_json_success( $response_data );
-		} catch ( Exception $e ) {
-			// Log and return JSON error for the client.
-			error_log( sprintf( 'v-wpsa: error generating report for %s: %s', $domain, $e->getMessage() ) );
-			wp_send_json_error( array( 'message' => 'Error generating report: ' . $e->getMessage() ) );
-		}
-	}
-
-	/**
-	 * Generate report using legacy Yii methods.
-	 *
-	 * @param string $domain Domain to generate report for.
-	 */
-	private static function generate_report_legacy( $domain ) {
 		global $v_wpsa_app;
 
 		// Convert warnings/notices to exceptions during this request so they can be returned
 		// as structured JSON errors instead of causing HTTP 500.
 		$prev_error_handler = set_error_handler(
-			function ( $errno, $errstr, $errfile, $errline ) {
+			function( $errno, $errstr, $errfile, $errline ) {
 				if ( ! ( error_reporting() & $errno ) ) {
-					// Respect @ operator: do not convert silently suppressed errors.
-					return false;
+					  // Respect @ operator: do not convert silently suppressed errors.
+					  return false;
 				}
 				throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
 			}
@@ -150,6 +99,14 @@ class V_WPSA_Ajax_Handlers {
 		}
 
 		V_WPSA_Yii_Integration::configure_yii_app( $v_wpsa_app );
+
+		// Get domain from request.
+		$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
+
+		if ( empty( $domain ) ) {
+			wp_send_json_error( array( 'message' => 'Domain is required' ) );
+			return;
+		}
 
 		// Create and validate the model to trigger analysis if needed.
 		// The WebsiteForm::validate() will automatically call tryToAnalyse()
@@ -185,7 +142,7 @@ class V_WPSA_Ajax_Handlers {
 			wp_send_json_success( $response_data );
 		} catch ( Throwable $t ) {
 			// Log and return JSON error for the client.
-			error_log( sprintf( 'v-wpsa: unhandled throwable during report generation for %s: %s in %s on line %d', $domain, $t->getMessage(), $t->getFile(), $t->getLine() ) );
+			error_log( sprintf( 'v-wpsa: unhandled throwable during PDF download for %s: %s in %s on line %d', $domain, $t->getMessage(), $t->getFile(), $t->getLine() ) );
 			if ( function_exists( 'Yii' ) ) {
 				Yii::log( $t->getMessage(), CLogger::LEVEL_ERROR );
 			}
@@ -195,7 +152,7 @@ class V_WPSA_Ajax_Handlers {
 			} else {
 				restore_error_handler();
 			}
-			wp_send_json_error( array( 'message' => 'Internal error while generating report: ' . $t->getMessage() ) );
+			wp_send_json_error( array( 'message' => 'Internal error while generating PDF: ' . $t->getMessage() ) );
 		} finally {
 			// Ensure error handler is restored if the request completes normally.
 			if ( isset( $prev_error_handler ) && null !== $prev_error_handler ) {
@@ -269,24 +226,6 @@ class V_WPSA_Ajax_Handlers {
 			return;
 		}
 
-		// Check if WP-native generation is enabled via feature flag.
-		$use_native = get_option( 'v_wpsa_use_native_generator', false );
-
-		if ( $use_native ) {
-			// Use WordPress-native PDF generation (no Yii bootstrap required).
-			self::download_pdf_native( $domain );
-		} else {
-			// Use legacy Yii-based PDF generation.
-			self::download_pdf_legacy( $domain );
-		}
-	}
-
-	/**
-	 * Download PDF using WordPress-native methods (no Yii required).
-	 *
-	 * @param string $domain Domain to generate PDF for.
-	 */
-	private static function download_pdf_native( $domain ) {
 		try {
 			// Increase memory and execution time for PDF generation which can be heavy.
 			if ( function_exists( 'wp_raise_memory_limit' ) ) {
@@ -304,9 +243,8 @@ class V_WPSA_Ajax_Handlers {
 					if ( $error && in_array( $error['type'], array( E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE ), true ) ) {
 						$error_msg = sprintf( 'v-wpsa: fatal error during PDF generation for %s: %s in %s on line %d', $domain_for_shutdown, $error['message'], $error['file'], $error['line'] );
 						error_log( $error_msg );
-						// Try to return a JSON error to the AJAX client instead of a raw HTTP 500 page.
+						// Try to return a JSON error to the AJAX client.
 						if ( ! headers_sent() ) {
-							// Clear output buffers to avoid mixed content.
 							while ( ob_get_level() ) {
 								ob_end_clean();
 							}
@@ -326,7 +264,7 @@ class V_WPSA_Ajax_Handlers {
 
 			// Debug logging.
 			$upload_dir = function_exists( 'wp_upload_dir' ) ? wp_upload_dir() : array( 'basedir' => '' );
-			error_log( sprintf( 'v-wpsa: download_pdf_native start for domain=%s uploads=%s memory_limit=%s', $domain, $upload_dir['basedir'], ini_get( 'memory_limit' ) ) );
+			error_log( sprintf( 'v-wpsa: download_pdf start for domain=%s uploads=%s memory_limit=%s', $domain, $upload_dir['basedir'], ini_get( 'memory_limit' ) ) );
 
 			// Generate PDF using WordPress-native methods.
 			$pdf_data = V_WPSA_Report_Generator::generate_pdf_report( $domain );
@@ -363,126 +301,6 @@ class V_WPSA_Ajax_Handlers {
 				}
 			}
 			if ( false === $bytes ) {
-				error_log( sprintf( 'v-wpsa: readfile failed for %s', $pdf_data['file'] ) );
-				throw new Exception( 'Unable to read PDF file' );
-			}
-			exit;
-		} catch ( Exception $e ) {
-			wp_send_json_error( array( 'message' => $e->getMessage() ) );
-		}
-	}
-
-	/**
-	 * Download PDF using legacy Yii methods.
-	 *
-	 * @param string $domain Domain to generate PDF for.
-	 */
-	private static function download_pdf_legacy( $domain ) {
-		global $v_wpsa_app;
-
-		// Initialize Yii if not already initialized.
-		if ( null === $v_wpsa_app ) {
-			$yii    = v_wpsa_PLUGIN_DIR . 'framework/yii.php';
-			$config = v_wpsa_PLUGIN_DIR . 'protected/config/main.php';
-
-			if ( file_exists( $yii ) && file_exists( $config ) ) {
-				require_once $yii;
-				$v_wpsa_app = Yii::createWebApplication( $config );
-
-				if ( isset( $v_wpsa_app->params['app.timezone'] ) ) {
-					$v_wpsa_app->setTimeZone( $v_wpsa_app->params['app.timezone'] );
-				}
-			} else {
-				wp_send_json_error( array( 'message' => 'Application not initialized' ) );
-				return;
-			}
-		}
-
-		V_WPSA_Yii_Integration::configure_yii_app( $v_wpsa_app );
-
-		try {
-			// Increase memory and execution time for PDF generation which can be heavy.
-			// Ask WordPress to raise memory limit for this admin/ajax operation.
-			if ( function_exists( 'wp_raise_memory_limit' ) ) {
-				wp_raise_memory_limit( 'admin' );
-			}
-			if ( function_exists( 'set_time_limit' ) ) {
-				set_time_limit( 0 );
-			}
-
-			// Register shutdown function to capture fatal errors that would otherwise return HTTP 500.
-			$domain_for_shutdown = $domain;
-			register_shutdown_function(
-				function () use ( $domain_for_shutdown ) {
-					$error = error_get_last();
-					if ( $error && in_array( $error['type'], array( E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE ), true ) ) {
-						$error_msg = sprintf( 'v-wpsa: fatal error during PDF generation for %s: %s in %s on line %d', $domain_for_shutdown, $error['message'], $error['file'], $error['line'] );
-						error_log( $error_msg );
-						if ( function_exists( 'Yii' ) ) {
-							Yii::log( $error_msg, CLogger::LEVEL_ERROR );
-						}
-						// Try to return a JSON error to the AJAX client instead of a raw HTTP 500 page.
-						if ( ! headers_sent() ) {
-							// Clear output buffers to avoid mixed content.
-							while ( ob_get_level() ) {
-								ob_end_clean();
-							}
-							header( 'Content-Type: application/json; charset=utf-8' );
-							header( 'HTTP/1.1 200 OK' );
-							echo wp_json_encode(
-								array(
-									'success' => false,
-									'data'    => array( 'message' => 'Internal server error while generating PDF: ' . $error['message'] ),
-								)
-							);
-							// Ensure termination.
-							exit;
-						}
-					}
-				}
-			);
-
-			// Debug logging: start.
-			$upload_dir = function_exists( 'wp_upload_dir' ) ? wp_upload_dir() : array( 'basedir' => '' );
-			error_log( sprintf( 'v-wpsa: download_pdf start for domain=%s uploads=%s memory_limit=%s max_exec=%s', $domain, $upload_dir['basedir'], ini_get( 'memory_limit' ), ini_get( 'max_execution_time' ) ) );
-
-			// Generate PDF using WordPress-native template system.
-			$pdf_data = V_WPSA_Report_Generator::generate_pdf_report( $domain );
-
-			error_log( sprintf( 'v-wpsa: generate_pdf_report returned: %s', var_export( $pdf_data, true ) ) );
-
-			// Read the PDF file.
-			if ( ! file_exists( $pdf_data['file'] ) ) {
-				error_log( sprintf( 'v-wpsa: PDF file not found after generation: %s', $pdf_data['file'] ) );
-				throw new Exception( 'PDF file not found' );
-			}
-
-			// Output the PDF with proper headers.
-			header( 'Content-Type: application/pdf' );
-			header( 'Content-Disposition: attachment; filename="' . $pdf_data['filename'] . '"' );
-			header( 'Content-Length: ' . filesize( $pdf_data['file'] ) );
-			header( 'Cache-Control: private, max-age=0, must-revalidate' );
-			header( 'Pragma: public' );
-
-			// Output file and exit.
-			// Stream file directly using readfile for lowest memory usage. Wrap
-			// readfile in an error handler so warnings become catchable exceptions.
-			$prev_handler = set_error_handler(
-				function ( $errno, $errstr, $errfile, $errline ) {
-					throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
-				}
-			);
-			$bytes        = false;
-			try {
-				$bytes = readfile( $pdf_data['file'] );
-			} finally {
-				if ( $prev_handler !== null ) {
-					set_error_handler( $prev_handler );
-				} else {
-					restore_error_handler();
-				}
-			}
-			if ( $bytes === false ) {
 				error_log( sprintf( 'v-wpsa: readfile failed for %s', $pdf_data['file'] ) );
 				throw new Exception( 'Unable to read PDF file' );
 			}
