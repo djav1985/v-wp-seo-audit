@@ -144,7 +144,7 @@ class V_WPSA_Utils {
 		if ( function_exists( 'wp_upload_dir' ) ) {
 			$upload_dir = wp_upload_dir();
 			$root       = rtrim( $upload_dir['basedir'], '\/' ) . '/seo-audit/pdf';
-			// Use simplified filename structure: wp-content/uploads/seo-audit/pdf/{domain}.pdf
+			// Use simplified filename structure: wp-content/uploads/seo-audit/pdf/{domain}.pdf.
 			$file = $root . '/' . $domain . '.pdf';
 			return $file;
 		}
@@ -264,8 +264,8 @@ class V_WPSA_Utils {
 
 		curl_setopt( $ch, CURLOPT_USERAGENT, $user_agent );
 
-		$mr = $maxredirect === null ? 5 : intval( $maxredirect );
-		if ( ini_get( 'open_basedir' ) === '' && ( ini_get( 'safe_mode' ) === 'Off' || ini_get( 'safe_mode' ) === '' ) ) {
+		$mr = null === $maxredirect ? 5 : intval( $maxredirect );
+		if ( '' === ini_get( 'open_basedir' ) && ( 'Off' === ini_get( 'safe_mode' ) || '' === ini_get( 'safe_mode' ) ) ) {
 			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, $mr > 0 );
 			curl_setopt( $ch, CURLOPT_MAXREDIRS, $mr );
 		} else {
@@ -485,108 +485,11 @@ class V_WPSA_Utils {
 	}
 
 	/**
-	 * Check if reCAPTCHA is enabled (backward compatibility).
+	 * Check if reCAPTCHA is enabled.
 	 *
 	 * @return bool Always false in WP-native version (reCAPTCHA not implemented yet).
 	 */
 	public static function is_recaptcha_enabled() {
 		return false;
 	}
-
-	// ========== Backward Compatibility Aliases ==========
-	// These methods maintain camelCase names for backward compatibility with templates.
-
-	/**
-	 * Backward compatibility alias for create_pdf_folder.
-	 *
-	 * @param string $domain Domain name.
-	 * @return string PDF file path.
-	 * @throws Exception If folder cannot be created.
-	 *
-	 * phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-	 */
-	public static function createPdfFolder( $domain ) {
-		return self::create_pdf_folder( $domain );
-	}
-
-	/**
-	 * Backward compatibility alias for is_psi_active.
-	 *
-	 * @param string $k Key (device or categories).
-	 * @param string $item Item to check.
-	 * @return bool True if active, false otherwise.
-	 *
-	 * phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-	 */
-	public static function isPsiActive( $k, $item ) {
-		return self::is_psi_active( $k, $item );
-	}
-
-	/**
-	 * Backward compatibility alias for crop_domain.
-	 *
-	 * @param string $domain Domain name.
-	 * @param int    $length Maximum length.
-	 * @param string $separator Separator string.
-	 * @return string Cropped domain name.
-	 *
-	 * phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-	 */
-	public static function cropDomain( $domain, $length = 24, $separator = '...' ) {
-		return self::crop_domain( $domain, $length, $separator );
-	}
-
-	/**
-	 * Backward compatibility alias for create_nested_dir.
-	 *
-	 * @param string $path Path to create.
-	 * @return bool True on success, false on failure.
-	 *
-	 * phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-	 */
-	public static function createNestedDir( $path ) {
-		return self::create_nested_dir( $path );
-	}
-
-	/**
-	 * Backward compatibility alias for delete_pdf.
-	 *
-	 * @param string $domain Domain name.
-	 * @return bool True on success.
-	 *
-	 * phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-	 */
-	public static function deletePdf( $domain ) {
-		return self::delete_pdf( $domain );
-	}
-
-	/**
-	 * Backward compatibility alias for get_pdf_file.
-	 *
-	 * @param string $domain Domain name.
-	 * @param string $lang Language code (optional).
-	 * @return string PDF file path.
-	 *
-	 * phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-	 */
-	public static function getPdfFile( $domain, $lang = null ) {
-		return self::get_pdf_file( $domain, $lang );
-	}
-
-	/**
-	 * Backward compatibility alias for is_recaptcha_enabled.
-	 *
-	 * @return bool Always false.
-	 *
-	 * phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-	 */
-	public static function isRecaptchaEnabled() {
-		return self::is_recaptcha_enabled();
-	}
-	// phpcs:enable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-}
-
-// Backward compatibility: create alias for old class name.
-if ( ! class_exists( 'Utils' ) ) {
-	class_alias( 'V_WPSA_Utils', 'Utils' );
 }

@@ -139,7 +139,7 @@ class V_WPSA_Report_Generator {
 
 		// Generate PDF file path.
 		// Utils class is now loaded in main plugin file.
-		$pdf_file = Utils::createPdfFolder( $domain );
+		$pdf_file = V_WPSA_Utils::create_pdf_folder( $domain );
 
 		// Create PDF using TCPDF directly.
 		self::create_pdf_from_html( $html, $pdf_file, $data['website']['idn'] );

@@ -362,9 +362,9 @@ class V_WPSA_DB {
 
 		// Classes are now loaded in main plugin file via includes/class-v-wpsa-*.php
 		// with backward compatibility aliases (Utils, WebsiteThumbnail).
-		if ( class_exists( 'WebsiteThumbnail' ) ) {
+		if ( class_exists( 'V_WPSA_Thumbnail' ) ) {
 			try {
-				$thumbnail = WebsiteThumbnail::getThumbData(
+				$thumbnail = V_WPSA_Thumbnail::get_thumb_data(
 					array(
 						'url'  => $domain,
 						'size' => 'l',

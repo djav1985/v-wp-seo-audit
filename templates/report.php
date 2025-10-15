@@ -47,17 +47,17 @@ endif;
 
 		var pie_data = [];
 		pie_data[0] = {
-			label: '<?php echo 'External Links'; ?> : <?php echo 'noFollow'; ?> <?php echo Utils::proportion( $linkcount, $links['external_nofollow'] ); ?>%',
+			label: '<?php echo 'External Links'; ?> : <?php echo 'noFollow'; ?> <?php echo V_WPSA_Utils::proportion( $linkcount, $links['external_nofollow'] ); ?>%',
 			data: <?php echo $links['external_nofollow']; ?>,
 			color: '#6A93BA'
 		};
 		pie_data[1] = {
-			label: '<?php echo 'External Links'; ?> : <?php echo 'Passing Juice'; ?> <?php echo Utils::proportion( $linkcount, $links['external_dofollow'] ); ?>%',
+			label: '<?php echo 'External Links'; ?> : <?php echo 'Passing Juice'; ?> <?php echo V_WPSA_Utils::proportion( $linkcount, $links['external_dofollow'] ); ?>%',
 			data: <?php echo $links['external_dofollow']; ?>,
 			color: '#315D86'
 		};
 		pie_data[2] = {
-			label: '<?php echo 'Internal Links'; ?> <?php echo Utils::proportion( $linkcount, $links['internal'] ); ?>%',
+			label: '<?php echo 'Internal Links'; ?> <?php echo V_WPSA_Utils::proportion( $linkcount, $links['internal'] ); ?>%',
 			data: <?php echo $links['internal']; ?>,
 			color: '#ddd'
 		};
@@ -193,7 +193,7 @@ endif;
 <h3 id="section_content" class="mt-5 mb-3"><?php echo 'SEO Content'; ?></h3>
 <div class="category-wrapper">
 	<!-- Title -->
-	<?php $advice = $rateprovider->addCompareArray( 'title', mb_strlen( Utils::html_decode( $meta['title'] ) ) ); ?>
+	<?php $advice = $rateprovider->addCompareArray( 'title', mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) ) ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -203,16 +203,16 @@ endif;
 		</div>
 		<div class="col-md-8">
 			<p class="text-break">
-				<?php echo esc_html( Utils::html_decode( $meta['title'] ) ); ?>
+				<?php echo esc_html( V_WPSA_Utils::html_decode( $meta['title'] ) ); ?>
 			</p>
 			<p>
 				<strong>
-					<?php echo 'Length'; ?> : <?php echo mb_strlen( Utils::html_decode( $meta['title'] ) ); ?>
+					<?php echo 'Length'; ?> : <?php echo mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) ); ?>
 				</strong>
 			</p>
 			<p>
 				<?php
-				$title_length = mb_strlen( Utils::html_decode( $meta['title'] ) );
+				$title_length = mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) );
 				if ( $advice === 'success' ) {
 					echo 'Great! Your title tag has an optimal length (' . $title_length . ' characters).';
 				} elseif ( $advice === 'warning' ) {
@@ -226,7 +226,7 @@ endif;
 	</div>
 
 	<!-- Description -->
-	<?php $advice = $rateprovider->addCompareArray( 'description', mb_strlen( Utils::html_decode( $meta['description'] ) ) ); ?>
+	<?php $advice = $rateprovider->addCompareArray( 'description', mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) ) ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -236,16 +236,16 @@ endif;
 		</div>
 		<div class="col-md-8">
 			<p class="text-break">
-				<?php echo esc_html( Utils::html_decode( $meta['description'] ) ); ?>
+				<?php echo esc_html( V_WPSA_Utils::html_decode( $meta['description'] ) ); ?>
 			</p>
 			<p>
 				<strong>
-					<strong><?php echo 'Length'; ?> : <?php echo mb_strlen( Utils::html_decode( $meta['description'] ) ); ?></strong>
+					<strong><?php echo 'Length'; ?> : <?php echo mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) ); ?></strong>
 				</strong>
 			</p>
 			<p>
 				<?php
-				$desc_length = mb_strlen( Utils::html_decode( $meta['description'] ) );
+				$desc_length = mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) );
 				if ( $advice === 'success' ) {
 					echo 'Perfect! Your meta description has an optimal length (' . $desc_length . ' characters).';
 				} elseif ( $advice === 'warning' ) {
@@ -349,7 +349,7 @@ endif;
 								foreach ( $headings as $h ) :
 									$i++;
 									?>
-									<li class="text-break<?php echo $i > $over_max ? ' over-max' : ''; ?>">[<?php echo mb_strtoupper( $heading ); ?>] <?php echo esc_html( Utils::html_decode( $h ) ); ?></li>
+									<li class="text-break<?php echo $i > $over_max ? ' over-max' : ''; ?>">[<?php echo mb_strtoupper( $heading ); ?>] <?php echo esc_html( V_WPSA_Utils::html_decode( $h ) ); ?></li>
 									<?php
 								endforeach;
 							endif;
@@ -557,7 +557,7 @@ endif;
 							<tr <?php echo $i > $over_max ? 'class="over-max"' : null; ?>>
 								<td class="text-break">
 									<a href="<?php echo $link['Link']; ?>" target="_blank" rel="nofollow">
-										<?php echo ! empty( $link['Name'] ) ? esc_html( Utils::html_decode( $link['Name'] ) ) : '-'; ?>
+										<?php echo ! empty( $link['Name'] ) ? esc_html( V_WPSA_Utils::html_decode( $link['Name'] ) ) : '-'; ?>
 									</a>
 								</td>
 								<td><?php echo ( $link['Type'] === 'internal' ? 'Internal' : 'External' ); ?></td>
@@ -591,7 +591,7 @@ endif;
 		<div class="col-md-8">
 			<p class="text-break cloud-container">
 				<?php foreach ( $cloud['words'] as $word => $stat ) : ?>
-					<span class="grade-<?php echo $stat['grade']; ?>"><?php echo esc_html( Utils::html_decode( $word ) ); ?></span>
+					<span class="grade-<?php echo $stat['grade']; ?>"><?php echo esc_html( V_WPSA_Utils::html_decode( $word ) ); ?></span>
 				<?php endforeach; ?>
 			</p>
 		</div>
@@ -1084,14 +1084,14 @@ endif;
 				<h5><?php echo 'Device'; ?></h5>
 
 				<div class="form-check">
-					<input type="radio" name="psi__strategy" id="psi_strategy_desktop" class="form-check-input" value="desktop" <?php echo Utils::isPsiActive( 'device', 'desktop' ) ? ' checked' : null; ?>>
+					<input type="radio" name="psi__strategy" id="psi_strategy_desktop" class="form-check-input" value="desktop" <?php echo V_WPSA_Utils::is_psi_active( 'device', 'desktop' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_strategy_desktop">
 						<?php echo 'Desktop'; ?>
 					</label>
 				</div>
 
 				<div class="form-check">
-					<input type="radio" name="psi__strategy" id="psi_strategy_mobile" class="form-check-input" value="mobile" <?php echo Utils::isPsiActive( 'device', 'mobile' ) ? ' checked' : null; ?>>
+					<input type="radio" name="psi__strategy" id="psi_strategy_mobile" class="form-check-input" value="mobile" <?php echo V_WPSA_Utils::is_psi_active( 'device', 'mobile' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_strategy_mobile">
 						<?php echo 'Mobile'; ?>
 					</label>
@@ -1102,35 +1102,35 @@ endif;
 				<h5><?php echo 'Categories'; ?></h5>
 
 				<div class="form-check">
-					<input type="checkbox" class="form-check-input" id="psi_category_performance" data-psi-category="performance" value="performance" <?php echo Utils::isPsiActive( 'categories', 'performance' ) ? ' checked' : null; ?>>
+					<input type="checkbox" class="form-check-input" id="psi_category_performance" data-psi-category="performance" value="performance" <?php echo V_WPSA_Utils::is_psi_active( 'categories', 'performance' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_category_performance">
 						<?php echo 'Performance'; ?>
 					</label>
 				</div>
 
 				<div class="form-check">
-					<input type="checkbox" class="form-check-input" id="psi_category_accessibility" data-psi-category="accessibility" value="accessibility" <?php echo Utils::isPsiActive( 'categories', 'accessibility' ) ? ' checked' : null; ?>>
+					<input type="checkbox" class="form-check-input" id="psi_category_accessibility" data-psi-category="accessibility" value="accessibility" <?php echo V_WPSA_Utils::is_psi_active( 'categories', 'accessibility' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_category_accessibility">
 						<?php echo 'Accessibility'; ?>
 					</label>
 				</div>
 
 				<div class="form-check">
-					<input type="checkbox" class="form-check-input" id="psi_category_bestpr" data-psi-category="best-practices" value="best-practices" <?php echo Utils::isPsiActive( 'categories', 'best-practices' ) ? ' checked' : null; ?>>
+					<input type="checkbox" class="form-check-input" id="psi_category_bestpr" data-psi-category="best-practices" value="best-practices" <?php echo V_WPSA_Utils::is_psi_active( 'categories', 'best-practices' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_category_bestpr">
 						<?php echo 'Best Practices'; ?>
 					</label>
 				</div>
 
 				<div class="form-check">
-					<input type="checkbox" class="form-check-input" id="psi_category_seo" data-psi-category="seo" value="seo" <?php echo Utils::isPsiActive( 'categories', 'seo' ) ? ' checked' : null; ?>>
+					<input type="checkbox" class="form-check-input" id="psi_category_seo" data-psi-category="seo" value="seo" <?php echo V_WPSA_Utils::is_psi_active( 'categories', 'seo' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_category_seo">
 						<?php echo 'SEO'; ?>
 					</label>
 				</div>
 
 				<div class="form-check">
-					<input type="checkbox" class="form-check-input" id="psi_category_pwa" data-psi-category="pwa" value="pwa" <?php echo Utils::isPsiActive( 'categories', 'pwa' ) ? ' checked' : null; ?>>
+					<input type="checkbox" class="form-check-input" id="psi_category_pwa" data-psi-category="pwa" value="pwa" <?php echo V_WPSA_Utils::is_psi_active( 'categories', 'pwa' ) ? ' checked' : null; ?>>
 					<label class="form-check-label" for="psi_category_pwa">
 						<?php echo 'Progressive Web App'; ?>
 					</label>

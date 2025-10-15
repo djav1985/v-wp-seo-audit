@@ -59,8 +59,8 @@ class V_WPSA_Helpers {
 
 		// Also delete the cached thumbnail if the class is available.
 		// Use false parameter to prevent autoloader from triggering.
-		if ( class_exists( 'WebsiteThumbnail', false ) ) {
-			WebsiteThumbnail::deleteThumbnail( $domain );
+		if ( class_exists( 'V_WPSA_Thumbnail', false ) ) {
+			V_WPSA_Thumbnail::delete_thumbnail( $domain );
 		}
 
 		return true;

@@ -14,7 +14,7 @@ class Validation {
             'errors'=>0,
             'warnings'=>0,
         );
-        if(!$response = @json_decode(Utils::curl($url), true)) {
+        if(!$response = @json_decode(V_WPSA_Utils::curl($url), true)) {
             return $d;
         }
         //var_dump($response);

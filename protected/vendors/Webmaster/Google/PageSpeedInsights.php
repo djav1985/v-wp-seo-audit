@@ -28,7 +28,7 @@ class PageSpeedInsights {
         }
         $query_params = http_build_query($params, null, "&");
         $url = self::API_URL."?".$query_params;
-        return @json_decode(Utils::curl($url), true);
+        return @json_decode(V_WPSA_Utils::curl($url), true);
     }
 
     public function getResults() {

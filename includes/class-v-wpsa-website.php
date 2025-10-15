@@ -36,7 +36,7 @@ class V_WPSA_Website {
 		global $wpdb;
 		$table = self::get_table_name();
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table ) );
+		$count = $wpdb->get_var( "SELECT COUNT(*) FROM " . esc_sql( $table ) );
 		return (int) $count;
 	}
 
@@ -73,28 +73,4 @@ class V_WPSA_Website {
 		// Delete website and all related records.
 		return $db->delete_website( $website_id );
 	}
-}
-
-// Backward compatibility: create alias for old class name (static methods only).
-if ( ! class_exists( 'Website' ) ) {
-	/**
-	 * Legacy Website class for backward compatibility.
-	 *
-	 * Note: This only supports static methods used in WP-native code.
-	 * Yii ActiveRecord methods like model(), find(), etc. are not available.
-	 *
-	 * phpcs:disable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-	 */
-	class Website {
-		/**
-		 * Remove website by domain (backward compatibility wrapper).
-		 *
-		 * @param string $domain Domain name.
-		 * @return bool Success status.
-		 */
-		public static function removeByDomain( $domain ) {
-			return V_WPSA_Website::remove_by_domain( $domain );
-		}
-	}
-	// phpcs:enable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 }
