@@ -499,6 +499,16 @@ class V_WPSA_DB {
 	protected function ensure_report_defaults( $data ) {
 		// Content defaults.
 		if ( empty( $data['content'] ) || ! is_array( $data['content'] ) ) {
+		// Ensure numeric link counters exist.
+		if ( ! isset( $data['links']['internal'] ) || ! is_numeric( $data['links']['internal'] ) ) {
+			$data['links']['internal'] = 0;
+		}
+		if ( ! isset( $data['links']['external_dofollow'] ) || ! is_numeric( $data['links']['external_dofollow'] ) ) {
+			$data['links']['external_dofollow'] = 0;
+		}
+		if ( ! isset( $data['links']['external_nofollow'] ) || ! is_numeric( $data['links']['external_nofollow'] ) ) {
+			$data['links']['external_nofollow'] = 0;
+		}
 			$data['content'] = array();
 		}
 		if ( ! isset( $data['content']['headings'] ) || ! is_array( $data['content']['headings'] ) ) {
@@ -625,6 +635,19 @@ class V_WPSA_DB {
 		if ( ! isset( $data['cloud']['matrix'] ) || ! is_array( $data['cloud']['matrix'] ) ) {
 			$data['cloud']['matrix'] = array();
 		}
+		// Normalize words entries to expected structure to avoid offset errors.
+		foreach ( $data['cloud']['words'] as $w => $stat ) {
+			if ( ! is_array( $stat ) ) {
+				$data['cloud']['words'][ $w ] = array( 'count' => 0, 'grade' => 0 );
+			} else {
+				if ( ! isset( $stat['count'] ) ) {
+					$data['cloud']['words'][ $w ]['count'] = 0;
+				}
+				if ( ! isset( $stat['grade'] ) ) {
+					$data['cloud']['words'][ $w ]['grade'] = 0;
+				}
+			}
+		}
 
 		// Misc defaults.
 		if ( ! isset( $data['misc'] ) || ! is_array( $data['misc'] ) ) {
@@ -635,6 +658,14 @@ class V_WPSA_DB {
 		}
 		if ( ! isset( $data['misc']['analytics'] ) || ! is_array( $data['misc']['analytics'] ) ) {
 			$data['misc']['analytics'] = array();
+		}
+		// Ensure analytics entries are strings (provider keys) to avoid issues when iterating.
+		foreach ( $data['misc']['analytics'] as $k => $v ) {
+			if ( is_array( $v ) && isset( $v['provider'] ) ) {
+				$data['misc']['analytics'][ $k ] = (string) $v['provider'];
+			} else {
+				$data['misc']['analytics'][ $k ] = (string) $v;
+			}
 		}
 
 		// Isseter defaults (boolean flags).
@@ -660,6 +691,28 @@ class V_WPSA_DB {
 		}
 		if ( ! isset( $data['w3c']['warnings'] ) ) {
 			$data['w3c']['warnings'] = 0;
+		}
+
+		// Website defaults (ensure score and id exist for template usage)
+		if ( ! isset( $data['website'] ) || ! is_array( $data['website'] ) ) {
+			$data['website'] = array();
+		}
+		if ( ! isset( $data['website']['score'] ) ) {
+			$data['website']['score'] = 0;
+		}
+		if ( ! isset( $data['website']['id'] ) ) {
+			$data['website']['id'] = 0;
+		}
+		if ( ! isset( $data['website']['idn'] ) ) {
+			$data['website']['idn'] = isset( $data['website']['domain'] ) ? $data['website']['domain'] : '';
+		}
+		if ( ! isset( $data['website']['domain'] ) ) {
+			$data['website']['domain'] = '';
+		}
+
+		// Ensure linkcount exists
+		if ( ! isset( $data['linkcount'] ) || ! is_numeric( $data['linkcount'] ) ) {
+			$data['linkcount'] = 0;
 		}
 
 		return $data;
