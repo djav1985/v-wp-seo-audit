@@ -28,10 +28,6 @@ class V_WPSA_Ajax_Handlers {
 		add_action( 'wp_ajax_v_wpsa_generate_report', array( __CLASS__, 'generate_report' ) );
 		add_action( 'wp_ajax_nopriv_v_wpsa_generate_report', array( __CLASS__, 'generate_report' ) );
 
-		// PagePeeker proxy handler (legacy).
-		add_action( 'wp_ajax_v_wpsa_pagepeeker', array( __CLASS__, 'pagepeeker_proxy' ) );
-		add_action( 'wp_ajax_nopriv_v_wpsa_pagepeeker', array( __CLASS__, 'pagepeeker_proxy' ) );
-
 		// PDF download handler.
 		add_action( 'wp_ajax_v_wpsa_download_pdf', array( __CLASS__, 'download_pdf' ) );
 		add_action( 'wp_ajax_nopriv_v_wpsa_download_pdf', array( __CLASS__, 'download_pdf' ) );
@@ -145,25 +141,6 @@ class V_WPSA_Ajax_Handlers {
 			// Log and return JSON error for the client.
 			error_log( sprintf( 'v-wpsa: unhandled throwable during report generation for %s: %s in %s on line %d', $domain, $t->getMessage(), $t->getFile(), $t->getLine() ) );
 			wp_send_json_error( array( 'message' => 'Internal error while generating report: ' . $t->getMessage() ) );
-		}
-	}
-
-	/**
-	 * AJAX handler for PagePeeker proxy (legacy).
-	 * WordPress-native implementation - no Yii dependencies.
-	 */
-	public static function pagepeeker_proxy() {
-		// Verify nonce for security.
-		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
-
-		// Thumbnail proxy is disabled by default in modern implementation.
-		// Thumbnails are served directly from thum.io.
-		$url = isset( $_GET['url'] ) ? sanitize_text_field( wp_unslash( $_GET['url'] ) ) : '';
-		if ( $url ) {
-			// Return success with a message that thumbnails are served directly.
-			wp_send_json_success( array( 'message' => 'Thumbnails are served directly from thum.io' ) );
-		} else {
-			wp_send_json_error( array( 'message' => 'Thumbnail proxy is not enabled' ) );
 		}
 	}
 

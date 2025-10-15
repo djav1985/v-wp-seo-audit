@@ -108,8 +108,12 @@ class V_WPSA_Thumbnail {
 			$thumbnail_data = V_WPSA_Utils::curl( $thumbnail_url );
 		} else {
 			// Fallback to WordPress HTTP API.
-			$response = wp_remote_get( $thumbnail_url );
+			$response = wp_remote_get( $thumbnail_url, array( 'timeout' => 15 ) );
 			if ( is_wp_error( $response ) ) {
+				// If download fails, try to return stale cache if it exists.
+				if ( file_exists( $thumbnail_path ) ) {
+					return self::get_cached_thumbnail_url( $domain );
+				}
 				return false;
 			}
 			$thumbnail_data = wp_remote_retrieve_body( $response );
@@ -117,6 +121,11 @@ class V_WPSA_Thumbnail {
 
 		if ( $thumbnail_data && strlen( $thumbnail_data ) > 0 ) {
 			file_put_contents( $thumbnail_path, $thumbnail_data );
+			return self::get_cached_thumbnail_url( $domain );
+		}
+
+		// If download failed but stale cache exists, use it.
+		if ( file_exists( $thumbnail_path ) ) {
 			return self::get_cached_thumbnail_url( $domain );
 		}
 
@@ -159,9 +168,10 @@ class V_WPSA_Thumbnail {
 		// Try to get or create cached thumbnail.
 		$thumbnail_url = self::download_thumbnail( $domain, $width );
 
+		// Only return local cached version, never direct URL.
+		// If download fails and no cache exists, return empty thumb.
 		if ( ! $thumbnail_url ) {
-			// Fallback to direct thum.io URL if download fails.
-			$thumbnail_url = "https://image.thum.io/get/maxAge/350/width/{$width}/https://{$domain}";
+			$thumbnail_url = '';
 		}
 
 		return array(
@@ -186,15 +196,16 @@ class V_WPSA_Thumbnail {
 		$domain = $params['url'];
 		$width  = isset( $params['width'] ) ? $params['width'] : 350;
 
-		// Try to get cached thumbnail first.
-		$thumbnail_path = self::get_cached_thumbnail_path( $domain );
+		// Try to get or create cached thumbnail.
+		$thumbnail_url = self::download_thumbnail( $domain, $width );
 
-		if ( file_exists( $thumbnail_path ) ) {
-			return self::get_cached_thumbnail_url( $domain );
+		// Only return local cached version.
+		// If no cache exists, return empty string.
+		if ( ! $thumbnail_url ) {
+			return '';
 		}
 
-		// Return thum.io URL as fallback.
-		return "https://image.thum.io/get/maxAge/350/width/{$width}/https://{$domain}";
+		return $thumbnail_url;
 	}
 
 	/**

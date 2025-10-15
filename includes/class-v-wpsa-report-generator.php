@@ -56,6 +56,7 @@ class V_WPSA_Report_Generator {
 				}
 			} catch ( Exception $e ) {
 				// Don't break rendering on score persistence failure; just continue.
+				error_log( 'v-wpsa: Failed to persist score: ' . $e->getMessage() );
 			}
 		}
 
@@ -87,6 +88,24 @@ class V_WPSA_Report_Generator {
 			throw new Exception( 'Website not found: ' . $domain );
 		}
 
+		// Generate PDF file path.
+		$pdf_file = V_WPSA_Utils::create_pdf_folder( $domain );
+
+		// Check if PDF already exists and is fresh (within cache time).
+		$cache_time = apply_filters( 'v_wpsa_cache_time', DAY_IN_SECONDS );
+		if ( file_exists( $pdf_file ) ) {
+			$file_time = filemtime( $pdf_file );
+			if ( ( time() - $file_time ) < $cache_time ) {
+				// PDF exists and is fresh, return cached version.
+				return array(
+					'file'     => $pdf_file,
+					'filename' => $data['website']['idn'] . '.pdf',
+					'cached'   => true,
+				);
+			}
+		}
+
+		// PDF doesn't exist or is stale, generate new one.
 		// Ensure thumbnail is a URL string for the PDF template.
 		if ( isset( $data['thumbnail'] ) && is_array( $data['thumbnail'] ) ) {
 			if ( isset( $data['thumbnail']['thumb'] ) && ! empty( $data['thumbnail']['thumb'] ) ) {
@@ -101,7 +120,7 @@ class V_WPSA_Report_Generator {
 
 		// Ensure Utils class is available for templates that reference it.
 		if ( ! class_exists( 'Utils' ) ) {
-			$utils_path = v_wpsa_PLUGIN_DIR . 'protected/components/Utils.php';
+			$utils_path = v_wpsa_PLUGIN_DIR . 'old/protected/components/Utils.php';
 			if ( file_exists( $utils_path ) ) {
 				require_once $utils_path;
 			}
@@ -111,14 +130,6 @@ class V_WPSA_Report_Generator {
 		$analytics_path = v_wpsa_PLUGIN_DIR . 'protected/vendors/Webmaster/Source/AnalyticsFinder.php';
 		if ( file_exists( $analytics_path ) ) {
 			require_once $analytics_path;
-		}
-
-		// Ensure Utils class is available for templates that reference it.
-		if ( ! class_exists( 'Utils' ) ) {
-			$utils_path = v_wpsa_PLUGIN_DIR . 'protected/components/Utils.php';
-			if ( file_exists( $utils_path ) ) {
-				require_once $utils_path;
-			}
 		}
 
 		// Render PDF template to HTML.
@@ -134,12 +145,9 @@ class V_WPSA_Report_Generator {
 				}
 			} catch ( Exception $e ) {
 				// Ignore persistence errors and continue PDF generation.
+				error_log( 'v-wpsa: Failed to persist score: ' . $e->getMessage() );
 			}
 		}
-
-		// Generate PDF file path.
-		// Utils class is now loaded in main plugin file.
-		$pdf_file = V_WPSA_Utils::create_pdf_folder( $domain );
 
 		// Create PDF using TCPDF directly.
 		self::create_pdf_from_html( $html, $pdf_file, $data['website']['idn'] );
@@ -152,6 +160,7 @@ class V_WPSA_Report_Generator {
 		return array(
 			'file'     => $pdf_file,
 			'filename' => $data['website']['idn'] . '.pdf',
+			'cached'   => false,
 		);
 	}
 
