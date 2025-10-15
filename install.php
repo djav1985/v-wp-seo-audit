@@ -184,18 +184,16 @@ function v_wpsa_cleanup() {
 	);
 
 	if ( ! empty( $old_websites ) ) {
-		$plugin_dir = v_wpsa_PLUGIN_DIR;
-		$pdf_dir    = $plugin_dir . 'pdf/';
-
-		// Get upload directory for thumbnails.
+		// Get upload directory for PDFs and thumbnails.
 		$upload_dir    = wp_upload_dir();
+		$pdf_dir       = $upload_dir['basedir'] . '/seo-audit/pdf/';
 		$thumbnail_dir = $upload_dir['basedir'] . '/seo-audit/thumbnails/';
 
 		foreach ( $old_websites as $website ) {
 			$domain = $website['domain'];
 
 			// Clean up PDF files.
-			// PDFs are stored in: pdf/{lang}/{first_letter}/{domain}.pdf.
+			// PDFs are stored in: seo-audit/pdf/{lang}/{first_letter}/{domain}.pdf.
 			$languages = array( 'en' ); // Default language support.
 
 			foreach ( $languages as $lang ) {
