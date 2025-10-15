@@ -100,7 +100,8 @@ var WrHelper = (function () {
             scrollTo: true,
             manageProgressBar: true,
             beforeSend: null,
-            afterSend: null
+            afterSend: null,
+            force: false
         }, options || {});
 
         var $container = normalizeElement(settings.$container, '.v-wpsa-container').first();
@@ -122,14 +123,20 @@ var WrHelper = (function () {
             $progressBar.show();
         }
 
+        var ajaxData = {
+            action: 'v_wpsa_generate_report',
+            domain: domain,
+            nonce: settings.nonce
+        };
+
+        if (settings.force) {
+            ajaxData.force = '1';
+        }
+
         var request = $.ajax({
             url: settings.ajaxUrl,
             type: 'POST',
-            data: {
-                action: 'v_wpsa_generate_report',
-                domain: domain,
-                nonce: settings.nonce
-            },
+            data: ajaxData,
             dataType: 'json'
         });
 
@@ -269,6 +276,12 @@ var WrHelper = (function () {
                 dataType: 'json'
             }).done(function(response) {
                 if (response && response.success && response.data && response.data.domain) {
+                    // Check if this is a force update request
+                    var forceUpdate = $submit.data('force-update') === true;
+                    if (forceUpdate) {
+                        $submit.removeData('force-update');
+                    }
+
                     window.vWpSeoAudit.generateReport(response.data.domain, {
                         ajaxUrl: ajaxUrl,
                         nonce: nonce,
@@ -276,6 +289,7 @@ var WrHelper = (function () {
                         $errors: $errors,
                         $progressBar: $progressBar,
                         manageProgressBar: false,
+                        force: forceUpdate,
                         afterSend: function() {
                             if ($progressBar.length) {
                                 $progressBar.hide();

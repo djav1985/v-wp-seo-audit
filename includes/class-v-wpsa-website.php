@@ -52,10 +52,8 @@ class V_WPSA_Website {
 			return false;
 		}
 
-		// Require IDN class for domain encoding.
-		$idn_path = v_wpsa_PLUGIN_DIR . 'Webmaster/Utils/IDN.php';
-		if ( file_exists( $idn_path ) ) {
-			require_once $idn_path;
+		// Use IDN class for domain encoding if available.
+		if ( class_exists( 'IDN' ) ) {
 			$idn    = new IDN();
 			$domain = $idn->encode( $domain );
 		}

@@ -87,7 +87,7 @@ class V_WPSA_DB {
 	public function filter_columns( $table, array $data ) {
 		$cols = $this->get_table_columns( $table );
 		if ( empty( $cols ) ) {
-			return $data; // no schema info - return as-is
+			return $data; // No schema info - return as-is.
 		}
 		return array_intersect_key( $data, array_flip( $cols ) );
 	}
@@ -411,22 +411,36 @@ class V_WPSA_DB {
 		);
 
 		// Prepare RateProvider instance.
-		// Explicitly require the file to avoid Yii autoloader interference.
-		$rateprovider      = null;
-		$rateprovider_path = v_wpsa_PLUGIN_DIR . 'Webmaster/Rates/RateProvider.php';
-		if ( file_exists( $rateprovider_path ) ) {
-			require_once $rateprovider_path;
+		$rateprovider = null;
+		if ( class_exists( 'RateProvider' ) ) {
 			$rateprovider = new RateProvider();
 		}
 
 		// Provide a minimal fallback RateProvider so templates can safely call methods
 		// even when the legacy RateProvider class/file is not available.
 		if ( null === $rateprovider ) {
-			$rateprovider = new class {
+			// phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid, Squiz.Commenting.FunctionComment.Missing
+			$rateprovider = new class() {
+				/**
+				 * Mock addCompare method for fallback.
+				 *
+				 * @param string $key Unused key parameter.
+				 * @param mixed  $value Value to check.
+				 * @return string Status string.
+				 */
+				// phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid, Squiz.Commenting.FunctionComment.Missing
 				public function addCompare( $key, $value ) {
 					return $value ? 'success' : 'neutral';
 				}
 
+				/**
+				 * Mock addCompareArray method for fallback.
+				 *
+				 * @param string $key Unused key parameter.
+				 * @param mixed  $value Value to check.
+				 * @return string Status string.
+				 */
+				// phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid, Squiz.Commenting.FunctionComment.Missing
 				public function addCompareArray( $key, $value ) {
 					if ( is_numeric( $value ) ) {
 						return ( $value > 0 ) ? 'success' : 'neutral';
@@ -487,16 +501,6 @@ class V_WPSA_DB {
 	protected function ensure_report_defaults( $data ) {
 		// Content defaults.
 		if ( empty( $data['content'] ) || ! is_array( $data['content'] ) ) {
-		// Ensure numeric link counters exist.
-		if ( ! isset( $data['links']['internal'] ) || ! is_numeric( $data['links']['internal'] ) ) {
-			$data['links']['internal'] = 0;
-		}
-		if ( ! isset( $data['links']['external_dofollow'] ) || ! is_numeric( $data['links']['external_dofollow'] ) ) {
-			$data['links']['external_dofollow'] = 0;
-		}
-		if ( ! isset( $data['links']['external_nofollow'] ) || ! is_numeric( $data['links']['external_nofollow'] ) ) {
-			$data['links']['external_nofollow'] = 0;
-		}
 			$data['content'] = array();
 		}
 		if ( ! isset( $data['content']['headings'] ) || ! is_array( $data['content']['headings'] ) ) {
@@ -626,7 +630,10 @@ class V_WPSA_DB {
 		// Normalize words entries to expected structure to avoid offset errors.
 		foreach ( $data['cloud']['words'] as $w => $stat ) {
 			if ( ! is_array( $stat ) ) {
-				$data['cloud']['words'][ $w ] = array( 'count' => 0, 'grade' => 0 );
+				$data['cloud']['words'][ $w ] = array(
+					'count' => 0,
+					'grade' => 0,
+				);
 			} else {
 				if ( ! isset( $stat['count'] ) ) {
 					$data['cloud']['words'][ $w ]['count'] = 0;
@@ -681,7 +688,7 @@ class V_WPSA_DB {
 			$data['w3c']['warnings'] = 0;
 		}
 
-		// Website defaults (ensure score and id exist for template usage)
+		// Website defaults (ensure score and id exist for template usage).
 		if ( ! isset( $data['website'] ) || ! is_array( $data['website'] ) ) {
 			$data['website'] = array();
 		}
@@ -698,7 +705,7 @@ class V_WPSA_DB {
 			$data['website']['domain'] = '';
 		}
 
-		// Ensure linkcount exists
+		// Ensure linkcount exists.
 		if ( ! isset( $data['linkcount'] ) || ! is_numeric( $data['linkcount'] ) ) {
 			$data['linkcount'] = 0;
 		}
@@ -835,14 +842,6 @@ class V_WPSA_DB {
 		// Create an instance to access instance helpers (schema introspection, etc.).
 		$db = new self();
 
-		// Load required Yii vendor classes.
-		// Note: We must load files directly before any class_exists() checks to avoid
-		// triggering Yii's autoloader which will try to find the class in the wrong path.
-		$helper_path = v_wpsa_PLUGIN_DIR . 'Webmaster/Utils/Helper.php';
-		if ( file_exists( $helper_path ) ) {
-			require_once $helper_path;
-		}
-
 		try {
 			// Fetch website HTML - try both HTTPS and HTTP.
 			// Use a more realistic user-agent to avoid being blocked.
@@ -894,25 +893,6 @@ class V_WPSA_DB {
 			$html = wp_remote_retrieve_body( $response );
 			if ( empty( $html ) ) {
 				return new WP_Error( 'empty_response', 'Website returned empty content' );
-			}
-
-			// Load analysis classes.
-			$source_path     = v_wpsa_PLUGIN_DIR . 'Webmaster/Source/';
-			$classes_to_load = array(
-				'Content.php',
-				'Document.php',
-				'Links.php',
-				'MetaTags.php',
-				'Optimization.php',
-				'SeoAnalyse.php',
-				'Validation.php',
-			);
-
-			foreach ( $classes_to_load as $class_file ) {
-				$class_path = $source_path . $class_file;
-				if ( file_exists( $class_path ) ) {
-					require_once $class_path;
-				}
 			}
 
 			// Perform analysis.

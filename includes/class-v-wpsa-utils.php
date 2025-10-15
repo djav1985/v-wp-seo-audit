@@ -125,7 +125,8 @@ class V_WPSA_Utils {
 			try {
 				V_WPSA_Thumbnail::delete_thumbnail( $domain );
 			} catch ( Exception $e ) {
-				// Ignore errors deleting thumbnails.
+				// Intentionally ignore errors deleting thumbnails.
+				unset( $e );
 			}
 		}
 
@@ -458,7 +459,7 @@ class V_WPSA_Utils {
 	 * @return bool True if starts with, false otherwise.
 	 */
 	public static function starts_with( $haystack, $needle ) {
-		return (string) $needle !== '' && strncmp( $haystack, $needle, strlen( $needle ) ) === 0;
+		return '' !== (string) $needle && 0 === strncmp( $haystack, $needle, strlen( $needle ) );
 	}
 
 	/**

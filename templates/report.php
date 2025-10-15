@@ -104,19 +104,21 @@ endif;
 				return true;
 			}
 			e.preventDefault();
-			// Fill domain input and trigger the same flow as the Analyze button.
+			// Fill domain input and trigger the same flow as the Analyze button, but with force=true.
 			var $domain = $("#domain");
 			if ($domain.length) {
 				$domain.val('<?php echo esc_js( $website['domain'] ); ?>');
 				// Trigger the same validation -> generateReport flow wired to #submit
-				$('#submit').trigger('click');
+				// but with force update enabled
+				$('#submit').data('force-update', true).trigger('click');
 			} else {
-				// Fallback: call generateReport directly if form is not present.
+				// Fallback: call generateReport directly if form is not present, with force=true.
 				if (window.vWpSeoAudit && typeof window.vWpSeoAudit.generateReport === 'function') {
 					window.vWpSeoAudit.generateReport('<?php echo esc_js( $website['domain'] ); ?>', {
 						$container: $('.v-wpsa-container').first(),
 						$errors: $('#errors'),
-						$progressBar: $('#progress-bar')
+						$progressBar: $('#progress-bar'),
+						force: true
 					});
 				}
 			}

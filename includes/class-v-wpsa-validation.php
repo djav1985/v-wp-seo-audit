@@ -113,11 +113,8 @@ class V_WPSA_Validation {
 	 * @return string Encoded domain.
 	 */
 	public static function encode_idn( $domain ) {
-		// Check if IDN class is available from Yii vendors.
-		$idn_file = v_wpsa_PLUGIN_DIR . 'Webmaster/Utils/IDN.php';
-
-		if ( file_exists( $idn_file ) ) {
-			require_once $idn_file;
+		// Check if IDN class is available.
+		if ( class_exists( 'IDN' ) ) {
 			$idn = new IDN();
 			return $idn->encode( $domain );
 		}
