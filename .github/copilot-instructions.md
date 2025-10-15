@@ -7,12 +7,12 @@ Purpose (one-liner)
 - Convert and maintain a legacy Yii SEO-audit app running as a WordPress plugin. UI is provided via a shortcode; heavy work is performed by legacy Yii models/controllers invoked from WP AJAX handlers.
 
 Quick architecture summary
-- Shortcode `[v_wp_seo_audit]` renders the UI. Client JS ( `js/base.js` ) uses `admin-ajax.php` to call plugin actions implemented in `v-wp-seo-audit.php`.
+- Shortcode `[v_wp_seo_audit]` renders the UI. Client JS ( `js/base.js` ) uses `admin-ajax.php` to call plugin actions implemented in `v-wpsa.php`.
 - Server-side analysis logic lives under `protected/` and `framework/` (Yii). AJAX handlers bootstrap Yii as needed and call controller actions (e.g., `WebsitestatController::actionGenerateHTML`, `actionGeneratePDF`).
 - Persistent data uses custom `ca_*` tables created on activation (`v_wpsa_activate`).
 
 Key files to inspect first
-- `v-wp-seo-audit.php` — plugin entry, shortcode registration, AJAX handlers, enqueued assets, activation/uninstall hooks, WordPress Cron cleanup, and native validation functions.
+- `v-wpsa.php` — plugin entry, shortcode registration, AJAX handlers, enqueued assets, activation/uninstall hooks, WordPress Cron cleanup, and native validation functions.
 - `js/base.js` — primary frontend logic, validation, AJAX calls, and the PDF downloader (uses XHR blob download).
 - `protected/views/` — UI templates (Yii view files). These files are rendered by Yii controllers and injected into the page via AJAX.
 - `protected/commands`, `protected/controllers`, `protected/models` — legacy logic used by the plugin; find commands invoked via `yiic` or programmatically.
@@ -43,7 +43,7 @@ Security and maintenance notes
 - Form validation: Domain validation is now pure WordPress code and doesn't require Yii. Use `v_wp_seo_audit_validate_domain()` for standalone validation needs.
 
 Examples (patterns to follow)
-- AJAX handler skeleton (server): see `v_wp_seo_audit_ajax_generate_report` in `v-wp-seo-audit.php` — bootstraps Yii, validates input with `sanitize_text_field( wp_unslash() )`, runs controller action, and returns `wp_send_json_success( array( 'html' => $content ) )`.
+- AJAX handler skeleton (server): see `v_wp_seo_audit_ajax_generate_report` in `v-wpsa.php` — bootstraps Yii, validates input with `sanitize_text_field( wp_unslash() )`, runs controller action, and returns `wp_send_json_success( array( 'html' => $content ) )`.
 - Frontend XHR blob download (client): see `js/base.js` — uses XMLHttpRequest with `responseType='blob'` and tests Content-Type for `application/pdf` before triggering a download.
 
 When to refactor vs keep legacy

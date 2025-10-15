@@ -78,9 +78,9 @@ class V_WPSA_Yii_Integration {
 	 * Initialize Yii framework when shortcode is present.
 	 */
 	public static function init() {
-		global $post, $v_wp_seo_audit_app;
+		global $post, $v_wpsa_app;
 
-		if ( null !== $v_wp_seo_audit_app ) {
+		if ( null !== $v_wpsa_app ) {
 			return;
 		}
 
@@ -88,7 +88,7 @@ class V_WPSA_Yii_Integration {
 		$should_init = false;
 		if ( is_admin() ) {
 			$should_init = false; // Don't init in admin to avoid conflicts.
-		} elseif ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'v_wp_seo_audit' ) ) {
+		} elseif ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'v_wpsa' ) ) {
 			$should_init = true;
 		}
 
@@ -104,15 +104,15 @@ class V_WPSA_Yii_Integration {
 			require_once $yii;
 
 			// Create Yii application but don't run it yet.
-			$v_wp_seo_audit_app = Yii::createWebApplication( $config );
+			$v_wpsa_app = Yii::createWebApplication( $config );
 
 			// Set timezone from config.
-			if ( isset( $v_wp_seo_audit_app->params['app.timezone'] ) ) {
-				$v_wp_seo_audit_app->setTimeZone( $v_wp_seo_audit_app->params['app.timezone'] );
+			if ( isset( $v_wpsa_app->params['app.timezone'] ) ) {
+				$v_wpsa_app->setTimeZone( $v_wpsa_app->params['app.timezone'] );
 			}
 
 			// Configure Yii app for WordPress environment.
-			self::configure_yii_app( $v_wp_seo_audit_app );
+			self::configure_yii_app( $v_wpsa_app );
 		}
 	}
 }

@@ -81,9 +81,9 @@ var WrHelper = (function () {
     }
 
     function resolveContainer($context) {
-        var $container = $context && $context.length ? $context.closest('.v-wp-seo-audit-container') : $();
+        var $container = $context && $context.length ? $context.closest('.v-wpsa-container') : $();
         if (!$container.length) {
-            $container = $('.v-wp-seo-audit-container').first();
+            $container = $('.v-wpsa-container').first();
         }
         return $container;
     }
@@ -103,7 +103,7 @@ var WrHelper = (function () {
             afterSend: null
         }, options || {});
 
-        var $container = normalizeElement(settings.$container, '.v-wp-seo-audit-container').first();
+        var $container = normalizeElement(settings.$container, '.v-wpsa-container').first();
         var $errors = normalizeElement(settings.$errors, '#errors');
         var $progressBar = normalizeElement(settings.$progressBar, '#progress-bar');
         var manageProgress = settings.manageProgressBar !== false;
@@ -126,7 +126,7 @@ var WrHelper = (function () {
             url: settings.ajaxUrl,
             type: 'POST',
             data: {
-                action: 'v_wp_seo_audit_generate_report',
+                action: 'v_wpsa_generate_report',
                 domain: domain,
                 nonce: settings.nonce
             },
@@ -167,7 +167,7 @@ var WrHelper = (function () {
                     var $form = $('#website-form');
                     if ($form.length) {
                         var $parent = $form.parent();
-                        $targetContainer = $('<div class="v-wp-seo-audit-container"></div>').html(html);
+                        $targetContainer = $('<div class="v-wpsa-container"></div>').html(html);
                         // Store the fresh nonce on the container for later use (e.g., PDF download)
                         if (response.data && response.data.nonce) {
                             $targetContainer.attr('data-nonce', response.data.nonce);
@@ -262,7 +262,7 @@ var WrHelper = (function () {
                 url: ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'v_wp_seo_audit_validate',
+                    action: 'v_wpsa_validate',
                     domain: domain,
                     nonce: nonce
                 },
@@ -315,7 +315,7 @@ var WrHelper = (function () {
             }
         });
 
-        $('body').on('click', '.v-wp-seo-audit-view-report', function(e) {
+        $('body').on('click', '.v-wpsa-view-report', function(e) {
             e.preventDefault();
 
             var $trigger = $(this);
@@ -340,7 +340,7 @@ var WrHelper = (function () {
             });
         });
 
-        $('body').on('click', '.v-wp-seo-audit-download-pdf', function(e) {
+        $('body').on('click', '.v-wpsa-download-pdf', function(e) {
             e.preventDefault();
 
             var $trigger = $(this);
@@ -424,7 +424,7 @@ var WrHelper = (function () {
             };
             
             // Send the request with form data
-            var formData = 'action=v_wp_seo_audit_download_pdf&domain=' + encodeURIComponent(domain) + '&nonce=' + encodeURIComponent(nonce);
+            var formData = 'action=v_wpsa_download_pdf&domain=' + encodeURIComponent(domain) + '&nonce=' + encodeURIComponent(nonce);
             xhr.send(formData);
         });
     });

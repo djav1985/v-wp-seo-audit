@@ -17,8 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function v_wpsa_deactivate() {
 	// Clear scheduled cron job.
-	$timestamp = wp_next_scheduled( 'v_wp_seo_audit_daily_cleanup' );
+	$timestamp = wp_next_scheduled( 'v_wpsa_daily_cleanup' );
 	if ( $timestamp ) {
-		wp_unschedule_event( $timestamp, 'v_wp_seo_audit_daily_cleanup' );
+		wp_unschedule_event( $timestamp, 'v_wpsa_daily_cleanup' );
 	}
 }

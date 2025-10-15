@@ -512,4 +512,69 @@ class V_WPSA_DB {
 			return new WP_Error( 'analysis_error', 'Analysis failed: ' . $e->getMessage() );
 		}
 	}
+
+	/**
+	 * Get websites with pagination and ordering.
+	 *
+	 * @param array $args Query arguments.
+	 *                    - 'order' (string): ORDER BY clause.
+	 *                    - 'limit' (int): Number of results to return.
+	 *                    - 'offset' (int): Offset for pagination.
+	 *                    - 'columns' (array): Columns to select.
+	 *
+	 * @return array Array of website records.
+	 */
+	public function get_websites( $args = array() ) {
+		$defaults = array(
+			'order'   => 'added DESC',
+			'limit'   => 10,
+			'offset'  => 0,
+			'columns' => array( '*' ),
+		);
+
+		$args = wp_parse_args( $args, $defaults );
+
+		$table_name = $this->get_table_name( 'website' );
+		$columns    = is_array( $args['columns'] ) ? implode( ', ', array_map( 'esc_sql', $args['columns'] ) ) : '*';
+		$order      = esc_sql( $args['order'] );
+		$limit      = absint( $args['limit'] );
+		$offset     = absint( $args['offset'] );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$results = $this->wpdb->get_results(
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			"SELECT {$columns} FROM {$table_name} ORDER BY {$order} LIMIT {$offset}, {$limit}",
+			ARRAY_A
+		);
+
+		return $results ? $results : array();
+	}
+
+	/**
+	 * Count total number of websites.
+	 *
+	 * @param array $where Optional where conditions.
+	 *
+	 * @return int Total count.
+	 */
+	public function count_websites( $where = array() ) {
+		$table_name = $this->get_table_name( 'website' );
+
+		if ( empty( $where ) ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$count = $this->wpdb->get_var(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT COUNT(*) FROM {$table_name}"
+			);
+		} else {
+			$where_clause = $this->build_where_clause( $where );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$count = $this->wpdb->get_var(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT COUNT(*) FROM {$table_name} WHERE {$where_clause}"
+			);
+		}
+
+		return $count ? intval( $count ) : 0;
+	}
 }
