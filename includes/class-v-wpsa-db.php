@@ -226,6 +226,102 @@ class V_WPSA_DB {
 	}
 
 	/**
+	 * Get full data for website report including metadata.
+	 * This is a WordPress-native replacement for WebsitestatController::collectInfo().
+	 *
+	 * @param string $domain Domain name.
+	 * @return array|null Full report data or null if website not found.
+	 * @throws Exception If required classes are not available.
+	 */
+	public function get_website_report_full_data( $domain ) {
+		// Get website record.
+		$website = $this->get_website_by_domain( $domain );
+		if ( ! $website ) {
+			return null;
+		}
+
+		$wid = $website['id'];
+
+		// Get all related table data.
+		$report_data = $this->get_website_report_data( $wid );
+
+		// Get thumbnail data.
+		$thumbnail = array();
+		if ( class_exists( 'WebsiteThumbnail' ) ) {
+			try {
+				$thumbnail = WebsiteThumbnail::getThumbData(
+					array(
+						'url'  => $domain,
+						'size' => 'l',
+					)
+				);
+			} catch ( Exception $e ) {
+				// Log error but continue.
+				error_log( 'v-wpsa: thumbnail error: ' . $e->getMessage() );
+				$thumbnail = array(
+					'thumb' => 'https://image.thum.io/get/maxAge/350/width/350/https://' . $domain,
+					'url'   => $domain,
+				);
+			}
+		}
+
+		// Calculate time difference for cache expiration.
+		$diff    = time() - (int) $website['added'];
+		$strtime = '';
+
+		// Calculate human-readable time difference.
+		if ( $diff < 60 ) {
+			$strtime = $diff . ' seconds ago';
+		} elseif ( $diff < 3600 ) {
+			$strtime = floor( $diff / 60 ) . ' minutes ago';
+		} elseif ( $diff < 86400 ) {
+			$strtime = floor( $diff / 3600 ) . ' hours ago';
+		} else {
+			$strtime = floor( $diff / 86400 ) . ' days ago';
+		}
+
+		// Build generated metadata.
+		$generated = array(
+			'time'    => $strtime,
+			'seconds' => $diff,
+		);
+
+		// Prepare RateProvider instance.
+		$rateprovider = null;
+		if ( class_exists( 'RateProvider' ) ) {
+			$rateprovider = new RateProvider();
+		}
+
+		// Calculate URL for update form.
+		$upd_url = '#';
+		if ( class_exists( 'V_WPSA_Config' ) ) {
+			$upd_url = V_WPSA_Config::get( 'param.instant_redirect' ) ? '#update_form' : '#';
+		}
+
+		// Assemble full data array matching WebsitestatController structure.
+		$full_data = array(
+			'website'      => $website,
+			'cloud'        => $report_data['cloud'],
+			'content'      => $report_data['content'],
+			'document'     => $report_data['document'],
+			'isseter'      => $report_data['issetobject'],
+			'links'        => $report_data['links'],
+			'meta'         => $report_data['metatags'],
+			'w3c'          => $report_data['w3c'],
+			'misc'         => $report_data['misc'],
+			'thumbnail'    => $thumbnail,
+			'generated'    => $generated,
+			'diff'         => $diff,
+			'over_max'     => 6,
+			'linkcount'    => isset( $report_data['links']['links'] ) ? count( $report_data['links']['links'] ) : 0,
+			'rateprovider' => $rateprovider,
+			'updUrl'       => $upd_url,
+		);
+
+		return $full_data;
+	}
+
+	/**
 	 * Get website count (for statistics).
 	 *
 	 * @return int Total number of websites.
