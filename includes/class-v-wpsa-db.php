@@ -419,25 +419,51 @@ class V_WPSA_DB {
 		}
 
 		try {
-			// Fetch website HTML.
-			$url      = 'http://' . $domain;
-			$response = wp_remote_get(
-				$url,
-				array(
-					'timeout'     => 30,
-					'user-agent'  => 'Mozilla/5.0 (compatible; v-wpsa/1.0; +http://yoursite.com)',
-					'sslverify'   => false,
-					'redirection' => 5,
-				)
+			// Fetch website HTML - try both HTTPS and HTTP.
+			// Use a more realistic user-agent to avoid being blocked.
+			$user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+
+			$request_args = array(
+				'timeout'     => 30,
+				'user-agent'  => $user_agent,
+				'sslverify'   => false,
+				'redirection' => 5,
+				'headers'     => array(
+					'Accept'                    => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+					'Accept-Language'           => 'en-US,en;q=0.5',
+					'Accept-Encoding'           => 'gzip, deflate',
+					'DNT'                       => '1',
+					'Connection'                => 'keep-alive',
+					'Upgrade-Insecure-Requests' => '1',
+				),
 			);
+
+			// Try HTTPS first (more common nowadays).
+			$url      = 'https://' . $domain;
+			$response = wp_remote_get( $url, $request_args );
+
+			// If HTTPS fails, try HTTP.
+			if ( is_wp_error( $response ) ) {
+				error_log( 'v-wpsa: HTTPS failed for ' . $domain . ': ' . $response->get_error_message() . ', trying HTTP' );
+				$url      = 'http://' . $domain;
+				$response = wp_remote_get( $url, $request_args );
+			}
 
 			if ( is_wp_error( $response ) ) {
 				return new WP_Error( 'fetch_failed', 'Could not fetch website: ' . $response->get_error_message() );
 			}
 
 			$response_code = wp_remote_retrieve_response_code( $response );
-			if ( 200 !== $response_code ) {
-				return new WP_Error( 'fetch_failed', 'Website returned HTTP ' . $response_code );
+
+			// Accept any 2xx or 3xx response code (success or redirect).
+			// Many websites use 301/302 redirects or return 206 (partial content).
+			if ( $response_code < 200 || $response_code >= 400 ) {
+				// For 4xx and 5xx errors, provide a more helpful message.
+				if ( $response_code >= 400 && $response_code < 500 ) {
+					return new WP_Error( 'fetch_failed', 'Website access denied (HTTP ' . $response_code . '). The website may be blocking automated requests or may require authentication.' );
+				} else {
+					return new WP_Error( 'fetch_failed', 'Website returned HTTP ' . $response_code );
+				}
 			}
 
 			$html = wp_remote_retrieve_body( $response );
