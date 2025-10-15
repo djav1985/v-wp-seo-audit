@@ -260,10 +260,81 @@ class V_WPSA_DB {
 
 		foreach ( $tables as $table ) {
 			$result         = $this->get_by_wid( $table, $wid );
-			$data[ $table ] = $result ? $result : array();
+			$data[ $table ] = $result ? $this->decode_json_fields( $table, $result ) : array();
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Decode JSON-encoded fields in a database row based on table name.
+	 *
+	 * @param string $table Table name (without prefix).
+	 * @param array  $row Database row as associative array.
+	 * @return array Row with JSON fields decoded to arrays.
+	 */
+	protected function decode_json_fields( $table, $row ) {
+		if ( ! is_array( $row ) ) {
+			return $row;
+		}
+
+		// Define which fields contain JSON data for each table.
+		$json_fields = array(
+			'cloud'    => array( 'words', 'matrix' ),
+			'content'  => array( 'headings', 'deprecated' ),
+			'links'    => array( 'links' ),
+			'metatags' => array( 'ogproperties' ),
+			'misc'     => array( 'sitemap', 'analytics' ),
+		);
+
+		// If this table has JSON fields, decode them.
+		if ( isset( $json_fields[ $table ] ) ) {
+			foreach ( $json_fields[ $table ] as $field ) {
+				if ( isset( $row[ $field ] ) ) {
+					$row[ $field ] = $this->decode_json_field( $row[ $field ] );
+				}
+			}
+		}
+
+		return $row;
+	}
+
+	/**
+	 * Decode a single JSON field value.
+	 *
+	 * @param mixed $value The field value (may be JSON string, serialized data, or already decoded).
+	 * @return array Decoded array or empty array if decoding fails.
+	 */
+	protected function decode_json_field( $value ) {
+		// Already an array.
+		if ( is_array( $value ) ) {
+			return $value;
+		}
+
+		// Null or empty.
+		if ( null === $value || '' === $value ) {
+			return array();
+		}
+
+		// Try JSON decode.
+		if ( is_string( $value ) ) {
+			$trimmed = trim( $value );
+			$decoded = json_decode( $trimmed, true );
+			if ( JSON_ERROR_NONE === json_last_error() && ( is_array( $decoded ) || is_object( $decoded ) ) ) {
+				return (array) $decoded;
+			}
+
+			// Try PHP serialized string.
+			if ( function_exists( 'maybe_unserialize' ) && maybe_unserialize( $trimmed ) !== $trimmed ) {
+				$maybe = maybe_unserialize( $trimmed );
+				if ( is_array( $maybe ) || is_object( $maybe ) ) {
+					return (array) $maybe;
+				}
+			}
+		}
+
+		// Fallback to empty array.
+		return array();
 	}
 
 	/**
@@ -366,15 +437,15 @@ class V_WPSA_DB {
 			$upd_url = V_WPSA_Config::get( 'param.instant_redirect' ) ? '#update_form' : '#';
 		}
 
-		// Normalize report sections (some DB fields store JSON/serialized strings).
-		$cloud    = $this->normalize_report_section( $report_data['cloud'] );
-		$content  = $this->normalize_report_section( $report_data['content'] );
-		$document = $this->normalize_report_section( $report_data['document'] );
-		$issetobj = $this->normalize_report_section( $report_data['issetobject'] );
-		$links    = $this->normalize_report_section( $report_data['links'] );
-		$meta     = $this->normalize_report_section( $report_data['metatags'] );
-		$w3c      = $this->normalize_report_section( $report_data['w3c'] );
-		$misc     = $this->normalize_report_section( $report_data['misc'] );
+		// Extract report sections (JSON fields already decoded in get_website_report_data).
+		$cloud    = ! empty( $report_data['cloud'] ) ? $report_data['cloud'] : array();
+		$content  = ! empty( $report_data['content'] ) ? $report_data['content'] : array();
+		$document = ! empty( $report_data['document'] ) ? $report_data['document'] : array();
+		$issetobj = ! empty( $report_data['issetobject'] ) ? $report_data['issetobject'] : array();
+		$links    = ! empty( $report_data['links'] ) ? $report_data['links'] : array();
+		$meta     = ! empty( $report_data['metatags'] ) ? $report_data['metatags'] : array();
+		$w3c      = ! empty( $report_data['w3c'] ) ? $report_data['w3c'] : array();
+		$misc     = ! empty( $report_data['misc'] ) ? $report_data['misc'] : array();
 
 		// Assemble full data array matching WebsitestatController structure.
 		$full_data = array(
