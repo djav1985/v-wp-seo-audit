@@ -88,6 +88,13 @@ if ( ! file_exists( $yii ) || ! file_exists( $config ) ) {
 // Check if Yii is already loaded (avoid double loading).
 if ( ! class_exists( 'Yii', false ) ) {
 	require_once $yii;
+
+	// Configure Yii autoloader to skip WordPress classes.
+	// Need to load V_WPSA_Yii_Integration class first.
+	if ( file_exists( v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-yii-integration.php' ) ) {
+		require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-yii-integration.php';
+		V_WPSA_Yii_Integration::configure_yii_autoloader();
+	}
 }
 
 // Check if app is already created.

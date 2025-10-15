@@ -287,8 +287,11 @@ class V_WPSA_DB {
 		);
 
 		// Prepare RateProvider instance.
-		$rateprovider = null;
-		if ( class_exists( 'RateProvider' ) ) {
+		// Explicitly require the file to avoid Yii autoloader interference.
+		$rateprovider      = null;
+		$rateprovider_path = v_wpsa_PLUGIN_DIR . 'protected/vendors/Webmaster/Rates/RateProvider.php';
+		if ( file_exists( $rateprovider_path ) ) {
+			require_once $rateprovider_path;
 			$rateprovider = new RateProvider();
 		}
 
