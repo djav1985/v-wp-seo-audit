@@ -16,9 +16,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Displays a paginated list of analyzed websites with thumbnails and scores.
  *
  * @param array $args Widget arguments.
- *                    - 'order' (string): Order by clause (default: 't.added DESC')
- *                    - 'page' (int): Current page number (default: 1)
- *                    - 'per_page' (int): Number of items per page (default: 12)
+ *                    - 'order' (string): Order by clause (default: 't.added DESC').
+ *                    - 'page' (int): Current page number (default: 1).
+ *                    - 'per_page' (int): Number of items per page (default: 12).
  *
  * @return string Widget HTML output.
  */
@@ -58,7 +58,7 @@ function v_wpsa_render_website_list( $args = array() ) {
 	// Prepare thumbnail stack.
 	$thumbnail_stack = array();
 	foreach ( $websites as $website ) {
-		$thumbnail_key                    = 'thumb_' . $website['id'];
+		$thumbnail_key                     = 'thumb_' . $website['id'];
 		$thumbnail_stack[ $thumbnail_key ] = v_wpsa_get_website_thumbnail_url(
 			array(
 				'url'  => $website['domain'],

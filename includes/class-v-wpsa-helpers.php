@@ -172,7 +172,7 @@ class V_WPSA_Helpers {
 				);
 			}
 		} catch ( Exception $e ) {
-			error_log( 'V-WP-SEO-Audit analysis error: ' . $e->getMessage() );
+			// Optionally handle error here (e.g., do_action for logging), but do not log in production.
 			return false;
 		}
 
