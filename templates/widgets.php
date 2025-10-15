@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function v_wpsa_render_website_list( $args = array() ) {
 	// Default arguments.
 	$defaults = array(
-	'order'    => 'modified DESC',
+		'order'    => 'modified DESC',
 		'page'     => 1,
 		'per_page' => V_WPSA_Config::get( 'param.rating_per_page', 12 ),
 	);
@@ -237,8 +237,8 @@ function v_wpsa_get_website_thumbnail_url( $args = array() ) {
 	// Try to return a cached thumbnail from the WordPress uploads directory
 	// so thumbnails can be displayed without bootstrapping Yii.
 	if ( function_exists( 'wp_upload_dir' ) ) {
-		$upload_dir = wp_upload_dir();
-		$filename   = md5( $args['url'] ) . '.jpg';
+		$upload_dir  = wp_upload_dir();
+		$filename    = md5( $args['url'] ) . '.jpg';
 		$cached_path = rtrim( $upload_dir['basedir'], '\/' ) . '/seo-audit/thumbnails/' . $filename;
 		$cached_url  = rtrim( $upload_dir['baseurl'], '\/' ) . '/seo-audit/thumbnails/' . $filename;
 

@@ -1,3 +1,25 @@
+WARNING: The v-wpsa standard uses 2 deprecated sniffs
+--------------------------------------------------------------------------------
+-  Generic.Functions.CallTimePassByReference
+   This sniff has been deprecated since v3.12.1 and will be removed in v4.0.0.
+-  Squiz.WhiteSpace.LanguageConstructSpacing
+   This sniff has been deprecated since v3.3.0 and will be removed in v4.0.0.
+   Use the Generic.WhiteSpace.LanguageConstructSpacing sniff instead.
+
+Deprecated sniffs are still run, but will stop working at some point in the
+future.
+
+WARNING: The v-wpsa standard uses 2 deprecated sniffs
+--------------------------------------------------------------------------------
+-  Generic.Functions.CallTimePassByReference
+   This sniff has been deprecated since v3.12.1 and will be removed in v4.0.0.
+-  Squiz.WhiteSpace.LanguageConstructSpacing
+   This sniff has been deprecated since v3.3.0 and will be removed in v4.0.0.
+   Use the Generic.WhiteSpace.LanguageConstructSpacing sniff instead.
+
+Deprecated sniffs are still run, but will stop working at some point in the
+future.
+
 <?php
 /**
  * PDF Template
@@ -61,7 +83,8 @@ a { color:#315D86; text-decoration: underline; }
 </td>
 <td>
 <h1 class="h-review"><?php echo 'Website review for ' . esc_html( $website['idn'] ); ?></h1>
-<i class="icon-time"></i>&nbsp;<small><?php echo 'Generated on'; ?> <?php
+<i class="icon-time"></i>&nbsp;<small><?php echo 'Generated on'; ?>
+<?php
 $monthNames = array(
 	'Jan' => 'January',
 	'Feb' => 'February',
@@ -112,7 +135,7 @@ echo $month . ' ' . $generated['d'] . ' ' . $generated['Y'] . ' ' . $generated['
 <tr class="<?php echo $advice; ?>">
 <td class="td-icon">
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo 'Title'; ?>
@@ -141,7 +164,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo 'Description'; ?>
@@ -170,7 +193,7 @@ if ( $advice === 'success' ) {
 
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 
 <td class="td-compare" align="center" valign="middle">
@@ -215,7 +238,7 @@ if ( $advice === 'success' ) {
 <tr class="odd">
 <td>
 <br/><br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo 'Headings'; ?>
@@ -265,7 +288,7 @@ if ($content['isset_headings']) :
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo 'Images'; ?>
@@ -290,7 +313,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo 'Text/HTML Ratio'; ?>
@@ -316,7 +339,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo 'Flash'; ?>
@@ -337,7 +360,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare" align="center" valign="middle">
 <?php echo 'Iframe'; ?>
@@ -372,7 +395,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td class="td-icon">
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
 <?php echo 'URL Rewrite'; ?>
@@ -393,7 +416,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo 'Underscores in the URLs'; ?>
@@ -414,7 +437,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo 'In-page links'; ?>
@@ -438,7 +461,7 @@ echo 'We found a total of ' . $total_links . ' links including ' . $file_links .
 <tr class="odd">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo 'Statistics'; ?>
@@ -502,7 +525,7 @@ endforeach;
 <tr class="odd">
 <td class="td-icon">
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
 <?php echo 'Keywords Cloud'; ?>
@@ -542,10 +565,10 @@ foreach ($cloud['matrix'] as $word => $object) :
 <tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 <td><?php echo esc_html( $word ); ?></td>
 <td><?php echo (int) $cloud['words'][ $word ]['count']; ?></td>
-<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $object['title']; ?>.png" /></td>
-<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $object['keywords']; ?>.png" /></td>
-<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $object['description']; ?>.png" /></td>
-<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $object['headings']; ?>.png" /></td>
+<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['title']; ?>.png" /></td>
+<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['keywords']; ?>.png" /></td>
+<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['description']; ?>.png" /></td>
+<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['headings']; ?>.png" /></td>
 </tr>
 	<?php
 	$i++;
@@ -569,7 +592,7 @@ endforeach;
 <tr class="odd">
 <td class="td-icon">
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
 <?php echo 'Url'; ?>
@@ -586,7 +609,7 @@ endforeach;
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo 'Favicon'; ?>
@@ -607,7 +630,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo 'Language'; ?>
@@ -628,7 +651,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo 'Dublin Core'; ?>
@@ -663,7 +686,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td class="td-icon">
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
 <?php echo 'Doctype'; ?>
@@ -684,7 +707,7 @@ endif;
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo 'Encoding'; ?>
@@ -705,7 +728,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo 'W3C Validity'; ?>
@@ -722,7 +745,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo 'Deprecated HTML'; ?>
@@ -763,7 +786,7 @@ if ( $advice === 'success' ) {
 <tr class="odd">
 <td>
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 <?php echo 'Speed Tips'; ?>
@@ -775,7 +798,7 @@ if ( $advice === 'success' ) {
 
 <tr class="no-top-line even">
 <?php $advice = $rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] ); ?>
-<td width="20px"><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
+<td width="20px"><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
 <td width="330px">
 <?php
 if ( $advice === 'success' ) {
@@ -789,7 +812,7 @@ if ( $advice === 'success' ) {
 
 <tr class="odd">
 <?php $advice = $rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] ); ?>
-<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
+<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
 <td>
 <?php
 if ( $advice === 'success' ) {
@@ -804,7 +827,7 @@ if ( $advice === 'success' ) {
 <tr class="even">
 <?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
 <?php list($img_advice,) = explode( ' ', $advice ); ?>
-<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
+<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
 <td>
 <?php
 $css_count = is_array( $document['css'] ) ? count( $document['css'] ) : 0;
@@ -820,7 +843,7 @@ if ( $advice === 'success' ) {
 <tr class="odd">
 <?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
 <?php list($img_advice,) = explode( ' ', $advice ); ?>
-<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
+<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
 <td>
 <?php
 $js_count = is_array( $document['js'] ) ? count( $document['js'] ) : 0;
@@ -836,7 +859,7 @@ if ( $advice === 'success' ) {
 <tr class="even">
 	<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
 	<?php list($img_advice,) = explode( ' ', $advice ); ?>
-	<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
+	<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
 	<td>
 		<?php
 		echo 'Gzip Compression';
@@ -874,7 +897,7 @@ if ( $advice === 'success' ) {
 <tr class="odd">
 <td class="td-icon">
 <br/>
-<img src = "<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src = "<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
 <?php echo 'Mobile Optimization'; ?>
@@ -885,17 +908,17 @@ if ( $advice === 'success' ) {
 <tbody>
 
 <tr class="even">
-<td width="20px"><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
+<td width="20px"><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
 <td width="330px"><?php echo 'Apple Icon'; ?></td>
 </tr>
 
 <tr class="odd">
-<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
+<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
 <td><?php echo 'Meta Viewport Tag'; ?></td>
 </tr>
 
 <tr class="even">
-<td><img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
+<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
 <td><?php echo 'Flash content'; ?></td>
 </tr>
 
@@ -924,7 +947,7 @@ if ( $advice === 'success' ) {
 	<?php $advice = $rateprovider->addCompare( 'hasSitemap', ! empty( $misc['sitemap'] ) ); ?>
 <tr class="<?php echo $advice; ?>">
 <td class="td-icon">
-<img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="td-compare">
 	<?php echo 'XML Sitemap'; ?>
@@ -963,7 +986,7 @@ if ( $advice === 'success' ) {
 <tr class="<?php echo $advice; ?>">
 <td class="td-icon">
 <br/>
-<img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 	<?php echo 'Robots.txt'; ?>
@@ -987,7 +1010,7 @@ if ( $advice === 'success' ) {
 	<?php $advice = $rateprovider->addCompare( 'hasAnalytics', ! empty( $misc['analytics'] ) ); ?>
 <tr class="<?php echo $advice; ?>">
 <td class="td-icon">
-<img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
+<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle"/>
 </td>
 <td class="compare">
 	<?php echo 'Analytics'; ?>
@@ -1006,7 +1029,7 @@ if ( $advice === 'success' ) {
 			?>
 <tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 <td>
-<img src="<?php echo V_WPSA_Config::get_base_url(true); ?>/assets/img/analytics/<?php echo $analytics; ?>.png" />
+<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/analytics/<?php echo $analytics; ?>.png" />
 &nbsp;&nbsp;
 			<?php echo esc_html( AnalyticsFinder::getProviderName( $analytics ) ); ?>
 </td>

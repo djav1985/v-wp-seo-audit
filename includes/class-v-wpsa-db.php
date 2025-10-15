@@ -892,9 +892,9 @@ class V_WPSA_DB {
 			}
 
 					$html = wp_remote_retrieve_body( $response );
-					if ( empty( $html ) ) {
-						return new WP_Error( 'empty_response', 'Website returned empty content' );
-					}
+			if ( empty( $html ) ) {
+				return new WP_Error( 'empty_response', 'Website returned empty content' );
+			}
 
 			// Perform analysis.
 			$table_prefix = $wpdb->prefix . 'ca_';
