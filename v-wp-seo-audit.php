@@ -44,6 +44,12 @@ require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-validation.php';
 require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-helpers.php';
 require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-report-generator.php';
 require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-ajax-handlers.php';
+require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-admin-settings.php';
+
+// Initialize admin settings.
+if ( is_admin() ) {
+	V_WPSA_Admin_Settings::init();
+}
 
 // Load WordPress-native widget templates.
 require_once v_wpsa_PLUGIN_DIR . 'templates/widgets.php';
