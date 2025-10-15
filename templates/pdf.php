@@ -444,9 +444,9 @@ echo 'We found a total of ' . $total_links . ' links including ' . $file_links .
 <?php echo 'Statistics'; ?>
 </td>
 <td>
-<?php echo 'External Links'; ?> : <?php echo 'noFollow'; ?> <?php echo Utils::proportion( $linkcount, $links['external_nofollow'] ); ?>%<br/><br/>
-<?php echo 'External Links'; ?> : <?php echo 'Passing Juice'; ?> <?php echo Utils::proportion( $linkcount, $links['external_dofollow'] ); ?>%<br/><br/>
-<?php echo 'Internal Links'; ?> <?php echo Utils::proportion( $linkcount, $links['internal'] ); ?>%
+<?php echo 'External Links'; ?> : <?php echo 'noFollow'; ?> <?php echo V_WPSA_Utils::proportion( $linkcount, $links['external_nofollow'] ); ?>%<br/><br/>
+<?php echo 'External Links'; ?> : <?php echo 'Passing Juice'; ?> <?php echo V_WPSA_Utils::proportion( $linkcount, $links['external_dofollow'] ); ?>%<br/><br/>
+<?php echo 'Internal Links'; ?> <?php echo V_WPSA_Utils::proportion( $linkcount, $links['internal'] ); ?>%
 </td>
 </tr>
 </tbody>

@@ -230,8 +230,8 @@ function v_wpsa_get_website_thumbnail_url( $args = array() ) {
 	$args = wp_parse_args( $args, $defaults );
 
 	// If Yii is available, use WebsiteThumbnail class which handles caching.
-	if ( class_exists( 'WebsiteThumbnail', false ) ) {
-		return WebsiteThumbnail::getOgImage( $args );
+	if ( class_exists( 'V_WPSA_Thumbnail', false ) ) {
+		return V_WPSA_Thumbnail::get_og_image( $args );
 	}
 
 	// Try to return a cached thumbnail from the WordPress uploads directory
@@ -263,7 +263,7 @@ function v_wpsa_get_website_thumbnail_url( $args = array() ) {
 function v_wpsa_crop_domain( $domain, $max_length = 25 ) {
 	// If Utils class exists, use it.
 	if ( class_exists( 'Utils', false ) && method_exists( 'Utils', 'cropDomain' ) ) {
-		return Utils::cropDomain( $domain );
+		return V_WPSA_Utils::crop_domain( $domain );
 	}
 
 	// Fallback to simple truncation.

@@ -360,23 +360,11 @@ class V_WPSA_DB {
 		// Get thumbnail data.
 		$thumbnail = array();
 
-		// Ensure WebsiteThumbnail and Utils classes are available.
-		if ( ! class_exists( 'Utils' ) ) {
-			$utils_path = v_wpsa_PLUGIN_DIR . 'protected/components/Utils.php';
-			if ( file_exists( $utils_path ) ) {
-				require_once $utils_path;
-			}
-		}
-		if ( ! class_exists( 'WebsiteThumbnail' ) ) {
-			$thumbnail_path = v_wpsa_PLUGIN_DIR . 'protected/components/WebsiteThumbnail.php';
-			if ( file_exists( $thumbnail_path ) ) {
-				require_once $thumbnail_path;
-			}
-		}
-
-		if ( class_exists( 'WebsiteThumbnail' ) ) {
+		// Classes are now loaded in main plugin file via includes/class-v-wpsa-*.php
+		// with backward compatibility aliases (Utils, WebsiteThumbnail).
+		if ( class_exists( 'V_WPSA_Thumbnail' ) ) {
 			try {
-				$thumbnail = WebsiteThumbnail::getThumbData(
+				$thumbnail = V_WPSA_Thumbnail::get_thumb_data(
 					array(
 						'url'  => $domain,
 						'size' => 'l',

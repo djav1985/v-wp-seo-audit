@@ -35,7 +35,7 @@ class Optimization {
                 curl_setopt($ch, CURLOPT_HEADER, 1);
                 curl_setopt($ch, CURLOPT_NOBODY, true);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-                $ch = Utils::ch($ch);
+                $ch = V_WPSA_Utils::ch($ch);
 
                 if(false === $ch) {
                     continue;
@@ -47,7 +47,7 @@ class Optimization {
                 $i = (array) curl_getinfo($ch);
 
                 if(isset($i['http_code']) AND in_array((int) $i['http_code'], $acceptedCodes)) {
-                    $sitemaps[] = Utils::v($i, "url", $url);
+                    $sitemaps[] = V_WPSA_Utils::v($i, "url", $url);
                 }
             }
         }
@@ -61,7 +61,7 @@ class Optimization {
         }
         $url = "http://".$this->domain."/robots.txt";
 
-        $ch = Utils::ch(curl_init($url));
+        $ch = V_WPSA_Utils::ch(curl_init($url));
         if(false === $ch) {
             $this->robotsTxt = false;
             return $this->robotsTxt;
@@ -89,7 +89,7 @@ class Optimization {
     public function hasGzipSupport() {
         $ch = curl_init($this->final_url);
         curl_setopt($ch, CURLOPT_HEADER, 1);
-        $ch = Utils::ch($ch, array(
+        $ch = V_WPSA_Utils::ch($ch, array(
             'Accept-Encoding:gzip',
         ));
 
@@ -100,11 +100,11 @@ class Optimization {
         $response = (string) curl_exec($ch);
         $info = (array) curl_getinfo($ch);
 
-        $h_size = Utils::v($info, "header_size", 0);
+        $h_size = V_WPSA_Utils::v($info, "header_size", 0);
         if(!$h_size) {
             return false;
         }
-        $h = Utils::get_headers_from_curl_response(substr($response, 0, $h_size));
+        $h = V_WPSA_Utils::get_headers_from_curl_response(substr($response, 0, $h_size));
         return isset($h['content-encoding']) AND (mb_stripos($h['content-encoding'], 'gzip') !== false);
     }
 
