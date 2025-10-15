@@ -17,6 +17,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 class V_WPSA_Yii_Integration {
 
 	/**
+	 * Configure Yii autoloader with WordPress-friendly settings.
+	 *
+	 * Prevents Yii's autoloader from interfering with WordPress core classes
+	 * and other non-Yii classes.
+	 */
+	public static function configure_yii_autoloader() {
+		// Add a filter to prevent Yii from trying to autoload WordPress classes.
+		// Yii's autoloader filters allow us to skip certain class names.
+		YiiBase::$autoloaderFilters[] = function( $className ) {
+			// Skip WordPress core classes (they start with WP_ or have WordPress patterns).
+			if ( strpos( $className, 'WP_' ) === 0 ) {
+				return true; // Skip this class (return true to skip Yii autoloader).
+			}
+
+			// Skip WordPress filesystem classes.
+			if ( strpos( $className, 'WP_Filesystem' ) === 0 ) {
+				return true;
+			}
+
+			// Skip vendor classes that should be manually loaded.
+			$skip_classes = array( 'RateProvider', 'Utils' );
+			if ( in_array( $className, $skip_classes, true ) ) {
+				return true;
+			}
+
+			// Allow Yii to process other classes.
+			return false;
+		};
+	}
+
+	/**
 	 * Configure Yii application with WordPress-friendly settings.
 	 *
 	 * @param mixed $app Yii application instance.
@@ -102,6 +133,10 @@ class V_WPSA_Yii_Integration {
 
 		if ( file_exists( $yii ) && file_exists( $config ) ) {
 			require_once $yii;
+
+			// Configure Yii autoloader to skip WordPress and other non-Yii classes.
+			// This prevents Yii from trying to load WordPress core classes.
+			self::configure_yii_autoloader();
 
 			// Create Yii application but don't run it yet.
 			$v_wpsa_app = Yii::createWebApplication( $config );

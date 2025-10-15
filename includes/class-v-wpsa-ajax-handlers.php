@@ -87,6 +87,10 @@ class V_WPSA_Ajax_Handlers {
 
 			if ( file_exists( $yii ) && file_exists( $config ) ) {
 				require_once $yii;
+
+				// Configure Yii autoloader to skip WordPress classes.
+				V_WPSA_Yii_Integration::configure_yii_autoloader();
+
 				$v_wpsa_app = Yii::createWebApplication( $config );
 
 				if ( isset( $v_wpsa_app->params['app.timezone'] ) ) {
@@ -179,6 +183,10 @@ class V_WPSA_Ajax_Handlers {
 
 			if ( file_exists( $yii ) && file_exists( $config ) ) {
 				require_once $yii;
+
+				// Configure Yii autoloader to skip WordPress classes.
+				V_WPSA_Yii_Integration::configure_yii_autoloader();
+
 				$v_wpsa_app = Yii::createWebApplication( $config );
 
 				if ( isset( $v_wpsa_app->params['app.timezone'] ) ) {
