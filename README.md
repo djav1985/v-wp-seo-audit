@@ -30,6 +30,7 @@ The plugin will display on the front-end where the shortcode is placed.
 - Content analysis
 - Performance testing
 - PageSpeed Insights integration
+- **Force update / re-analysis of reports** - Remove cached data and generate fresh reports
 - Front-end display via shortcode
 - AJAX-based form submission for seamless user experience
 - Client-side form validation
@@ -62,11 +63,13 @@ The plugin registers the following AJAX actions:
    - Parameters: `domain`, `nonce`
    - Response: HTML content of the audit report
 
-3. **v_wpsa_pagepeeker**: Proxies thumbnail requests
-   - Action: `v_wpsa_pagepeeker`
-   - Method: GET
-   - Parameters: `method`, `url`, `size`
-   - Response: JSON data from PagePeeker API
+3. **v_wpsa_download_pdf**: Downloads PDF version of report
+   - Action: `v_wpsa_download_pdf`
+   - Method: POST
+   - Parameters: `domain`, `nonce`
+   - Response: PDF file download
+
+**Note:** The `v_wpsa_generate_report` endpoint supports a `force` parameter (set to `'1'`) to force deletion of cached data and re-analysis. This is used by the UPDATE button in generated reports.
 
 ### Form Workflow
 
@@ -76,6 +79,18 @@ The plugin registers the following AJAX actions:
 4. If valid, AJAX request to `v_wpsa_generate_report` generates the report
 5. Report HTML is injected into the page without reload
 6. Page scrolls to the report section automatically
+
+### Update Button Workflow
+
+1. User clicks UPDATE button on an existing report
+2. JavaScript fills domain input and sets force-update flag
+3. AJAX request to `v_wpsa_generate_report` with `force=1` parameter
+4. Server deletes all cached data (database records, PDFs, thumbnails)
+5. Fresh analysis is performed
+6. New report HTML replaces old report on the page
+7. Page scrolls to the updated report
+
+For detailed information about the update button functionality, see [UPDATE_BUTTON_FUNCTIONALITY.md](UPDATE_BUTTON_FUNCTIONALITY.md).
 
 ## PHP_CodeSniffer (phpcs) Setup
 
