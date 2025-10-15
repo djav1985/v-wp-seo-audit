@@ -4,7 +4,7 @@
  *
  * WordPress-native domain validation functions.
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -114,7 +114,7 @@ class V_WPSA_Validation {
 	 */
 	public static function encode_idn( $domain ) {
 		// Check if IDN class is available from Yii vendors.
-		$idn_file = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/vendors/Webmaster/Utils/IDN.php';
+		$idn_file = v_wpsa_PLUGIN_DIR . 'protected/vendors/Webmaster/Utils/IDN.php';
 
 		if ( file_exists( $idn_file ) ) {
 			require_once $idn_file;
@@ -152,7 +152,7 @@ class V_WPSA_Validation {
 	 * @return string|false Error message if banned, false otherwise.
 	 */
 	public static function check_banned_domain( $domain ) {
-		$restriction_file = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/domain_restriction.php';
+		$restriction_file = v_wpsa_PLUGIN_DIR . 'protected/config/domain_restriction.php';
 
 		if ( ! file_exists( $restriction_file ) ) {
 			return false;

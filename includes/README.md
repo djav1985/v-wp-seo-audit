@@ -1,6 +1,6 @@
 # Includes Directory
 
-This directory contains WordPress-native helper classes and utilities for the V-WP-SEO-Audit plugin.
+This directory contains WordPress-native helper classes and utilities for the v-wpsa plugin.
 
 ## Files
 

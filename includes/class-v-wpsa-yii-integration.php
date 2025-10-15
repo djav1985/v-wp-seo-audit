@@ -4,7 +4,7 @@
  *
  * Handles all Yii framework initialization and configuration.
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -28,7 +28,7 @@ class V_WPSA_Yii_Integration {
 
 		if ( $app->hasComponent( 'request' ) ) {
 			$request      = $app->getRequest();
-			$plugin_parts = wp_parse_url( rtrim( V_WP_SEO_AUDIT_PLUGIN_URL, '/' ) );
+			$plugin_parts = wp_parse_url( rtrim( v_wpsa_PLUGIN_URL, '/' ) );
 			if ( ! is_array( $plugin_parts ) ) {
 				$plugin_parts = array();
 			}
@@ -97,8 +97,8 @@ class V_WPSA_Yii_Integration {
 		}
 
 		// Initialize Yii framework.
-		$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-		$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+		$yii    = v_wpsa_PLUGIN_DIR . 'framework/yii.php';
+		$config = v_wpsa_PLUGIN_DIR . 'protected/config/main.php';
 
 		if ( file_exists( $yii ) && file_exists( $config ) ) {
 			require_once $yii;

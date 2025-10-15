@@ -19,7 +19,7 @@
  *      Ban: any-fuck-any.com
  *      Not Ban: any-fuck.com; fuck-any.com; fuck.com, any-fuck-any.net
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 return array(

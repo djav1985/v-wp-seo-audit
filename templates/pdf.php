@@ -19,7 +19,7 @@
  * - $isseter: Various boolean flags
  * - $misc: Miscellaneous data (optional)
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

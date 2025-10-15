@@ -1,11 +1,11 @@
 <?php
 /**
- * WebsiteList widget for V_WP_SEO_Audit plugin.
+ * WebsiteList widget for v_wpsa plugin.
  *
  * Renders a paginated list of analyzed websites with thumbnails and scores.
  * Used in Yii-based views, typically injected via AJAX in WordPress plugin context.
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 /**
@@ -14,7 +14,7 @@
  * Date: 2015.11.22
  * Time: 15:55
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 class WebsiteList extends CWidget {
 

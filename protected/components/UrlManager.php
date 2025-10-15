@@ -2,7 +2,7 @@
 /**
  * File: UrlManager.php
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 class UrlManager extends CUrlManager {

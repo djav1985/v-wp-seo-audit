@@ -366,7 +366,7 @@ var WrHelper = (function () {
             
             // Debug: Check if nonce is available
             if (!nonce) {
-                console.error('V-WP-SEO-Audit: Nonce is not available');
+                console.error('v-wpsa: Nonce is not available');
                 window.alert('Error: Security token is not available. Please refresh the page and try again.');
                 $trigger.removeClass('disabled').removeAttr('aria-busy').text(originalText);
                 return;

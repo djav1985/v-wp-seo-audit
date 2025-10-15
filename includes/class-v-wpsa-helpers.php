@@ -4,7 +4,7 @@
  *
  * WordPress-native helper functions for the plugin.
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -91,7 +91,7 @@ class V_WPSA_Helpers {
 	 * @return mixed The config value or empty array on failure.
 	 */
 	public static function load_config_file( $config_name ) {
-		$config_dir   = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/';
+		$config_dir   = v_wpsa_PLUGIN_DIR . 'protected/config/';
 		$config_local = $config_dir . $config_name . '_local.php';
 		$config_prod  = $config_dir . $config_name . '.php';
 
@@ -120,8 +120,8 @@ class V_WPSA_Helpers {
 
 		// Ensure Yii is initialized for analysis.
 		if ( null === $v_wpsa_app ) {
-			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+			$yii    = v_wpsa_PLUGIN_DIR . 'framework/yii.php';
+			$config = v_wpsa_PLUGIN_DIR . 'protected/config/main.php';
 
 			if ( file_exists( $yii ) && file_exists( $config ) ) {
 				require_once $yii;

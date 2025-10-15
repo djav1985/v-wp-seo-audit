@@ -8,9 +8,9 @@ It should be solely designed as a wordpress plugin not to run standalone.
 
 ## Problem Statement
 
-The V-WP-SEO-Audit WordPress plugin had several issues:
+The v-wpsa WordPress plugin had several issues:
 
-1. **Missing PagePeeker AJAX Handler**: The documentation mentioned a `v_wp_seo_audit_pagepeeker` AJAX handler, but it was not implemented in the code
+1. **Missing PagePeeker AJAX Handler**: The documentation mentioned a `v_wpsa_pagepeeker` AJAX handler, but it was not implemented in the code
 2. **Direct File Access Errors**: The `index.php` file would die immediately with "Direct access not allowed" even for legitimate requests
 3. **Security Issues**: AJAX handlers lacked nonce verification for CSRF protection
 4. **WebsitestatController Issues**: The controller tried to include files directly instead of using WordPress AJAX patterns
@@ -22,13 +22,13 @@ The V-WP-SEO-Audit WordPress plugin had several issues:
 **File**: `v-wpsa.php` (lines 422-461)
 
 ```php
-function v_wp_seo_audit_ajax_pagepeeker() {
+function v_wpsa_ajax_pagepeeker() {
     // Initializes Yii framework
     // Checks if thumbnail proxy is enabled (it's disabled by default)
     // Returns appropriate response based on proxy configuration
 }
-add_action('wp_ajax_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker');
-add_action('wp_ajax_nopriv_v_wp_seo_audit_pagepeeker', 'v_wp_seo_audit_ajax_pagepeeker');
+add_action('wp_ajax_v_wpsa_pagepeeker', 'v_wpsa_ajax_pagepeeker');
+add_action('wp_ajax_nopriv_v_wpsa_pagepeeker', 'v_wpsa_ajax_pagepeeker');
 ```
 
 **Note**: This handler acknowledges that the thumbnail proxy is disabled by default and that the plugin now uses thum.io directly for thumbnails instead of PagePeeker.
@@ -41,17 +41,17 @@ Added security checks to all three AJAX handlers using WordPress's recommended `
 
 **Domain Validation Handler** (line 309):
 ```php
-check_ajax_referer('v_wp_seo_audit_nonce', 'nonce');
+check_ajax_referer('v_wpsa_nonce', 'nonce');
 ```
 
 **Report Generation Handler** (line 363):
 ```php
-check_ajax_referer('v_wp_seo_audit_nonce', 'nonce');
+check_ajax_referer('v_wpsa_nonce', 'nonce');
 ```
 
 **PagePeeker Proxy Handler** (line 419):
 ```php
-check_ajax_referer('v_wp_seo_audit_nonce', 'nonce');
+check_ajax_referer('v_wpsa_nonce', 'nonce');
 ```
 
 **Note**: Using `check_ajax_referer()` is the WordPress best practice for AJAX handlers as it automatically dies with -1 if verification fails, providing better security than manual checking.
@@ -117,7 +117,7 @@ Changed from a simple `die('Direct access not allowed')` to a comprehensive erro
   ```
 
 **PHP Changes** (`v-wpsa.php`):
-- Simplified to use standard `check_ajax_referer('v_wp_seo_audit_nonce', 'nonce')`
+- Simplified to use standard `check_ajax_referer('v_wpsa_nonce', 'nonce')`
 - Consistent with other AJAX handlers
 - No special handling needed
 
@@ -174,10 +174,10 @@ The plugin now has four fully functional AJAX endpoints:
 
 | Action | Function | Purpose | Nonce Verification Method |
 |--------|----------|---------|---------------------------|
-| `v_wp_seo_audit_validate` | `v_wp_seo_audit_ajax_validate_domain()` | Validates domain input | `check_ajax_referer()` |
-| `v_wp_seo_audit_generate_report` | `v_wp_seo_audit_ajax_generate_report()` | Generates SEO audit report | `check_ajax_referer()` |
-| `v_wp_seo_audit_download_pdf` | `v_wp_seo_audit_ajax_download_pdf()` | Downloads PDF report for a domain | `check_ajax_referer()` |
-| `v_wp_seo_audit_pagepeeker` | `v_wp_seo_audit_ajax_pagepeeker()` | Legacy thumbnail proxy | `check_ajax_referer()` |
+| `v_wpsa_validate` | `v_wpsa_ajax_validate_domain()` | Validates domain input | `check_ajax_referer()` |
+| `v_wpsa_generate_report` | `v_wpsa_ajax_generate_report()` | Generates SEO audit report | `check_ajax_referer()` |
+| `v_wpsa_download_pdf` | `v_wpsa_ajax_download_pdf()` | Downloads PDF report for a domain | `check_ajax_referer()` |
+| `v_wpsa_pagepeeker` | `v_wpsa_ajax_pagepeeker()` | Legacy thumbnail proxy | `check_ajax_referer()` |
 
 All endpoints use consistent `check_ajax_referer()` for nonce verification and are registered for both authenticated (`wp_ajax_`) and non-authenticated (`wp_ajax_nopriv_`) users.
 
@@ -193,7 +193,7 @@ All endpoints use consistent `check_ajax_referer()` for nonce verification and a
 - ✅ Old `index.php` file remains but shows helpful error message
 - ✅ No database changes required
 - ✅ No configuration changes needed
-- ✅ Existing shortcode `[v_wp_seo_audit]` continues to work
+- ✅ Existing shortcode `[v_wpsa]` continues to work
 - ✅ All existing AJAX handlers remain functional
 
 ## Testing Status
@@ -270,13 +270,13 @@ JavaScript validates domain format (client-side)
        ✓ Valid format
        ↓
 AJAX POST to: /wp-admin/admin-ajax.php
-  - action: v_wp_seo_audit_validate
+  - action: v_wpsa_validate
   - domain: example.com
   - nonce: security_token
        ↓
 WordPress hooks system
        ↓
-v_wp_seo_audit_ajax_validate_domain() function
+v_wpsa_ajax_validate_domain() function
        ↓
 Initializes Yii framework
        ↓
@@ -289,13 +289,13 @@ Returns JSON: { success: true, data: { domain: "example.com" } }
 JavaScript receives validation success
        ↓
 AJAX POST to: /wp-admin/admin-ajax.php
-  - action: v_wp_seo_audit_generate_report
+  - action: v_wpsa_generate_report
   - domain: example.com
   - nonce: security_token
        ↓
 WordPress hooks system
        ↓
-v_wp_seo_audit_ajax_generate_report() function
+v_wpsa_ajax_generate_report() function
        ↓
 Initializes Yii framework
        ↓
@@ -342,10 +342,10 @@ User sees report on same page ✓
 │  │  │  • Enqueues JavaScript with config         │    │  │
 │  │  │                                              │    │  │
 │  │  │  Handlers:                                   │    │  │
-│  │  │  1. v_wp_seo_audit_ajax_validate_domain()  │    │  │
-│  │  │  2. v_wp_seo_audit_ajax_generate_report()  │    │  │
-│  │  │  3. v_wp_seo_audit_ajax_download_pdf()     │    │  │
-│  │  │  4. v_wp_seo_audit_ajax_pagepeeker_proxy() │    │  │
+│  │  │  1. v_wpsa_ajax_validate_domain()  │    │  │
+│  │  │  2. v_wpsa_ajax_generate_report()  │    │  │
+│  │  │  3. v_wpsa_ajax_download_pdf()     │    │  │
+│  │  │  4. v_wpsa_ajax_pagepeeker_proxy() │    │  │
 │  │  └─────────────────────────────────────────────┘    │  │
 │  │                         ↕                            │  │
 │  │  ┌─────────────────────────────────────────────┐    │  │
@@ -403,7 +403,7 @@ Output: "google.com" (validated)
 POST /wp-admin/admin-ajax.php
 Content-Type: application/x-www-form-urlencoded
 
-action=v_wp_seo_audit_validate
+action=v_wpsa_validate
 domain=google.com
 nonce=abc123xyz
 ```
@@ -423,7 +423,7 @@ nonce=abc123xyz
 POST /wp-admin/admin-ajax.php
 Content-Type: application/x-www-form-urlencoded
 
-action=v_wp_seo_audit_generate_report
+action=v_wpsa_generate_report
 domain=google.com
 nonce=abc123xyz
 ```
@@ -454,7 +454,7 @@ $('html, body').animate({
 **Invalid Domain Input**
 ```http
 POST /wp-admin/admin-ajax.php
-action=v_wp_seo_audit_validate
+action=v_wpsa_validate
 domain=invalid..domain..
 ```
 

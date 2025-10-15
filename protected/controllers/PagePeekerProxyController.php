@@ -2,7 +2,7 @@
 /**
  * File: PagePeekerProxyController.php
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 class PagePeekerProxyController extends Controller {

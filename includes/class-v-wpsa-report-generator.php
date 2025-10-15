@@ -4,7 +4,7 @@
  * WordPress-native report generation without Yii controllers.
  * Replaces functionality from WebsitestatController.
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -130,7 +130,7 @@ class V_WPSA_Report_Generator {
 	 * @throws Exception If template not found.
 	 */
 	private static function render_template( $template, $data ) {
-		$template_path = V_WP_SEO_AUDIT_PLUGIN_DIR . 'templates/' . $template;
+		$template_path = v_wpsa_PLUGIN_DIR . 'templates/' . $template;
 
 		if ( ! file_exists( $template_path ) ) {
 			throw new Exception( 'Template not found: ' . $template );

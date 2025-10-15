@@ -2,7 +2,7 @@
 /**
  * File: Utils.php
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 class Utils {

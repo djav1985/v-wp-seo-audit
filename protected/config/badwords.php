@@ -2,7 +2,7 @@
 /**
  * File: badwords.php
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 return array(

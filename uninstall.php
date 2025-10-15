@@ -1,11 +1,11 @@
 <?php
 /**
- * Uninstall script for V-WP-SEO-Audit plugin
+ * Uninstall script for v-wpsa plugin
  *
  * This file is executed when the plugin is uninstalled from WordPress.
  * It removes all database tables and options created by the plugin.
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 // Exit if uninstall not called from WordPress.

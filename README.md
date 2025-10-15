@@ -1,4 +1,4 @@
-# V-WP-SEO-Audit WordPress Plugin
+# v-wpsa WordPress Plugin
 
 WordPress SEO Audit plugin - Analyze your website's SEO performance
 
@@ -10,14 +10,14 @@ This plugin provides comprehensive SEO audit functionality for WordPress. It ana
 
 1. Upload the plugin files to the `/wp-content/plugins/v-wpsa` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
-3. Add the shortcode `[v_wp_seo_audit]` to any page or post where you want to display the SEO audit tool
+3. Add the shortcode `[v_wpsa]` to any page or post where you want to display the SEO audit tool
 
 ## Usage
 
 To display the SEO audit tool on your website, simply add the following shortcode to any page or post:
 
 ```
-[v_wp_seo_audit]
+[v_wpsa]
 ```
 
 The plugin will display on the front-end where the shortcode is placed.
@@ -50,20 +50,20 @@ This plugin uses WordPress's admin-ajax.php for all AJAX communication instead o
 
 The plugin registers the following AJAX actions:
 
-1. **v_wp_seo_audit_validate**: Validates domain input
-   - Action: `v_wp_seo_audit_validate`
+1. **v_wpsa_validate**: Validates domain input
+   - Action: `v_wpsa_validate`
    - Method: POST
    - Parameters: `domain`, `nonce`
    - Response: Success with validated domain or error message
 
-2. **v_wp_seo_audit_generate_report**: Generates SEO audit report
-   - Action: `v_wp_seo_audit_generate_report`
+2. **v_wpsa_generate_report**: Generates SEO audit report
+   - Action: `v_wpsa_generate_report`
    - Method: POST
    - Parameters: `domain`, `nonce`
    - Response: HTML content of the audit report
 
-3. **v_wp_seo_audit_pagepeeker**: Proxies thumbnail requests
-   - Action: `v_wp_seo_audit_pagepeeker`
+3. **v_wpsa_pagepeeker**: Proxies thumbnail requests
+   - Action: `v_wpsa_pagepeeker`
    - Method: GET
    - Parameters: `method`, `url`, `size`
    - Response: JSON data from PagePeeker API
@@ -72,8 +72,8 @@ The plugin registers the following AJAX actions:
 
 1. User enters domain in the form
 2. Client-side validation checks for valid domain format
-3. AJAX request to `v_wp_seo_audit_validate` validates the domain
-4. If valid, AJAX request to `v_wp_seo_audit_generate_report` generates the report
+3. AJAX request to `v_wpsa_validate` validates the domain
+4. If valid, AJAX request to `v_wpsa_generate_report` generates the report
 5. Report HTML is injected into the page without reload
 6. Page scrolls to the report section automatically
 
@@ -136,7 +136,7 @@ This plugin was converted from a standalone Yii PHP application to a WordPress p
 **WordPress-Native Conversions:**
 - ✅ `Utils::deletePdf()` → `V_WPSA_Helpers::delete_pdf()` (uses `wp_upload_dir()`, `wp_delete_file()`)
 - ✅ `Utils::getLocalConfigIfExists()` → `V_WPSA_Helpers::load_config_file()` (uses plugin constants)
-- ✅ `Yii::app()->params['analyzer.cache_time']` → WordPress filter `v_wp_seo_audit_cache_time`
+- ✅ `Yii::app()->params['analyzer.cache_time']` → WordPress filter `v_wpsa_cache_time`
 
 **Files Modified:**
 - `v-wpsa.php` - Added 3 new WordPress-native helper functions
@@ -185,7 +185,7 @@ To test the plugin functionality:
 
 2. **Create a Test Page**:
    - Create a new page in WordPress
-   - Add the shortcode `[v_wp_seo_audit]`
+   - Add the shortcode `[v_wpsa]`
    - Publish the page
 
 3. **Test Form Submission**:

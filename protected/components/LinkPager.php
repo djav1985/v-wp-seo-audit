@@ -1,16 +1,16 @@
 <?php
 /**
- * LinkPager component for V_WP_SEO_Audit plugin.
+ * LinkPager component for v_wpsa plugin.
  *
  * Extends CLinkPager to add Bootstrap-compatible page-link classes.
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 /**
  * File: LinkPager.php
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 class LinkPager extends CLinkPager {
 

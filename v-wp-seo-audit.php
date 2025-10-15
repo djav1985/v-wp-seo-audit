@@ -2,11 +2,11 @@
 /**
  * File: v-wpsa.php
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 /*
-Plugin Name: V-WP-SEO-Audit
+Plugin Name: v-wpsa
 Description: WordPress SEO Audit plugin - Analyze your website's SEO performance
 Version: 1.0.0
 Author: djav1985
@@ -19,15 +19,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants.
-define( 'V_WP_SEO_AUDIT_VERSION', '1.0.0' );
-define( 'V_WP_SEO_AUDIT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'V_WP_SEO_AUDIT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'v_wpsa_VERSION', '1.0.0' );
+define( 'v_wpsa_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'v_wpsa_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 // Load installation hooks.
-require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'install.php';
+require_once v_wpsa_PLUGIN_DIR . 'install.php';
 
 // Load deactivation hooks.
-require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'deactivation.php';
+require_once v_wpsa_PLUGIN_DIR . 'deactivation.php';
 
 // Register activation and deactivation hooks.
 register_activation_hook( __FILE__, 'v_wpsa_activate' );
@@ -37,16 +37,16 @@ register_deactivation_hook( __FILE__, 'v_wpsa_deactivate' );
 add_action( 'v_wpsa_daily_cleanup', 'v_wpsa_cleanup' );
 
 // Load organized includes files.
-require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-config.php';
-require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-db.php';
-require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-yii-integration.php';
-require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-validation.php';
-require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-helpers.php';
-require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-report-generator.php';
-require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'includes/class-v-wpsa-ajax-handlers.php';
+require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-config.php';
+require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-db.php';
+require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-yii-integration.php';
+require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-validation.php';
+require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-helpers.php';
+require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-report-generator.php';
+require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-ajax-handlers.php';
 
 // Load WordPress-native widget templates.
-require_once V_WP_SEO_AUDIT_PLUGIN_DIR . 'templates/widgets.php';
+require_once v_wpsa_PLUGIN_DIR . 'templates/widgets.php';
 
 // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 if ( ! @ini_get( 'date.timezone' ) ) {
@@ -74,20 +74,20 @@ function v_wpsa_enqueue_assets() {
 	// Only load if shortcode is present on the page.
 	if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'v_wpsa' ) ) {
 		// Enqueue CSS files.
-		wp_enqueue_style( 'v-wpsa-bootstrap', V_WP_SEO_AUDIT_PLUGIN_URL . 'assets/css/bootstrap.min.css', array(), V_WP_SEO_AUDIT_VERSION );
-		wp_enqueue_style( 'v-wpsa-fontawesome', V_WP_SEO_AUDIT_PLUGIN_URL . 'assets/css/fontawesome.min.css', array(), V_WP_SEO_AUDIT_VERSION );
-		wp_enqueue_style( 'v-wpsa-app', V_WP_SEO_AUDIT_PLUGIN_URL . 'assets/css/app.css', array( 'v-wpsa-bootstrap' ), V_WP_SEO_AUDIT_VERSION );
+		wp_enqueue_style( 'v-wpsa-bootstrap', v_wpsa_PLUGIN_URL . 'assets/css/bootstrap.min.css', array(), v_wpsa_VERSION );
+		wp_enqueue_style( 'v-wpsa-fontawesome', v_wpsa_PLUGIN_URL . 'assets/css/fontawesome.min.css', array(), v_wpsa_VERSION );
+		wp_enqueue_style( 'v-wpsa-app', v_wpsa_PLUGIN_URL . 'assets/css/app.css', array( 'v-wpsa-bootstrap' ), v_wpsa_VERSION );
 
 		// Enqueue JS files.
 		wp_enqueue_script( 'jquery' ); // Use WordPress jQuery.
-		wp_enqueue_script( 'v-wpsa-bootstrap', V_WP_SEO_AUDIT_PLUGIN_URL . 'assets/js/bootstrap.bundle.min.js', array( 'jquery' ), V_WP_SEO_AUDIT_VERSION, true );
-		wp_enqueue_script( 'v-wpsa-flot', V_WP_SEO_AUDIT_PLUGIN_URL . 'assets/js/jquery.flot.js', array( 'jquery' ), V_WP_SEO_AUDIT_VERSION, true );
-		wp_enqueue_script( 'v-wpsa-flot-pie', V_WP_SEO_AUDIT_PLUGIN_URL . 'assets/js/jquery.flot.pie.js', array( 'jquery', 'v-wpsa-flot' ), V_WP_SEO_AUDIT_VERSION, true );
-		wp_enqueue_script( 'v-wpsa-base', V_WP_SEO_AUDIT_PLUGIN_URL . 'assets/js/base.js', array( 'jquery' ), V_WP_SEO_AUDIT_VERSION, true );
+		wp_enqueue_script( 'v-wpsa-bootstrap', v_wpsa_PLUGIN_URL . 'assets/js/bootstrap.bundle.min.js', array( 'jquery' ), v_wpsa_VERSION, true );
+		wp_enqueue_script( 'v-wpsa-flot', v_wpsa_PLUGIN_URL . 'assets/js/jquery.flot.js', array( 'jquery' ), v_wpsa_VERSION, true );
+		wp_enqueue_script( 'v-wpsa-flot-pie', v_wpsa_PLUGIN_URL . 'assets/js/jquery.flot.pie.js', array( 'jquery', 'v-wpsa-flot' ), v_wpsa_VERSION, true );
+		wp_enqueue_script( 'v-wpsa-base', v_wpsa_PLUGIN_URL . 'assets/js/base.js', array( 'jquery' ), v_wpsa_VERSION, true );
 
 		// Add global JavaScript variables needed by the plugin.
 		// Use plugin URL directly (no Yii dependency).
-		$base_url = rtrim( V_WP_SEO_AUDIT_PLUGIN_URL, '/' );
+		$base_url = rtrim( v_wpsa_PLUGIN_URL, '/' );
 
 		// Inject global variables into the page.
 		$global_vars = "var _global = { 
@@ -114,7 +114,7 @@ function v_wpsa_shortcode( $atts ) {
 	// This does NOT require Yii initialization.
 	ob_start();
 
-	$template_path = V_WP_SEO_AUDIT_PLUGIN_DIR . 'templates/main.php';
+	$template_path = v_wpsa_PLUGIN_DIR . 'templates/main.php';
 	if ( file_exists( $template_path ) ) {
 		include $template_path;
 	} else {

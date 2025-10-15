@@ -4,7 +4,7 @@
  * WordPress-native widget rendering functions.
  * Replaces protected/widgets/WebsiteList.php
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

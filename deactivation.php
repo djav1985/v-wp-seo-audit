@@ -1,10 +1,10 @@
 <?php
 /**
- * Deactivation script for V-WP-SEO-Audit plugin
+ * Deactivation script for v-wpsa plugin
  *
  * This file contains the deactivation hook function.
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

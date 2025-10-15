@@ -2,7 +2,7 @@
 /**
  * File: index.php
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 if ( empty( $website ) || ! is_array( $website ) ) : ?>

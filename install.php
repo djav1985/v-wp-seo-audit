@@ -1,10 +1,10 @@
 <?php
 /**
- * Installation and activation script for V-WP-SEO-Audit plugin
+ * Installation and activation script for v-wpsa plugin
  *
  * This file contains the activation, deactivation, and cleanup hooks.
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -147,7 +147,7 @@ function v_wpsa_activate() {
 	}
 
 	// Set plugin version option.
-	add_option( 'v_wpsa_version', V_WP_SEO_AUDIT_VERSION );
+	add_option( 'v_wpsa_version', v_wpsa_VERSION );
 
 	// Schedule daily cleanup cron job.
 	if ( ! wp_next_scheduled( 'v_wpsa_daily_cleanup' ) ) {
@@ -184,7 +184,7 @@ function v_wpsa_cleanup() {
 	);
 
 	if ( ! empty( $old_websites ) ) {
-		$plugin_dir = V_WP_SEO_AUDIT_PLUGIN_DIR;
+		$plugin_dir = v_wpsa_PLUGIN_DIR;
 		$pdf_dir    = $plugin_dir . 'pdf/';
 
 		// Get upload directory for thumbnails.

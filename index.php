@@ -5,7 +5,7 @@
  * All functionality is now handled through WordPress AJAX handlers.
  * This file is kept for backward compatibility only.
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 // Prevent direct access - this file should only be loaded via WordPress.
@@ -28,7 +28,7 @@ if ( ! isset( $_GET['r'] ) && ! isset( $_POST['r'] ) ) {
 	<!DOCTYPE html>
 	<html>
 	<head>
-		<title>V-WP-SEO-Audit - Direct Access Not Allowed</title>
+		<title>v-wpsa - Direct Access Not Allowed</title>
 		<style>
 			body { font-family: Arial, sans-serif; margin: 50px; }
 			.notice { background: #fff3cd; border: 1px solid #ffc107; padding: 20px; border-radius: 5px; }
@@ -39,7 +39,7 @@ if ( ! isset( $_GET['r'] ) && ! isset( $_POST['r'] ) ) {
 	<body>
 		<div class="notice">
 			<h1>Direct Access Not Allowed</h1>
-			<p>This file should not be accessed directly. The V-WP-SEO-Audit plugin now uses WordPress AJAX handlers.</p>
+			<p>This file should not be accessed directly. The v-wpsa plugin now uses WordPress AJAX handlers.</p>
 			<p>Please use the plugin shortcode <code>[v_wpsa]</code> on a WordPress page instead.</p>
 			<p><a href="<?php echo esc_url( home_url( '/' ) ); ?>">Return to Homepage</a></p>
 		</div>
@@ -71,16 +71,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants.
-if ( ! defined( 'V_WP_SEO_AUDIT_PLUGIN_DIR' ) ) {
-	define( 'V_WP_SEO_AUDIT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'v_wpsa_PLUGIN_DIR' ) ) {
+	define( 'v_wpsa_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 }
-if ( ! defined( 'V_WP_SEO_AUDIT_PLUGIN_URL' ) ) {
-	define( 'V_WP_SEO_AUDIT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+if ( ! defined( 'v_wpsa_PLUGIN_URL' ) ) {
+	define( 'v_wpsa_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 }
 
 // Initialize Yii framework if not already loaded.
-$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+$yii    = v_wpsa_PLUGIN_DIR . 'framework/yii.php';
+$config = v_wpsa_PLUGIN_DIR . 'protected/config/main.php';
 if ( ! file_exists( $yii ) || ! file_exists( $config ) ) {
 	die( 'Yii framework not found' );
 }
@@ -106,7 +106,7 @@ if ( null === $v_wpsa_app ) {
 	if ( $v_wpsa_app->hasComponent( 'request' ) ) {
 		$request = $v_wpsa_app->getRequest();
 		// Set base URL to plugin's relative path (from site root).
-		$plugin_relative_url = str_replace( get_site_url(), '', rtrim( V_WP_SEO_AUDIT_PLUGIN_URL, '/' ) );
+		$plugin_relative_url = str_replace( get_site_url(), '', rtrim( v_wpsa_PLUGIN_URL, '/' ) );
 		$request->setBaseUrl( $plugin_relative_url );
 		// In WordPress, we need to use the index.php as script URL.
 		$request->setScriptUrl( $plugin_relative_url . '/index.php' );

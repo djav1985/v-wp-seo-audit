@@ -4,7 +4,7 @@
  *
  * Handles all WordPress AJAX endpoints for the plugin.
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -70,8 +70,8 @@ class V_WPSA_Ajax_Handlers {
 
 		// Initialize Yii if not already initialized.
 		if ( null === $v_wpsa_app ) {
-			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+			$yii    = v_wpsa_PLUGIN_DIR . 'framework/yii.php';
+			$config = v_wpsa_PLUGIN_DIR . 'protected/config/main.php';
 
 			if ( file_exists( $yii ) && file_exists( $config ) ) {
 				require_once $yii;
@@ -144,8 +144,8 @@ class V_WPSA_Ajax_Handlers {
 
 		// Initialize Yii if not already initialized.
 		if ( null === $v_wpsa_app ) {
-			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+			$yii    = v_wpsa_PLUGIN_DIR . 'framework/yii.php';
+			$config = v_wpsa_PLUGIN_DIR . 'protected/config/main.php';
 
 			if ( file_exists( $yii ) && file_exists( $config ) ) {
 				require_once $yii;
@@ -190,8 +190,8 @@ class V_WPSA_Ajax_Handlers {
 
 		// Initialize Yii if not already initialized.
 		if ( null === $v_wpsa_app ) {
-			$yii    = V_WP_SEO_AUDIT_PLUGIN_DIR . 'framework/yii.php';
-			$config = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/main.php';
+			$yii    = v_wpsa_PLUGIN_DIR . 'framework/yii.php';
+			$config = v_wpsa_PLUGIN_DIR . 'protected/config/main.php';
 
 			if ( file_exists( $yii ) && file_exists( $config ) ) {
 				require_once $yii;

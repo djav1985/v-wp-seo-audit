@@ -2,7 +2,7 @@
 /**
  * File: ParseController.php
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 class ParseController extends Controller {
 

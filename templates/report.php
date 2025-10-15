@@ -22,7 +22,7 @@
  * - $misc: Miscellaneous data
  * - $over_max: Maximum items to show before collapse
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

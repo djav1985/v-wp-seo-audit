@@ -4,7 +4,7 @@
  * Provides WordPress-native access to plugin configuration.
  * Replaces Yii::app()->params[] calls.
  *
- * @package V_WP_SEO_Audit
+ * @package v_wpsa
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -55,7 +55,7 @@ class V_WPSA_Config {
 	 * Load configuration from protected/config/config.php.
 	 */
 	private static function load_config() {
-		$config_file = V_WP_SEO_AUDIT_PLUGIN_DIR . 'protected/config/config.php';
+		$config_file = v_wpsa_PLUGIN_DIR . 'protected/config/config.php';
 
 		if ( file_exists( $config_file ) ) {
 			self::$config = require $config_file;
@@ -114,8 +114,8 @@ class V_WPSA_Config {
 	 */
 	public static function get_base_url( $absolute = false ) {
 		if ( $absolute ) {
-			return untrailingslashit( V_WP_SEO_AUDIT_PLUGIN_URL );
+			return untrailingslashit( v_wpsa_PLUGIN_URL );
 		}
-		return untrailingslashit( str_replace( home_url(), '', V_WP_SEO_AUDIT_PLUGIN_URL ) );
+		return untrailingslashit( str_replace( home_url(), '', v_wpsa_PLUGIN_URL ) );
 	}
 }
