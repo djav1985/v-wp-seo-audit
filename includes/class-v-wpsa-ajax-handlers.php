@@ -102,11 +102,14 @@ class V_WPSA_Ajax_Handlers {
 			// Website doesn't exist - needs analysis.
 			$needs_analysis = true;
 		} elseif ( $force_update ) {
-			// Force update requested - always re-analyze and clear old data.
+			// Force update requested - delete everything and re-analyze from scratch.
 			$needs_analysis = true;
-			$wid            = $website['id'];
+			$wid            = null; // Set to null to force creation of new record.
 
-			// Delete old PDFs when force updating.
+			// Delete the complete website record from database.
+			$db->delete_website( $website['id'] );
+
+			// Delete old PDFs and thumbnails when force updating.
 			V_WPSA_Helpers::delete_pdf( $domain );
 			V_WPSA_Helpers::delete_pdf( $domain . '_pagespeed' );
 		} elseif ( strtotime( $website['modified'] ) + $cache_time <= time() ) {
