@@ -98,29 +98,34 @@ endif;
 		});
 
 		$('#update_stat').on('click', function(e) {
-			var href = $(this).attr("href");
-			// If href points to external location, follow it.
-			if (href.indexOf("#") < 0) {
-				return true;
-			}
 			e.preventDefault();
-			// Fill domain input and trigger the same flow as the Analyze button, but with force=true.
-			var $domain = $("#domain");
-			if ($domain.length) {
-				$domain.val('<?php echo esc_js( $website['domain'] ); ?>');
-				// Trigger the same validation -> generateReport flow wired to #submit
-				// but with force update enabled
-				$('#submit').data('force-update', true).trigger('click');
-			} else {
-				// Fallback: call generateReport directly if form is not present, with force=true.
-				if (window.vWpSeoAudit && typeof window.vWpSeoAudit.generateReport === 'function') {
-					window.vWpSeoAudit.generateReport('<?php echo esc_js( $website['domain'] ); ?>', {
-						$container: $('.v-wpsa-container').first(),
-						$errors: $('#errors'),
-						$progressBar: $('#progress-bar'),
-						force: true
-					});
+
+			// Always call generateReport directly with force=true to update the report
+			if (window.vWpSeoAudit && typeof window.vWpSeoAudit.generateReport === 'function') {
+				var $container = $('.v-wpsa-container').first();
+
+				// Create error and progress elements if they don't exist
+				var $errors = $('#errors');
+				var $progressBar = $('#progress-bar');
+
+				// If form elements don't exist, create temporary ones in the container
+				if (!$errors.length) {
+					$errors = $('<div id="errors" class="alert alert-danger mb-3" style="display: none"></div>');
+					$container.prepend($errors);
 				}
+				if (!$progressBar.length) {
+					$progressBar = $('<div id="progress-bar" class="progress mb-3" style="display: none"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div></div>');
+					$container.prepend($progressBar);
+				}
+
+				window.vWpSeoAudit.generateReport('<?php echo esc_js( $website['domain'] ); ?>', {
+					$container: $container,
+					$errors: $errors,
+					$progressBar: $progressBar,
+					force: true
+				});
+			} else {
+				window.alert('Error: Report generation function not available. Please refresh the page and try again.');
 			}
 		});
 
