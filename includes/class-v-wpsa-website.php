@@ -36,7 +36,7 @@ class V_WPSA_Website {
 		global $wpdb;
 		$table = self::get_table_name();
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$count = $wpdb->get_var( "SELECT COUNT(*) FROM " . esc_sql( $table ) );
+		$count = $wpdb->get_var( 'SELECT COUNT(*) FROM ' . esc_sql( $table ) );
 		return (int) $count;
 	}
 
@@ -53,7 +53,7 @@ class V_WPSA_Website {
 		}
 
 		// Require IDN class for domain encoding.
-		$idn_path = v_wpsa_PLUGIN_DIR . 'protected/vendors/Webmaster/Utils/IDN.php';
+		$idn_path = v_wpsa_PLUGIN_DIR . 'Webmaster/Utils/IDN.php';
 		if ( file_exists( $idn_path ) ) {
 			require_once $idn_path;
 			$idn    = new IDN();

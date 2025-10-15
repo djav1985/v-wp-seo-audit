@@ -413,7 +413,7 @@ class V_WPSA_DB {
 		// Prepare RateProvider instance.
 		// Explicitly require the file to avoid Yii autoloader interference.
 		$rateprovider      = null;
-		$rateprovider_path = v_wpsa_PLUGIN_DIR . 'protected/vendors/Webmaster/Rates/RateProvider.php';
+		$rateprovider_path = v_wpsa_PLUGIN_DIR . 'Webmaster/Rates/RateProvider.php';
 		if ( file_exists( $rateprovider_path ) ) {
 			require_once $rateprovider_path;
 			$rateprovider = new RateProvider();
@@ -838,7 +838,7 @@ class V_WPSA_DB {
 		// Load required Yii vendor classes.
 		// Note: We must load files directly before any class_exists() checks to avoid
 		// triggering Yii's autoloader which will try to find the class in the wrong path.
-		$helper_path = v_wpsa_PLUGIN_DIR . 'protected/vendors/Webmaster/Utils/Helper.php';
+		$helper_path = v_wpsa_PLUGIN_DIR . 'Webmaster/Utils/Helper.php';
 		if ( file_exists( $helper_path ) ) {
 			require_once $helper_path;
 		}
@@ -856,7 +856,7 @@ class V_WPSA_DB {
 				'headers'     => array(
 					'Accept'                    => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 					'Accept-Language'           => 'en-US,en;q=0.5',
-					'Accept-Encoding'           => 'gzip, deflate',
+					'Accept-Encoding'           => 'gzip, deflate, br, zstd',
 					'DNT'                       => '1',
 					'Connection'                => 'keep-alive',
 					'Upgrade-Insecure-Requests' => '1',
@@ -897,7 +897,7 @@ class V_WPSA_DB {
 			}
 
 			// Load analysis classes.
-			$source_path     = v_wpsa_PLUGIN_DIR . 'protected/vendors/Webmaster/Source/';
+			$source_path     = v_wpsa_PLUGIN_DIR . 'Webmaster/Source/';
 			$classes_to_load = array(
 				'Content.php',
 				'Document.php',

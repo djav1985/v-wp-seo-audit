@@ -38,7 +38,7 @@ class V_WPSA_Report_Generator {
 		// with backward compatibility aliases (Utils, WebsiteThumbnail).
 
 		// Ensure AnalyticsFinder is available (legacy vendor class used in templates).
-		$analytics_path = v_wpsa_PLUGIN_DIR . 'protected/vendors/Webmaster/Source/AnalyticsFinder.php';
+		$analytics_path = v_wpsa_PLUGIN_DIR . 'Webmaster/Source/AnalyticsFinder.php';
 		if ( file_exists( $analytics_path ) ) {
 			require_once $analytics_path;
 		}
@@ -127,7 +127,7 @@ class V_WPSA_Report_Generator {
 		}
 
 		// Ensure AnalyticsFinder is available for PDF template usage.
-		$analytics_path = v_wpsa_PLUGIN_DIR . 'protected/vendors/Webmaster/Source/AnalyticsFinder.php';
+		$analytics_path = v_wpsa_PLUGIN_DIR . 'Webmaster/Source/AnalyticsFinder.php';
 		if ( file_exists( $analytics_path ) ) {
 			require_once $analytics_path;
 		}
@@ -174,7 +174,7 @@ class V_WPSA_Report_Generator {
 	 */
 	private static function create_pdf_from_html( $html, $pdf_file, $title ) {
 		// Load TCPDF library directly.
-		$tcpdf_path = v_wpsa_PLUGIN_DIR . 'protected/extensions/tcpdf/tcpdf/tcpdf.php';
+		$tcpdf_path = v_wpsa_PLUGIN_DIR . 'tcpdf/tcpdf/tcpdf.php';
 		if ( ! file_exists( $tcpdf_path ) ) {
 			throw new Exception( 'TCPDF library not found' );
 		}

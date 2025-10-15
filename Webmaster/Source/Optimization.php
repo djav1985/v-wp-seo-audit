@@ -90,7 +90,7 @@ class Optimization {
         $ch = curl_init($this->final_url);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         $ch = V_WPSA_Utils::ch($ch, array(
-            'Accept-Encoding:gzip',
+            'Accept-Encoding:gzip, deflate, br, zstd',
         ));
 
         if(false === $ch) {
@@ -105,7 +105,15 @@ class Optimization {
             return false;
         }
         $h = V_WPSA_Utils::get_headers_from_curl_response(substr($response, 0, $h_size));
-        return isset($h['content-encoding']) AND (mb_stripos($h['content-encoding'], 'gzip') !== false);
+        // Check for any modern compression: gzip, deflate, br (Brotli), or zstd (Zstandard)
+        if(isset($h['content-encoding'])) {
+            $encoding = mb_strtolower($h['content-encoding']);
+            return (mb_stripos($encoding, 'gzip') !== false) ||
+                   (mb_stripos($encoding, 'deflate') !== false) ||
+                   (mb_stripos($encoding, 'br') !== false) ||
+                   (mb_stripos($encoding, 'zstd') !== false);
+        }
+        return false;
     }
 
 }
