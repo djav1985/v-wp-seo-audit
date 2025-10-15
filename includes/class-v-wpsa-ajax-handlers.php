@@ -61,82 +61,79 @@ class V_WPSA_Ajax_Handlers {
 
 	/**
 	 * AJAX handler for generating HTML report.
+	 * WordPress-native implementation - no Yii dependencies.
 	 */
 	public static function generate_report() {
 		// Verify nonce for security.
 		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
 
-		global $v_wpsa_app;
-
-		// Convert warnings/notices to exceptions during this request so they can be returned
-		// as structured JSON errors instead of causing HTTP 500.
-		$prev_error_handler = set_error_handler(
-			function( $errno, $errstr, $errfile, $errline ) {
-				if ( ! ( error_reporting() & $errno ) ) {
-					  // Respect @ operator: do not convert silently suppressed errors.
-					  return false;
-				}
-				throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
-			}
-		);
-
-		// Initialize Yii if not already initialized.
-		if ( null === $v_wpsa_app ) {
-			$yii    = v_wpsa_PLUGIN_DIR . 'framework/yii.php';
-			$config = v_wpsa_PLUGIN_DIR . 'protected/config/main.php';
-
-			if ( file_exists( $yii ) && file_exists( $config ) ) {
-				require_once $yii;
-
-				// Configure Yii autoloader to skip WordPress classes.
-				V_WPSA_Yii_Integration::configure_yii_autoloader();
-
-				$v_wpsa_app = Yii::createWebApplication( $config );
-
-				if ( isset( $v_wpsa_app->params['app.timezone'] ) ) {
-					$v_wpsa_app->setTimeZone( $v_wpsa_app->params['app.timezone'] );
-				}
-			} else {
-				wp_send_json_error( array( 'message' => 'Application not initialized' ) );
-				return;
-			}
-		}
-
-		V_WPSA_Yii_Integration::configure_yii_app( $v_wpsa_app );
-
 		// Get domain from request.
-		$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitization handled in V_WPSA_Validation.
+		$domain_raw = isset( $_POST['domain'] ) ? wp_unslash( $_POST['domain'] ) : '';
 
-		if ( empty( $domain ) ) {
+		if ( empty( $domain_raw ) ) {
 			wp_send_json_error( array( 'message' => 'Domain is required' ) );
 			return;
 		}
 
-		// Create and validate the model to trigger analysis if needed.
-		// The WebsiteForm::validate() will automatically call tryToAnalyse()
-		// which will create/update the website record in the database.
-		$model         = new WebsiteForm();
-		$model->domain = $domain;
+		// Validate domain using WordPress-native validation.
+		$validation = V_WPSA_Validation::validate_domain( $domain_raw );
 
-		if ( ! $model->validate() ) {
-			// Validation failed (domain invalid, unreachable, or analysis error).
-			$errors         = $model->getErrors();
-			$error_messages = array();
-			foreach ( $errors as $field => $field_errors ) {
-				foreach ( $field_errors as $error ) {
-					$error_messages[] = $error;
-				}
-			}
-			wp_send_json_error( array( 'message' => implode( '<br>', $error_messages ) ) );
+		if ( ! $validation['valid'] ) {
+			wp_send_json_error( array( 'message' => implode( '<br>', $validation['errors'] ) ) );
 			return;
+		}
+
+		// Extract validated domain data.
+		$domain = $validation['domain'];
+		$idn    = $validation['idn'];
+		$ip     = $validation['ip'];
+
+		// Check if website needs analysis or if cached data can be used.
+		$db      = new V_WPSA_DB();
+		$website = $db->get_website_by_domain( $domain, array( 'modified', 'id' ) );
+
+		// Get cache time - default to 24 hours.
+		$cache_time = apply_filters( 'v_wpsa_cache_time', DAY_IN_SECONDS );
+
+		$needs_analysis = false;
+		$wid            = null;
+
+		if ( ! $website ) {
+			// Website doesn't exist - needs analysis.
+			$needs_analysis = true;
+		} elseif ( strtotime( $website['modified'] ) + $cache_time <= time() ) {
+			// Website exists but data is stale - needs re-analysis.
+			$needs_analysis = true;
+			$wid            = $website['id'];
+
+			// Delete old PDFs when re-analyzing.
+			V_WPSA_Helpers::delete_pdf( $domain );
+			V_WPSA_Helpers::delete_pdf( $domain . '_pagespeed' );
+		}
+
+		// Perform analysis if needed.
+		if ( $needs_analysis ) {
+			$result = V_WPSA_DB::analyze_website( $domain, $idn, $ip, $wid );
+
+			if ( is_wp_error( $result ) ) {
+				wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+				return;
+			}
+
+			// Verify analysis created the record.
+			$website_check = $db->get_website_by_domain( $domain, array( 'id' ) );
+			if ( ! $website_check ) {
+				wp_send_json_error( array( 'message' => 'Analysis failed: domain record not created. Please try again or check your domain input.' ) );
+				return;
+			}
 		}
 
 		try {
 			// Generate report using WordPress-native template system.
-			$content = V_WPSA_Report_Generator::generate_html_report( $model->domain );
+			$content = V_WPSA_Report_Generator::generate_html_report( $domain );
 
-			// Also provide a fresh nonce in case the frontend lost the original one
-			// (for example when HTML is injected via AJAX into pages without the inline script).
+			// Also provide a fresh nonce in case the frontend lost the original one.
 			$response_data = array(
 				'html'  => $content,
 				'nonce' => wp_create_nonce( 'v_wpsa_nonce' ),
@@ -146,75 +143,28 @@ class V_WPSA_Ajax_Handlers {
 			wp_send_json_success( $response_data );
 		} catch ( Throwable $t ) {
 			// Log and return JSON error for the client.
-			error_log( sprintf( 'v-wpsa: unhandled throwable during PDF download for %s: %s in %s on line %d', $domain, $t->getMessage(), $t->getFile(), $t->getLine() ) );
-			if ( function_exists( 'Yii' ) ) {
-				Yii::log( $t->getMessage(), CLogger::LEVEL_ERROR );
-			}
-			// Restore previous error handler if set.
-			if ( isset( $prev_error_handler ) && null !== $prev_error_handler ) {
-				set_error_handler( $prev_error_handler );
-			} else {
-				restore_error_handler();
-			}
-			wp_send_json_error( array( 'message' => 'Internal error while generating PDF: ' . $t->getMessage() ) );
-		} finally {
-			// Ensure error handler is restored if the request completes normally.
-			if ( isset( $prev_error_handler ) && null !== $prev_error_handler ) {
-				set_error_handler( $prev_error_handler );
-			} else {
-				restore_error_handler();
-			}
+			error_log( sprintf( 'v-wpsa: unhandled throwable during report generation for %s: %s in %s on line %d', $domain, $t->getMessage(), $t->getFile(), $t->getLine() ) );
+			wp_send_json_error( array( 'message' => 'Internal error while generating report: ' . $t->getMessage() ) );
 		}
 	}
 
 	/**
 	 * AJAX handler for PagePeeker proxy (legacy).
+	 * WordPress-native implementation - no Yii dependencies.
 	 */
 	public static function pagepeeker_proxy() {
 		// Verify nonce for security.
 		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
 
-		global $v_wpsa_app;
-
-		// Initialize Yii if not already initialized.
-		if ( null === $v_wpsa_app ) {
-			$yii    = v_wpsa_PLUGIN_DIR . 'framework/yii.php';
-			$config = v_wpsa_PLUGIN_DIR . 'protected/config/main.php';
-
-			if ( file_exists( $yii ) && file_exists( $config ) ) {
-				require_once $yii;
-
-				// Configure Yii autoloader to skip WordPress classes.
-				V_WPSA_Yii_Integration::configure_yii_autoloader();
-
-				$v_wpsa_app = Yii::createWebApplication( $config );
-
-				if ( isset( $v_wpsa_app->params['app.timezone'] ) ) {
-					$v_wpsa_app->setTimeZone( $v_wpsa_app->params['app.timezone'] );
-				}
-			} else {
-				wp_send_json_error( array( 'message' => 'Application not initialized' ) );
-				return;
-			}
+		// Thumbnail proxy is disabled by default in modern implementation.
+		// Thumbnails are served directly from thum.io.
+		$url = isset( $_GET['url'] ) ? sanitize_text_field( wp_unslash( $_GET['url'] ) ) : '';
+		if ( $url ) {
+			// Return success with a message that thumbnails are served directly.
+			wp_send_json_success( array( 'message' => 'Thumbnails are served directly from thum.io' ) );
+		} else {
+			wp_send_json_error( array( 'message' => 'Thumbnail proxy is not enabled' ) );
 		}
-
-		V_WPSA_Yii_Integration::configure_yii_app( $v_wpsa_app );
-
-		// Check if thumbnail proxy is enabled (it's disabled by default).
-		if ( ! isset( $v_wpsa_app->params['thumbnail.proxy'] ) || ! $v_wpsa_app->params['thumbnail.proxy'] ) {
-			// Thumbnail proxy is disabled, use direct thum.io URLs instead.
-			$url = isset( $_GET['url'] ) ? sanitize_text_field( wp_unslash( $_GET['url'] ) ) : '';
-			if ( $url ) {
-				// Return success with a message that thumbnails are served directly.
-				wp_send_json_success( array( 'message' => 'Thumbnails are served directly from thum.io' ) );
-			} else {
-				wp_send_json_error( array( 'message' => 'Thumbnail proxy is not enabled' ) );
-			}
-			return;
-		}
-
-		// Legacy PagePeeker proxy code (not used with current thum.io implementation).
-		wp_send_json_error( array( 'message' => 'PagePeeker proxy is deprecated' ) );
 	}
 
 	/**
