@@ -39,7 +39,6 @@ add_action( 'v_wpsa_daily_cleanup', 'v_wpsa_cleanup' );
 // Load organized includes files.
 require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-config.php';
 require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-db.php';
-require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-yii-integration.php';
 require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-validation.php';
 require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-helpers.php';
 require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-report-generator.php';
