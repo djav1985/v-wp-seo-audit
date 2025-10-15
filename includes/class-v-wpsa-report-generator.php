@@ -42,6 +42,12 @@ class V_WPSA_Report_Generator {
 			}
 		}
 
+		// Ensure AnalyticsFinder is available (legacy vendor class used in templates).
+		$analytics_path = v_wpsa_PLUGIN_DIR . 'protected/vendors/Webmaster/Source/AnalyticsFinder.php';
+		if ( file_exists( $analytics_path ) ) {
+			require_once $analytics_path;
+		}
+
 		// Render using WordPress template.
 		$html = self::render_template( 'report.php', $data );
 
@@ -104,6 +110,12 @@ class V_WPSA_Report_Generator {
 			if ( file_exists( $utils_path ) ) {
 				require_once $utils_path;
 			}
+		}
+
+		// Ensure AnalyticsFinder is available for PDF template usage.
+		$analytics_path = v_wpsa_PLUGIN_DIR . 'protected/vendors/Webmaster/Source/AnalyticsFinder.php';
+		if ( file_exists( $analytics_path ) ) {
+			require_once $analytics_path;
 		}
 
 		// Ensure Utils class is available for templates that reference it.

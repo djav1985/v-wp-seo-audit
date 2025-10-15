@@ -431,6 +431,23 @@ class V_WPSA_DB {
 			$rateprovider = new RateProvider();
 		}
 
+		// Provide a minimal fallback RateProvider so templates can safely call methods
+		// even when the legacy RateProvider class/file is not available.
+		if ( null === $rateprovider ) {
+			$rateprovider = new class {
+				public function addCompare( $key, $value ) {
+					return $value ? 'success' : 'neutral';
+				}
+
+				public function addCompareArray( $key, $value ) {
+					if ( is_numeric( $value ) ) {
+						return ( $value > 0 ) ? 'success' : 'neutral';
+					}
+					return ! empty( $value ) ? 'success' : 'neutral';
+				}
+			};
+		}
+
 		// Calculate URL for update form.
 		$upd_url = '#';
 		if ( class_exists( 'V_WPSA_Config' ) ) {
