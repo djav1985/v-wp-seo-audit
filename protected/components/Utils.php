@@ -99,6 +99,17 @@ class Utils {
 	 */
 	public static function getPdfFile( $domain, $lang = null) {
 
+		// Use WordPress upload directory if available (preferred method).
+		if ( defined( 'ABSPATH' ) && function_exists( 'wp_upload_dir' ) ) {
+			$upload_dir = wp_upload_dir();
+			$root       = $upload_dir['basedir'] . '/seo-audit';
+			$lang       = $lang ? $lang : ( Yii::app()->language ?? 'en' );
+			$subfolder  = mb_substr( $domain, 0, 1 );
+			$file       = $root . '/pdf/' . $lang . '/' . $subfolder . '/' . $domain . '.pdf';
+			return $file;
+		}
+
+		// Fallback to Yii webroot for backward compatibility (CLI or standalone usage).
 		$root      = Yii::getPathofAlias( 'webroot' );
 		$lang      = $lang ? $lang : Yii::app()->language;
 		$subfolder = mb_substr( $domain, 0, 1 );

@@ -95,3 +95,13 @@ $base_url    = v_wpsa_PLUGIN_URL;
 		</p>
 	</div>
 </div>
+
+<?php
+// Render website list widget if there are analyzed websites.
+$widget_html = v_wpsa_render_website_list();
+if ( ! empty( $widget_html ) ) :
+	?>
+	<hr>
+	<h3 class="mb-4"><?php esc_html_e( 'Latest Reviews', 'v-wpsa' ); ?></h3>
+	<?php echo $widget_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Widget HTML is safely generated. ?>
+<?php endif; ?>

@@ -102,12 +102,12 @@ function v_wpsa_render_website_list_template( $websites, $thumbnail_stack, $args
 			<?php
 			// Generate view report URL.
 			$url    = add_query_arg( array( 'domain' => $website['domain'] ), home_url( '/' ) );
-			$domain = esc_attr( $website['domain'] );
+			$domain = $website['domain'];
 			?>
 			<div class="col col-12 col-md-6 col-lg-4 mb-4">
 				<div class="card mb-3">
 					<h5 class="card-header"><?php echo esc_html( v_wpsa_crop_domain( $website['idn'] ) ); ?></h5>
-					<a class="v-wpsa-view-report" href="<?php echo esc_url( $url ); ?>" data-domain="<?php echo $domain; ?>">
+					<a class="v-wpsa-view-report" href="<?php echo esc_url( $url ); ?>" data-domain="<?php echo esc_attr( $domain ); ?>">
 						<img class="card-img-top" id="thumb_<?php echo absint( $website['id'] ); ?>" src="<?php echo esc_url( $base_url . '/assets/img/loader.gif' ); ?>" alt="<?php echo esc_attr( $website['idn'] ); ?>" />
 					</a>
 					<ul class="list-group list-group-flush">
@@ -118,7 +118,7 @@ function v_wpsa_render_website_list_template( $websites, $thumbnail_stack, $args
 								echo esc_html( sprintf( __( 'The score is %d/100', 'v-wpsa' ), absint( $website['score'] ) ) );
 								?>
 							</p>
-							<a class="v-wpsa-view-report" href="<?php echo esc_url( $url ); ?>" data-domain="<?php echo $domain; ?>">
+							<a class="v-wpsa-view-report" href="<?php echo esc_url( $url ); ?>" data-domain="<?php echo esc_attr( $domain ); ?>">
 								<div class="progress mb-3">
 									<div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo absint( $website['score'] ); ?>%;"></div>
 								</div>
@@ -127,7 +127,7 @@ function v_wpsa_render_website_list_template( $websites, $thumbnail_stack, $args
 					</ul>
 
 					<div class="card-body">
-						<a class="btn btn-primary v-wpsa-view-report" href="<?php echo esc_url( $url ); ?>" data-domain="<?php echo $domain; ?>" role="button">
+						<a class="btn btn-primary v-wpsa-view-report" href="<?php echo esc_url( $url ); ?>" data-domain="<?php echo esc_attr( $domain ); ?>" role="button">
 							<?php esc_html_e( 'Review', 'v-wpsa' ); ?>
 						</a>
 					</div>
@@ -181,7 +181,7 @@ function v_wpsa_render_pagination( $current_page, $per_page, $total ) {
 	// Page number links.
 	for ( $i = 1; $i <= $total_pages; $i++ ) {
 		$active_class = ( $i === $current_page ) ? ' active' : '';
-		echo '<li class="page-item' . $active_class . '">';
+		echo '<li class="page-item' . esc_attr( $active_class ) . '">';
 		if ( $i === $current_page ) {
 			echo '<span class="page-link">' . absint( $i ) . '</span>';
 		} else {
