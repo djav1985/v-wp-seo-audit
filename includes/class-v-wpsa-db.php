@@ -60,12 +60,12 @@ class V_WPSA_DB {
 	 */
 	public function get_table_columns( $table ) {
 		static $cache = array();
-		$key = $table;
+		$key          = $table;
 		if ( isset( $cache[ $key ] ) ) {
 			return $cache[ $key ];
 		}
 		$table_name = $this->get_table_name( $table );
-		$cols = array();
+		$cols       = array();
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 		$results = $this->wpdb->get_results( "DESCRIBE {$table_name}", ARRAY_A );
 		if ( $results ) {
@@ -81,7 +81,7 @@ class V_WPSA_DB {
 	 * Filter an associative array to only keys that exist as columns in a given table.
 	 *
 	 * @param string $table Table name without prefix.
-	 * @param array $data Associative array to filter.
+	 * @param array  $data Associative array to filter.
 	 * @return array Filtered associative array.
 	 */
 	public function filter_columns( $table, array $data ) {
@@ -288,6 +288,21 @@ class V_WPSA_DB {
 
 		// Get thumbnail data.
 		$thumbnail = array();
+
+		// Ensure WebsiteThumbnail and Utils classes are available.
+		if ( ! class_exists( 'Utils' ) ) {
+			$utils_path = v_wpsa_PLUGIN_DIR . 'protected/components/Utils.php';
+			if ( file_exists( $utils_path ) ) {
+				require_once $utils_path;
+			}
+		}
+		if ( ! class_exists( 'WebsiteThumbnail' ) ) {
+			$thumbnail_path = v_wpsa_PLUGIN_DIR . 'protected/components/WebsiteThumbnail.php';
+			if ( file_exists( $thumbnail_path ) ) {
+				require_once $thumbnail_path;
+			}
+		}
+
 		if ( class_exists( 'WebsiteThumbnail' ) ) {
 			try {
 				$thumbnail = WebsiteThumbnail::getThumbData(
@@ -307,8 +322,10 @@ class V_WPSA_DB {
 		}
 
 		// Calculate time difference for cache expiration.
-		$diff    = time() - (int) $website['added'];
-		$strtime = '';
+		// Use 'modified' timestamp to match Yii controller behavior.
+		$modified_timestamp = isset( $website['modified'] ) ? strtotime( $website['modified'] ) : (int) $website['added'];
+		$diff               = time() - $modified_timestamp;
+		$strtime            = '';
 
 		// Calculate human-readable time difference.
 		if ( $diff < 60 ) {
@@ -321,10 +338,17 @@ class V_WPSA_DB {
 			$strtime = floor( $diff / 86400 ) . ' days ago';
 		}
 
-		// Build generated metadata.
+		// Build generated metadata matching WebsitestatController format.
+		// Include all date components needed by report.php template.
 		$generated = array(
 			'time'    => $strtime,
 			'seconds' => $diff,
+			'A'       => gmdate( 'A', $modified_timestamp ),
+			'Y'       => gmdate( 'Y', $modified_timestamp ),
+			'M'       => gmdate( 'M', $modified_timestamp ),
+			'd'       => gmdate( 'd', $modified_timestamp ),
+			'H'       => gmdate( 'H', $modified_timestamp ),
+			'i'       => gmdate( 'i', $modified_timestamp ),
 		);
 
 		// Prepare RateProvider instance.
@@ -435,7 +459,12 @@ class V_WPSA_DB {
 			} else {
 				// Ensure keys exist.
 				$data['links']['links'][ $idx ] = array_merge(
-					array( 'Link' => '', 'Name' => '', 'Type' => 'external', 'Juice' => 'dofollow' ),
+					array(
+						'Link'  => '',
+						'Name'  => '',
+						'Type'  => 'external',
+						'Juice' => 'dofollow',
+					),
 					$link
 				);
 			}
@@ -912,7 +941,7 @@ class V_WPSA_DB {
 	 */
 	public function set_website_score( $wid, $score ) {
 		$table = 'website';
-		$data = array( 'score' => intval( $score ) );
+		$data  = array( 'score' => intval( $score ) );
 
 		// If schema does not contain 'score' column, attempt to add it (best-effort).
 		$cols = $this->get_table_columns( $table );

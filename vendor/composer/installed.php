@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => '619e053da79bc34136d0a3282bcf45a944fb2f53',
+        'pretty_version' => 'dev-copilot/fix-undefined-array-key-error',
+        'version' => 'dev-copilot/fix-undefined-array-key-error',
+        'reference' => '77e0fde7e3ffeb693eca34e2e4947c8c39acb37c',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,18 +11,18 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '619e053da79bc34136d0a3282bcf45a944fb2f53',
+            'pretty_version' => 'dev-copilot/fix-undefined-array-key-error',
+            'version' => 'dev-copilot/fix-undefined-array-key-error',
+            'reference' => '77e0fde7e3ffeb693eca34e2e4947c8c39acb37c',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
         'squizlabs/php_codesniffer' => array(
-            'pretty_version' => '3.7.0',
-            'version' => '3.7.0.0',
-            'reference' => 'a2cd51b45bcaef9c1f2a4bda48f2dd2fa2b95563',
+            'pretty_version' => '3.13.4',
+            'version' => '3.13.4.0',
+            'reference' => 'ad545ea9c1b7d270ce0fc9cbfb884161cd706119',
             'type' => 'library',
             'install_path' => __DIR__ . '/../squizlabs/php_codesniffer',
             'aliases' => array(),
