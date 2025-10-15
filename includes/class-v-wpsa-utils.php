@@ -468,7 +468,7 @@ class V_WPSA_Utils {
 	 * @return array Config array.
 	 */
 	public static function get_local_config_if_exists( $config_name ) {
-		$dir        = dirname( dirname( __FILE__ ) ) . '/protected/config';
+		$dir        = dirname( dirname( __FILE__ ) ) . '/config';
 		$conf_local = $dir . '/' . $config_name . '_local.php';
 		$conf_prod  = $dir . '/' . $config_name . '.php';
 		return file_exists( $conf_local ) ? require $conf_local : ( file_exists( $conf_prod ) ? require $conf_prod : array() );

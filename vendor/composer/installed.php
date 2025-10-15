@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => 'bc665e88bcf6a0417ff082acae67ee343ea1dabc',
+        'pretty_version' => 'dev-copilot/update-gzip-compression-references',
+        'version' => 'dev-copilot/update-gzip-compression-references',
+        'reference' => 'abffaf87eec4907dd5b57d99e0c02e9466361891',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => 'bc665e88bcf6a0417ff082acae67ee343ea1dabc',
+            'pretty_version' => 'dev-copilot/update-gzip-compression-references',
+            'version' => 'dev-copilot/update-gzip-compression-references',
+            'reference' => 'abffaf87eec4907dd5b57d99e0c02e9466361891',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

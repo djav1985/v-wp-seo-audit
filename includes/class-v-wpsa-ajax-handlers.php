@@ -197,14 +197,8 @@ class V_WPSA_Ajax_Handlers {
 				}
 			);
 
-			// Debug logging.
-			$upload_dir = function_exists( 'wp_upload_dir' ) ? wp_upload_dir() : array( 'basedir' => '' );
-			error_log( sprintf( 'v-wpsa: download_pdf start for domain=%s uploads=%s memory_limit=%s', $domain, $upload_dir['basedir'], ini_get( 'memory_limit' ) ) );
-
 			// Generate PDF using WordPress-native methods.
 			$pdf_data = V_WPSA_Report_Generator::generate_pdf_report( $domain );
-
-			error_log( sprintf( 'v-wpsa: generate_pdf_report returned: %s', var_export( $pdf_data, true ) ) );
 
 			// Read the PDF file.
 			if ( ! file_exists( $pdf_data['file'] ) ) {

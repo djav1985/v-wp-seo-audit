@@ -52,10 +52,10 @@ class V_WPSA_Config {
 	}
 
 	/**
-	 * Load configuration from protected/config/config.php.
+	 * Load configuration from config/config.php.
 	 */
 	private static function load_config() {
-		$config_file = v_wpsa_PLUGIN_DIR . 'protected/config/config.php';
+		$config_file = v_wpsa_PLUGIN_DIR . 'config/config.php';
 
 		if ( file_exists( $config_file ) ) {
 			self::$config = require $config_file;
