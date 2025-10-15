@@ -34,8 +34,31 @@ class V_WPSA_Report_Generator {
 			throw new Exception( 'Website not found: ' . $domain );
 		}
 
+		// Ensure Utils class is available for templates that reference it.
+		if ( ! class_exists( 'Utils' ) ) {
+			$utils_path = v_wpsa_PLUGIN_DIR . 'protected/components/Utils.php';
+			if ( file_exists( $utils_path ) ) {
+				require_once $utils_path;
+			}
+		}
+
 		// Render using WordPress template.
-		return self::render_template( 'report.php', $data );
+		$html = self::render_template( 'report.php', $data );
+
+		// Persist calculated score if a RateProvider was used during rendering.
+		if ( isset( $data['website']['id'] ) && isset( $data['rateprovider'] ) && is_object( $data['rateprovider'] ) ) {
+			try {
+				if ( method_exists( $data['rateprovider'], 'getScore' ) ) {
+					$score = (int) $data['rateprovider']->getScore();
+					$db    = new V_WPSA_DB();
+					$db->set_website_score( $data['website']['id'], $score );
+				}
+			} catch ( Exception $e ) {
+				// Don't break rendering on score persistence failure; just continue.
+			}
+		}
+
+		return $html;
 	}
 
 	/**
@@ -75,8 +98,37 @@ class V_WPSA_Report_Generator {
 			}
 		}
 
+		// Ensure Utils class is available for templates that reference it.
+		if ( ! class_exists( 'Utils' ) ) {
+			$utils_path = v_wpsa_PLUGIN_DIR . 'protected/components/Utils.php';
+			if ( file_exists( $utils_path ) ) {
+				require_once $utils_path;
+			}
+		}
+
+		// Ensure Utils class is available for templates that reference it.
+		if ( ! class_exists( 'Utils' ) ) {
+			$utils_path = v_wpsa_PLUGIN_DIR . 'protected/components/Utils.php';
+			if ( file_exists( $utils_path ) ) {
+				require_once $utils_path;
+			}
+		}
+
 		// Render PDF template to HTML.
 		$html = self::render_template( 'pdf.php', $data );
+
+		// Persist calculated score if a RateProvider was used during rendering.
+		if ( isset( $data['website']['id'] ) && isset( $data['rateprovider'] ) && is_object( $data['rateprovider'] ) ) {
+			try {
+				if ( method_exists( $data['rateprovider'], 'getScore' ) ) {
+					$score = (int) $data['rateprovider']->getScore();
+					$db    = new V_WPSA_DB();
+					$db->set_website_score( $data['website']['id'], $score );
+				}
+			} catch ( Exception $e ) {
+				// Ignore persistence errors and continue PDF generation.
+			}
+		}
 
 		// Generate PDF file path.
 		if ( ! class_exists( 'Utils' ) ) {

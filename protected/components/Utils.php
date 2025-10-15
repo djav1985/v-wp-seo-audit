@@ -99,14 +99,47 @@ class Utils {
 	 */
 	public static function deletePdf( $domain) {
 
-		foreach (Yii::app()->params['app.languages'] as $langId => $language) {
-			$pdf = self::getPdfFile( $domain, $langId );
-			if (file_exists( $pdf )) {
-				unlink( $pdf );
+		// If Yii is available, use configured languages list; otherwise fallback to WordPress uploads path.
+		if ( class_exists( 'Yii' ) ) {
+			$languages = array();
+			if ( isset( Yii::app()->params['app.languages'] ) && is_array( Yii::app()->params['app.languages'] ) ) {
+				$languages = array_keys( Yii::app()->params['app.languages'] );
+			}
+			if ( empty( $languages ) ) {
+				$languages = array( 'en' );
+			}
+			foreach ( $languages as $langId ) {
+				$pdf = self::getPdfFile( $domain, $langId );
+				if ( file_exists( $pdf ) ) {
+					@unlink( $pdf );
+				}
+			}
+		} else {
+			// Fallback: delete simplified PDF files in WordPress uploads.
+			if ( function_exists( 'wp_upload_dir' ) ) {
+				$upload_dir = wp_upload_dir();
+				$base       = rtrim( $upload_dir['basedir'], "\/'" ) . '/seo-audit/pdf/';
+				$paths      = array(
+					$base . $domain . '.pdf',
+					$base . $domain . '_pagespeed.pdf',
+				);
+				foreach ( $paths as $pdf ) {
+					if ( file_exists( $pdf ) ) {
+						@unlink( $pdf );
+					}
+				}
 			}
 		}
-		// Also delete the cached thumbnail.
-		WebsiteThumbnail::deleteThumbnail( $domain );
+
+		// Also delete the cached thumbnail if the helper exists.
+		if ( class_exists( 'WebsiteThumbnail', false ) ) {
+			try {
+				WebsiteThumbnail::deleteThumbnail( $domain );
+			} catch ( Exception $e ) {
+				// ignore errors deleting thumbnails
+			}
+		}
+
 		return true;
 	}
 
@@ -185,9 +218,23 @@ class Utils {
 	public static function curl( $url, array $headers = array(), $cookie = false) {
 
 		$ch = curl_init( $url );
-		if ($cookie) {
-			$path   = Yii::getPathOfAlias( Yii::app()->params['param.cookie_cache'] );
-			$cookie = $path . "/cookie_{$cookie}.txt";
+		if ( $cookie ) {
+			// Prefer Yii-configured cookie cache when available, otherwise use WP uploads folder.
+			if ( class_exists( 'Yii' ) && method_exists( 'Yii', 'getPathOfAlias' ) && isset( Yii::app()->params['param.cookie_cache'] ) ) {
+				$path   = Yii::getPathOfAlias( Yii::app()->params['param.cookie_cache'] );
+				$cookie = $path . "/cookie_{$cookie}.txt";
+			} else {
+				if ( function_exists( 'wp_upload_dir' ) ) {
+					$upload_dir = wp_upload_dir();
+					$cookie_dir = rtrim( $upload_dir['basedir'], "\/'" ) . '/seo-audit/cookies/';
+					if ( ! is_dir( $cookie_dir ) ) {
+						@mkdir( $cookie_dir, 0755, true );
+					}
+					$cookie = $cookie_dir . "cookie_{$cookie}.txt";
+				} else {
+					$cookie = false;
+				}
+			}
 		}
 		$html = self::curl_exec( $ch, $headers, $cookie );
 		curl_close( $ch );
@@ -385,9 +432,13 @@ class Utils {
 	}
 
 	public static function isPsiActive( $k, $item) {
-		 $key        = "psi.{$k}";
-		 $configItem = Yii::app()->params[ $key ];
-		 return is_array( $configItem ) ? ( empty( $configItem ) or in_array( $item, $configItem ) ) : $configItem === $item;
+		$key = "psi.{$k}";
+		if ( class_exists( 'Yii' ) && isset( Yii::app()->params[ $key ] ) ) {
+			$configItem = Yii::app()->params[ $key ];
+			return is_array( $configItem ) ? ( empty( $configItem ) || in_array( $item, $configItem, true ) ) : $configItem === $item;
+		}
+		// Fallback: not active by default.
+		return false;
 	}
 
 	public static function starts_with( $haystack, $needle) {
@@ -395,10 +446,17 @@ class Utils {
 	}
 
 	public static function getLocalConfigIfExists( $config_name) {
-		 $dir       = Yii::getPathOfAlias( 'application.config' );
+		// If Yii is available, use its path alias; otherwise look in protected/config as a fallback.
+		if ( class_exists( 'Yii' ) && method_exists( 'Yii', 'getPathOfAlias' ) ) {
+			$dir       = Yii::getPathOfAlias( 'application.config' );
+			$conf_local = $dir . '/' . $config_name . '_local.php';
+			$conf_prod  = $dir . '/' . $config_name . '.php';
+			return file_exists( $conf_local ) ? require $conf_local : ( file_exists( $conf_prod ) ? require $conf_prod : array() );
+		}
+		$dir        = dirname( dirname( __DIR__ ) ) . '/protected/config';
 		$conf_local = $dir . '/' . $config_name . '_local.php';
 		$conf_prod  = $dir . '/' . $config_name . '.php';
-		 return file_exists( $conf_local ) ? require $conf_local : require $conf_prod;
+		return file_exists( $conf_local ) ? require $conf_local : ( file_exists( $conf_prod ) ? require $conf_prod : array() );
 	}
 
 	public static function html_decode( $str) {

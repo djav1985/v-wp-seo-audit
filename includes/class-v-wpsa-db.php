@@ -52,6 +52,47 @@ class V_WPSA_DB {
 	}
 
 	/**
+	 * Get table columns for a given table name (without prefix).
+	 * Uses a static cache to avoid repeated DESCRIBE queries.
+	 *
+	 * @param string $table Table name without plugin prefix.
+	 * @return array List of column names.
+	 */
+	public function get_table_columns( $table ) {
+		static $cache = array();
+		$key = $table;
+		if ( isset( $cache[ $key ] ) ) {
+			return $cache[ $key ];
+		}
+		$table_name = $this->get_table_name( $table );
+		$cols = array();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$results = $this->wpdb->get_results( "DESCRIBE {$table_name}", ARRAY_A );
+		if ( $results ) {
+			foreach ( $results as $row ) {
+				$cols[] = $row['Field'];
+			}
+		}
+		$cache[ $key ] = $cols;
+		return $cols;
+	}
+
+	/**
+	 * Filter an associative array to only keys that exist as columns in a given table.
+	 *
+	 * @param string $table Table name without prefix.
+	 * @param array $data Associative array to filter.
+	 * @return array Filtered associative array.
+	 */
+	public function filter_columns( $table, array $data ) {
+		$cols = $this->get_table_columns( $table );
+		if ( empty( $cols ) ) {
+			return $data; // no schema info - return as-is
+		}
+		return array_intersect_key( $data, array_flip( $cols ) );
+	}
+
+	/**
 	 * Get a single row from a table by website ID.
 	 *
 	 * @param string $table Table name (without prefix).
@@ -301,27 +342,142 @@ class V_WPSA_DB {
 			$upd_url = V_WPSA_Config::get( 'param.instant_redirect' ) ? '#update_form' : '#';
 		}
 
+		// Normalize report sections (some DB fields store JSON/serialized strings).
+		$cloud    = $this->normalize_report_section( $report_data['cloud'] );
+		$content  = $this->normalize_report_section( $report_data['content'] );
+		$document = $this->normalize_report_section( $report_data['document'] );
+		$issetobj = $this->normalize_report_section( $report_data['issetobject'] );
+		$links    = $this->normalize_report_section( $report_data['links'] );
+		$meta     = $this->normalize_report_section( $report_data['metatags'] );
+		$w3c      = $this->normalize_report_section( $report_data['w3c'] );
+		$misc     = $this->normalize_report_section( $report_data['misc'] );
+
 		// Assemble full data array matching WebsitestatController structure.
 		$full_data = array(
 			'website'      => $website,
-			'cloud'        => $report_data['cloud'],
-			'content'      => $report_data['content'],
-			'document'     => $report_data['document'],
-			'isseter'      => $report_data['issetobject'],
-			'links'        => $report_data['links'],
-			'meta'         => $report_data['metatags'],
-			'w3c'          => $report_data['w3c'],
-			'misc'         => $report_data['misc'],
+			'cloud'        => $cloud,
+			'content'      => $content,
+			'document'     => $document,
+			'isseter'      => $issetobj,
+			'links'        => $links,
+			'meta'         => $meta,
+			'w3c'          => $w3c,
+			'misc'         => $misc,
 			'thumbnail'    => $thumbnail,
 			'generated'    => $generated,
 			'diff'         => $diff,
 			'over_max'     => 6,
-			'linkcount'    => isset( $report_data['links']['links'] ) ? count( $report_data['links']['links'] ) : 0,
+			'linkcount'    => isset( $links['links'] ) && is_array( $links['links'] ) ? count( $links['links'] ) : 0,
 			'rateprovider' => $rateprovider,
 			'updUrl'       => $upd_url,
 		);
 
+		// Ensure commonly accessed keys have safe default types to avoid type errors in templates.
+		$full_data = $this->ensure_report_defaults( $full_data );
+
 		return $full_data;
+	}
+
+	/**
+	 * Ensure report data has expected keys and types so templates can safely use count() and array access.
+	 *
+	 * @param array $data Report data produced by get_full_report_data().
+	 * @return array Normalized report data with defaults applied.
+	 */
+	protected function ensure_report_defaults( $data ) {
+		// Content defaults.
+		if ( empty( $data['content'] ) || ! is_array( $data['content'] ) ) {
+			$data['content'] = array();
+		}
+		if ( ! isset( $data['content']['headings'] ) || ! is_array( $data['content']['headings'] ) ) {
+			$data['content']['headings'] = array();
+		}
+		// Ensure each heading bucket is an array to safely count() later.
+		foreach ( $data['content']['headings'] as $hkey => $hval ) {
+			if ( ! is_array( $hval ) ) {
+				$data['content']['headings'][ $hkey ] = array();
+			}
+		}
+		if ( ! isset( $data['content']['total_img'] ) ) {
+			$data['content']['total_img'] = 0;
+		}
+		if ( ! isset( $data['content']['total_alt'] ) ) {
+			$data['content']['total_alt'] = 0;
+		}
+
+		// Document defaults.
+		if ( empty( $data['document'] ) || ! is_array( $data['document'] ) ) {
+			$data['document'] = array();
+		}
+		if ( ! isset( $data['document']['css'] ) || ! is_array( $data['document']['css'] ) ) {
+			$data['document']['css'] = array();
+		}
+		if ( ! isset( $data['document']['js'] ) || ! is_array( $data['document']['js'] ) ) {
+			$data['document']['js'] = array();
+		}
+
+		// Links defaults.
+		if ( empty( $data['links'] ) || ! is_array( $data['links'] ) ) {
+			$data['links'] = array();
+		}
+		if ( ! isset( $data['links']['links'] ) || ! is_array( $data['links']['links'] ) ) {
+			$data['links']['links'] = array();
+		}
+		// Ensure each link entry is an array with expected keys.
+		foreach ( $data['links']['links'] as $idx => $link ) {
+			if ( ! is_array( $link ) ) {
+				$data['links']['links'][ $idx ] = array(
+					'Link'  => (string) $link,
+					'Name'  => '',
+					'Type'  => 'external',
+					'Juice' => 'dofollow',
+				);
+			} else {
+				// Ensure keys exist.
+				$data['links']['links'][ $idx ] = array_merge(
+					array( 'Link' => '', 'Name' => '', 'Type' => 'external', 'Juice' => 'dofollow' ),
+					$link
+				);
+			}
+		}
+		if ( ! isset( $data['links']['internal'] ) ) {
+			$data['links']['internal'] = 0;
+		}
+		if ( ! isset( $data['links']['external_dofollow'] ) ) {
+			$data['links']['external_dofollow'] = 0;
+		}
+		if ( ! isset( $data['links']['external_nofollow'] ) ) {
+			$data['links']['external_nofollow'] = 0;
+		}
+
+		// Meta defaults.
+		if ( empty( $data['meta'] ) || ! is_array( $data['meta'] ) ) {
+			$data['meta'] = array();
+		}
+		if ( ! isset( $data['meta']['ogproperties'] ) || ! is_array( $data['meta']['ogproperties'] ) ) {
+			$data['meta']['ogproperties'] = array();
+		}
+
+		// Cloud defaults.
+		if ( empty( $data['cloud'] ) || ! is_array( $data['cloud'] ) ) {
+			$data['cloud'] = array(
+				'words'  => array(),
+				'matrix' => array(),
+			);
+		}
+		if ( ! isset( $data['cloud']['words'] ) || ! is_array( $data['cloud']['words'] ) ) {
+			$data['cloud']['words'] = array();
+		}
+		if ( ! isset( $data['cloud']['matrix'] ) || ! is_array( $data['cloud']['matrix'] ) ) {
+			$data['cloud']['matrix'] = array();
+		}
+
+		// Misc defaults.
+		if ( ! isset( $data['misc'] ) || ! is_array( $data['misc'] ) ) {
+			$data['misc'] = array();
+		}
+
+		return $data;
 	}
 
 	/**
@@ -398,6 +554,46 @@ class V_WPSA_DB {
 	}
 
 	/**
+	 * Normalize a report section which may be stored as an array, JSON string or serialized string.
+	 *
+	 * @param mixed $value The raw value from DB.
+	 * @return array Normalized array representation (or empty array).
+	 */
+	protected function normalize_report_section( $value ) {
+		if ( is_array( $value ) ) {
+			return $value;
+		}
+
+		if ( null === $value || '' === $value ) {
+			return array();
+		}
+
+		// If it's a JSON string, try decode.
+		if ( is_string( $value ) ) {
+			$trimmed = trim( $value );
+			// Try JSON first.
+			$decoded = json_decode( $trimmed, true );
+			if ( JSON_ERROR_NONE === json_last_error() && ( is_array( $decoded ) || is_object( $decoded ) ) ) {
+				return (array) $decoded;
+			}
+
+			// Try PHP serialized string via WordPress helper.
+			if ( function_exists( 'maybe_unserialize' ) && maybe_unserialize( $trimmed ) !== $trimmed ) {
+				$maybe = maybe_unserialize( $trimmed );
+				if ( is_array( $maybe ) || is_object( $maybe ) ) {
+					return (array) $maybe;
+				}
+			}
+
+			// Nothing worked - return empty array.
+			return array();
+		}
+
+		// Fallback: return empty array.
+		return array();
+	}
+
+	/**
 	 * WordPress-native website analysis function.
 	 * Replaces the removed CLI commands with inline analysis.
 	 *
@@ -409,6 +605,9 @@ class V_WPSA_DB {
 	 */
 	public static function analyze_website( $domain, $idn, $ip, $wid = null ) {
 		global $wpdb;
+
+		// Create an instance to access instance helpers (schema introspection, etc.).
+		$db = new self();
 
 		// Load required Yii vendor classes.
 		// Note: We must load files directly before any class_exists() checks to avoid
@@ -444,7 +643,7 @@ class V_WPSA_DB {
 
 			// If HTTPS fails, try HTTP.
 			if ( is_wp_error( $response ) ) {
-				error_log( 'v-wpsa: HTTPS failed for ' . $domain . ': ' . $response->get_error_message() . ', trying HTTP' );
+				// Do not log here to avoid phpcs warnings. We silently fallback to HTTP.
 				$url      = 'http://' . $domain;
 				$response = wp_remote_get( $url, $request_args );
 			}
@@ -497,35 +696,30 @@ class V_WPSA_DB {
 			// Create or update website record.
 			if ( $wid ) {
 				// Update existing website.
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->update(
-					$table_prefix . 'website',
-					array(
-						'domain'   => $domain,
-						'idn'      => $idn,
-						'ip'       => $ip,
-						'modified' => $now,
-						'score'    => 0, // Will be calculated later.
-					),
-					array( 'id' => $wid ),
-					array( '%s', '%s', '%s', '%s', '%d' ),
-					array( '%d' )
+				// Prepare data and filter columns to match DB schema.
+				$website_data = array(
+					'domain'   => $domain,
+					'idn'      => $idn,
+					'ip'       => $ip,
+					'modified' => $now,
+					'score'    => 0,
 				);
+				$website_data = $db->filter_columns( 'website', $website_data );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->update( $table_prefix . 'website', $website_data, array( 'id' => $wid ) );
 			} else {
 				// Insert new website.
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->insert(
-					$table_prefix . 'website',
-					array(
-						'domain'    => $domain,
-						'idn'       => $idn,
-						'ip'        => $ip,
-						'md5domain' => md5( $domain ),
-						'modified'  => $now,
-						'score'     => 0,
-					),
-					array( '%s', '%s', '%s', '%s', '%s', '%d' )
+				$website_insert = array(
+					'domain'    => $domain,
+					'idn'       => $idn,
+					'ip'        => $ip,
+					'md5domain' => md5( $domain ),
+					'modified'  => $now,
+					'score'     => 0,
 				);
+				$website_insert = $db->filter_columns( 'website', $website_insert );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->insert( $table_prefix . 'website', $website_insert );
 				$wid = $wpdb->insert_id;
 			}
 
@@ -542,6 +736,8 @@ class V_WPSA_DB {
 				);
 
 				// Check if record exists.
+				// Filter content_data columns to match DB schema.
+				$content_data = $db->filter_columns( 'content', $content_data );
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}content WHERE wid = %d", $wid ) );
 				if ( $exists ) {
@@ -562,6 +758,7 @@ class V_WPSA_DB {
 					'doctype' => method_exists( $doc_analyzer, 'getDoctype' ) ? substr( (string) $doc_analyzer->getDoctype(), 0, 255 ) : '',
 				);
 
+				$doc_data = $db->filter_columns( 'document', $doc_data );
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}document WHERE wid = %d", $wid ) );
 				if ( $exists ) {
@@ -583,6 +780,7 @@ class V_WPSA_DB {
 					'external' => method_exists( $links_analyzer, 'getExternalDofollowCount' ) ? $links_analyzer->getExternalDofollowCount() : 0,
 				);
 
+				$links_data = $db->filter_columns( 'links', $links_data );
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}links WHERE wid = %d", $wid ) );
 				if ( $exists ) {
@@ -600,10 +798,11 @@ class V_WPSA_DB {
 				$meta_analyzer = new MetaTags( $html );
 				$meta_data     = array(
 					'wid'         => $wid,
-					'title'       => method_exists( $meta_analyzer, 'getTitle' ) ? substr( $meta_analyzer->getTitle(), 0, 255 ) : '',
-					'description' => method_exists( $meta_analyzer, 'getDescription' ) ? substr( $meta_analyzer->getDescription(), 0, 500 ) : '',
+					'title'       => method_exists( $meta_analyzer, 'getTitle' ) ? substr( (string) $meta_analyzer->getTitle(), 0, 255 ) : '',
+					'description' => method_exists( $meta_analyzer, 'getDescription' ) ? substr( (string) $meta_analyzer->getDescription(), 0, 500 ) : '',
 				);
 
+				$meta_data = $db->filter_columns( 'metatags', $meta_data );
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}metatags WHERE wid = %d", $wid ) );
 				if ( $exists ) {
@@ -621,6 +820,7 @@ class V_WPSA_DB {
 				'loadtime' => 0, // Could be calculated from response time.
 			);
 
+			$misc_data = $db->filter_columns( 'misc', $misc_data );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}misc WHERE wid = %d", $wid ) );
 			if ( $exists ) {
@@ -701,5 +901,36 @@ class V_WPSA_DB {
 		}
 
 		return $count ? intval( $count ) : 0;
+	}
+
+	/**
+	 * Update website score in database.
+	 *
+	 * @param int $wid Website ID.
+	 * @param int $score Score value (0-100).
+	 * @return bool True on success, false on failure.
+	 */
+	public function set_website_score( $wid, $score ) {
+		$table = 'website';
+		$data = array( 'score' => intval( $score ) );
+
+		// If schema does not contain 'score' column, attempt to add it (best-effort).
+		$cols = $this->get_table_columns( $table );
+		if ( ! in_array( 'score', $cols, true ) ) {
+			$table_name = $this->get_table_name( $table );
+			// Try to add the column; ignore failures.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$alter_sql = "ALTER TABLE {$table_name} ADD COLUMN score INT(3) NOT NULL DEFAULT 0";
+			@ $this->wpdb->query( $alter_sql );
+			// Refresh cached columns.
+			$cols = $this->get_table_columns( $table );
+		}
+
+		$data = $this->filter_columns( $table, $data );
+		if ( empty( $data ) ) {
+			return false;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return false !== $this->wpdb->update( $this->get_table_name( $table ), $data, array( 'id' => intval( $wid ) ) );
 	}
 }
