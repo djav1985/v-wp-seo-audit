@@ -10,17 +10,23 @@ This plugin provides comprehensive SEO audit functionality for WordPress. It ana
 
 1. Upload the plugin files to the `/wp-content/plugins/v-wpsa` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
-3. Add the shortcode `[v_wpsa]` to any page or post where you want to display the SEO audit tool
+3. Add the shortcode `[v_wpsa]` or `[v_wp_seo_audit]` to any page or post where you want to display the SEO audit tool
 
 ## Usage
 
-To display the SEO audit tool on your website, simply add the following shortcode to any page or post:
+To display the SEO audit tool on your website, simply add one of the following shortcodes to any page or post:
 
 ```
 [v_wpsa]
 ```
 
-The plugin will display on the front-end where the shortcode is placed.
+or
+
+```
+[v_wp_seo_audit]
+```
+
+Both shortcodes work identically. The plugin will display on the front-end where the shortcode is placed.
 
 ## Features
 
@@ -185,7 +191,7 @@ To test the plugin functionality:
 
 2. **Create a Test Page**:
    - Create a new page in WordPress
-   - Add the shortcode `[v_wpsa]`
+   - Add the shortcode `[v_wpsa]` or `[v_wp_seo_audit]`
    - Publish the page
 
 3. **Test Form Submission**:

@@ -71,8 +71,8 @@ $v_wpsa_app = null;
 function v_wpsa_enqueue_assets() {
 	global $post;
 
-	// Only load if shortcode is present on the page.
-	if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'v_wpsa' ) ) {
+	// Only load if shortcode is present on the page (check both shortcode names).
+	if ( is_a( $post, 'WP_Post' ) && ( has_shortcode( $post->post_content, 'v_wpsa' ) || has_shortcode( $post->post_content, 'v_wp_seo_audit' ) ) ) {
 		// Enqueue CSS files.
 		wp_enqueue_style( 'v-wpsa-bootstrap', v_wpsa_PLUGIN_URL . 'assets/css/bootstrap.min.css', array(), v_wpsa_VERSION );
 		wp_enqueue_style( 'v-wpsa-fontawesome', v_wpsa_PLUGIN_URL . 'assets/css/fontawesome.min.css', array(), v_wpsa_VERSION );
@@ -130,6 +130,8 @@ function v_wpsa_shortcode( $atts ) {
 	return '<div class="v-wpsa-container" data-nonce="' . esc_attr( $nonce ) . '">' . $content . '</div>';
 }
 add_shortcode( 'v_wpsa', 'v_wpsa_shortcode' );
+// Also register the full plugin name as an alias for backward compatibility.
+add_shortcode( 'v_wp_seo_audit', 'v_wpsa_shortcode' );
 
 // Initialize AJAX handlers.
 V_WPSA_Ajax_Handlers::init();
