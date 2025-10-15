@@ -80,8 +80,14 @@ class V_WPSA_Report_Generator {
 		$filename = $domain;
 		$pdf_file = Utils::createPdfFolder( $filename );
 
-		// Use Yii PDF generation (will be replaced in future).
-		$controller->createPdfFromHtml( $html, $pdf_file, $data['website']['idn'] );
+		// Use Yii PDF generation but only save the file to disk (do not stream it).
+		// The AJAX handler will send the file to the client.
+		$controller->createPdfFromHtml( $html, $pdf_file, $data['website']['idn'], false );
+
+		// Ensure PDF was created.
+		if ( ! file_exists( $pdf_file ) ) {
+			throw new Exception( 'Failed to create PDF file' );
+		}
 
 		return array(
 			'file'     => $pdf_file,

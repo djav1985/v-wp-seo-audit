@@ -244,8 +244,13 @@ class WebsitestatController extends Controller {
 	 */
 	public function actionGeneratePDF( $domain ) {
 		$filename = $this->domain;
-		$pdfFile  = Utils::createPdfFolder( $filename );
-		if (file_exists( $pdfFile )) {
+		try {
+			$pdfFile = Utils::createPdfFolder( $filename );
+		} catch ( Exception $e ) {
+			// If we cannot create the deep nested folder, try to notify user gracefully.
+			throw new CHttpException( 500, 'Unable to prepare PDF file: ' . $e->getMessage() );
+		}
+		if ( file_exists( $pdfFile ) ) {
 			$this->outputPDF( $pdfFile, $this->website['idn'] );
 		}
 
@@ -297,11 +302,12 @@ class WebsitestatController extends Controller {
 	/**
 	 * createPdfFromHtml function.
 	 *
-	 * @param mixed $html Parameter.
-	 * @param mixed $pdfFile Parameter.
-	 * @param mixed $filename Parameter.
+	* @param mixed $html Parameter.
+	* @param mixed $pdfFile Parameter.
+	* @param mixed $filename Parameter.
+	* @param bool  $stream Whether to stream the PDF directly to the client (default: true).
 	 */
-	protected function createPdfFromHtml( $html, $pdfFile, $filename ) {
+	protected function createPdfFromHtml( $html, $pdfFile, $filename, $stream = true ) {
 		$pdf = Yii::createComponent( 'application.extensions.tcpdf.ETcPdf', 'P', 'cm', 'A4', true, 'UTF-8' );
 		$pdf->SetCreator( PDF_CREATOR );
 		$pdf->SetAuthor( 'http://website-review.php8developer.com' );
@@ -314,8 +320,12 @@ class WebsitestatController extends Controller {
 
 		// $pdf->writeHTML($html, true, false, true, false, '');
 		@$pdf->writeHTML( $html, 2 );
+		// Save PDF to disk.
 		$pdf->Output( $pdfFile, 'F' );
-		$this->outputPDF( $pdfFile, $filename );
+		// If requested, stream the PDF directly to the client and end execution.
+		if ( $stream ) {
+			$this->outputPDF( $pdfFile, $filename );
+		}
 	}
 
 	/**

@@ -196,6 +196,16 @@ function v_wpsa_cleanup() {
 			// PDFs are stored in: seo-audit/pdf/{lang}/{first_letter}/{domain}.pdf.
 			$languages = array( 'en' ); // Default language support.
 
+			// Also remove simplified PDF files located directly under seo-audit/pdf/
+			$simple_pdf_path = $pdf_dir . $domain . '.pdf';
+			if ( file_exists( $simple_pdf_path ) ) {
+				wp_delete_file( $simple_pdf_path );
+			}
+			$simple_pdf_path_ps = $pdf_dir . $domain . '_pagespeed.pdf';
+			if ( file_exists( $simple_pdf_path_ps ) ) {
+				wp_delete_file( $simple_pdf_path_ps );
+			}
+
 			foreach ( $languages as $lang ) {
 				$first_letter = mb_substr( $domain, 0, 1 );
 				$pdf_path     = $pdf_dir . $lang . '/' . $first_letter . '/' . $domain . '.pdf';

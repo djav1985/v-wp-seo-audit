@@ -25,9 +25,21 @@ class V_WPSA_Helpers {
 	public static function delete_pdf( $domain ) {
 		// Get WordPress upload directory.
 		$upload_dir = wp_upload_dir();
-		$pdf_base   = $upload_dir['basedir'] . '/seo-audit/pdf/';
+		$pdf_base   = rtrim( $upload_dir['basedir'], '\/' ) . '/seo-audit/pdf/';
 
-		// Get available languages from config or use default.
+		// Primary (new) simplified PDF paths.
+		$simple_paths = array(
+			$pdf_base . $domain . '.pdf',
+			$pdf_base . $domain . '_pagespeed.pdf',
+		);
+
+		foreach ( $simple_paths as $pdf_path ) {
+			if ( file_exists( $pdf_path ) ) {
+				wp_delete_file( $pdf_path );
+			}
+		}
+
+		// Also attempt to remove legacy nested PDF layout (language/first-letter) for backward compatibility.
 		global $v_wpsa_app;
 		$languages = array( 'en' ); // Default language.
 
@@ -35,13 +47,17 @@ class V_WPSA_Helpers {
 			$languages = array_keys( $v_wpsa_app->params['app.languages'] );
 		}
 
-		// Delete PDF for each language.
 		foreach ( $languages as $lang ) {
 			$subfolder = mb_substr( $domain, 0, 1 );
-			$pdf_path  = $pdf_base . $lang . '/' . $subfolder . '/' . $domain . '.pdf';
-
-			if ( file_exists( $pdf_path ) ) {
-				wp_delete_file( $pdf_path );
+			$legacy_base = rtrim( $upload_dir['basedir'], '\/' ) . '/seo-audit/pdf/' . $lang . '/' . $subfolder . '/';
+			$legacy_paths = array(
+				$legacy_base . $domain . '.pdf',
+				$legacy_base . $domain . '_pagespeed.pdf',
+			);
+			foreach ( $legacy_paths as $pdf_path ) {
+				if ( file_exists( $pdf_path ) ) {
+					wp_delete_file( $pdf_path );
+				}
 			}
 		}
 

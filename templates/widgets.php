@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Displays a paginated list of analyzed websites with thumbnails and scores.
  *
  * @param array $args Widget arguments.
- *                    - 'order' (string): Order by clause (default: 't.added DESC').
+ *                    - 'order' (string): Order by clause (default: 'modified DESC').
  *                    - 'page' (int): Current page number (default: 1).
  *                    - 'per_page' (int): Number of items per page (default: 12).
  *
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function v_wpsa_render_website_list( $args = array() ) {
 	// Default arguments.
 	$defaults = array(
-		'order'    => 't.added DESC',
+	'order'    => 'modified DESC',
 		'page'     => 1,
 		'per_page' => V_WPSA_Config::get( 'param.rating_per_page', 12 ),
 	);
@@ -44,7 +44,7 @@ function v_wpsa_render_website_list( $args = array() ) {
 			'order'   => $args['order'],
 			'limit'   => $args['per_page'],
 			'offset'  => $offset,
-			'columns' => array( 'id', 'domain', 'idn', 'score', 'added' ),
+			'columns' => array( 'id', 'domain', 'idn', 'score', 'added', 'modified' ),
 		)
 	);
 
@@ -58,12 +58,16 @@ function v_wpsa_render_website_list( $args = array() ) {
 	// Prepare thumbnail stack.
 	$thumbnail_stack = array();
 	foreach ( $websites as $website ) {
-		$thumbnail_key                     = 'thumb_' . $website['id'];
-		$thumbnail_stack[ $thumbnail_key ] = v_wpsa_get_website_thumbnail_url(
-			array(
-				'url'  => $website['domain'],
-				'size' => 'l',
-			)
+		$thumbnail_key = (string) $website['id'];
+		// Ensure frontend receives an object with a `thumb` property to be
+		// compatible with the dynamicThumbnail() helper in assets/js/base.js.
+		$thumbnail_stack[ $thumbnail_key ] = array(
+			'thumb' => v_wpsa_get_website_thumbnail_url(
+				array(
+					'url'  => $website['domain'],
+					'size' => 'l',
+				)
+			),
 		);
 	}
 
@@ -80,7 +84,7 @@ function v_wpsa_render_website_list( $args = array() ) {
  * Render website list template HTML.
  *
  * @param array $websites Websites data array.
- * @param array $thumbnail_stack Thumbnail URLs keyed by thumb_ID.
+ * @param array $thumbnail_stack Thumbnail URLs keyed by website ID (e.g., '12').
  * @param array $args Widget arguments.
  * @param int   $total Total number of websites.
  */
@@ -225,13 +229,27 @@ function v_wpsa_get_website_thumbnail_url( $args = array() ) {
 
 	$args = wp_parse_args( $args, $defaults );
 
-	// If Yii is available, use WebsiteThumbnail class.
+	// If Yii is available, use WebsiteThumbnail class which handles caching.
 	if ( class_exists( 'WebsiteThumbnail', false ) ) {
 		return WebsiteThumbnail::getOgImage( $args );
 	}
 
-	// Fallback to placeholder.
-	return V_WPSA_Config::get_base_url( true ) . '/assets/img/loader.gif';
+	// Try to return a cached thumbnail from the WordPress uploads directory
+	// so thumbnails can be displayed without bootstrapping Yii.
+	if ( function_exists( 'wp_upload_dir' ) ) {
+		$upload_dir = wp_upload_dir();
+		$filename   = md5( $args['url'] ) . '.jpg';
+		$cached_path = rtrim( $upload_dir['basedir'], '\/' ) . '/seo-audit/thumbnails/' . $filename;
+		$cached_url  = rtrim( $upload_dir['baseurl'], '\/' ) . '/seo-audit/thumbnails/' . $filename;
+
+		if ( file_exists( $cached_path ) ) {
+			return $cached_url;
+		}
+	}
+
+	// Fallback to direct thum.io URL if no cached thumbnail is available.
+	$width = '350';
+	return "https://image.thum.io/get/maxAge/350/width/{$width}/https://" . $args['url'];
 }
 
 /**

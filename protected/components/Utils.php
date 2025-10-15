@@ -45,15 +45,22 @@ class Utils {
 	public static function createNestedDir( $path) {
 
 		$dir = pathinfo( $path, PATHINFO_DIRNAME );
-		if (is_dir( $dir )) {
+
+		if ( is_dir( $dir ) ) {
 			return true;
-		} elseif (self::createNestedDir( $dir )) {
-			if (mkdir( $dir )) {
-				chmod( $dir, 0777 );
-				return true;
-			}
 		}
-		return false;
+
+		// Prefer WordPress helper if available (handles permissions and recursion).
+		if ( function_exists( 'wp_mkdir_p' ) ) {
+			return (bool) wp_mkdir_p( $dir );
+		}
+
+		// Fallback to PHP recursive mkdir with permission bits.
+		$created = @mkdir( $dir, 0777, true );
+		if ( $created ) {
+			@chmod( $dir, 0777 );
+		}
+		return (bool) $created;
 	}
 
 	/**
@@ -61,13 +68,26 @@ class Utils {
 	 *
 	 * @param string $domain The domain name.
 	 * @return string The PDF file path.
+	 * @throws Exception If the folder cannot be created.
 	 */
 	public static function createPdfFolder( $domain) {
 
+		// Ensure the primary PDF storage location uses the simplified uploads path.
 		$pdf = self::getPdfFile( $domain );
-		if ( ! file_exists( $pdf )) {
-			self::createNestedDir( $pdf );
+		$dir = pathinfo( $pdf, PATHINFO_DIRNAME );
+
+		if ( ! is_dir( $dir ) ) {
+			if ( function_exists( 'wp_mkdir_p' ) ) {
+				$ok = wp_mkdir_p( $dir );
+			} else {
+				$ok = self::createNestedDir( $pdf );
+			}
+
+			if ( ! $ok ) {
+				throw new Exception( 'Unable to create PDF directory: ' . $dir . '. Please ensure the uploads directory is writable (wp-content/uploads).' );
+			}
 		}
+
 		return $pdf;
 	}
 
@@ -102,10 +122,9 @@ class Utils {
 		// Use WordPress upload directory if available (preferred method).
 		if ( defined( 'ABSPATH' ) && function_exists( 'wp_upload_dir' ) ) {
 			$upload_dir = wp_upload_dir();
-			$root       = $upload_dir['basedir'] . '/seo-audit';
-			$lang       = $lang ? $lang : ( Yii::app()->language ?? 'en' );
-			$subfolder  = mb_substr( $domain, 0, 1 );
-			$file       = $root . '/pdf/' . $lang . '/' . $subfolder . '/' . $domain . '.pdf';
+			$root       = rtrim( $upload_dir['basedir'], '\/' ) . '/seo-audit/pdf';
+			// Use simplified filename structure: wp-content/uploads/seo-audit/pdf/{domain}.pdf
+			$file       = $root . '/' . $domain . '.pdf';
 			return $file;
 		}
 
