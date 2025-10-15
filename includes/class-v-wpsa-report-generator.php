@@ -73,6 +73,18 @@ class V_WPSA_Report_Generator {
 		// Get data from controller.
 		$data = self::extract_controller_data( $controller );
 
+		// Ensure thumbnail is a URL string for the PDF template.
+		if ( isset( $data['thumbnail'] ) && is_array( $data['thumbnail'] ) ) {
+			if ( isset( $data['thumbnail']['thumb'] ) && ! empty( $data['thumbnail']['thumb'] ) ) {
+				$data['thumbnail'] = $data['thumbnail']['thumb'];
+			} elseif ( isset( $data['thumbnail']['url'] ) && ! empty( $data['thumbnail']['url'] ) ) {
+				// Fallback: construct a thum.io URL when no cached thumb is present.
+				$data['thumbnail'] = 'https://image.thum.io/get/maxAge/350/width/350/https://' . $data['thumbnail']['url'];
+			} else {
+				$data['thumbnail'] = '';
+			}
+		}
+
 		// Render PDF template to HTML.
 		$html = self::render_template( 'pdf.php', $data );
 
