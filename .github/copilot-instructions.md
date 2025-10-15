@@ -1,59 +1,47 @@
-# Copilot Instructions for v-wpsa Plugin
+# Copilot instructions — v-wp-seo-audit
 
-```instructions
-# Copilot Instructions for v-wpsa Plugin
+Purpose: give an AI coding agent the minimum, precise context needed to be productive in this repository.
 
-Purpose (one-liner)
-- Convert and maintain a legacy Yii SEO-audit app running as a WordPress plugin. UI is provided via a shortcode; heavy work is performed by legacy Yii models/controllers invoked from WP AJAX handlers.
+Big picture
+- Hybrid WordPress plugin that is being migrated away from Yii. The plugin now runs WordPress-native code for most flows but selectively boots Yii for legacy analysis/PDF paths. Key boundaries:
+  - WP bootstrap & UI: `v-wp-seo-audit.php`, `includes/`, `templates/`, `assets/js/` (shortcode, enqueues, `_global` JS injection).
+  - AJAX entrypoints: `includes/class-v-wpsa-ajax-handlers.php` (registers `v_wpsa_*` actions; always use `check_ajax_referer`).
+  - Data & persistence: `includes/class-v-wpsa-db.php` (WP-native wrapper for `ca_*` tables) and legacy `protected/` (Yii models/vendors).
+  - Report & PDF generation: `includes/class-v-wpsa-report-generator.php` (currently still calls into Yii controllers); TCPDF lives under `protected/extensions/tcpdf`.
 
-Quick architecture summary
-- Shortcode `[v_wpsa]` renders the UI. Client JS ( `js/base.js` ) uses `admin-ajax.php` to call plugin actions implemented in `v-wpsa.php`.
-- Server-side analysis logic lives under `protected/` and `framework/` (Yii). AJAX handlers bootstrap Yii as needed and call controller actions (e.g., `WebsitestatController::actionGenerateHTML`, `actionGeneratePDF`).
-- Persistent data uses custom `ca_*` tables created on activation (`v_wpsa_activate`).
+Must-know conventions (follow exactly)
+- All AJAX POST handlers must call `check_ajax_referer('v_wpsa_nonce','nonce')` and return `wp_send_json_success()` / `wp_send_json_error()`.
+- Sanitize inputs with `wp_unslash()` then `sanitize_text_field()` (see `V_WPSA_Ajax_Handlers::validate_domain`).
+- Preserve the JSON response shape expected by `assets/js/base.js`: `{ success: boolean, data: { ... } }`.
+- Use `V_WPSA_DB` for DB access where possible (keeps `ca_` prefix and prepared statements patterns).
+- Do not initialize Yii during normal page loads. The global `$v_wpsa_app` is only allowed to be created inside tightly-scoped AJAX handlers; avoid adding `require_once 'framework/yii.php'` in code paths executed for page views.
+- When you must use legacy vendor classes, prefer explicit `require_once` of the specific files (this repo does that to avoid triggering Yii's autoloader; see `V_WPSA_DB::analyze_website`).
 
-Key files to inspect first
-- `v-wpsa.php` — plugin entry, shortcode registration, AJAX handlers, enqueued assets, activation/uninstall hooks, WordPress Cron cleanup, and native validation functions.
-- `js/base.js` — primary frontend logic, validation, AJAX calls, and the PDF downloader (uses XHR blob download).
-- `protected/views/` — UI templates (Yii view files). These files are rendered by Yii controllers and injected into the page via AJAX.
-- `protected/commands`, `protected/controllers`, `protected/models` — legacy logic used by the plugin; find commands invoked via `yiic` or programmatically.
-- `framework/` — Yii framework bootstrap and `yiic` console wrappers.
-- `TESTING_GUIDE.md` — manual QA instructions; useful to reproduce user flows.
-- `CONVERSION_NOTES.md` — tracks conversion progress from Yii to WordPress native (Phase 1 & 2 complete).
-- `ARCHITECTURE.md` — detailed plugin architecture including new WordPress Cron and validation features.
+JS & DOM expectations
+- `assets/js/base.js` is the single-page UX controller. It expects:
+  - form inputs with \#domain and \#submit selectors;
+  - container element `.v-wpsa-container` that may contain a `data-nonce` attribute;
+  - download links with `.v-wpsa-download-pdf` and `data-domain` attributes; XHR expects a PDF blob (`application/pdf`) or a JSON error.
+- If you change a template in `templates/`, update the selectors in `assets/js/base.js` or preserve the DOM IDs/classes.
 
-Developer workflows and commands
-- Linting: `vendor\bin\phpcbf .` (auto-fix), then `vendor\bin\phpcs .` (report). The repo includes `phpcs.xml` configured for WordPress rules.
-- Manual test flow: follow `TESTING_GUIDE.md` to validate AJAX flows (validation → generate_report → download PDF).
-- Local debugging: use browser devtools to inspect XHR to `admin-ajax.php`. Check that each AJAX POST includes `action`, fields, and `nonce`.
+Key integration points & gotchas
+- TCPDF: bundled at `protected/extensions/tcpdf`. New WP-native PDF handlers should prefer composer/autoload or require the TCPDF library directly; watch remote images and memory/time limits.
+- Logging & fatal-handling: AJAX handlers already register shutdown handlers and `error_log()` messages prefixed with `v-wpsa:` — use those for debugging.
+- Avoid relying on `Website::model()` or other CActiveRecord classes for new code; instead add methods to `V_WPSA_DB` so migration can proceed incrementally.
 
-Project-specific patterns and gotchas
-- All client-server communication must go through WP AJAX endpoints (no direct file access). Handlers use `check_ajax_referer('v_wpsa_nonce','nonce')`.
-- AJAX responses are JSON shaped as `{ success: bool, data: { ... } }` (client expects this exact shape).
-- The plugin bootstraps Yii on demand. Many handlers do `require_once framework/yii.php` and `Yii::createWebApplication($config)` — be mindful of side effects and performance when calling from high-traffic pages.
-- Domain validation now uses WordPress-native functions (`v_wpsa_validate_domain()` and helpers) and does NOT require Yii initialization. Only report generation requires Yii.
-- Views under `protected/views` are Yii templates using `CHtml::encode()` / `Yii::t()` — when updating views, prefer escaping with `CHtml::encode()` or WordPress equivalents if you migrate to WP templating.
-- PDF download: frontend sends XHR POST expecting a PDF blob. If the page injects HTML via AJAX, the global inline nonce may be missing; the generate_report handler was updated to return a fresh nonce. When modifying AJAX flows, ensure a valid nonce is available to the client.
-- WordPress Cron: A daily cleanup job (`v_wpsa_cleanup`) runs automatically to remove old PDFs, thumbnails, and database records. This is registered on plugin activation and unregistered on deactivation.
+Search heuristics (quick grep tokens)
+- To locate remaining Yii dependencies search for: `Yii::`, `WebsitestatController`, `ParseController`, `Website::model(`, `createPdfFromHtml`, `framework/yii.php`, `CActiveRecord`, `CHtml::`.
 
-Security and maintenance notes
-- Nonces: use `wp_create_nonce('v_wpsa_nonce')` on the page and `check_ajax_referer()` server-side. When returning server-injected HTML via AJAX, include a fresh nonce (e.g., response.data.nonce) or add `data-nonce` on the container.
-- Protect CLI scripts: `protected/yiic.php`, `protected/yiic` and `command.php` are leftovers from the standalone app. Either keep them for cron/CLI usage and guard against HTTP access, or migrate jobs to WP-Cron/WP-CLI.
-- Sensitive output: `command.php` prints PHP binary and paths — treat it as informational only and do not expose in production.
-- WordPress Cron: The daily cleanup job is scheduled automatically. To test manually, use WP-CLI: `wp cron event run v_wpsa_daily_cleanup`
-- Form validation: Domain validation is now pure WordPress code and doesn't require Yii. Use `v_wpsa_validate_domain()` for standalone validation needs.
+Developer workflows (practical steps)
+- Lint: run `phpcs .` (config in `phpcs.xml`) and fix with `phpcbf .` where safe. See `composer.json` dev deps for PHPCS & WPCS.
+- Manual smoke test: install plugin, add `[v_wpsa]` shortcode to a page, open DevTools → Network → watch POSTs to `admin-ajax.php` for `v_wpsa_validate` and `v_wpsa_generate_report` and verify responses follow the JSON shape.
+- Heavy tasks (PDF/report generation): prefer running via WP-CLI or feature-flagged AJAX endpoints (handlers already call `wp_raise_memory_limit('admin')` and `set_time_limit(0)`).
 
-Examples (patterns to follow)
-- AJAX handler skeleton (server): see `v_wpsa_ajax_generate_report` in `v-wpsa.php` — bootstraps Yii, validates input with `sanitize_text_field( wp_unslash() )`, runs controller action, and returns `wp_send_json_success( array( 'html' => $content ) )`.
-- Frontend XHR blob download (client): see `js/base.js` — uses XMLHttpRequest with `responseType='blob'` and tests Content-Type for `application/pdf` before triggering a download.
+Fast migration checklist for AI tasks
+1. Find all `Yii::` / controller usages and create per-file TODOs (search tokens above).
+2. Replace `V_WPSA_Report_Generator::generate_html_report` data collection (currently creates `WebsitestatController`) with a WP-native data assembler that uses `V_WPSA_DB`.
+3. Replace `generate_pdf_report` to render HTML → TCPDF in WP context and stream a blob (maintain current XHR contract used by `assets/js/base.js`).
+4. Move model logic from `protected/models/` into `V_WPSA_DB` or small repository classes; keep `ca_*` schema.
+5. Add feature flags (option or transient) to switch endpoints from legacy Yii → WP-native incrementally.
 
-When to refactor vs keep legacy
-- Keep Yii code if the migration cost is high and behavior is well-tested. Wrap any new WP-native code behind the same AJAX endpoints to avoid breaking clients.
-- Prefer incremental migration: add WP-CLI commands and WP-Cron wrappers for the main tasks (parse, sitemap, clear PDF), then replace `exec('yiic ...')` call sites with in-process calls or WP-CLI triggers.
-- Phase 2 conversions completed: WordPress Cron for cleanup (replaces old CLI clear command), WordPress-native domain validation (replaces Yii WebsiteForm validation)
-- Remaining Yii dependencies: Report generation, PDF creation, database operations (ActiveRecord), and view rendering still use Yii framework.
-
-Where to ask for clarification
-- If a controller/action is unclear, look in `protected/controllers/` for the implementation. If behavior depends on Yii params, inspect `protected/config/main.php` and `protected/config/console.php`.
-
-If anything here is unclear or you want a follow-up (e.g., add WP-CLI skeletons, migrate one command to WP-Cron, or harden public files), tell me which area to expand.
-```
+If anything above is ambiguous or you want the recommended first PR scaffolded (e.g., migrate `generate_report` handler first), tell me which endpoint to target and I will produce a precise migration plan.
