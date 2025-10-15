@@ -98,7 +98,8 @@ class V_WPSA_Helpers {
 	 * @return mixed The config value or empty array on failure.
 	 */
 	public static function load_config_file( $config_name ) {
-		$config_dir   = v_wpsa_PLUGIN_DIR . 'protected/config/';
+		// Try old directory first (moved files).
+		$config_dir   = v_wpsa_PLUGIN_DIR . 'old/protected/config/';
 		$config_local = $config_dir . $config_name . '_local.php';
 		$config_prod  = $config_dir . $config_name . '.php';
 

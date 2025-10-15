@@ -1,6 +1,9 @@
 # Composer dependencies
 /vendor/
 
+# Old/archived files
+/old/
+
 # Node modules (if any)
 node_modules/
 

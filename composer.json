@@ -1,4 +1,9 @@
 {
+    "autoload": {
+        "classmap": [
+            "includes/"
+        ]
+    },
     "require-dev": {
         "squizlabs/php_codesniffer": "*",
         "wp-coding-standards/wpcs": "^2.3"

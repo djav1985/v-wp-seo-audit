@@ -36,16 +36,8 @@ register_deactivation_hook( __FILE__, 'v_wpsa_deactivate' );
 // Register cleanup action.
 add_action( 'v_wpsa_daily_cleanup', 'v_wpsa_cleanup' );
 
-// Load organized includes files.
-require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-config.php';
-require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-utils.php';
-require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-thumbnail.php';
-require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-website.php';
-require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-db.php';
-require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-validation.php';
-require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-helpers.php';
-require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-report-generator.php';
-require_once v_wpsa_PLUGIN_DIR . 'includes/class-v-wpsa-ajax-handlers.php';
+// Load Composer autoloader for plugin classes.
+require_once v_wpsa_PLUGIN_DIR . 'vendor/autoload.php';
 
 // Load WordPress-native widget templates.
 require_once v_wpsa_PLUGIN_DIR . 'templates/widgets.php';
@@ -63,7 +55,7 @@ global $v_wpsa_app;
 $v_wpsa_app = null;
 
 // NOTE: Yii initialization is NO LONGER done on page load.
-// Yii is only initialized when needed by AJAX handlers (generate_report, download_pdf, pagepeeker_proxy).
+// Yii is only initialized when needed by AJAX handlers (generate_report, download_pdf).
 // This prevents Yii from running on common page requests, improving performance and avoiding conflicts.
 
 // Enqueue styles and scripts for front-end.
