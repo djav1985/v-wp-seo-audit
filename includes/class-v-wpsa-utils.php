@@ -584,6 +584,7 @@ class V_WPSA_Utils {
 		return self::is_recaptcha_enabled();
 	}
 	// phpcs:enable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+}
 
 // Backward compatibility: create alias for old class name.
 if ( ! class_exists( 'Utils' ) ) {

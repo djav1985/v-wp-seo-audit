@@ -268,6 +268,7 @@ class V_WPSA_Thumbnail {
 		return self::thumbnail_stack( $websites, $params );
 	}
 	// phpcs:enable WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+}
 
 // Backward compatibility: create alias for old class name.
 if ( ! class_exists( 'WebsiteThumbnail' ) ) {
