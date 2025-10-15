@@ -20,3 +20,27 @@ Stack trace:
 #6 D:\Server\htdocs4\public\wp-includes\plugin.php(517): WP_Hook->do_action()
 #7 D:\Server\htdocs4\public\wp-admin\admin-ajax.php(192): do_action()
 REQUEST_URI=/wp-admin/admin-ajax.php
+2025/10/14 22:02:28 [error] [php] include(RateProvider.php): Failed to open stream: No such file or directory (D:\Server\htdocs4\public\wp-content\plugins\v-wp-seo-audit\framework\YiiBase.php:463)
+Stack trace:
+#0 D:\Server\htdocs4\public\wp-content\plugins\v-wp-seo-audit\framework\YiiBase.php(463): include()
+#1 unknown(0): autoload()
+#2 D:\Server\htdocs4\public\wp-content\plugins\v-wp-seo-audit\includes\class-v-wpsa-db.php(291): class_exists()
+#3 D:\Server\htdocs4\public\wp-content\plugins\v-wp-seo-audit\includes\class-v-wpsa-report-generator.php(31): V_WPSA_DB->get_full_report_data()
+#4 D:\Server\htdocs4\public\wp-content\plugins\v-wp-seo-audit\includes\class-v-wpsa-ajax-handlers.php(132): generate_html_report()
+#5 D:\Server\htdocs4\public\wp-includes\class-wp-hook.php(324): generate_report()
+#6 D:\Server\htdocs4\public\wp-includes\class-wp-hook.php(348): WP_Hook->apply_filters()
+#7 D:\Server\htdocs4\public\wp-includes\plugin.php(517): WP_Hook->do_action()
+#8 D:\Server\htdocs4\public\wp-admin\admin-ajax.php(192): do_action()
+REQUEST_URI=/wp-admin/admin-ajax.php
+2025/10/14 22:02:31 [error] [php] include(RateProvider.php): Failed to open stream: No such file or directory (D:\Server\htdocs4\public\wp-content\plugins\v-wp-seo-audit\framework\YiiBase.php:463)
+Stack trace:
+#0 D:\Server\htdocs4\public\wp-content\plugins\v-wp-seo-audit\framework\YiiBase.php(463): include()
+#1 unknown(0): autoload()
+#2 D:\Server\htdocs4\public\wp-content\plugins\v-wp-seo-audit\includes\class-v-wpsa-db.php(291): class_exists()
+#3 D:\Server\htdocs4\public\wp-content\plugins\v-wp-seo-audit\includes\class-v-wpsa-report-generator.php(31): V_WPSA_DB->get_full_report_data()
+#4 D:\Server\htdocs4\public\wp-content\plugins\v-wp-seo-audit\includes\class-v-wpsa-ajax-handlers.php(132): generate_html_report()
+#5 D:\Server\htdocs4\public\wp-includes\class-wp-hook.php(324): generate_report()
+#6 D:\Server\htdocs4\public\wp-includes\class-wp-hook.php(348): WP_Hook->apply_filters()
+#7 D:\Server\htdocs4\public\wp-includes\plugin.php(517): WP_Hook->do_action()
+#8 D:\Server\htdocs4\public\wp-admin\admin-ajax.php(192): do_action()
+REQUEST_URI=/wp-admin/admin-ajax.php
