@@ -1,15 +1,35 @@
 <?xml version="1.0"?>
 <ruleset name="v-wpsa">
     <description>PHP_CodeSniffer rules for v-wpsa plugin</description>
-    <rule ref="WordPress"/>
-    <rule ref="WordPress-Core"/>
-    <rule ref="WordPress-Docs"/>
-    <rule ref="WordPress-Extra"/>
-    <rule ref="Generic.WhiteSpace.LanguageConstructSpacing"/>
-    <exclude-pattern>vendor/*</exclude-pattern>
-    <exclude-pattern>assets/*</exclude-pattern>
-    <exclude-pattern>tcpdf/*</exclude-pattern>
-    <exclude-pattern>protected/*</exclude-pattern>
+
+    <!-- Apply WordPress Standards, but exclude deprecated sniffs -->
+    <rule ref="WordPress">
+        <exclude name="Generic.Functions.CallTimePassByReference" />
+        <exclude name="Squiz.WhiteSpace.LanguageConstructSpacing" />
+    </rule>
+    <rule ref="WordPress-Core">
+        <exclude name="Generic.Functions.CallTimePassByReference" />
+        <exclude name="Squiz.WhiteSpace.LanguageConstructSpacing" />
+    </rule>
+    <rule ref="WordPress-Docs">
+        <exclude name="Generic.Functions.CallTimePassByReference" />
+        <exclude name="Squiz.WhiteSpace.LanguageConstructSpacing" />
+    </rule>
+    <rule ref="WordPress-Extra">
+        <exclude name="Generic.Functions.CallTimePassByReference" />
+        <exclude name="Squiz.WhiteSpace.LanguageConstructSpacing" />
+    </rule>
+
+    <!-- Add the recommended replacement sniff -->
+    <rule ref="Generic.WhiteSpace.LanguageConstructSpacing" />
+
+    <!-- Ignore folders -->
+    <exclude-pattern>^.*[/\\\\]vendor[/\\\\].*</exclude-pattern>
+    <exclude-pattern>^.*[/\\\\]assets[/\\\\].*</exclude-pattern>
+    <exclude-pattern>^.*[/\\\\]tcpdf[/\\\\].*</exclude-pattern>
+
+
+    <!-- Limit scan scope -->
     <file>includes/</file>
     <file>templates/</file>
     <file>v-wp-seo-audit.php</file>

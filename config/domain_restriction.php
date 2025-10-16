@@ -1,5 +1,4 @@
 <?php
-/**
  * File: domain_restriction.php
  *
  * Description: Domain restriction configuration.

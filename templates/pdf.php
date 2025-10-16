@@ -175,6 +175,9 @@ $format_points    = static function ( $value ) {
 	<tr class="no-top-line">
 		<td>
 			<img class="thumbnail" id="thumb_<?php echo $website['id']; ?>" src="<?php echo $thumbnail; ?>" alt="<?php echo $website['idn']; ?>" />
+		
+		
+		
 		</td>
 		<td>
 			<h1 class="h-review"><?php echo 'Website review for ' . esc_html( $website['idn'] ); ?></h1>

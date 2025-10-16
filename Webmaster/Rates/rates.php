@@ -198,7 +198,7 @@ return array(
 		),
 	),
 
-    'wordConsistency'    => array(
+	'wordConsistency'    => array(
 		'keywords'    => 0.5,
 		'description' => 0.5,
 		'title'       => 1,

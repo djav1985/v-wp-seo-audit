@@ -71,24 +71,24 @@ $format_points    = static function ( $value ) {
 		"use strict";
 
 	jQuery(function($) {
-		dynamicThumbnail({
-			<?php echo 'main_' . $website['id']; ?>: <?php echo wp_json_encode( $thumbnail ); ?>
-		});
+					dynamicThumbnail({
+						<?php echo esc_js( 'main_' . $website['id'] ); ?>: <?php echo wp_json_encode( $thumbnail ); ?>
+					});
 
 		var pie_data = [];
 		pie_data[0] = {
-			label: '<?php echo 'External Links'; ?> : <?php echo 'noFollow'; ?> <?php echo V_WPSA_Utils::proportion( $linkcount, $links['external_nofollow'] ); ?>%',
-			data: <?php echo $links['external_nofollow']; ?>,
+			label: '<?php echo esc_js( 'External Links' ); ?> : <?php echo esc_js( 'noFollow' ); ?> <?php echo esc_js( V_WPSA_Utils::proportion( $linkcount, $links['external_nofollow'] ) ); ?>%',
+			data: <?php echo esc_js( $links['external_nofollow'] ); ?>,
 			color: '#6A93BA'
 		};
 		pie_data[1] = {
-			label: '<?php echo 'External Links'; ?> : <?php echo 'Passing Juice'; ?> <?php echo V_WPSA_Utils::proportion( $linkcount, $links['external_dofollow'] ); ?>%',
-			data: <?php echo $links['external_dofollow']; ?>,
+			label: '<?php echo esc_js( 'External Links' ); ?> : <?php echo esc_js( 'Passing Juice' ); ?> <?php echo esc_js( V_WPSA_Utils::proportion( $linkcount, $links['external_dofollow'] ) ); ?>%',
+			data: <?php echo esc_js( $links['external_dofollow'] ); ?>,
 			color: '#315D86'
 		};
 		pie_data[2] = {
-			label: '<?php echo 'Internal Links'; ?> <?php echo V_WPSA_Utils::proportion( $linkcount, $links['internal'] ); ?>%',
-			data: <?php echo $links['internal']; ?>,
+			label: '<?php echo esc_js( 'Internal Links' ); ?> <?php echo esc_js( V_WPSA_Utils::proportion( $linkcount, $links['internal'] ) ); ?>%',
+			data: <?php echo esc_js( $links['internal'] ); ?>,
 			color: '#ddd'
 		};
 
@@ -203,7 +203,10 @@ $format_points    = static function ( $value ) {
 <div class="jumbotron">
 	<div class="row">
 		<div class="col-md-4 col-lg-5 col-sm-12">
-			<img class="img-responsive img-thumbnail mb-20" id="thumb_main_<?php echo $website['id']; ?>" src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/loader.gif" alt="<?php echo $website['idn']; ?>" />
+					<img class="img-responsive img-thumbnail mb-20" id="thumb_main_<?php echo esc_attr( $website['id'] ); ?>" src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/loader.gif" alt="<?php echo esc_attr( $website['idn'] ); ?>" />
+		
+		
+		
 		</div>
 		<div class="col-md-8 col-lg-7 col-sm-12 text-left">
 			<h1 class="text-break">
@@ -213,7 +216,7 @@ $format_points    = static function ( $value ) {
 			<p>
 				<i class="fas fa-clock"></i>&nbsp;<small><?php echo 'Generated on'; ?>
 					<?php
-					$month_names = array(
+					$month_names       = array(
 						'Jan' => 'January',
 						'Feb' => 'February',
 						'Mar' => 'March',
@@ -227,15 +230,15 @@ $format_points    = static function ( $value ) {
 						'Nov' => 'November',
 						'Dec' => 'December',
 					);
-					$month       = isset( $month_names[ $generated['M'] ] ) ? $month_names[ $generated['M'] ] : $generated['M'];
-					echo $month . ' ' . $generated['d'] . ' ' . $generated['Y'] . ' ' . $generated['H'] . ':' . $generated['i'] . ' ' . $generated['A'];
+								$month = isset( $month_names[ $generated['M'] ] ) ? $month_names[ $generated['M'] ] : $generated['M'];
+								echo esc_html( $month ) . ' ' . esc_html( $generated['d'] ) . ' ' . esc_html( $generated['Y'] ) . ' ' . esc_html( $generated['H'] ) . ':' . esc_html( $generated['i'] ) . ' ' . esc_html( $generated['A'] );
 					?>
 				</small>
 			</p>
 
 
 
-			<?php echo V_WPSA_Config::get( 'param.addthis' ); ?>
+					<?php echo esc_html( V_WPSA_Config::get( 'param.addthis' ) ); ?>
 
 
 			<p class="mt-3">
@@ -288,7 +291,7 @@ $format_points    = static function ( $value ) {
 			</p>
 			<p>
 				<strong>
-					<?php echo 'Length'; ?> : <?php echo mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) ); ?>
+					<?php echo 'Length'; ?> : <?php echo esc_html( mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) ) ); ?>
 				</strong>
 			</p>
 			<p>
@@ -321,7 +324,7 @@ $format_points    = static function ( $value ) {
 			</p>
 			<p>
 				<strong>
-					<strong><?php echo 'Length'; ?> : <?php echo mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) ); ?></strong>
+					<strong><?php echo 'Length'; ?> : <?php echo esc_html( mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) ) ); ?></strong>
 				</strong>
 			</p>
 			<p>

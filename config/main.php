@@ -81,17 +81,17 @@ return array(
 
 		// Error handler - removed custom error view, WordPress will handle 404s.
 
-	// Log errors using WordPress or plugin-specific logging.
-		'log'             => array(
-			'class'  => 'CLogRouter',
-			'routes' => array(
-				array(
-					'class'  => 'CFileLogRoute',
-					'levels' => 'error, warning',
-					'except' => 'exception.CHttpException.*',
+		// Log errors using WordPress or plugin-specific logging.
+			'log'         => array(
+				'class'  => 'CLogRouter',
+				'routes' => array(
+					array(
+						'class'  => 'CFileLogRoute',
+						'levels' => 'error, warning',
+						'except' => 'exception.CHttpException.*',
+					),
 				),
 			),
-		),
 
 		'securityManager' => array(
 			'encryptionKey' => wp_salt( 'auth' ),

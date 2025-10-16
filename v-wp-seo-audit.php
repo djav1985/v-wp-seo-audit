@@ -9,6 +9,9 @@
  * License URI: https://opensource.org/licenses/MIT
  * Text Domain: v-wpsa
  * Requires PHP: 8.0
+ * WARNING: The v-wpsa standard uses 2 deprecated sniffs
+ *
+ * @package v_wpsa
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

@@ -10,7 +10,7 @@
  * @license URI https://opensource.org/licenses/MIT
  */
 
-﻿<?php
+﻿ < ? php
 return array(
 	'uds',
 	'som',
