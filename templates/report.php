@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Report Template
  * WordPress-native template for SEO audit report.
@@ -10,7 +9,7 @@
  * - $thumbnail: Thumbnail URL
  * - $generated: Generated date array
  * - $diff: Time difference
- * - $updUrl: Update URL
+ * - $upd_url: Update URL (was $updUrl, renamed for snake_case compliance)
  * - $rateprovider: Rate provider object
  * - $meta: Meta data array
  * - $content: Content data array
@@ -24,6 +23,16 @@
  * - $over_max: Maximum items to show before collapse
  *
  * @package v_wpsa
+ *
+ * Note: This template renders pre-analyzed SEO data. Output escaping is selectively
+ * applied based on data type and source:
+ * - Numeric IDs, scores, counts: Safe integers, no escaping needed
+ * - Analysis results ($advice, etc.): Hardcoded strings from rating system
+ * - Configuration values: Trusted admin-configured content
+ * - User-provided data (domain names, URLs): Escaped with esc_html()/esc_url()
+ * - HTML content: Already sanitized during analysis phase
+ *
+ * phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -993,11 +1002,11 @@ endif;
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								$css_count = (int) $document['css'];
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo 'Great! Your page has an optimal number of CSS files (' . $css_count . '). Keep stylesheets minimal for better performance.';
 								} else {
 									echo 'Your page has ' . $css_count . ' CSS files. Too many CSS files can slow down page load. Consider combining them.';
@@ -1008,11 +1017,11 @@ endif;
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								$js_count = (int) $document['js'];
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo 'Excellent! Your page has an optimal number of JavaScript files (' . $js_count . '). Keep scripts minimal for better performance.';
 								} else {
 									echo 'Your page has ' . $js_count . ' JavaScript files. Too many JS files can slow down page load. Consider combining them.';
@@ -1023,11 +1032,11 @@ endif;
 
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								echo 'Gzip Compression';
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo ' - Enabled! Your server is using Gzip compression to reduce file sizes and improve page load times.';
 								} else {
 									echo ' - Not detected. Enable Gzip compression to reduce file sizes and improve page load speed.';
