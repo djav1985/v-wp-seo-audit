@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: Helper.php
+ *
+ * Description: Utility helper functions.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class Helper {
 	public static function striptags( $html ) {
 		$html   = preg_replace( '/(<|>)\1{2}/is', '', (string) $html );

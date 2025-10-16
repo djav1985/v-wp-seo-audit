@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: RateProvider.php
+ *
+ * Description: Rate provider for SEO scoring.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class RateProvider {
 
         /**

@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: en.php
+ *
+ * Description: Common English words for filtering.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 return array(
 	'adj',
 	'as',

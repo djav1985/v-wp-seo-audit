@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: Links.php
+ *
+ * Description: Link analysis and validation.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class Links {
 	private $html;
 	private $domain;

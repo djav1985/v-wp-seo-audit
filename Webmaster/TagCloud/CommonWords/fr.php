@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: fr.php
+ *
+ * Description: Common French words for filtering.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 return array(
 	'conne',
 	'merde',

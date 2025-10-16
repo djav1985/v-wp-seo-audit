@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: SeoAnalyse.php
+ *
+ * Description: Core SEO analysis functionality.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class SeoAnalyse {
 	private $html;
 	private $keywords = array();

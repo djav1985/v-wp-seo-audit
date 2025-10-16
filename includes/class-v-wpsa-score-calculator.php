@@ -1,8 +1,13 @@
 <?php
 /**
- * Score calculator for analyzer output.
+ * File: class-v-wpsa-score-calculator.php
+ *
+ * Description: SEO score calculation logic.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

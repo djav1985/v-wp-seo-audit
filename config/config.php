@@ -2,7 +2,12 @@
 /**
  * File: config.php
  *
+ * Description: Main configuration file.
+ *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

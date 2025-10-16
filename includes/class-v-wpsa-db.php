@@ -1,9 +1,13 @@
 <?php
 /**
- * Database operations class for v-wpsa plugin.
- * Provides WordPress-native database access methods.
+ * File: class-v-wpsa-db.php
+ *
+ * Description: Database operations wrapper for WordPress integration.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

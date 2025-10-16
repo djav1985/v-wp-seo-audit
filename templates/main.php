@@ -1,10 +1,13 @@
 <?php
 /**
- * Request Form Template
- * WordPress-native template for the SEO audit form.
- * Replaces protected/views/site/index.php
+ * File: main.php
+ *
+ * Description: Main template for the SEO audit form.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

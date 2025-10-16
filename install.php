@@ -1,10 +1,13 @@
 <?php
 /**
- * Installation and activation script for v-wpsa plugin
+ * File: install.php
  *
- * This file contains the activation, deactivation, and cleanup hooks.
+ * Description: Installation and activation hooks.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

@@ -1,9 +1,13 @@
 <?php
 /**
- * Website Thumbnail Class
- * WordPress-native version of WebsiteThumbnail from protected/components/WebsiteThumbnail.php
+ * File: class-v-wpsa-thumbnail.php
+ *
+ * Description: Thumbnail generation and management.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

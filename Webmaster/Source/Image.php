@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: Image.php
+ *
+ * Description: Image analysis and optimization checks.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class Image {
 	private $html;
 	private $domain;

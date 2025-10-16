@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: Document.php
+ *
+ * Description: HTML document analysis.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class Document {
 	private $html;
 	// DOCTYPE Declarations. See: http://www.w3.org/QA/2002/04/valid-dtd-list.html

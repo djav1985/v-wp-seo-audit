@@ -1,3 +1,15 @@
+<?php
+/**
+ * File: da.php
+ *
+ * Description: Common Danish words for filtering.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 ﻿<?php
 return array(
 	'uds',

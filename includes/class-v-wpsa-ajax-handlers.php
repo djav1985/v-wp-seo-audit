@@ -1,10 +1,13 @@
 <?php
 /**
- * AJAX Handlers Class
+ * File: class-v-wpsa-ajax-handlers.php
  *
- * Handles all WordPress AJAX endpoints for the plugin.
+ * Description: AJAX request handlers for domain validation and report generation.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

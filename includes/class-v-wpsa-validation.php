@@ -1,10 +1,13 @@
 <?php
 /**
- * Domain Validation Class
+ * File: class-v-wpsa-validation.php
  *
- * WordPress-native domain validation functions.
+ * Description: Input validation and sanitization.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

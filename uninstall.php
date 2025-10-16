@@ -1,11 +1,13 @@
 <?php
 /**
- * Uninstall script for v-wpsa plugin
+ * File: uninstall.php
  *
- * This file is executed when the plugin is uninstalled from WordPress.
- * It removes all database tables and options created by the plugin.
+ * Description: Uninstallation and cleanup hooks.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 // Exit if uninstall not called from WordPress.

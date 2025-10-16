@@ -1,9 +1,13 @@
 <?php
 /**
- * Website Model Class
- * WordPress-native version of Website model from protected/models/Website.php
+ * File: class-v-wpsa-website.php
+ *
+ * Description: Website data management class.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

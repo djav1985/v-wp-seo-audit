@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: sv.php
+ *
+ * Description: Common Swedish words for filtering.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 return array(
 	'och',
 	'att',

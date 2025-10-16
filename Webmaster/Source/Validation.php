@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: Validation.php
+ *
+ * Description: HTML validation functionality.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class Validation {
 	private $domain;
 	private $htmlValidator = 'https://validator.w3.org/nu/?doc=%s&out=json';

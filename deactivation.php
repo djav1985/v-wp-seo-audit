@@ -1,10 +1,13 @@
 <?php
 /**
- * Deactivation script for v-wpsa plugin
+ * File: deactivation.php
  *
- * This file contains the deactivation hook function.
+ * Description: Deactivation hooks for the plugin.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
