@@ -347,6 +347,7 @@ class V_WPSA_Utils {
 		if ( ! isset( $parsed['host'] ) ) {
 			return false;
 		}
+		// Use existing scheme if present, otherwise default to http:// (fallback only).
 		$url = isset( $parsed['scheme'] ) ? $parsed['scheme'] . '://' : 'http://';
 		if ( isset( $parsed['user'] ) ) {
 			$url .= $parsed['user'];

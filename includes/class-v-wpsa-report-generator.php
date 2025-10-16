@@ -1,8 +1,8 @@
 <?php
 /**
  * Report Generator Class
- * WordPress-native report generation without Yii controllers.
- * Replaces functionality from WebsitestatController.
+ *
+ * WordPress-native report generation.
  *
  * @package v_wpsa
  */
@@ -270,6 +270,8 @@ class V_WPSA_Report_Generator {
 		}
 
 		// Define K_PATH_CACHE for TCPDF if not already defined.
+		// TCPDF requires a writable cache directory for image and font processing.
+		// We store it in WordPress uploads directory under seo-audit/cache/.
 		if ( ! defined( 'K_PATH_CACHE' ) ) {
 			$upload_dir = wp_upload_dir();
 			$cache_dir  = $upload_dir['basedir'] . '/seo-audit/cache/';

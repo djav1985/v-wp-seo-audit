@@ -5,6 +5,10 @@
  * @package v_wpsa
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 // Load configuration.
 $cfg_main  = __DIR__ . DIRECTORY_SEPARATOR . 'config.php';
 $cfg_local = __DIR__ . DIRECTORY_SEPARATOR . 'config_local.php';

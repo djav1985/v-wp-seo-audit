@@ -42,21 +42,7 @@ require_once v_wpsa_PLUGIN_DIR . 'vendor/autoload.php';
 // Load WordPress-native widget templates.
 require_once v_wpsa_PLUGIN_DIR . 'templates/widgets.php';
 
-// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
-if ( ! @ini_get( 'date.timezone' ) ) {
-	// phpcs:ignore WordPress.DateTime.RestrictedFunctions.timezone_change_date_default_timezone_set
-	date_default_timezone_set( 'UTC' );
-}
-
 mb_internal_encoding( 'UTF-8' );
-
-// Global variable to store Yii application instance.
-global $v_wpsa_app;
-$v_wpsa_app = null;
-
-// NOTE: Yii initialization is NO LONGER done on page load.
-// Yii is only initialized when needed by AJAX handlers (generate_report, download_pdf).
-// This prevents Yii from running on common page requests, improving performance and avoiding conflicts.
 
 // Enqueue styles and scripts for front-end.
 /**
