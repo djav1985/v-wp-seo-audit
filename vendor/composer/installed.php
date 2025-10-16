@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-copilot/fix-php-errors-in-plugin',
-        'version' => 'dev-copilot/fix-php-errors-in-plugin',
-        'reference' => '10d2950b0344849c44448d4b024ea297181ae24c',
+        'pretty_version' => 'dev-copilot/fix-gzip-detection-issues',
+        'version' => 'dev-copilot/fix-gzip-detection-issues',
+        'reference' => 'a8f2c2f5214b473a87d0fa2ebf1ea1e667556671',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-copilot/fix-php-errors-in-plugin',
-            'version' => 'dev-copilot/fix-php-errors-in-plugin',
-            'reference' => '10d2950b0344849c44448d4b024ea297181ae24c',
+            'pretty_version' => 'dev-copilot/fix-gzip-detection-issues',
+            'version' => 'dev-copilot/fix-gzip-detection-issues',
+            'reference' => 'a8f2c2f5214b473a87d0fa2ebf1ea1e667556671',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
