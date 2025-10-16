@@ -1455,8 +1455,7 @@ $format_points = static function ( $value ) {
 
 								if ( 'wordConsistency' === $key && is_array( $definition ) ) {
 									$per_tag_sum      = array_sum( $definition );
-									$effective_limit  = max( $consistency_limit, $matrix_count, 1 );
-									$max_points       = $per_tag_sum * $effective_limit;
+									$max_points       = $per_tag_sum * $consistency_limit;
 								} elseif ( is_array( $definition ) ) {
 									foreach ( $definition as $rule ) {
 										if ( is_array( $rule ) && isset( $rule['score'] ) ) {
@@ -1495,7 +1494,15 @@ $format_points = static function ( $value ) {
 								$max_display    = $format_points( $max_points );
 								?>
 								<tr>
-								        <td><?php echo esc_html( $label ); ?></td>
+								        <td>
+								        <?php
+										if ( 'wordConsistency' === $key ) {
+											echo esc_html( $label );
+										} else {
+											echo esc_html( $label );
+										}
+								        ?>
+								        </td>
 								        <td><?php echo esc_html( $points_display ); ?></td>
 								        <td><?php echo esc_html( $max_display ); ?></td>
 								        <td>

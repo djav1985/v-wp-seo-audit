@@ -57,24 +57,22 @@ Advice. Be careful if you want to change the rates.
 */
 return array(
 
-	// --- BASE METRICS (TOTAL = 82.5) ---
-
-	'noFlash'            => 1.5,
-	'noIframe'           => 1.5,
-	'issetHeadings'      => 1.0,
-	'noNestedtables'     => 1.0,
-	'noInlineCSS'        => 1.5,
-	'issetFavicon'       => 1.0,
+	'noFlash'            => 2,
+	'noIframe'           => 2,
+	'issetHeadings'      => 4,
+	'noNestedtables'     => 1,
+	'noInlineCSS'        => 2,
+	'issetFavicon'       => 2,
 	'noEmail'            => 0,
 	'keywords'           => 0,
-	'imgHasAlt'          => 1.5,
-	'isFriendlyUrl'      => 2.0,
-	'noUnderScore'       => 1.5,
-	'issetInternalLinks' => 1.5,
-	'hasRobotsTxt'       => 1.0,
-	'hasSitemap'         => 2.0,
-	'hasGzip'            => 1.0,
-	'hasAnalytics'       => 1.0,
+	'imgHasAlt'          => 6,
+	'isFriendlyUrl'      => 4,
+	'noUnderScore'       => 4,
+	'issetInternalLinks' => 4,
+	'hasRobotsTxt'       => 2,
+	'hasSitemap'         => 4,
+	'hasGzip'            => 1,
+	'hasAnalytics'       => 1,
 
 	'title'              => array(
 		'$value == _RATE_TITLE_BAD' => array(
@@ -82,11 +80,11 @@ return array(
 			'advice' => _RATE_ERROR,
 		),
 		'$value > _RATE_TITLE_BAD and $value < _RATE_TITLE_GOOD' => array(
-			'score'  => 2,
+			'score'  => 3,
 			'advice' => _RATE_WARNING,
 		),
 		'$value >= _RATE_TITLE_GOOD and $value <= _RATE_TITLE_BEST' => array(
-			'score'  => 4,
+			'score'  => 6,
 			'advice' => _RATE_OK,
 		),
 		'$value > _RATE_TITLE_BEST' => array(
@@ -101,11 +99,11 @@ return array(
 			'advice' => _RATE_ERROR,
 		),
 		'$value > _RATE_DESC_BAD and $value < _RATE_DESC_GOOD' => array(
-			'score'  => 2,
+			'score'  => 3,
 			'advice' => _RATE_WARNING,
 		),
 		'$value >= _RATE_DESC_GOOD and $value <= _RATE_DESC_BEST' => array(
-			'score'  => 4,
+			'score'  => 6,
 			'advice' => _RATE_OK,
 		),
 		'$value > _RATE_DESC_BEST' => array(
@@ -114,12 +112,10 @@ return array(
 		),
 	),
 
-	'charset'            => 1.0,
-	'viewport'           => 1.0,
-	'dublincore'         => 1.0,
-	'ogmetaproperties'   => 1.0,
-
-	// --- HTML RATIO (MAX 4 / MIN 0) ---
+	'charset'            => 2,
+	'viewport'           => 2,
+	'dublincore'         => 1,
+	'ogmetaproperties'   => 3,
 
 	'htmlratio'          => array(
 		'$value < _RATE_HRATIO_BAD'  => array(
@@ -127,11 +123,11 @@ return array(
 			'advice' => _RATE_ERROR_LESSTHAN,
 		),
 		'$value >= _RATE_HRATIO_BAD and $value < _RATE_HRATIO_GOOD' => array(
-			'score'  => 2,
+			'score'  => 3,
 			'advice' => _RATE_OK,
 		),
 		'$value >= _RATE_HRATIO_GOOD and $value <= _RATE_HRATIO_BEST' => array(
-			'score'  => 4,
+			'score'  => 6,
 			'advice' => _RATE_OK_IDEAL,
 		),
 		'$value > _RATE_HRATIO_BEST' => array(
@@ -140,15 +136,13 @@ return array(
 		),
 	),
 
-	// --- W3C TOTAL 4 MAX ---
-
 	'w3c'                => array(
 		'$errors == _RATE_W3C_ERR_OK && $warnings < _RATE_W3C_WARN_OK' => array(
-			'score'  => 4,
+			'score'  => 6,
 			'advice' => _RATE_OK,
 		),
 		'$errors + $warnings < _RATE_W3C_ERR_WARN_LOW'   => array(
-			'score'  => 3,
+			'score'  => 4,
 			'advice' => _RATE_OK,
 		),
 		'$errors + $warnings >= _RATE_W3C_ERR_WARN_LOW && $errors + $warnings < _RATE_W3C_ERR_WARN_MED' => array(
@@ -165,17 +159,15 @@ return array(
 		),
 	),
 
-	'doctype'            => 1.0,
+	'doctype'            => 2,
 	'isPrintable'        => 0,
-	'issetAppleIcons'    => 1.0,
-	'noDeprecated'       => 1.0,
-	'lang'               => 1.0,
-
-	// --- ASSET COUNTS MAX 4 TOTAL ---
+	'issetAppleIcons'    => 1,
+	'noDeprecated'       => 1,
+	'lang'               => 2,
 
 	'cssCount'           => array(
 		'$value <= _RATE_CSS_COUNT' => array(
-			'score'  => 2.0,
+			'score'  => 4,
 			'advice' => _RATE_OK,
 		),
 		'$value > _RATE_CSS_COUNT'  => array(
@@ -186,7 +178,7 @@ return array(
 
 	'jsCount'            => array(
 		'$value <= _RATE_JS_COUNT' => array(
-			'score'  => 2.0,
+			'score'  => 4,
 			'advice' => _RATE_OK,
 		),
 		'$value > _RATE_JS_COUNT'  => array(
@@ -195,12 +187,11 @@ return array(
 		),
 	),
 
-	// --- WORD CONSISTENCY STAYS UNTOUCHED (17.5 POINTS DYNAMIC) ---
-
-	'wordConsistency'    => array(
+    'wordConsistency'    => array(
 		'keywords'    => 0.5,
-		'description' => 1,
+		'description' => 0.5,
 		'title'       => 1,
 		'headings'    => 1,
 	),
+
 );
