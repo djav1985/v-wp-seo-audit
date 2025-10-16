@@ -2,19 +2,12 @@
   padding: 4px;
   margin: 0 10px 5px 0;
 }
-.form-group.is-invalid .recaptcha_wrapper > div {
-  border: 1px solid #df382c;
-  border-radius: 3px;
-}
 
 .download_form {
   display: none;
 }
 .progress-score {
   background: #fff;
-  max-width: 300px;
-}
-.pdf-form-error {
   max-width: 300px;
 }
 
@@ -70,10 +63,6 @@ input#domain:hover {
   font-weight: 600;
   font-size: 24px;
   color: #315d86;
-}
-.rating_ico {
-  width: 205px !important;
-  height: 154px !important;
 }
 
 .category-wrapper {
