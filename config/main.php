@@ -14,31 +14,19 @@ $cfg_main  = __DIR__ . DIRECTORY_SEPARATOR . 'config.php';
 $cfg_local = __DIR__ . DIRECTORY_SEPARATOR . 'config_local.php';
 $params    = is_file( $cfg_local ) ? require $cfg_local : require $cfg_main;
 
-// Use WordPress DB constants if available (when running as WordPress plugin)
-// Otherwise fall back to config file settings (for CLI or standalone usage)
-if ( ! defined( 'DB_NAME' )) {
-	define( 'DB_NAME', $params['db.dbname'] );
+// Ensure WordPress database constants are defined.
+// This plugin only works as a WordPress plugin.
+if ( ! defined( 'DB_NAME' ) || ! defined( 'DB_USER' ) || ! defined( 'DB_PASSWORD' ) || ! defined( 'DB_HOST' ) ) {
+	wp_die( 'WordPress database constants are not defined. This plugin requires WordPress to be installed and configured.' );
 }
-if ( ! defined( 'DB_USER' )) {
-	define( 'DB_USER', $params['db.username'] );
-}
-if ( ! defined( 'DB_PASSWORD' )) {
-	define( 'DB_PASSWORD', $params['db.password'] );
-}
-if ( ! defined( 'DB_HOST' )) {
-	define( 'DB_HOST', $params['db.host'] );
-}
-if ( ! defined( 'DB_CHARSET' )) {
+
+if ( ! defined( 'DB_CHARSET' ) ) {
 	define( 'DB_CHARSET', 'utf8mb4' );
 }
-if ( ! isset( $table_prefix )) {
-	global $wpdb;
-	if (isset( $wpdb ) && isset( $wpdb->prefix )) {
-		$table_prefix = $wpdb->prefix;
-	} else {
-		$table_prefix = 'wp_';
-	}
-}
+
+// Get WordPress database table prefix.
+global $wpdb;
+$db_table_prefix = isset( $wpdb ) && isset( $wpdb->prefix ) ? $wpdb->prefix : 'wp_';
 
 return array(
 	'basePath'   => dirname( __FILE__ ) . DIRECTORY_SEPARATOR . '..',
@@ -59,12 +47,12 @@ return array(
 		// Url Manager.
 		'urlManager'      => array(
 			'urlFormat'      => 'path',
-			'showScriptName' => $params['url.show_script_name'],
+			'showScriptName' => false,
 			'class'          => 'application.components.UrlManager',
 			'cacheID'        => 'cache',
 		),
 
-		// File Cache. ~/root/website_review/runtime/cache direcotry.
+		// File Cache. ~/root/website_review/runtime/cache directory.
 		'cache'           => array(
 			'class' => 'CFileCache',
 		),
@@ -76,13 +64,13 @@ return array(
 			'username'              => DB_USER,
 			'password'              => DB_PASSWORD,
 			'charset'               => defined( 'DB_CHARSET' ) ? DB_CHARSET : 'utf8mb4',
-			'tablePrefix'           => 'wp_ca_',
+			'tablePrefix'           => $db_table_prefix . 'ca_',
 			'schemaCachingDuration' => 60 * 60 * 24 * 30,
 			'enableProfiling'       => defined( 'YII_DEBUG' ) ? YII_DEBUG : false,
 			'enableParamLogging'    => defined( 'YII_DEBUG' ) ? YII_DEBUG : false,
 		),
 
-		// Error handler - removed custom error view, WordPress will handle 404s
+		// Error handler - removed custom error view, WordPress will handle 404s.
 
 		// Log errors into ~/root/website_review/runtime/application.log file.
 		'log'             => array(
@@ -93,16 +81,12 @@ return array(
 					'levels' => 'error, warning',
 					'except' => 'exception.CHttpException.*',
 				),
-				/*
-				array(
-					'class'=>'CWebLogRoute',
-				),*/
 			),
 		),
 
 		'securityManager' => array(
-			'encryptionKey' => $params['app.encryption_key'],
-			'validationkey' => $params['app.validation_key'],
+			'encryptionKey' => wp_salt( 'auth' ),
+			'validationkey' => wp_salt( 'secure_auth' ),
 		),
 	),
 

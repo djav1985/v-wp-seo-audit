@@ -272,7 +272,7 @@ class V_WPSA_Utils {
 		} else {
 			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, false );
 			$original_url = curl_getinfo( $ch, CURLINFO_EFFECTIVE_URL );
-			$parsed       = parse_url( $original_url );
+			$parsed       = wp_parse_url( $original_url );
 			if ( ! $parsed ) {
 				return false;
 			}
@@ -298,7 +298,7 @@ class V_WPSA_Utils {
 							preg_match( '/Location:(.*?)\n/i', $header, $matches );
 							$newurl = trim( array_pop( $matches ) );
 
-							$parsed = parse_url( $newurl );
+							$parsed = wp_parse_url( $newurl );
 							if ( ! $parsed ) {
 								return false;
 							}
@@ -400,7 +400,7 @@ class V_WPSA_Utils {
 	 * @return string Scheme and host or default.
 	 */
 	public static function url_get_scheme_host( $url, $default ) {
-		$parsed = parse_url( $url );
+		$parsed = wp_parse_url( $url );
 		if ( false === $parsed ) {
 			return $default;
 		}

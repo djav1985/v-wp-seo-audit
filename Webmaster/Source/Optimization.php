@@ -89,8 +89,10 @@ class Optimization {
     public function hasGzipSupport() {
         $ch = curl_init($this->final_url);
         curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_NOBODY, true); // HEAD request
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD');
         $ch = V_WPSA_Utils::ch($ch, array(
-            'Accept-Encoding:gzip, deflate, br, zstd',
+            'Accept-Encoding: gzip, deflate, br, zstd',
         ));
 
         if(false === $ch) {
@@ -99,6 +101,7 @@ class Optimization {
 
         $response = (string) curl_exec($ch);
         $info = (array) curl_getinfo($ch);
+        curl_close($ch);
 
         $h_size = V_WPSA_Utils::v($info, "header_size", 0);
         if(!$h_size) {
