@@ -491,16 +491,23 @@ endif;
 		</div>
 		<div class="col-md-8">
 			<p>
-				<?php echo 'Ratio'; ?> : <strong><?php echo $document['htmlratio']; ?>%</strong>
+				<?php
+				$text_percent = (int) $document['htmlratio'];
+				$html_percent = 100 - $text_percent;
+				echo 'Ratio';
+				?>
+				: <strong><?php echo $text_percent; ?>% text vs <?php echo $html_percent; ?>% HTML</strong>
 			</p>
 			<p>
 				<?php
-				if ( 'success' === $advice ) {
-					echo 'Good! Your page has a healthy text to HTML ratio (' . $document['htmlratio'] . '%). This means your page has a good balance of content to code.';
+				if ( 'error less_than' === $advice ) {
+					echo 'Your text/HTML ratio (' . $text_percent . '% text, ' . $html_percent . '% HTML) is very low. Add more readable content for better SEO.';
+				} elseif ( 'success' === $advice ) {
+					echo 'Your text/HTML ratio (' . $text_percent . '% text, ' . $html_percent . '% HTML) is acceptable, but could be stronger. Aim for 40%-70% text for best SEO.';
+				} elseif ( 'success ideal_ratio' === $advice ) {
+					echo 'Excellent! Your page has an ideal text to HTML ratio (' . $text_percent . '% text, ' . $html_percent . '% HTML). This is optimal for SEO and readability.';
 				} elseif ( 'warning' === $advice ) {
-					echo 'Your text/HTML ratio (' . $document['htmlratio'] . '%) could be improved. Aim for a ratio between 10-25% for better SEO.';
-				} else {
-					echo 'Your text/HTML ratio (' . $document['htmlratio'] . '%) is too low. Consider adding more content or reducing HTML markup for better SEO.';
+					echo 'Your text/HTML ratio (' . $text_percent . '% text, ' . $html_percent . '% HTML) is a bit too text-heavy. Consider balancing content and markup for best results.';
 				}
 				?>
 			</p>

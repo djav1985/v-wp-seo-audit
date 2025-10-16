@@ -1029,6 +1029,12 @@ class V_WPSA_DB {
 					'htmlratio' => $html_ratio,
 				);
 
+				// Add favicon to document table if Favicon analyzer is available.
+				if ( class_exists( 'Favicon' ) ) {
+					$favicon_analyzer    = new Favicon( $html, $domain );
+					$doc_data['favicon'] = (string) $favicon_analyzer->getFavicon();
+				}
+
 				$doc_data = $db->filter_columns( 'document', $doc_data );
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}document WHERE wid = %d", $wid ) );
