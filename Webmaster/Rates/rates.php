@@ -56,145 +56,151 @@ By default {N} equals 5, so
 Advice. Be careful if you want to change the rates.
 */
 return array(
-    'noFlash'            => 1.5,
-    'noIframe'           => 1.5,
-    'issetHeadings'      => 0.5,
-    'noNestedtables'     => 0.5,
-    'noInlineCSS'        => 1.0,
-    'issetFavicon'       => 0.5,
-    'noEmail'            => 0,
-    'keywords'           => 0,
-    'imgHasAlt'          => 1.5,
-    'isFriendlyUrl'      => 2.0,
-    'noUnderScore'       => 1.0,
-    'issetInternalLinks' => 1.0,
-    'hasRobotsTxt'       => 1.0,
-    'hasSitemap'         => 1.5,
-    'hasGzip'            => 0.5,
-    'hasAnalytics'       => 1.0,
-	// 32
 
-    'title'              => array(
-        '$value == _RATE_TITLE_BAD' => array(
-            'score'  => 0,
-            'advice' => _RATE_ERROR,
-        ),
-        '$value > _RATE_TITLE_BAD and $value < _RATE_TITLE_GOOD' => array(
-            'score'  => 2.0,
-            'advice' => _RATE_WARNING,
-        ),
-        '$value >= _RATE_TITLE_GOOD and $value <= _RATE_TITLE_BEST' => array(
-            'score'  => 4.0,
-            'advice' => _RATE_OK,
-        ),
-        '$value > _RATE_TITLE_BEST' => array(
-            'score'  => 1.0,
-            'advice' => _RATE_WARNING,
-        ),
-    ),
+	// --- BASE METRICS (TOTAL = 82.5) ---
 
-    'description'        => array(
-        '$value == _RATE_DESC_BAD' => array(
-            'score'  => 0,
-            'advice' => _RATE_ERROR,
-        ),
-        '$value > _RATE_DESC_BAD and $value < _RATE_DESC_GOOD' => array(
-            'score'  => 2.0,
-            'advice' => _RATE_WARNING,
-        ),
-        '$value >= _RATE_DESC_GOOD and $value <= _RATE_DESC_BEST' => array(
-            'score'  => 4.0,
-            'advice' => _RATE_OK,
-        ),
-        '$value > _RATE_DESC_BEST' => array(
-            'score'  => 1.0,
-            'advice' => _RATE_WARNING,
-        ),
-    ),
+	'noFlash'            => 1.5,
+	'noIframe'           => 1.5,
+	'issetHeadings'      => 1.0,
+	'noNestedtables'     => 1.0,
+	'noInlineCSS'        => 1.5,
+	'issetFavicon'       => 1.0,
+	'noEmail'            => 0,
+	'keywords'           => 0,
+	'imgHasAlt'          => 1.5,
+	'isFriendlyUrl'      => 2.0,
+	'noUnderScore'       => 1.5,
+	'issetInternalLinks' => 1.5,
+	'hasRobotsTxt'       => 1.0,
+	'hasSitemap'         => 2.0,
+	'hasGzip'            => 1.0,
+	'hasAnalytics'       => 1.0,
 
-    'charset'            => 1.0,
-    'viewport'           => 0.5,
-    'dublincore'         => 0.5,
-    'ogmetaproperties'   => 1.0,
-	// 49,5
+	'title'              => array(
+		'$value == _RATE_TITLE_BAD' => array(
+			'score'  => 0,
+			'advice' => _RATE_ERROR,
+		),
+		'$value > _RATE_TITLE_BAD and $value < _RATE_TITLE_GOOD' => array(
+			'score'  => 2,
+			'advice' => _RATE_WARNING,
+		),
+		'$value >= _RATE_TITLE_GOOD and $value <= _RATE_TITLE_BEST' => array(
+			'score'  => 4,
+			'advice' => _RATE_OK,
+		),
+		'$value > _RATE_TITLE_BEST' => array(
+			'score'  => 1,
+			'advice' => _RATE_WARNING,
+		),
+	),
 
-    'htmlratio'          => array(
-        '$value < _RATE_HRATIO_BAD'  => array(
-            'score'  => 1.0,
-            'advice' => _RATE_ERROR_LESSTHAN, // Very little visible text
-        ),
-        '$value >= _RATE_HRATIO_BAD and $value < _RATE_HRATIO_GOOD' => array(
-            'score'  => 2.0,
-            'advice' => _RATE_OK, // Acceptable, but could be stronger
-        ),
-        '$value >= _RATE_HRATIO_GOOD and $value <= _RATE_HRATIO_BEST' => array(
-            'score'  => 2.5,
-            'advice' => _RATE_OK_IDEAL, // Ideal text balance
-        ),
-        '$value > _RATE_HRATIO_BEST' => array(
-            'score'  => 2.0, // Slight drop for being too text-heavy
-            'advice' => _RATE_WARNING,  // Informative warning instead of failure
-        ),
-    ),
+	'description'        => array(
+		'$value == _RATE_DESC_BAD' => array(
+			'score'  => 0,
+			'advice' => _RATE_ERROR,
+		),
+		'$value > _RATE_DESC_BAD and $value < _RATE_DESC_GOOD' => array(
+			'score'  => 2,
+			'advice' => _RATE_WARNING,
+		),
+		'$value >= _RATE_DESC_GOOD and $value <= _RATE_DESC_BEST' => array(
+			'score'  => 4,
+			'advice' => _RATE_OK,
+		),
+		'$value > _RATE_DESC_BEST' => array(
+			'score'  => 1,
+			'advice' => _RATE_WARNING,
+		),
+	),
 
+	'charset'            => 1.0,
+	'viewport'           => 1.0,
+	'dublincore'         => 1.0,
+	'ogmetaproperties'   => 1.0,
 
-    'w3c'                => array(
-        '$errors == _RATE_W3C_ERR_OK && $warnings < _RATE_W3C_WARN_OK' => array(
-            'score'  => 4,
-            'advice' => _RATE_OK,
-        ),
-        '$errors + $warnings < _RATE_W3C_ERR_WARN_LOW' => array(
-            'score'  => 3,
-            'advice' => _RATE_OK,
-        ),
-        '$errors + $warnings >= _RATE_W3C_ERR_WARN_LOW && $errors + $warnings < _RATE_W3C_ERR_WARN_MED' => array(
-            'score'  => 2,
-            'advice' => _RATE_WARNING,
-        ),
-        '$errors + $warnings >= _RATE_W3C_ERR_WARN_MED && $errors + $warnings < _RATE_W3C_ERR_WARN_HIGH' => array(
-            'score'  => 1,
-            'advice' => _RATE_WARNING,
-        ),
-        '$errors + $warnings >= _RATE_W3C_ERR_WARN_HIGH' => array(
-            'score'  => 0,
-            'advice' => _RATE_ERROR,
-        ),
-    ),
-    'doctype'            => 0.5,
-    'isPrintable'        => 0,
-    'issetAppleIcons'    => 0.5,
-    'noDeprecated'       => 0.5,
-    'lang'               => 0.5,
-	// 78,5
+	// --- HTML RATIO (MAX 4 / MIN 0) ---
 
-    'cssCount'           => array(
-        '$value <= _RATE_CSS_COUNT' => array(
-            'score'  => 1.0,
-            'advice' => _RATE_OK,
-        ),
-        '$value > _RATE_CSS_COUNT'  => array(
-            'score'  => 0.5,
-            'advice' => _RATE_ERROR,
-        ),
-    ),
+	'htmlratio'          => array(
+		'$value < _RATE_HRATIO_BAD'  => array(
+			'score'  => 0,
+			'advice' => _RATE_ERROR_LESSTHAN,
+		),
+		'$value >= _RATE_HRATIO_BAD and $value < _RATE_HRATIO_GOOD' => array(
+			'score'  => 2,
+			'advice' => _RATE_OK,
+		),
+		'$value >= _RATE_HRATIO_GOOD and $value <= _RATE_HRATIO_BEST' => array(
+			'score'  => 4,
+			'advice' => _RATE_OK_IDEAL,
+		),
+		'$value > _RATE_HRATIO_BEST' => array(
+			'score'  => 1,
+			'advice' => _RATE_WARNING,
+		),
+	),
 
-    'jsCount'            => array(
-        '$value <= _RATE_JS_COUNT' => array(
-            'score'  => 1.0,
-            'advice' => _RATE_OK,
-        ),
-        '$value > _RATE_JS_COUNT'  => array(
-            'score'  => 0.5,
-            'advice' => _RATE_ERROR,
-        ),
-    ),
-	// 86,5
+	// --- W3C TOTAL 4 MAX ---
 
-    'wordConsistency'    => array(
-        'keywords'    => 0,
-        'description' => 0.5,
-        'title'       => 0.5,
-        'headings'    => 0.5,
-    ),
-	// 100
+	'w3c'                => array(
+		'$errors == _RATE_W3C_ERR_OK && $warnings < _RATE_W3C_WARN_OK' => array(
+			'score'  => 4,
+			'advice' => _RATE_OK,
+		),
+		'$errors + $warnings < _RATE_W3C_ERR_WARN_LOW'   => array(
+			'score'  => 3,
+			'advice' => _RATE_OK,
+		),
+		'$errors + $warnings >= _RATE_W3C_ERR_WARN_LOW && $errors + $warnings < _RATE_W3C_ERR_WARN_MED' => array(
+			'score'  => 2,
+			'advice' => _RATE_WARNING,
+		),
+		'$errors + $warnings >= _RATE_W3C_ERR_WARN_MED && $errors + $warnings < _RATE_W3C_ERR_WARN_HIGH' => array(
+			'score'  => 1,
+			'advice' => _RATE_WARNING,
+		),
+		'$errors + $warnings >= _RATE_W3C_ERR_WARN_HIGH' => array(
+			'score'  => 0,
+			'advice' => _RATE_ERROR,
+		),
+	),
+
+	'doctype'            => 1.0,
+	'isPrintable'        => 0,
+	'issetAppleIcons'    => 1.0,
+	'noDeprecated'       => 1.0,
+	'lang'               => 1.0,
+
+	// --- ASSET COUNTS MAX 4 TOTAL ---
+
+	'cssCount'           => array(
+		'$value <= _RATE_CSS_COUNT' => array(
+			'score'  => 2.0,
+			'advice' => _RATE_OK,
+		),
+		'$value > _RATE_CSS_COUNT'  => array(
+			'score'  => 0,
+			'advice' => _RATE_ERROR,
+		),
+	),
+
+	'jsCount'            => array(
+		'$value <= _RATE_JS_COUNT' => array(
+			'score'  => 2.0,
+			'advice' => _RATE_OK,
+		),
+		'$value > _RATE_JS_COUNT'  => array(
+			'score'  => 0,
+			'advice' => _RATE_ERROR,
+		),
+	),
+
+	// --- WORD CONSISTENCY STAYS UNTOUCHED (17.5 POINTS DYNAMIC) ---
+
+	'wordConsistency'    => array(
+		'keywords'    => 0.5,
+		'description' => 1,
+		'title'       => 1,
+		'headings'    => 1,
+	),
 );
