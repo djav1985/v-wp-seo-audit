@@ -122,8 +122,8 @@ V_WPSA_Ajax_Handlers::init();
  * and external integrations.
  *
  * @param string $domain The domain to analyze.
- * @param bool   $report Whether to return full report data (true) or just PDF link (false).
- * @return string|WP_Error JSON string with report data or PDF link, or WP_Error on failure.
+ * @param bool   $report Whether to return full report data (true) or minimal data (false).
+ * @return string|WP_Error JSON string with report data, or WP_Error on failure.
  *
  * phpcs:disable WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
  */
@@ -136,9 +136,15 @@ function V_WPSA_external_generation( $domain, $report = true ) {
 		return $result;
 	}
 
-	// If only PDF link is requested.
+	// If minimal data is requested (no full report).
 	if ( ! $report ) {
-		return $result['pdf_url'];
+		// Return only domain, score, and PDF URL as JSON.
+		$minimal = array(
+			'domain'  => $result['domain'],
+			'score'   => $result['score'],
+			'pdf_url' => $result['pdf_url'],
+		);
+		return wp_json_encode( $minimal );
 	}
 
 	// Return full report as JSON string.

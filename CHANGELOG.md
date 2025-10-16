@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Internal Function for AI Integrations**: New `V_WPSA_external_generation()` function for internal use with AI chatbots and function calling
 - **Report Service Layer**: New `V_WPSA_Report_Service` class that provides unified interface for report generation
-- **Flexible Return Options**: Function can return full JSON report or just PDF download link based on parameter
+- **Simplified JSON Response**: Always returns JSON with only essential fields (domain, score, pdf_url, and optional report data)
 
 ### Function Signature
 ```php
@@ -19,20 +19,23 @@ V_WPSA_external_generation( string $domain, bool $report = true )
 
 **Parameters:**
 - `$domain` (string, required): Domain to analyze (without http://)
-- `$report` (bool, optional): If `true` returns full JSON report, if `false` returns only PDF URL. Default: `true`
+- `$report` (bool, optional): If `true` returns full report with all sections, if `false` returns only domain, score, and PDF URL. Default: `true`
 
 **Returns:**
-- When `$report` is `true`: JSON string with complete report data including domain, score, PDF URL, and all report sections
-- When `$report` is `false`: String with PDF download URL
+- Always returns JSON string
+- When `$report` is `true`: JSON with domain, score, pdf_url, and complete report data
+- When `$report` is `false`: JSON with only domain, score, and pdf_url
 - On error: `WP_Error` object
 
 **Usage Examples:**
 ```php
 // Get full report as JSON string
 $json_report = V_WPSA_external_generation( 'example.com', true );
+// Returns: {"domain": "...", "score": 85, "pdf_url": "...", "report": {...}}
 
-// Get only PDF download link
-$pdf_url = V_WPSA_external_generation( 'example.com', false );
+// Get minimal data
+$json_minimal = V_WPSA_external_generation( 'example.com', false );
+// Returns: {"domain": "...", "score": 85, "pdf_url": "..."}
 
 // Error handling
 $result = V_WPSA_external_generation( 'example.com', true );

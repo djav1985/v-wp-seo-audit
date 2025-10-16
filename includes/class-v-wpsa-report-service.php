@@ -120,17 +120,13 @@ class V_WPSA_Report_Service {
 			$upload_dir = wp_upload_dir();
 			$pdf_url    = $upload_dir['baseurl'] . '/seo-audit/pdf/' . $domain . '.pdf';
 
-			// Prepare JSON-safe payload.
+			// Prepare simplified JSON-safe payload.
 			// Remove rateprovider object and include key report sections.
 			$payload = array(
-				'domain'     => $domain,
-				'idn'        => $idn,
-				'score'      => isset( $report_data['website']['score'] ) ? (int) $report_data['website']['score'] : 0,
-				'cached'     => $was_cached,
-				'pdf_url'    => $pdf_url,
-				'pdf_cached' => isset( $pdf_result['cached'] ) ? $pdf_result['cached'] : false,
-				'generated'  => isset( $report_data['generated'] ) ? $report_data['generated'] : array(),
-				'report'     => array(
+				'domain'  => $domain,
+				'score'   => isset( $report_data['website']['score'] ) ? (int) $report_data['website']['score'] : 0,
+				'pdf_url' => $pdf_url,
+				'report'  => array(
 					'website'   => isset( $report_data['website'] ) ? self::sanitize_website_data( $report_data['website'] ) : array(),
 					'content'   => isset( $report_data['content'] ) ? $report_data['content'] : array(),
 					'document'  => isset( $report_data['document'] ) ? $report_data['document'] : array(),

@@ -84,11 +84,12 @@ V_WPSA_external_generation( string $domain, bool $report = true )
 
 **Parameters:**
 - `$domain` (string, required): Domain to analyze (without http://)
-- `$report` (bool, optional): If `true` returns full JSON report, if `false` returns only PDF URL. Default: `true`
+- `$report` (bool, optional): If `true` returns full report with all sections, if `false` returns only domain, score, and PDF URL. Default: `true`
 
 **Returns:**
-- When `$report` is `true`: JSON string with complete report data
-- When `$report` is `false`: String with PDF download URL
+- Always returns JSON string (never a plain string)
+- When `$report` is `true`: JSON with domain, score, pdf_url, and complete report sections
+- When `$report` is `false`: JSON with only domain, score, and pdf_url
 - On error: `WP_Error` object
 
 **Example Usage:**
@@ -96,16 +97,13 @@ V_WPSA_external_generation( string $domain, bool $report = true )
 ```php
 // Get full report as JSON string
 $json_report = V_WPSA_external_generation( 'example.com', true );
-
-// Decode and use the data
 $data = json_decode( $json_report, true );
-echo 'Domain: ' . $data['domain'];
-echo 'Score: ' . $data['score'];
-echo 'PDF URL: ' . $data['pdf_url'];
+// Returns: {"domain": "...", "score": 85, "pdf_url": "...", "report": {...}}
 
-// Get only PDF download link
-$pdf_url = V_WPSA_external_generation( 'example.com', false );
-echo 'Download PDF: ' . $pdf_url;
+// Get minimal data (just domain, score, PDF URL)
+$json_minimal = V_WPSA_external_generation( 'example.com', false );
+$data = json_decode( $json_minimal, true );
+// Returns: {"domain": "...", "score": 85, "pdf_url": "..."}
 
 // Error handling
 $result = V_WPSA_external_generation( 'invalid-domain', true );
@@ -126,33 +124,33 @@ function get_seo_report( $domain ) {
 }
 ```
 
-**JSON Response Structure (when `$report` is `true`):**
+**JSON Response Structure:**
 
+When `$report` is `false` (minimal):
 ```json
 {
   "domain": "example.com",
-  "idn": "example.com",
   "score": 85,
-  "cached": false,
+  "pdf_url": "https://yoursite.com/wp-content/uploads/seo-audit/pdf/example.com.pdf"
+}
+```
+
+When `$report` is `true` (full):
+```json
+{
+  "domain": "example.com",
+  "score": 85,
   "pdf_url": "https://yoursite.com/wp-content/uploads/seo-audit/pdf/example.com.pdf",
-  "pdf_cached": false,
-  "generated": {
-    "time": "2 minutes ago",
-    "seconds": 120
-  },
   "report": {
-    "website": {
-      "score": 85,
-      "score_breakdown": {...}
-    },
-    "content": {...},
-    "document": {...},
-    "links": {...},
-    "meta": {...},
-    "w3c": {...},
-    "cloud": {...},
-    "misc": {...},
-    "thumbnail": {...}
+    "website": { "score": 85, "score_breakdown": {...} },
+    "meta": { "title": "...", "description": "..." },
+    "links": { "internal": 10, "external_dofollow": 5 },
+    "content": { "word_count": 1500, "headings": {...} },
+    "document": { "title": "...", "lang": "en" },
+    "w3c": { "errors": 0, "warnings": 2 },
+    "cloud": { "words": [...] },
+    "misc": { "analytics": true, "sitemap": true },
+    "thumbnail": { "url": "..." }
   }
 }
 ```
