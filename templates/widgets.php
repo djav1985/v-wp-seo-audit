@@ -237,7 +237,7 @@ function v_wpsa_get_website_thumbnail_url( $args = array() ) {
 		return V_WPSA_Thumbnail::get_og_image( $args );
 	}
 
-	// Try to return a cached thumbnail from the WordPress uploads directory
+	// Try to return a cached thumbnail from the WordPress uploads directory.
 	if ( function_exists( 'wp_upload_dir' ) ) {
 		$upload_dir  = wp_upload_dir();
 		$filename    = md5( $args['url'] ) . '.jpg';
