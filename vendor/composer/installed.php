@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-copilot/update-report-removal-reanalysis',
-        'version' => 'dev-copilot/update-report-removal-reanalysis',
-        'reference' => '4141d9587cc665ef381fd9cbf124ab3216d7a277',
+        'pretty_version' => 'dev-copilot/fix-table-display-issue',
+        'version' => 'dev-copilot/fix-table-display-issue',
+        'reference' => '6f6a9bd051667fb2654679fe7efcdcb53a116fb5',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-copilot/update-report-removal-reanalysis',
-            'version' => 'dev-copilot/update-report-removal-reanalysis',
-            'reference' => '4141d9587cc665ef381fd9cbf124ab3216d7a277',
+            'pretty_version' => 'dev-copilot/fix-table-display-issue',
+            'version' => 'dev-copilot/fix-table-display-issue',
+            'reference' => '6f6a9bd051667fb2654679fe7efcdcb53a116fb5',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
