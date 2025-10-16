@@ -201,8 +201,8 @@ return array(
 	'wordConsistency'    => array(
 		'keywords'    => 0.5,
 		'description' => 0.5,
-		'title'       => 1,
-		'headings'    => 1,
+		'title'       => 0.5,
+		'headings'    => 1.5,
 	),
 
 );
