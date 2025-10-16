@@ -366,8 +366,11 @@ var WrHelper = (function () {
             }
 
             // Show loading state
-            var originalText = $trigger.text();
-            $trigger.addClass('disabled').attr('aria-busy', 'true').text('Generating PDF...');
+            var originalText = $.trim($trigger.text());
+            $trigger.addClass('disabled')
+                .attr('aria-busy', 'true')
+                .prop('disabled', true)
+                .text('Generating PDF...');
 
             var ajaxUrl = getAjaxUrl();
             var nonce = getNonce();
@@ -382,7 +385,10 @@ var WrHelper = (function () {
             if (!nonce) {
                 console.error('v-wpsa: Nonce is not available');
                 window.alert('Error: Security token is not available. Please refresh the page and try again.');
-                $trigger.removeClass('disabled').removeAttr('aria-busy').text(originalText);
+                $trigger.removeClass('disabled')
+                    .removeAttr('aria-busy')
+                    .prop('disabled', false)
+                    .text(originalText);
                 return;
             }
 
@@ -393,7 +399,10 @@ var WrHelper = (function () {
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             
             xhr.onload = function() {
-                $trigger.removeClass('disabled').removeAttr('aria-busy').text(originalText);
+                $trigger.removeClass('disabled')
+                    .removeAttr('aria-busy')
+                    .prop('disabled', false)
+                    .text(originalText);
                 
                 if (xhr.status === 200) {
                     var contentType = xhr.getResponseHeader('Content-Type');
@@ -433,7 +442,10 @@ var WrHelper = (function () {
             };
             
             xhr.onerror = function() {
-                $trigger.removeClass('disabled').removeAttr('aria-busy').text(originalText);
+                $trigger.removeClass('disabled')
+                    .removeAttr('aria-busy')
+                    .prop('disabled', false)
+                    .text(originalText);
                 window.alert('Error: Network error occurred. Please try again.');
             };
             
