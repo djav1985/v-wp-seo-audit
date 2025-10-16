@@ -111,11 +111,11 @@ endif;
 			p.find('.collapse-task').show();
 		});
 
-		$('#update_stat').on('click', function(e) {
-			e.preventDefault();
+                $('#update_stat').on('click', function(e) {
+                        e.preventDefault();
 
-			var $button = $(this);
-			var originalText = $button.text();
+                        var $button = $(this);
+                        var originalText = $.trim($button.text());
 
 			// Show loading state on button.
 			$button.prop('disabled', true)
@@ -230,22 +230,22 @@ endif;
 			</div>
 
 			<div class="btn-toolbar" role="toolbar" aria-label="Report actions">
-				<div class="btn-group mr-2" role="group" aria-label="Report download and update">
-					<a href="#" class="btn btn-primary v-wpsa-download-pdf" data-domain="<?php echo esc_html( $website['domain'] ); ?>">
-						<?php echo 'Download PDF Version'; ?>
-					</a>
-					<?php if ( ! isset( $upd_url ) ) {
-						$upd_url = '';
-					} ?>
-					<a href="<?php echo esc_url( $upd_url ); ?>" class="btn btn-success" id="update_stat">
-						<?php echo 'UPDATE'; ?>
-					</a>
-					<?php if ( current_user_can( 'manage_options' ) ) : ?>
-						<button type="button" class="btn btn-danger v-wpsa-delete-report" data-domain="<?php echo esc_attr( $website['domain'] ); ?>">
-							<?php echo 'DELETE'; ?>
-						</button>
-					<?php endif; ?>
-				</div>
+                                <div class="btn-group mr-2" role="group" aria-label="Report download and update">
+                                        <button type="button" class="btn btn-primary v-wpsa-download-pdf" data-domain="<?php echo esc_attr( $website['domain'] ); ?>">
+                                                <?php echo 'Download PDF Version'; ?>
+                                        </button>
+                                        <?php if ( ! isset( $upd_url ) ) {
+                                                $upd_url = '';
+                                        } ?>
+                                        <button type="button" class="btn btn-success" id="update_stat" data-domain="<?php echo esc_attr( $website['domain'] ); ?>" data-update-url="<?php echo esc_url( $upd_url ); ?>">
+                                                <?php echo 'UPDATE'; ?>
+                                        </button>
+                                        <?php if ( current_user_can( 'manage_options' ) ) : ?>
+                                                <button type="button" class="btn btn-danger v-wpsa-delete-report" data-domain="<?php echo esc_attr( $website['domain'] ); ?>">
+                                                        <?php echo 'DELETE'; ?>
+                                                </button>
+                                        <?php endif; ?>
+                                </div>
 			</div>
 
 		</div>
