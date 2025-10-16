@@ -160,93 +160,109 @@ function v_wpsa_activate() {
  * V_wpsa_cleanup function.
  *
  * Cleans up old PDF files, thumbnails, and database records.
+ * Keeps only the last 12 reports and removes older ones.
  * Runs daily via WordPress cron.
  */
 function v_wpsa_cleanup() {
 	global $wpdb;
 
-	// Get cache time from config (default 24 hours).
-	$cache_time = 60 * 60 * 24; // 24 hours in seconds.
+	// Get the maximum number of reports to keep (default 12).
+	$max_reports = apply_filters( 'v_wpsa_max_reports', 12 );
 
-	// Calculate cutoff timestamp.
-	$cutoff_date = gmdate( 'Y-m-d H:i:s', time() - $cache_time );
-
-	// Get old website records from database.
+	// Get total count of website records.
 	$table_name = $wpdb->prefix . 'ca_website';
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-	$old_websites = $wpdb->get_results(
-		$wpdb->prepare(
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			"SELECT domain FROM {$table_name} WHERE modified < %s",
-			$cutoff_date
-		),
-		ARRAY_A
+	$total_count = $wpdb->get_var(
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		"SELECT COUNT(*) FROM {$table_name}"
 	);
 
-	if ( ! empty( $old_websites ) ) {
-		// Get upload directory for PDFs and thumbnails.
-		$upload_dir    = wp_upload_dir();
-		$pdf_dir       = $upload_dir['basedir'] . '/seo-audit/pdf/';
-		$thumbnail_dir = $upload_dir['basedir'] . '/seo-audit/thumbnails/';
-
-		foreach ( $old_websites as $website ) {
-			$domain = $website['domain'];
-
-			// Clean up PDF files.
-			// PDFs are stored in: seo-audit/pdf/{lang}/{first_letter}/{domain}.pdf.
-			$languages = array( 'en' ); // Default language support.
-
-			// Also remove simplified PDF files located directly under seo-audit/pdf/.
-			$simple_pdf_path = $pdf_dir . $domain . '.pdf';
-			if ( file_exists( $simple_pdf_path ) ) {
-				wp_delete_file( $simple_pdf_path );
-			}
-			$simple_pdf_path_ps = $pdf_dir . $domain . '_pagespeed.pdf';
-			if ( file_exists( $simple_pdf_path_ps ) ) {
-				wp_delete_file( $simple_pdf_path_ps );
-			}
-
-			foreach ( $languages as $lang ) {
-				$first_letter = mb_substr( $domain, 0, 1 );
-				$pdf_path     = $pdf_dir . $lang . '/' . $first_letter . '/' . $domain . '.pdf';
-
-				if ( file_exists( $pdf_path ) ) {
-					wp_delete_file( $pdf_path );
-				}
-
-				// Also check for pagespeed PDF.
-				$pdf_path_ps = $pdf_dir . $lang . '/' . $first_letter . '/' . $domain . '_pagespeed.pdf';
-				if ( file_exists( $pdf_path_ps ) ) {
-					wp_delete_file( $pdf_path_ps );
-				}
-			}
-
-			// Clean up thumbnails.
-			$thumbnail_path = $thumbnail_dir . md5( $domain ) . '.jpg';
-			if ( file_exists( $thumbnail_path ) ) {
-				wp_delete_file( $thumbnail_path );
-			}
-		}
-
-		// Delete old database records.
+	// If we have more than the maximum allowed reports, delete the oldest ones.
+	if ( $total_count > $max_reports ) {
+		// Get domains of old reports that should be deleted.
+		// Keep the newest $max_reports and delete the rest.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query(
+		$old_websites = $wpdb->get_results(
 			$wpdb->prepare(
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				"DELETE FROM {$table_name} WHERE modified < %s",
-				$cutoff_date
-			)
+				"SELECT domain, id FROM {$table_name} ORDER BY modified DESC LIMIT %d, 999999",
+				$max_reports
+			),
+			ARRAY_A
 		);
 
-		// Clean up orphaned records in related tables.
-		$related_tables = array( 'cloud', 'content', 'document', 'issetobject', 'links', 'metatags', 'misc', 'pagespeed', 'w3c' );
-		foreach ( $related_tables as $table ) {
-			$related_table_name = $wpdb->prefix . 'ca_' . $table;
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
-				"DELETE FROM {$related_table_name} WHERE wid NOT IN (SELECT id FROM {$table_name})"
-			);
+		if ( ! empty( $old_websites ) ) {
+			// Get upload directory for PDFs and thumbnails.
+			$upload_dir    = wp_upload_dir();
+			$pdf_dir       = $upload_dir['basedir'] . '/seo-audit/pdf/';
+			$thumbnail_dir = $upload_dir['basedir'] . '/seo-audit/thumbnails/';
+
+			// Collect IDs to delete.
+			$ids_to_delete = array();
+
+			foreach ( $old_websites as $website ) {
+				$domain          = $website['domain'];
+				$ids_to_delete[] = $website['id'];
+
+				// Clean up PDF files.
+				// PDFs are stored in: seo-audit/pdf/{lang}/{first_letter}/{domain}.pdf.
+				$languages = array( 'en' ); // Default language support.
+
+				// Also remove simplified PDF files located directly under seo-audit/pdf/.
+				$simple_pdf_path = $pdf_dir . $domain . '.pdf';
+				if ( file_exists( $simple_pdf_path ) ) {
+					wp_delete_file( $simple_pdf_path );
+				}
+				$simple_pdf_path_ps = $pdf_dir . $domain . '_pagespeed.pdf';
+				if ( file_exists( $simple_pdf_path_ps ) ) {
+					wp_delete_file( $simple_pdf_path_ps );
+				}
+
+				foreach ( $languages as $lang ) {
+					$first_letter = mb_substr( $domain, 0, 1 );
+					$pdf_path     = $pdf_dir . $lang . '/' . $first_letter . '/' . $domain . '.pdf';
+
+					if ( file_exists( $pdf_path ) ) {
+						wp_delete_file( $pdf_path );
+					}
+
+					// Also check for pagespeed PDF.
+					$pdf_path_ps = $pdf_dir . $lang . '/' . $first_letter . '/' . $domain . '_pagespeed.pdf';
+					if ( file_exists( $pdf_path_ps ) ) {
+						wp_delete_file( $pdf_path_ps );
+					}
+				}
+
+				// Clean up thumbnails.
+				$thumbnail_path = $thumbnail_dir . md5( $domain ) . '.jpg';
+				if ( file_exists( $thumbnail_path ) ) {
+					wp_delete_file( $thumbnail_path );
+				}
+			}
+
+			// Delete old database records by IDs.
+			if ( ! empty( $ids_to_delete ) ) {
+				$ids_placeholder = implode( ',', array_fill( 0, count( $ids_to_delete ), '%d' ) );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query(
+					$wpdb->prepare(
+						// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						"DELETE FROM {$table_name} WHERE id IN ({$ids_placeholder})",
+						$ids_to_delete
+					)
+				);
+
+				// Clean up orphaned records in related tables.
+				$related_tables = array( 'cloud', 'content', 'document', 'issetobject', 'links', 'metatags', 'misc', 'pagespeed', 'w3c' );
+				foreach ( $related_tables as $table ) {
+					$related_table_name = $wpdb->prefix . 'ca_' . $table;
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->query(
+						// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+						"DELETE FROM {$related_table_name} WHERE wid NOT IN (SELECT id FROM {$table_name})"
+					);
+				}
+			}
 		}
 	}
 }
