@@ -282,6 +282,55 @@ if ( $advice === 'success' ) {
 	echo 'Some images are missing alt attributes. Alt text is important for SEO and accessibility. ' . (int) $content['total_alt'] . ' out of ' . (int) $content['total_img'] . ' images have alt attributes.';
 }
 ?>
+
+<?php if ( $advice !== 'success' && ! empty( $content['images_missing_alt'] ) && is_array( $content['images_missing_alt'] ) ) : ?>
+<br/>
+<br/>
+<strong><?php echo 'Images Missing Alt Text:'; ?></strong>
+<br/>
+<table class="table-inner" cellspacing="0" cellpadding="3" style="margin-top:5px;">
+<thead>
+<tr style="background-color:#f0f0f0;">
+<th style="font-weight:bold;padding:5px;"><?php echo 'Image Source'; ?></th>
+</tr>
+</thead>
+<tbody>
+<?php
+$max_display = 20; // Limit display in PDF to avoid bloat
+$i           = 0;
+foreach ( $content['images_missing_alt'] as $img_src ) :
+	$i++;
+	if ( $i > $max_display ) {
+		break;
+	}
+	// Extract filename from URL for display.
+	$filename = basename( parse_url( $img_src, PHP_URL_PATH ) );
+	if ( empty( $filename ) ) {
+		$filename = $img_src;
+	}
+	// Truncate long filenames for PDF display.
+	if ( strlen( $filename ) > 60 ) {
+		$filename = substr( $filename, 0, 57 ) . '...';
+	}
+	$row_class = ( $i % 2 === 0 ) ? 'even' : 'odd';
+	?>
+	<tr class="<?php echo $row_class; ?>">
+		<td style="padding:5px;word-wrap:break-word;" title="<?php echo esc_attr( $img_src ); ?>">
+			<?php echo esc_html( $filename ); ?>
+		</td>
+	</tr>
+<?php endforeach; ?>
+<?php if ( count( $content['images_missing_alt'] ) > $max_display ) : ?>
+<tr>
+<td style="padding:5px;font-style:italic;">
+<?php echo '... and ' . ( count( $content['images_missing_alt'] ) - $max_display ) . ' more images'; ?>
+</td>
+</tr>
+<?php endif; ?>
+</tbody>
+</table>
+<?php endif; ?>
+
 </td>
 </tr>
 

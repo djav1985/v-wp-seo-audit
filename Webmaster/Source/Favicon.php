@@ -53,6 +53,23 @@ class Favicon {
 			return $http_favicon;
 		}
 		
+		// Try with www prefix if not already present
+		if(strpos($this->domain, 'www.') !== 0) {
+			$https_www_favicon = 'https://www.' . $this->domain . '/favicon.ico';
+			$headers = @get_headers($https_www_favicon, true);
+			
+			if($headers && $this->isValidFaviconResponse($headers)) {
+				return $https_www_favicon;
+			}
+			
+			$http_www_favicon = 'http://www.' . $this->domain . '/favicon.ico';
+			$headers = @get_headers($http_www_favicon, true);
+			
+			if($headers && $this->isValidFaviconResponse($headers)) {
+				return $http_www_favicon;
+			}
+		}
+		
 		// No favicon found.
 		return null;
 	}
