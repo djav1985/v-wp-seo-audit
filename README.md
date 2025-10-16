@@ -45,7 +45,26 @@
 
 ## Overview
 
+**V-WP-SEO-Audit** is a comprehensive WordPress plugin that provides in-depth SEO analysis and reporting for any website. Built with both human users and AI integrations in mind, it delivers detailed insights into website performance, technical SEO compliance, content quality, and optimization opportunities.
 
+### Key Capabilities
+
+- **Comprehensive SEO Analysis**: Evaluates 50+ SEO factors including meta tags, content structure, technical compliance, and performance metrics
+- **Automated Scoring System**: Provides weighted scores across multiple categories with actionable recommendations
+- **PDF Report Generation**: Creates professional, downloadable PDF reports with full analysis details
+- **AI-Ready Function Calling**: Dedicated `V_WPSA_external_generation()` function for seamless AI chatbot and external system integration
+- **Caching & Performance**: Intelligent 24-hour caching system to optimize performance and reduce API calls
+- **Google PageSpeed Integration**: Real-time performance metrics from Google PageSpeed Insights API
+- **Multi-Language Support**: Handles internationalized domain names (IDN) and multiple language content analysis
+- **WordPress Native**: Built with WordPress best practices using hooks, filters, and standard database operations
+
+### Use Cases
+
+- **Website Owners**: Get instant SEO audits with actionable recommendations
+- **SEO Professionals**: Generate comprehensive reports for clients
+- **AI Chatbots**: Integrate SEO analysis capabilities via function calling
+- **Development Teams**: Automate SEO monitoring and reporting
+- **Content Managers**: Validate content quality and technical compliance
 
 ---
 
@@ -612,47 +631,85 @@
 
 This project requires the following dependencies:
 
-- **Programming Language:** PHP
+- **Programming Language:** PHP 8.0+
+- **Platform:** WordPress 5.0+
 - **Package Manager:** Composer
 
 ### Installation
 
-Build v-wp-seo-audit from the source and intsall dependencies:
+Build v-wp-seo-audit from source and install dependencies:
 
 1. **Clone the repository:**
-
     ```sh
-    ❯ git clone https://github.com/djav1985/v-wp-seo-audit
+    git clone https://github.com/djav1985/v-wp-seo-audit.git
     ```
-
 2. **Navigate to the project directory:**
-
     ```sh
-    ❯ cd v-wp-seo-audit
+    cd v-wp-seo-audit
     ```
-
 3. **Install the dependencies:**
-
-<!-- SHIELDS BADGE CURRENTLY DISABLED -->
-	<!-- [![composer][composer-shield]][composer-link] -->
-	<!-- REFERENCE LINKS -->
-	<!-- [composer-shield]: https://img.shields.io/badge/PHP-777BB4.svg?style={badge_style}&logo=php&logoColor=white -->
-	<!-- [composer-link]: https://www.php.net/ -->
-
-	**Using [composer](https://www.php.net/):**
-
-	```sh
-	❯ composer install
-	```
+    ```sh
+    composer install
+    ```
 
 ### Usage
 
-Run the project with:
+**As a WordPress plugin:**
+1. Copy the `v-wp-seo-audit` folder into your WordPress `wp-content/plugins/` directory.
+2. Activate the plugin from the WordPress admin dashboard under **Plugins**.
+3. Add the `[v_wpsa]` shortcode to any page or post to display the SEO audit form.
+4. Users can enter a domain name to analyze and receive a comprehensive SEO report with:
+   - SEO score and performance metrics
+   - Content analysis (meta tags, headings, keyword density)
+   - Technical validation (HTML compliance, sitemap, robots.txt)
+   - Link analysis (internal/external links)
+   - Image optimization review
+   - Google PageSpeed Insights integration
+   - Downloadable PDF reports
 
-**Using [composer](https://www.php.net/):**
-```sh
-php {entrypoint}
+**For AI Integration and Function Calling:**
+
+The plugin provides a dedicated function for AI chatbots and external integrations to generate SEO reports programmatically:
+
+```php
+/**
+ * Generate an SEO report via function calling
+ * 
+ * @param string $domain  The domain to analyze (e.g., "example.com")
+ * @param bool   $report  true = full report data, false = minimal data (domain, score, URLs)
+ * @return string|WP_Error JSON string with report data, or WP_Error on failure
+ */
+V_WPSA_external_generation( $domain, $report = true );
 ```
+
+**Example usage:**
+```php
+// Generate a full report
+$full_report = V_WPSA_external_generation( 'example.com', true );
+$data = json_decode( $full_report, true );
+
+// Generate minimal report (just score and URLs)
+$minimal_report = V_WPSA_external_generation( 'example.com', false );
+$quick_data = json_decode( $minimal_report, true );
+// Returns: ['domain', 'score', 'pdf_url', 'report_url']
+```
+
+**AI Function Calling Features:**
+- Validates and sanitizes domain input automatically
+- Returns structured JSON data suitable for AI parsing
+- Supports both comprehensive and minimal response modes
+- Handles caching intelligently (24-hour cache by default)
+- Includes error handling with WP_Error objects
+- No authentication required for read-only report generation
+- Compatible with WordPress REST API and AJAX endpoints
+
+**Standalone (for development/testing):**
+For development purposes, you can test PHP components directly:
+```sh
+php path/to/your/script.php
+```
+
+**Note:** Full plugin functionality requires WordPress. The analysis engine uses WordPress database tables and hooks.
 
 ---
 
