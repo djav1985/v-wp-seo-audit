@@ -21,6 +21,12 @@ defined( '_RATE_HRATIO_BAD' ) or define( '_RATE_HRATIO_BAD', 5 );
 defined( '_RATE_HRATIO_GOOD' ) or define( '_RATE_HRATIO_GOOD', 40 );
 defined( '_RATE_HRATIO_BEST' ) or define( '_RATE_HRATIO_BEST', 70 );
 
+defined( '_RATE_W3C_ERR_OK' ) or define( '_RATE_W3C_ERR_OK', 0 );
+defined( '_RATE_W3C_WARN_OK' ) or define( '_RATE_W3C_WARN_OK', 5 );
+defined( '_RATE_W3C_ERR_WARN_LOW' ) or define( '_RATE_W3C_ERR_WARN_LOW', 10 );
+defined( '_RATE_W3C_ERR_WARN_MED' ) or define( '_RATE_W3C_ERR_WARN_MED', 25 );
+defined( '_RATE_W3C_ERR_WARN_HIGH' ) or define( '_RATE_W3C_ERR_WARN_HIGH', 50 );
+
 /*
 The Website Review is a dynamic grade on a 100-point scale.
 This mean that the sum of shown bellow points can't be more than 100.
@@ -50,22 +56,22 @@ By default {N} equals 5, so
 Advice. Be careful if you want to change the rates.
 */
 return array(
-    'noFlash'            => 2.5,
-    'noIframe'           => 2.5,
-    'issetHeadings'      => 1.0,
-    'noNestedtables'     => 1.0,
-    'noInlineCSS'        => 1.5,
-    'issetFavicon'       => 1.0,
+    'noFlash'            => 1.5,
+    'noIframe'           => 1.5,
+    'issetHeadings'      => 0.5,
+    'noNestedtables'     => 0.5,
+    'noInlineCSS'        => 1.0,
+    'issetFavicon'       => 0.5,
     'noEmail'            => 0,
     'keywords'           => 0,
-    'imgHasAlt'          => 2.5,
-    'isFriendlyUrl'      => 3.0,
-    'noUnderScore'       => 2.0,
-    'issetInternalLinks' => 1.5,
-    'hasRobotsTxt'       => 1.5,
-    'hasSitemap'         => 2.0,
-    'hasGzip'            => 1.0,
-    'hasAnalytics'       => 1.5,
+    'imgHasAlt'          => 1.5,
+    'isFriendlyUrl'      => 2.0,
+    'noUnderScore'       => 1.0,
+    'issetInternalLinks' => 1.0,
+    'hasRobotsTxt'       => 1.0,
+    'hasSitemap'         => 1.5,
+    'hasGzip'            => 0.5,
+    'hasAnalytics'       => 1.0,
 	// 32
 
     'title'              => array(
@@ -74,15 +80,15 @@ return array(
             'advice' => _RATE_ERROR,
         ),
         '$value > _RATE_TITLE_BAD and $value < _RATE_TITLE_GOOD' => array(
-            'score'  => 1.5,
+            'score'  => 2.0,
             'advice' => _RATE_WARNING,
         ),
         '$value >= _RATE_TITLE_GOOD and $value <= _RATE_TITLE_BEST' => array(
-            'score'  => 3.0,
+            'score'  => 4.0,
             'advice' => _RATE_OK,
         ),
         '$value > _RATE_TITLE_BEST' => array(
-            'score'  => 1.5,
+            'score'  => 1.0,
             'advice' => _RATE_WARNING,
         ),
     ),
@@ -93,71 +99,92 @@ return array(
             'advice' => _RATE_ERROR,
         ),
         '$value > _RATE_DESC_BAD and $value < _RATE_DESC_GOOD' => array(
-            'score'  => 1.5,
+            'score'  => 2.0,
             'advice' => _RATE_WARNING,
         ),
         '$value >= _RATE_DESC_GOOD and $value <= _RATE_DESC_BEST' => array(
-            'score'  => 3.0,
+            'score'  => 4.0,
             'advice' => _RATE_OK,
         ),
         '$value > _RATE_DESC_BEST' => array(
-            'score'  => 1.5,
+            'score'  => 1.0,
             'advice' => _RATE_WARNING,
         ),
     ),
 
-    'charset'            => 2.0,
-    'viewport'           => 1.0,
-    'dublincore'         => 1.0,
-    'ogmetaproperties'   => 2.0,
+    'charset'            => 1.0,
+    'viewport'           => 0.5,
+    'dublincore'         => 0.5,
+    'ogmetaproperties'   => 1.0,
 	// 49,5
 
     'htmlratio'          => array(
         '$value < _RATE_HRATIO_BAD'  => array(
-            'score'  => 1.5,
+            'score'  => 1.0,
             'advice' => _RATE_ERROR_LESSTHAN, // Very little visible text
         ),
         '$value >= _RATE_HRATIO_BAD and $value < _RATE_HRATIO_GOOD' => array(
-            'score'  => 3.0,
+            'score'  => 2.0,
             'advice' => _RATE_OK, // Acceptable, but could be stronger
         ),
         '$value >= _RATE_HRATIO_GOOD and $value <= _RATE_HRATIO_BEST' => array(
-            'score'  => 4.0,
+            'score'  => 2.5,
             'advice' => _RATE_OK_IDEAL, // Ideal text balance
         ),
         '$value > _RATE_HRATIO_BEST' => array(
-            'score'  => 3.0, // Slight drop for being too text-heavy
+            'score'  => 2.0, // Slight drop for being too text-heavy
             'advice' => _RATE_WARNING,  // Informative warning instead of failure
         ),
     ),
 
 
-    'w3c'                => 3.0,
-    'doctype'            => 1.0,
+    'w3c'                => array(
+        '$errors == _RATE_W3C_ERR_OK && $warnings < _RATE_W3C_WARN_OK' => array(
+            'score'  => 4,
+            'advice' => _RATE_OK,
+        ),
+        '$errors + $warnings < _RATE_W3C_ERR_WARN_LOW' => array(
+            'score'  => 3,
+            'advice' => _RATE_OK,
+        ),
+        '$errors + $warnings >= _RATE_W3C_ERR_WARN_LOW && $errors + $warnings < _RATE_W3C_ERR_WARN_MED' => array(
+            'score'  => 2,
+            'advice' => _RATE_WARNING,
+        ),
+        '$errors + $warnings >= _RATE_W3C_ERR_WARN_MED && $errors + $warnings < _RATE_W3C_ERR_WARN_HIGH' => array(
+            'score'  => 1,
+            'advice' => _RATE_WARNING,
+        ),
+        '$errors + $warnings >= _RATE_W3C_ERR_WARN_HIGH' => array(
+            'score'  => 0,
+            'advice' => _RATE_ERROR,
+        ),
+    ),
+    'doctype'            => 0.5,
     'isPrintable'        => 0,
-    'issetAppleIcons'    => 1.0,
-    'noDeprecated'       => 1.0,
-    'lang'               => 1.0,
+    'issetAppleIcons'    => 0.5,
+    'noDeprecated'       => 0.5,
+    'lang'               => 0.5,
 	// 78,5
 
     'cssCount'           => array(
         '$value <= _RATE_CSS_COUNT' => array(
-            'score'  => 2.0,
+            'score'  => 1.0,
             'advice' => _RATE_OK,
         ),
         '$value > _RATE_CSS_COUNT'  => array(
-            'score'  => 1.0,
+            'score'  => 0.5,
             'advice' => _RATE_ERROR,
         ),
     ),
 
     'jsCount'            => array(
         '$value <= _RATE_JS_COUNT' => array(
-            'score'  => 2.0,
+            'score'  => 1.0,
             'advice' => _RATE_OK,
         ),
         '$value > _RATE_JS_COUNT'  => array(
-            'score'  => 1.0,
+            'score'  => 0.5,
             'advice' => _RATE_ERROR,
         ),
     ),
@@ -165,9 +192,9 @@ return array(
 
     'wordConsistency'    => array(
         'keywords'    => 0,
-        'description' => 1.0,
-        'title'       => 1.0,
-        'headings'    => 1.0,
+        'description' => 0.5,
+        'title'       => 0.5,
+        'headings'    => 0.5,
     ),
 	// 100
 );

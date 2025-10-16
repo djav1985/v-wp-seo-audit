@@ -1,5 +1,32 @@
 <?php
 class RateProvider {
+	/**
+	 * Get W3C score and advice for given error/warning counts (no eval in template).
+	 */
+	public function getW3cScoreAdvice($errors, $warnings) {
+		$rates = $this->rates['w3c'];
+		foreach ($rates as $condition => $score) {
+			// Replace $errors and $warnings in condition string
+			$cond = str_replace(['$errors', '$warnings'], [$errors, $warnings], $condition);
+			if (eval("return {$cond};")) {
+				return array($score['score'], $score['advice']);
+			}
+		}
+		return array(0, _RATE_ERROR);
+	}
+	/**
+	 * Get the numeric score for an array-based category for a given value, without incrementing total score.
+	 */
+	public function getCompareArrayScore($index, $value) {
+		$rates = $this->rates[$index];
+		foreach ($rates as $condition => $score) {
+			$eval = "return {$condition};";
+			if (eval($eval)) {
+				return $score['score'];
+			}
+		}
+		return 0;
+	}
 	private $rates = array();
 	private $score = 0;
 

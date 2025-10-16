@@ -40,6 +40,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( empty( $website ) || ! is_array( $website ) ) : ?>
+// Ensure $upd_url is always set to avoid undefined variable warning.
+if ( ! isset( $upd_url ) ) {
+	$upd_url = '';
+}
 	<div class="alert alert-danger mt-5 mb-5">
 		<?php echo 'No report available. The domain could not be analyzed or the record was not created. Please try again or check your domain input.'; ?>
 	</div>
@@ -230,6 +234,9 @@ endif;
 					<a href="#" class="btn btn-primary v-wpsa-download-pdf" data-domain="<?php echo esc_html( $website['domain'] ); ?>">
 						<?php echo 'Download PDF Version'; ?>
 					</a>
+					<?php if ( ! isset( $upd_url ) ) {
+						$upd_url = '';
+					} ?>
 					<a href="<?php echo esc_url( $upd_url ); ?>" class="btn btn-success" id="update_stat">
 						<?php echo 'UPDATE'; ?>
 					</a>
@@ -1319,70 +1326,70 @@ endif;
 									'name'    => 'Title Tag',
 									'key'     => 'title',
 									'current' => $rateprovider->addCompareArray( 'title', mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) ) ),
-									'max'     => 4,
+									'max'     => 4.0,
 									'type'    => 'array',
 								),
 								array(
 									'name'    => 'Meta Description',
 									'key'     => 'description',
 									'current' => $rateprovider->addCompareArray( 'description', mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) ) ),
-									'max'     => 4,
+									'max'     => 4.0,
 									'type'    => 'array',
 								),
 								array(
 									'name'    => 'Text/HTML Ratio',
 									'key'     => 'htmlratio',
 									'current' => $rateprovider->addCompareArray( 'htmlratio', $document['htmlratio'] ),
-									'max'     => 9,
+									'max'     => 2.5,
 									'type'    => 'array',
 								),
 								array(
 									'name'    => 'CSS Files Count',
 									'key'     => 'cssCount',
 									'current' => $rateprovider->addCompareArray( 'cssCount', $document['css'] ),
-									'max'     => 4,
+									'max'     => 1.0,
 									'type'    => 'array',
 								),
 								array(
 									'name'    => 'JavaScript Files Count',
 									'key'     => 'jsCount',
 									'current' => $rateprovider->addCompareArray( 'jsCount', $document['js'] ),
-									'max'     => 4,
+									'max'     => 1.0,
 									'type'    => 'array',
 								),
 								array(
 									'name'    => 'No Flash Content',
 									'key'     => 'noFlash',
 									'current' => $rateprovider->addCompare( 'noFlash', ! $isseter['flash'] ),
-									'max'     => 3.5,
+									'max'     => 1.5,
 									'type'    => 'boolean',
 								),
 								array(
 									'name'    => 'No Iframes',
 									'key'     => 'noIframe',
 									'current' => $rateprovider->addCompare( 'noIframe', ! $isseter['iframe'] ),
-									'max'     => 3.5,
+									'max'     => 1.5,
 									'type'    => 'boolean',
 								),
 								array(
 									'name'    => 'Images Have Alt Text',
 									'key'     => 'imgHasAlt',
 									'current' => $rateprovider->addCompare( 'imgHasAlt', $content['total_img'] === $content['total_alt'] ),
-									'max'     => 3.5,
+									'max'     => 1.5,
 									'type'    => 'boolean',
 								),
 								array(
 									'name'    => 'SEO Friendly URLs',
 									'key'     => 'isFriendlyUrl',
 									'current' => $rateprovider->addCompare( 'isFriendlyUrl', $links['friendly'] ),
-									'max'     => 5,
+									'max'     => 2.0,
 									'type'    => 'boolean',
 								),
 								array(
 									'name'    => 'No Underscores in URLs',
 									'key'     => 'noUnderScore',
 									'current' => $rateprovider->addCompare( 'noUnderScore', ! $links['isset_underscore'] ),
-									'max'     => 4,
+									'max'     => 1.0,
 									'type'    => 'boolean',
 								),
 								array(
@@ -1507,9 +1514,12 @@ endif;
 								array(
 									'name'    => 'W3C Validity',
 									'key'     => 'w3c',
-									'current' => $rateprovider->addCompare( 'w3c', $w3c['valid'] ),
-									'max'     => 5,
-									'type'    => 'boolean',
+									'current' => array(
+										'errors'   => $w3c['errors'],
+										'warnings' => $w3c['warnings'],
+									),
+									'max'     => 4,
+									'type'    => 'array_w3c',
 								),
 							);
 
@@ -1526,16 +1536,38 @@ endif;
 							}
 
 							foreach ( $categories as $category ) :
-								$advice       = $category['current'];
-								$points_text  = 'boolean' === $category['type'] ? ( 'success' === $advice ? $category['max'] : 0 ) : '~';
-								$status_class = 'success' === $advice || 'success ideal_ratio' === $advice ? 'success' : ( strpos( $advice, 'error' ) !== false ? 'danger' : 'warning' );
+								$advice = $category['current'];
+								if ( 'array' === $category['type'] ) {
+									$array_value = 0;
+									if ( 'title' === $category['key'] ) {
+										$array_value = mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) );
+									} elseif ( 'description' === $category['key'] ) {
+										$array_value = mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) );
+									} elseif ( 'htmlratio' === $category['key'] ) {
+										$array_value = $document['htmlratio'];
+									} elseif ( 'cssCount' === $category['key'] ) {
+										$array_value = $document['css'];
+									} elseif ( 'jsCount' === $category['key'] ) {
+										$array_value = $document['js'];
+									}
+									$points_text = $rateprovider->getCompareArrayScore( $category['key'], $array_value );
+									$status_class = ( $points_text > 0 ) ? 'success' : 'danger';
+								} elseif ( 'array_w3c' === $category['type'] ) {
+									$w3c_errors = isset( $category['current']['errors'] ) ? $category['current']['errors'] : 0;
+									$w3c_warnings = isset( $category['current']['warnings'] ) ? $category['current']['warnings'] : 0;
+									list( $points_text, $advice ) = $rateprovider->getW3cScoreAdvice( $w3c_errors, $w3c_warnings );
+									$status_class = ( $points_text >= 3 ) ? 'success' : ( $points_text > 0 ? 'warning' : 'danger' );
+								} else {
+									$points_text = ( 'success' === $advice ? $category['max'] : 0 );
+									$status_class = 'success' === $advice || 'success ideal_ratio' === $advice ? 'success' : ( strpos( $advice, 'error' ) !== false ? 'danger' : 'warning' );
+								}
 								?>
 								<tr>
 									<td><?php echo esc_html( $category['name'] ); ?></td>
 									<td><?php echo esc_html( $points_text ); ?></td>
 									<td><?php echo esc_html( $category['max'] ); ?></td>
 									<td>
-										<span class="badge badge-<?php echo esc_attr( $status_class ); ?>">
+										<span class="badge badge-<?php echo esc_attr( ( strpos( $advice, 'error' ) !== false ) ? 'danger' : $status_class ); ?>">
 											<?php
 											if ( 'success' === $advice || 'success ideal_ratio' === $advice ) {
 												echo 'Pass';
