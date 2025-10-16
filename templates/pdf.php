@@ -691,10 +691,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 				<td><?php echo esc_html( $word ); ?></td>
 				<td><?php echo (int) $cloud['words'][ $word ]['count']; ?></td>
-				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['title']; ?>.png" /></td>
-				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['keywords']; ?>.png" /></td>
-				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['description']; ?>.png" /></td>
-				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['headings']; ?>.png" /></td>
+				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo isset( $object['title'] ) ? (int) $object['title'] : 0; ?>.png" /></td>
+				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo isset( $object['keywords'] ) ? (int) $object['keywords'] : 0; ?>.png" /></td>
+				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo isset( $object['description'] ) ? (int) $object['description'] : 0; ?>.png" /></td>
+				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo isset( $object['headings'] ) ? (int) $object['headings'] : 0; ?>.png" /></td>
 			</tr>
 			<?php
 			$i++;
