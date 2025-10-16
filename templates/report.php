@@ -14,11 +14,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( empty( $website ) || ! is_array( $website ) ) : ?>
 // Ensure $upd_url is always set to avoid undefined variable warning.
 if ( ! isset( $upd_url ) ) {
 	$upd_url = '';
 }
+
+if ( empty( $website ) || ! is_array( $website ) ) :
+	?>
 	<div class="alert alert-danger mt-5 mb-5">
 		<?php echo 'No report available. The domain could not be analyzed or the record was not created. Please try again or check your domain input.'; ?>
 	</div>
@@ -1211,7 +1213,10 @@ $format_points    = static function ( $value ) {
 			</p>
 		</div>
 		<div class="col-md-8">
-			<?php if ( ! empty( $misc['analytics'] ) ) :; ?>
+			<?php
+			if ( ! empty( $misc['analytics'] ) ) :
+				;
+				?>
 				<p>
 					<?php
 					echo 'Great! We detected analytics tracking on your website. Analytics help you understand visitor behavior and improve your site.';
@@ -1232,17 +1237,19 @@ $format_points    = static function ( $value ) {
 						</tbody>
 					</table>
 				</div>
-			<?php else :; ?>
+			<?php else : ?>
 				<p><strong><?php echo 'Missing'; ?></strong></p>
 				<p>
 					<?php
 					echo 'Your website does not have analytics tracking installed. Consider adding analytics to gain insights into your visitors and improve your site performance.';
 					?>
+				</p>
 				<p>
 					<?php echo 'Domain'; ?> : <?php echo esc_html( $website['idn'] ); ?>
 				</p>
+			<?php endif; ?>
+		</div>
 	</div>
-</div>
 
 <?php if ( V_WPSA_Config::get( 'psi.show' ) ) : ?>
 	<h4 id="section_page_speed" class="mt-5 mb-3"><?php echo 'PageSpeed Insights'; ?></h4>
