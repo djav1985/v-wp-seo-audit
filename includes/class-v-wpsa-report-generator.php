@@ -34,6 +34,11 @@ class V_WPSA_Report_Generator {
 			throw new Exception( 'Website not found: ' . $domain );
 		}
 
+		// Calculate score before rendering if RateProvider exists.
+		if ( isset( $data['rateprovider'] ) && is_object( $data['rateprovider'] ) ) {
+			self::calculate_score( $data );
+		}
+
 		// Render using WordPress template.
 		$html = self::render_template( 'report.php', $data );
 
@@ -44,6 +49,8 @@ class V_WPSA_Report_Generator {
 					$score = (int) $data['rateprovider']->getScore();
 					$db    = new V_WPSA_DB();
 					$db->set_website_score( $data['website']['id'], $score );
+					// Update the data array so the template shows the right score.
+					$data['website']['score'] = $score;
 				}
 			} catch ( Exception $e ) {
 				// Don't break rendering on score persistence failure; just continue.
@@ -55,12 +62,113 @@ class V_WPSA_Report_Generator {
 	}
 
 	/**
-	 * Generate PDF report for a domain.
+	 * Calculate the SEO score for a website based on its report data.
+	 * This simulates all the RateProvider calls that would happen during template rendering.
 	 *
-	 * @param string $domain Domain to generate PDF for.
-	 * @return array Array with 'file' => path to PDF file, 'filename' => suggested filename.
-	 * @throws Exception If PDF cannot be generated.
+	 * @param array $data Report data array (passed by reference).
+	 * @return int The calculated score.
 	 */
+	private static function calculate_score( &$data ) {
+		$rateprovider = $data['rateprovider'];
+		$meta         = $data['meta'];
+		$content      = $data['content'];
+		$document     = $data['document'];
+		$links        = $data['links'];
+		$w3c          = $data['w3c'];
+		$isseter      = $data['isseter'];
+		$cloud        = $data['cloud'];
+		$misc         = $data['misc'];
+
+		// Simulate all the addCompare and addCompareArray calls from the template.
+		// These are in the same order as they appear in the template.
+
+		// Title.
+		$rateprovider->addCompareArray( 'title', mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) ) );
+
+		// Description.
+		$rateprovider->addCompareArray( 'description', mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) ) );
+
+		// Og properties.
+		$rateprovider->addCompare( 'ogmetaproperties', ! empty( $meta['ogproperties'] ) );
+
+		// Images.
+		$rateprovider->addCompare( 'imgHasAlt', $content['total_img'] === $content['total_alt'] );
+
+		// Text/HTML Ratio.
+		$rateprovider->addCompareArray( 'htmlratio', $document['htmlratio'] );
+
+		// Flash.
+		$rateprovider->addCompare( 'noFlash', ! $isseter['flash'] );
+
+		// Iframe.
+		$rateprovider->addCompare( 'noIframe', ! $isseter['iframe'] );
+
+		// Friendly URL.
+		$rateprovider->addCompare( 'isFriendlyUrl', $links['friendly'] );
+
+		// Underscore.
+		$rateprovider->addCompare( 'noUnderScore', ! $links['isset_underscore'] );
+
+		// In-page links.
+		$rateprovider->addCompare( 'issetInternalLinks', $links['internal'] > 0 );
+
+		// Favicon.
+		$rateprovider->addCompare( 'issetFavicon', ! empty( $document['favicon'] ) );
+
+		// Language.
+		$rateprovider->addCompare( 'lang', $document['lang'] );
+
+		// Dublin Core.
+		$rateprovider->addCompare( 'lang', $isseter['dublincore'] );
+
+		// Doctype.
+		$rateprovider->addCompare( 'doctype', $document['doctype'] );
+
+		// Encoding.
+		$rateprovider->addCompare( 'charset', $document['charset'] );
+
+		// W3C.
+		$rateprovider->addCompare( 'w3c', $w3c['valid'] );
+
+		// Deprecated.
+		$rateprovider->addCompare( 'noDeprecated', empty( $content['deprecated'] ) );
+
+		// Nested tables.
+		$rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] );
+
+		// Inline CSS.
+		$rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] );
+
+		// CSS count.
+		$rateprovider->addCompareArray( 'cssCount', $document['css'] );
+
+		// JS count.
+		$rateprovider->addCompareArray( 'jsCount', $document['js'] );
+
+		// Gzip.
+		$rateprovider->addCompare( 'hasGzip', $isseter['gzip'] );
+
+		// Sitemap.
+		$rateprovider->addCompare( 'hasSitemap', ! empty( $misc['sitemap'] ) );
+
+		// Robots.txt.
+		$rateprovider->addCompare( 'hasRobotsTxt', $isseter['robotstxt'] );
+
+		// Analytics.
+		$rateprovider->addCompare( 'hasAnalytics', ! empty( $misc['analytics'] ) );
+
+		// Keyword consistency matrix.
+		if ( ! empty( $cloud['matrix'] ) && is_array( $cloud['matrix'] ) ) {
+			$rateprovider->addCompareMatrix( $cloud['matrix'] );
+		}
+
+		// Store the calculated score back in the data.
+		$score                     = (int) $rateprovider->getScore();
+		$data['website']['score']  = $score;
+
+		return $score;
+	}
+
 	/**
 	 * Generate PDF report for a domain.
 	 *
@@ -77,6 +185,11 @@ class V_WPSA_Report_Generator {
 
 		if ( ! $data ) {
 			throw new Exception( 'Website not found: ' . $domain );
+		}
+
+		// Calculate score before rendering if RateProvider exists.
+		if ( isset( $data['rateprovider'] ) && is_object( $data['rateprovider'] ) ) {
+			self::calculate_score( $data );
 		}
 
 		// Generate PDF file path.

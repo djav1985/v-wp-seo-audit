@@ -220,12 +220,22 @@ class V_WPSA_Ajax_Handlers {
 				throw new Exception( 'PDF file not found' );
 			}
 
+			// Clear any output buffers before sending PDF to prevent corruption.
+			while ( ob_get_level() ) {
+				ob_end_clean();
+			}
+
 			// Output the PDF with proper headers.
 			header( 'Content-Type: application/pdf' );
 			header( 'Content-Disposition: attachment; filename="' . $pdf_data['filename'] . '"' );
 			header( 'Content-Length: ' . filesize( $pdf_data['file'] ) );
 			header( 'Cache-Control: private, max-age=0, must-revalidate' );
 			header( 'Pragma: public' );
+			// Explicitly disable compression for PDF downloads.
+			if ( function_exists( 'apache_setenv' ) ) {
+				@apache_setenv( 'no-gzip', '1' );
+			}
+			@ini_set( 'zlib.output_compression', 'Off' );
 
 			// Output file and exit.
 			$prev_handler = set_error_handler(
