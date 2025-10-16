@@ -53,48 +53,48 @@ if ( ! isset( $upd_url ) ) {
 endif;
 ?>
 <?php
-$score_breakdown = isset( $website['score_breakdown'] ) && is_array( $website['score_breakdown'] ) ? $website['score_breakdown'] : array();
+$score_breakdown  = isset( $website['score_breakdown'] ) && is_array( $website['score_breakdown'] ) ? $website['score_breakdown'] : array();
 $score_categories = isset( $score_breakdown['categories'] ) && is_array( $score_breakdown['categories'] ) ? $score_breakdown['categories'] : array();
-$score_lookup = static function ( $key, $field = null, $default = null ) use ( $score_categories ) {
-        if ( ! isset( $score_categories[ $key ] ) || ! is_array( $score_categories[ $key ] ) ) {
-                return $default;
-        }
+$score_lookup     = static function ( $key, $field = null, $default = null ) use ( $score_categories ) {
+	if ( ! isset( $score_categories[ $key ] ) || ! is_array( $score_categories[ $key ] ) ) {
+			return $default;
+	}
 
-        if ( null === $field ) {
-                return $score_categories[ $key ];
-        }
+	if ( null === $field ) {
+			return $score_categories[ $key ];
+	}
 
-        return isset( $score_categories[ $key ][ $field ] ) ? $score_categories[ $key ][ $field ] : $default;
+		return isset( $score_categories[ $key ][ $field ] ) ? $score_categories[ $key ][ $field ] : $default;
 };
 
 $score_advice = static function ( $key ) use ( $score_lookup ) {
-        $advice = $score_lookup( $key, 'advice', 'error' );
+		$advice = $score_lookup( $key, 'advice', 'error' );
 
-        return $advice ? $advice : 'error';
+		return $advice ? $advice : 'error';
 };
 
 $score_points = static function ( $key ) use ( $score_lookup ) {
-        $points = $score_lookup( $key, 'points', 0 );
+		$points = $score_lookup( $key, 'points', 0 );
 
-        return is_numeric( $points ) ? (float) $points : 0.0;
+		return is_numeric( $points ) ? (float) $points : 0.0;
 };
 
-$score_total   = isset( $score_breakdown['total'] ) ? (float) $score_breakdown['total'] : ( isset( $website['score'] ) ? (float) $website['score'] : 0.0 );
-$display_score = (int) round( $score_total );
+$score_total      = isset( $score_breakdown['total'] ) ? (float) $score_breakdown['total'] : ( isset( $website['score'] ) ? (float) $website['score'] : 0.0 );
+$display_score    = (int) round( $score_total );
 $website['score'] = $display_score;
-$rates         = isset( $rates ) && is_array( $rates ) ? $rates : array();
-$format_points = static function ( $value ) {
-        $value = (float) $value;
+$rates            = isset( $rates ) && is_array( $rates ) ? $rates : array();
+$format_points    = static function ( $value ) {
+		$value = (float) $value;
 
-        if ( abs( $value - round( $value ) ) < 0.01 ) {
-                return (string) (int) round( $value );
-        }
+	if ( abs( $value - round( $value ) ) < 0.01 ) {
+			return (string) (int) round( $value );
+	}
 
-        return number_format( $value, 2 );
+		return number_format( $value, 2 );
 };
 ?>
 <script type="text/javascript">
-        "use strict";
+		"use strict";
 
 	jQuery(function($) {
 		dynamicThumbnail({
@@ -153,11 +153,11 @@ $format_points = static function ( $value ) {
 			p.find('.collapse-task').show();
 		});
 
-                $('#update_stat').on('click', function(e) {
-                        e.preventDefault();
+				$('#update_stat').on('click', function(e) {
+						e.preventDefault();
 
-                        var $button = $(this);
-                        var originalText = $.trim($button.text());
+						var $button = $(this);
+						var originalText = $.trim($button.text());
 
 			// Show loading state on button.
 			$button.prop('disabled', true)
@@ -272,22 +272,24 @@ $format_points = static function ( $value ) {
 			</div>
 
 			<div class="btn-toolbar" role="toolbar" aria-label="Report actions">
-                                <div class="btn-group mr-2" role="group" aria-label="Report download and update">
-                                        <button type="button" class="btn btn-primary v-wpsa-download-pdf" data-domain="<?php echo esc_attr( $website['domain'] ); ?>">
-                                                <?php echo 'Download PDF Version'; ?>
-                                        </button>
-                                        <?php if ( ! isset( $upd_url ) ) {
-                                                $upd_url = '';
-                                        } ?>
-                                        <button type="button" class="btn btn-success" id="update_stat" data-domain="<?php echo esc_attr( $website['domain'] ); ?>" data-update-url="<?php echo esc_url( $upd_url ); ?>">
-                                                <?php echo 'UPDATE'; ?>
-                                        </button>
-                                        <?php if ( current_user_can( 'manage_options' ) ) : ?>
-                                                <button type="button" class="btn btn-danger v-wpsa-delete-report" data-domain="<?php echo esc_attr( $website['domain'] ); ?>">
-                                                        <?php echo 'DELETE'; ?>
-                                                </button>
-                                        <?php endif; ?>
-                                </div>
+								<div class="btn-group mr-2" role="group" aria-label="Report download and update">
+										<button type="button" class="btn btn-primary v-wpsa-download-pdf" data-domain="<?php echo esc_attr( $website['domain'] ); ?>">
+												<?php echo 'Download PDF Version'; ?>
+										</button>
+										<?php
+										if ( ! isset( $upd_url ) ) {
+												$upd_url = '';
+										}
+										?>
+										<button type="button" class="btn btn-success" id="update_stat" data-domain="<?php echo esc_attr( $website['domain'] ); ?>" data-update-url="<?php echo esc_url( $upd_url ); ?>">
+												<?php echo 'UPDATE'; ?>
+										</button>
+										<?php if ( current_user_can( 'manage_options' ) ) : ?>
+												<button type="button" class="btn btn-danger v-wpsa-delete-report" data-domain="<?php echo esc_attr( $website['domain'] ); ?>">
+														<?php echo 'DELETE'; ?>
+												</button>
+										<?php endif; ?>
+								</div>
 			</div>
 
 		</div>
@@ -298,7 +300,7 @@ $format_points = static function ( $value ) {
 <h3 id="section_content" class="mt-5 mb-3"><?php echo 'SEO Content'; ?></h3>
 <div class="category-wrapper">
 	<!-- Title -->
-        <?php $advice = $score_advice( 'title' ); ?>
+		<?php $advice = $score_advice( 'title' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -331,7 +333,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Description -->
-        <?php $advice = $score_advice( 'description' ); ?>
+		<?php $advice = $score_advice( 'description' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -364,7 +366,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Og properties -->
-        <?php $advice = $score_advice( 'ogmetaproperties' ); ?>
+		<?php $advice = $score_advice( 'ogmetaproperties' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -472,7 +474,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Images -->
-        <?php $advice = $score_advice( 'imgHasAlt' ); ?>
+		<?php $advice = $score_advice( 'imgHasAlt' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -536,7 +538,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Text/HTML Ratio -->
-        <?php $advice = $score_advice( 'htmlratio' ); ?>
+		<?php $advice = $score_advice( 'htmlratio' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -570,7 +572,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Flash -->
-        <?php $advice = $score_advice( 'noFlash' ); ?>
+		<?php $advice = $score_advice( 'noFlash' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -592,7 +594,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Iframe -->
-        <?php $advice = $score_advice( 'noIframe' ); ?>
+		<?php $advice = $score_advice( 'noIframe' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -618,7 +620,7 @@ $format_points = static function ( $value ) {
 <h3 id="section_links" class="mt-5 mb-3"><?php echo 'SEO Links'; ?></h3>
 <div class="category-wrapper">
 	<!-- Friendly url -->
-        <?php $advice = $score_advice( 'isFriendlyUrl' ); ?>
+		<?php $advice = $score_advice( 'isFriendlyUrl' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -640,7 +642,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Underscore -->
-        <?php $advice = $score_advice( 'noUnderScore' ); ?>
+		<?php $advice = $score_advice( 'noUnderScore' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -662,7 +664,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- In-page links -->
-        <?php $advice = $score_advice( 'issetInternalLinks' ); ?>
+		<?php $advice = $score_advice( 'issetInternalLinks' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -806,7 +808,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Favicon -->
-        <?php $advice = $score_advice( 'issetFavicon' ); ?>
+		<?php $advice = $score_advice( 'issetFavicon' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -828,7 +830,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Language -->
-        <?php $advice = $score_advice( 'lang' ); ?>
+		<?php $advice = $score_advice( 'lang' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -850,7 +852,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Dublin Core -->
-        <?php $advice = $score_advice( 'dublincore' ); ?>
+		<?php $advice = $score_advice( 'dublincore' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -876,7 +878,7 @@ $format_points = static function ( $value ) {
 <h3 id="section_document" class="mt-5 mb-3"><?php echo 'Document'; ?></h3>
 <div class="category-wrapper">
 	<!-- Doctype -->
-        <?php $advice = $score_advice( 'doctype' ); ?>
+		<?php $advice = $score_advice( 'doctype' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -898,7 +900,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Encoding -->
-        <?php $advice = $score_advice( 'charset' ); ?>
+		<?php $advice = $score_advice( 'charset' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -920,7 +922,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- W3C Validity -->
-        <?php $advice = $score_advice( 'w3c' ); ?>
+		<?php $advice = $score_advice( 'w3c' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -980,7 +982,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Deprecated -->
-        <?php $advice = $score_advice( 'noDeprecated' ); ?>
+		<?php $advice = $score_advice( 'noDeprecated' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -1035,7 +1037,7 @@ $format_points = static function ( $value ) {
 				<table class="table table-striped">
 					<tbody>
 						<tr>
-                                                    <?php $advice = $score_advice( 'noNestedtables' ); ?>
+													<?php $advice = $score_advice( 'noNestedtables' ); ?>
 							<td width="50px"><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
 							<td>
 								<?php
@@ -1049,7 +1051,7 @@ $format_points = static function ( $value ) {
 						</tr>
 
 						<tr>
-                                                    <?php $advice = $score_advice( 'noInlineCSS' ); ?>
+													<?php $advice = $score_advice( 'noInlineCSS' ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
 							<td>
 								<?php
@@ -1063,7 +1065,7 @@ $format_points = static function ( $value ) {
 						</tr>
 
 						<tr>
-                                                    <?php $advice = $score_advice( 'cssCount' ); ?>
+													<?php $advice = $score_advice( 'cssCount' ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
@@ -1078,7 +1080,7 @@ $format_points = static function ( $value ) {
 						</tr>
 
 						<tr>
-                                                    <?php $advice = $score_advice( 'jsCount' ); ?>
+													<?php $advice = $score_advice( 'jsCount' ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
@@ -1093,7 +1095,7 @@ $format_points = static function ( $value ) {
 						</tr>
 
 						<tr>
-                                                    <?php $advice = $score_advice( 'hasGzip' ); ?>
+													<?php $advice = $score_advice( 'hasGzip' ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
@@ -1155,7 +1157,7 @@ $format_points = static function ( $value ) {
 <h3 id="section_optimization" class="mt-5 mb-3"><?php echo 'Optimization'; ?></h3>
 <div class="category-wrapper">
 	<!-- Sitemap -->
-   <?php $advice = $score_advice( 'hasSitemap' ); ?>
+	<?php $advice = $score_advice( 'hasSitemap' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -1198,7 +1200,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Robots -->
-   <?php $advice = $score_advice( 'hasRobotsTxt' ); ?>
+	<?php $advice = $score_advice( 'hasRobotsTxt' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -1226,7 +1228,7 @@ $format_points = static function ( $value ) {
 	</div>
 
 	<!-- Analytics support -->
-   <?php $advice = $score_advice( 'hasAnalytics' ); ?>
+	<?php $advice = $score_advice( 'hasAnalytics' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -1449,13 +1451,13 @@ $format_points = static function ( $value ) {
 									continue;
 								}
 
-								$definition  = $rates[ $key ];
-								$label       = isset( $category_labels[ $key ] ) ? $category_labels[ $key ] : ucwords( preg_replace( '/([a-z])([A-Z])/', '$1 $2', $key ) );
-								$max_points  = 0.0;
+								$definition = $rates[ $key ];
+								$label      = isset( $category_labels[ $key ] ) ? $category_labels[ $key ] : ucwords( preg_replace( '/([a-z])([A-Z])/', '$1 $2', $key ) );
+								$max_points = 0.0;
 
 								if ( 'wordConsistency' === $key && is_array( $definition ) ) {
-									$per_tag_sum      = array_sum( $definition );
-									$max_points       = $per_tag_sum * $consistency_limit;
+									$per_tag_sum = array_sum( $definition );
+									$max_points  = $per_tag_sum * $consistency_limit;
 								} elseif ( is_array( $definition ) ) {
 									foreach ( $definition as $rule ) {
 										if ( is_array( $rule ) && isset( $rule['score'] ) ) {
@@ -1494,22 +1496,22 @@ $format_points = static function ( $value ) {
 								$max_display    = $format_points( $max_points );
 								?>
 								<tr>
-								        <td>
-								        <?php
+										<td>
+										<?php
 										if ( 'wordConsistency' === $key ) {
 											echo esc_html( $label );
 										} else {
 											echo esc_html( $label );
 										}
-								        ?>
-								        </td>
-								        <td><?php echo esc_html( $points_display ); ?></td>
-								        <td><?php echo esc_html( $max_display ); ?></td>
-								        <td>
-								                <span class="badge badge-<?php echo esc_attr( $badge_class ); ?>">
-								                        <?php echo esc_html( $status_label ); ?>
-								                </span>
-								        </td>
+										?>
+										</td>
+										<td><?php echo esc_html( $points_display ); ?></td>
+										<td><?php echo esc_html( $max_display ); ?></td>
+										<td>
+												<span class="badge badge-<?php echo esc_attr( $badge_class ); ?>">
+														<?php echo esc_html( $status_label ); ?>
+												</span>
+										</td>
 								</tr>
 								<?php
 							}

@@ -34,48 +34,48 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-        exit;
+		exit;
 }
 ?>
 <?php
-$score_breakdown = isset( $website['score_breakdown'] ) && is_array( $website['score_breakdown'] ) ? $website['score_breakdown'] : array();
+$score_breakdown  = isset( $website['score_breakdown'] ) && is_array( $website['score_breakdown'] ) ? $website['score_breakdown'] : array();
 $score_categories = isset( $score_breakdown['categories'] ) && is_array( $score_breakdown['categories'] ) ? $score_breakdown['categories'] : array();
-$score_lookup = static function ( $key, $field = null, $default = null ) use ( $score_categories ) {
-        if ( ! isset( $score_categories[ $key ] ) || ! is_array( $score_categories[ $key ] ) ) {
-                return $default;
-        }
+$score_lookup     = static function ( $key, $field = null, $default = null ) use ( $score_categories ) {
+	if ( ! isset( $score_categories[ $key ] ) || ! is_array( $score_categories[ $key ] ) ) {
+			return $default;
+	}
 
-        if ( null === $field ) {
-                return $score_categories[ $key ];
-        }
+	if ( null === $field ) {
+			return $score_categories[ $key ];
+	}
 
-        return isset( $score_categories[ $key ][ $field ] ) ? $score_categories[ $key ][ $field ] : $default;
+		return isset( $score_categories[ $key ][ $field ] ) ? $score_categories[ $key ][ $field ] : $default;
 };
 
 $score_advice = static function ( $key ) use ( $score_lookup ) {
-        $advice = $score_lookup( $key, 'advice', 'error' );
+		$advice = $score_lookup( $key, 'advice', 'error' );
 
-        return $advice ? $advice : 'error';
+		return $advice ? $advice : 'error';
 };
 
 $score_points = static function ( $key ) use ( $score_lookup ) {
-        $points = $score_lookup( $key, 'points', 0 );
+		$points = $score_lookup( $key, 'points', 0 );
 
-        return is_numeric( $points ) ? (float) $points : 0.0;
+		return is_numeric( $points ) ? (float) $points : 0.0;
 };
 
-$score_total   = isset( $score_breakdown['total'] ) ? (float) $score_breakdown['total'] : ( isset( $website['score'] ) ? (float) $website['score'] : 0.0 );
-$display_score = (int) round( $score_total );
+$score_total      = isset( $score_breakdown['total'] ) ? (float) $score_breakdown['total'] : ( isset( $website['score'] ) ? (float) $website['score'] : 0.0 );
+$display_score    = (int) round( $score_total );
 $website['score'] = $display_score;
-$rates         = isset( $rates ) && is_array( $rates ) ? $rates : array();
-$format_points = static function ( $value ) {
-        $value = (float) $value;
+$rates            = isset( $rates ) && is_array( $rates ) ? $rates : array();
+$format_points    = static function ( $value ) {
+		$value = (float) $value;
 
-        if ( abs( $value - round( $value ) ) < 0.01 ) {
-                return (string) (int) round( $value );
-        }
+	if ( abs( $value - round( $value ) ) < 0.01 ) {
+			return (string) (int) round( $value );
+	}
 
-        return number_format( $value, 2 );
+		return number_format( $value, 2 );
 };
 ?>
 <style>
@@ -250,7 +250,7 @@ $format_points = static function ( $value ) {
 	<tbody>
 
 		<!-- Title -->
-            <?php $advice = $score_advice( 'title' ); ?>
+			<?php $advice = $score_advice( 'title' ); ?>
 		<?php list($img_advice,) = explode( ' ', $advice ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td class="td-icon">
@@ -279,7 +279,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- Description -->
-            <?php $advice = $score_advice( 'description' ); ?>
+			<?php $advice = $score_advice( 'description' ); ?>
 		<?php list($img_advice,) = explode( ' ', $advice ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
@@ -308,7 +308,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- Og properties -->
-            <?php $advice = $score_advice( 'ogmetaproperties' ); ?>
+			<?php $advice = $score_advice( 'ogmetaproperties' ); ?>
 		<tr class="<?php echo $advice; ?>">
 
 			<td>
@@ -404,7 +404,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- Images -->
-            <?php $advice = $score_advice( 'imgHasAlt' ); ?>
+			<?php $advice = $score_advice( 'imgHasAlt' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -478,7 +478,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- Text/HTML Ratio -->
-            <?php $advice = $score_advice( 'htmlratio' ); ?>
+			<?php $advice = $score_advice( 'htmlratio' ); ?>
 		<?php list($img_advice,) = explode( ' ', $advice ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
@@ -512,7 +512,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- Flash -->
-            <?php $advice = $score_advice( 'noFlash' ); ?>
+			<?php $advice = $score_advice( 'noFlash' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -533,7 +533,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- Iframe -->
-            <?php $advice = $score_advice( 'noIframe' ); ?>
+			<?php $advice = $score_advice( 'noIframe' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -570,7 +570,7 @@ $format_points = static function ( $value ) {
 	</thead>
 	<tbody>
 		<!-- Friendly url -->
-            <?php $advice = $score_advice( 'isFriendlyUrl' ); ?>
+			<?php $advice = $score_advice( 'isFriendlyUrl' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td class="td-icon">
 				<br />
@@ -591,7 +591,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- Underscore -->
-            <?php $advice = $score_advice( 'noUnderScore' ); ?>
+			<?php $advice = $score_advice( 'noUnderScore' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -612,7 +612,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- In-page links -->
-            <?php $advice = $score_advice( 'issetInternalLinks' ); ?>
+			<?php $advice = $score_advice( 'issetInternalLinks' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -792,7 +792,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- Favicon -->
-            <?php $advice = $score_advice( 'issetFavicon' ); ?>
+			<?php $advice = $score_advice( 'issetFavicon' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -813,7 +813,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- Language -->
-            <?php $advice = $score_advice( 'lang' ); ?>
+			<?php $advice = $score_advice( 'lang' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -834,7 +834,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- Dublin Core -->
-            <?php $advice = $score_advice( 'dublincore' ); ?>
+			<?php $advice = $score_advice( 'dublincore' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -871,7 +871,7 @@ $format_points = static function ( $value ) {
 	<tbody>
 
 		<!-- Doctype -->
-            <?php $advice = $score_advice( 'doctype' ); ?>
+			<?php $advice = $score_advice( 'doctype' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td class="td-icon">
 				<br />
@@ -892,7 +892,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- Encoding -->
-            <?php $advice = $score_advice( 'charset' ); ?>
+			<?php $advice = $score_advice( 'charset' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -913,7 +913,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- W3C Validity -->
-            <?php $advice = $score_advice( 'w3c' ); ?>
+			<?php $advice = $score_advice( 'w3c' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -957,7 +957,7 @@ $format_points = static function ( $value ) {
 		</tr>
 
 		<!-- Deprecated -->
-            <?php $advice = $score_advice( 'noDeprecated' ); ?>
+			<?php $advice = $score_advice( 'noDeprecated' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -1013,7 +1013,7 @@ $format_points = static function ( $value ) {
 					<tbody>
 
 						<tr class="no-top-line even">
-                                                    <?php $advice = $score_advice( 'noNestedtables' ); ?>
+													<?php $advice = $score_advice( 'noNestedtables' ); ?>
 							<td width="20px"><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
 							<td width="330px">
 								<?php
@@ -1027,7 +1027,7 @@ $format_points = static function ( $value ) {
 						</tr>
 
 						<tr class="odd">
-                                                    <?php $advice = $score_advice( 'noInlineCSS' ); ?>
+													<?php $advice = $score_advice( 'noInlineCSS' ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
 							<td>
 								<?php
@@ -1041,7 +1041,7 @@ $format_points = static function ( $value ) {
 						</tr>
 
 						<tr class="even">
-                                                    <?php $advice = $score_advice( 'cssCount' ); ?>
+													<?php $advice = $score_advice( 'cssCount' ); ?>
 							<?php list($img_advice,) = explode( ' ', $advice ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $img_advice ? '1' : '0'; ?>.png" /></td>
 							<td>
@@ -1057,7 +1057,7 @@ $format_points = static function ( $value ) {
 						</tr>
 
 						<tr class="odd">
-                                                    <?php $advice = $score_advice( 'jsCount' ); ?>
+													<?php $advice = $score_advice( 'jsCount' ); ?>
 							<?php list($img_advice,) = explode( ' ', $advice ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $img_advice ? '1' : '0'; ?>.png" /></td>
 							<td>
@@ -1073,7 +1073,7 @@ $format_points = static function ( $value ) {
 						</tr>
 
 						<tr class="even">
-                                                    <?php $advice = $score_advice( 'hasGzip' ); ?>
+													<?php $advice = $score_advice( 'hasGzip' ); ?>
 							<?php list($img_advice,) = explode( ' ', $advice ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $img_advice ? '1' : '0'; ?>.png" /></td>
 							<td>
@@ -1164,7 +1164,7 @@ $format_points = static function ( $value ) {
 		<tbody>
 
 			<!-- Sitemap -->
-   <?php $advice = $score_advice( 'hasSitemap' ); ?>
+	<?php $advice = $score_advice( 'hasSitemap' ); ?>
 			<tr class="<?php echo $advice; ?>">
 				<td class="td-icon">
 					<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
@@ -1202,7 +1202,7 @@ $format_points = static function ( $value ) {
 			</tr>
 
 			<!-- Robots -->
-   <?php $advice = $score_advice( 'hasRobotsTxt' ); ?>
+	<?php $advice = $score_advice( 'hasRobotsTxt' ); ?>
 			<tr class="<?php echo $advice; ?>">
 				<td class="td-icon">
 					<br />
@@ -1227,7 +1227,7 @@ $format_points = static function ( $value ) {
 			</tr>
 
 			<!-- Analytics support -->
-   <?php $advice = $score_advice( 'hasAnalytics' ); ?>
+	<?php $advice = $score_advice( 'hasAnalytics' ); ?>
 			<tr class="<?php echo $advice; ?>">
 				<td class="td-icon">
 					<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
