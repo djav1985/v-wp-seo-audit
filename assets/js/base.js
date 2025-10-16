@@ -441,6 +441,82 @@ var WrHelper = (function () {
             var formData = 'action=v_wpsa_download_pdf&domain=' + encodeURIComponent(domain) + '&nonce=' + encodeURIComponent(nonce);
             xhr.send(formData);
         });
+
+        // Delete report handler (admin only)
+        $('body').on('click', '.v-wpsa-delete-report', function(e) {
+            e.preventDefault();
+
+            var $trigger = $(this);
+            var domain = $trigger.data('domain');
+
+            if (!domain) {
+                window.alert('Domain is required to delete report');
+                return;
+            }
+
+            // Confirm deletion
+            if (!window.confirm('Are you sure you want to delete the report for "' + domain + '"? This action cannot be undone.\n\nThis will remove:\n- All database records\n- PDF files\n- Thumbnail images')) {
+                return;
+            }
+
+            // Show loading state
+            var originalText = $trigger.text();
+            $trigger.addClass('disabled').prop('disabled', true).text('Deleting...');
+
+            var ajaxUrl = getAjaxUrl();
+            var nonce = getNonce();
+
+            // If the container has a data-nonce attribute (server-injected), prefer it
+            var $container = resolveContainer($trigger);
+            if ($container && $container.length && $container.data('nonce')) {
+                nonce = $container.data('nonce');
+            }
+
+            // Check if nonce is available
+            if (!nonce) {
+                console.error('v-wpsa: Nonce is not available');
+                window.alert('Error: Security token is not available. Please refresh the page and try again.');
+                $trigger.removeClass('disabled').prop('disabled', false).text(originalText);
+                return;
+            }
+
+            $.ajax({
+                url: ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'v_wpsa_delete_report',
+                    domain: domain,
+                    nonce: nonce
+                },
+                dataType: 'json'
+            }).done(function(response) {
+                $trigger.removeClass('disabled').prop('disabled', false).text(originalText);
+
+                if (response && response.success) {
+                    window.alert('Report deleted successfully!');
+                    // Remove the report container and show the form
+                    if ($container.length) {
+                        $container.fadeOut(400, function() {
+                            // Show the form again
+                            $('#update_form').fadeIn();
+                            // Scroll to the form
+                            $('html, body').animate({
+                                scrollTop: $('#update_form').offset().top - 100
+                            }, 500);
+                        });
+                    } else {
+                        // Fallback: just reload the page
+                        window.location.reload();
+                    }
+                } else {
+                    var message = response && response.data && response.data.message ? response.data.message : 'Failed to delete report';
+                    window.alert('Error: ' + message);
+                }
+            }).fail(function() {
+                $trigger.removeClass('disabled').prop('disabled', false).text(originalText);
+                window.alert('Error: Network error occurred. Please try again.');
+            });
+        });
     });
 })(jQuery);
 

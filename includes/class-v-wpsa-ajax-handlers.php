@@ -31,6 +31,9 @@ class V_WPSA_Ajax_Handlers {
 		// PDF download handler.
 		add_action( 'wp_ajax_v_wpsa_download_pdf', array( __CLASS__, 'download_pdf' ) );
 		add_action( 'wp_ajax_nopriv_v_wpsa_download_pdf', array( __CLASS__, 'download_pdf' ) );
+
+		// Delete report handler (admin only).
+		add_action( 'wp_ajax_v_wpsa_delete_report', array( __CLASS__, 'delete_report' ) );
 	}
 
 	/**
@@ -269,6 +272,75 @@ class V_WPSA_Ajax_Handlers {
 			exit;
 		} catch ( Exception $e ) {
 			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+		}
+	}
+
+	/**
+	 * AJAX handler for deleting a report.
+	 * Only available to users with manage_options capability.
+	 */
+	public static function delete_report() {
+		// Verify nonce for security.
+		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
+
+		// Check if user has admin permissions.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => 'Unauthorized: Only administrators can delete reports.' ) );
+			return;
+		}
+
+		// Get domain from request.
+		$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
+
+		if ( empty( $domain ) ) {
+			wp_send_json_error( array( 'message' => 'Domain is required' ) );
+			return;
+		}
+
+		try {
+			// Get website ID from database.
+			$db      = new V_WPSA_DB();
+			$website = $db->get_website_by_domain( $domain, array( 'id' ) );
+
+			if ( ! $website ) {
+				wp_send_json_error( array( 'message' => 'Website not found in database' ) );
+				return;
+			}
+
+			// Delete the website record and all related data from database.
+			$deleted = $db->delete_website( $website['id'] );
+
+			if ( ! $deleted ) {
+				wp_send_json_error( array( 'message' => 'Failed to delete website record from database' ) );
+				return;
+			}
+
+			// Delete PDF files.
+			V_WPSA_Helpers::delete_pdf( $domain );
+			V_WPSA_Helpers::delete_pdf( $domain . '_pagespeed' );
+
+			// Delete thumbnails.
+			$upload_dir    = wp_upload_dir();
+			$thumbnail_dir = rtrim( $upload_dir['basedir'], '\/' ) . '/seo-audit/thumbnails/';
+			$thumbnail_ext = array( '.jpg', '.jpeg', '.png', '.gif' );
+
+			foreach ( $thumbnail_ext as $ext ) {
+				$thumbnail_file = $thumbnail_dir . $domain . $ext;
+				if ( file_exists( $thumbnail_file ) ) {
+					wp_delete_file( $thumbnail_file );
+				}
+			}
+
+			wp_send_json_success(
+				array(
+					'message' => 'Report deleted successfully',
+					'domain'  => $domain,
+				)
+			);
+		} catch ( Exception $e ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for troubleshooting.
+			error_log( sprintf( 'v-wpsa: Error deleting report for %s: %s', $domain, $e->getMessage() ) );
+			wp_send_json_error( array( 'message' => 'Error deleting report: ' . $e->getMessage() ) );
 		}
 	}
 }

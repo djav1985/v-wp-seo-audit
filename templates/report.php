@@ -214,12 +214,6 @@ endif;
 			</p>
 
 
-			<p>
-				<?php
-				// Always show UPDATE button; clicking fills the domain input and allows re-analysis.
-				echo 'Old data? <a href="' . $upd_url . '" class="btn btn-success" id="update_stat">UPDATE</a> !';
-				?>
-			</p>
 
 			<?php echo V_WPSA_Config::get( 'param.addthis' ); ?>
 
@@ -231,9 +225,21 @@ endif;
 				<div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $website['score']; ?>%;"></div>
 			</div>
 
-			<a href="#" class="btn btn-primary v-wpsa-download-pdf" data-domain="<?php echo esc_html( $website['domain'] ); ?>">
-				<?php echo 'Download PDF Version'; ?>
-			</a>
+			<div class="btn-toolbar" role="toolbar" aria-label="Report actions">
+				<div class="btn-group mr-2" role="group" aria-label="Report download and update">
+					<a href="#" class="btn btn-primary v-wpsa-download-pdf" data-domain="<?php echo esc_html( $website['domain'] ); ?>">
+						<?php echo 'Download PDF Version'; ?>
+					</a>
+					<a href="<?php echo esc_url( $upd_url ); ?>" class="btn btn-success" id="update_stat">
+						<?php echo 'UPDATE'; ?>
+					</a>
+					<?php if ( current_user_can( 'manage_options' ) ) : ?>
+						<button type="button" class="btn btn-danger v-wpsa-delete-report" data-domain="<?php echo esc_attr( $website['domain'] ); ?>">
+							<?php echo 'DELETE'; ?>
+						</button>
+					<?php endif; ?>
+				</div>
+			</div>
 
 		</div>
 	</div>
@@ -1285,6 +1291,282 @@ endif;
 		</div>
 	<?php endif; ?>
 	</div>
+
+<?php if ( current_user_can( 'manage_options' ) ) : ?>
+	<h3 id="section_scoring_breakdown" class="mt-5 mb-3"><?php echo 'Scoring Breakdown (Admin Only)'; ?></h3>
+	<div class="category-wrapper">
+		<div class="row pt-3 pb-3">
+			<div class="col-12">
+				<p class="lead"><?php echo 'This section shows how points are allocated across different SEO categories.'; ?></p>
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<thead class="thead-dark">
+							<tr>
+								<th><?php echo 'Category'; ?></th>
+								<th><?php echo 'Points Earned'; ?></th>
+								<th><?php echo 'Max Possible'; ?></th>
+								<th><?php echo 'Status'; ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							// Get the rates configuration.
+							$rates = $rateprovider->getRates();
+
+							// Define the categories with their human-readable names and checks.
+							$categories = array(
+								array(
+									'name'    => 'Title Tag',
+									'key'     => 'title',
+									'current' => $rateprovider->addCompareArray( 'title', mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) ) ),
+									'max'     => 4,
+									'type'    => 'array',
+								),
+								array(
+									'name'    => 'Meta Description',
+									'key'     => 'description',
+									'current' => $rateprovider->addCompareArray( 'description', mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) ) ),
+									'max'     => 4,
+									'type'    => 'array',
+								),
+								array(
+									'name'    => 'Text/HTML Ratio',
+									'key'     => 'htmlratio',
+									'current' => $rateprovider->addCompareArray( 'htmlratio', $document['htmlratio'] ),
+									'max'     => 9,
+									'type'    => 'array',
+								),
+								array(
+									'name'    => 'CSS Files Count',
+									'key'     => 'cssCount',
+									'current' => $rateprovider->addCompareArray( 'cssCount', $document['css'] ),
+									'max'     => 4,
+									'type'    => 'array',
+								),
+								array(
+									'name'    => 'JavaScript Files Count',
+									'key'     => 'jsCount',
+									'current' => $rateprovider->addCompareArray( 'jsCount', $document['js'] ),
+									'max'     => 4,
+									'type'    => 'array',
+								),
+								array(
+									'name'    => 'No Flash Content',
+									'key'     => 'noFlash',
+									'current' => $rateprovider->addCompare( 'noFlash', ! $isseter['flash'] ),
+									'max'     => 3.5,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'No Iframes',
+									'key'     => 'noIframe',
+									'current' => $rateprovider->addCompare( 'noIframe', ! $isseter['iframe'] ),
+									'max'     => 3.5,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Images Have Alt Text',
+									'key'     => 'imgHasAlt',
+									'current' => $rateprovider->addCompare( 'imgHasAlt', $content['total_img'] === $content['total_alt'] ),
+									'max'     => 3.5,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'SEO Friendly URLs',
+									'key'     => 'isFriendlyUrl',
+									'current' => $rateprovider->addCompare( 'isFriendlyUrl', $links['friendly'] ),
+									'max'     => 5,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'No Underscores in URLs',
+									'key'     => 'noUnderScore',
+									'current' => $rateprovider->addCompare( 'noUnderScore', ! $links['isset_underscore'] ),
+									'max'     => 4,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'OG Meta Properties',
+									'key'     => 'ogmetaproperties',
+									'current' => $rateprovider->addCompare( 'ogmetaproperties', ! empty( $meta['ogproperties'] ) ),
+									'max'     => 3,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Charset Declared',
+									'key'     => 'charset',
+									'current' => $rateprovider->addCompare( 'charset', $document['charset'] ),
+									'max'     => 3,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'XML Sitemap',
+									'key'     => 'hasSitemap',
+									'current' => $rateprovider->addCompare( 'hasSitemap', ! empty( $misc['sitemap'] ) ),
+									'max'     => 3,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Robots.txt',
+									'key'     => 'hasRobotsTxt',
+									'current' => $rateprovider->addCompare( 'hasRobotsTxt', $isseter['robotstxt'] ),
+									'max'     => 2,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Analytics',
+									'key'     => 'hasAnalytics',
+									'current' => $rateprovider->addCompare( 'hasAnalytics', ! empty( $misc['analytics'] ) ),
+									'max'     => 2,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Internal Links',
+									'key'     => 'issetInternalLinks',
+									'current' => $rateprovider->addCompare( 'issetInternalLinks', $links['internal'] > 0 ),
+									'max'     => 2,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'No Inline CSS',
+									'key'     => 'noInlineCSS',
+									'current' => $rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] ),
+									'max'     => 2,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Doctype Declared',
+									'key'     => 'doctype',
+									'current' => $rateprovider->addCompare( 'doctype', $document['doctype'] ),
+									'max'     => 2,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Language Declared',
+									'key'     => 'lang',
+									'current' => $rateprovider->addCompare( 'lang', $document['lang'] ),
+									'max'     => 2,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Apple Touch Icons',
+									'key'     => 'issetAppleIcons',
+									'current' => $rateprovider->addCompare( 'issetAppleIcons', $isseter['appleicons'] ),
+									'max'     => 2,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'No Nested Tables',
+									'key'     => 'noNestedtables',
+									'current' => $rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] ),
+									'max'     => 1.5,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Favicon',
+									'key'     => 'issetFavicon',
+									'current' => $rateprovider->addCompare( 'issetFavicon', ! empty( $document['favicon'] ) ),
+									'max'     => 1.5,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Viewport Meta Tag',
+									'key'     => 'viewport',
+									'current' => $rateprovider->addCompare( 'viewport', $isseter['viewport'] ),
+									'max'     => 1.5,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Gzip Compression',
+									'key'     => 'hasGzip',
+									'current' => $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ),
+									'max'     => 1.5,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'No Deprecated HTML',
+									'key'     => 'noDeprecated',
+									'current' => $rateprovider->addCompare( 'noDeprecated', empty( $content['deprecated'] ) ),
+									'max'     => 1.5,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Headings Present',
+									'key'     => 'issetHeadings',
+									'current' => $rateprovider->addCompare( 'issetHeadings', $content['isset_headings'] ),
+									'max'     => 1.5,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'Dublin Core',
+									'key'     => 'dublincore',
+									'current' => $rateprovider->addCompare( 'dublincore', $isseter['dublincore'] ),
+									'max'     => 1,
+									'type'    => 'boolean',
+								),
+								array(
+									'name'    => 'W3C Validity',
+									'key'     => 'w3c',
+									'current' => $rateprovider->addCompare( 'w3c', $w3c['valid'] ),
+									'max'     => 5,
+									'type'    => 'boolean',
+								),
+							);
+
+							// Add keyword consistency scores.
+							if ( ! empty( $cloud['matrix'] ) ) {
+								$rateprovider->addCompareMatrix( $cloud['matrix'] );
+								$categories[] = array(
+									'name'    => 'Keyword Consistency',
+									'key'     => 'wordConsistency',
+									'current' => 'calculated',
+									'max'     => 17.5,
+									'type'    => 'matrix',
+								);
+							}
+
+							foreach ( $categories as $category ) :
+								$advice       = $category['current'];
+								$points_text  = 'boolean' === $category['type'] ? ( 'success' === $advice ? $category['max'] : 0 ) : '~';
+								$status_class = 'success' === $advice || 'success ideal_ratio' === $advice ? 'success' : ( strpos( $advice, 'error' ) !== false ? 'danger' : 'warning' );
+								?>
+								<tr>
+									<td><?php echo esc_html( $category['name'] ); ?></td>
+									<td><?php echo esc_html( $points_text ); ?></td>
+									<td><?php echo esc_html( $category['max'] ); ?></td>
+									<td>
+										<span class="badge badge-<?php echo esc_attr( $status_class ); ?>">
+											<?php
+											if ( 'success' === $advice || 'success ideal_ratio' === $advice ) {
+												echo 'Pass';
+											} elseif ( strpos( $advice, 'error' ) !== false ) {
+												echo 'Fail';
+											} else {
+												echo 'Warning';
+											}
+											?>
+										</span>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+							<tr class="table-info">
+								<td><strong><?php echo 'Total Score'; ?></strong></td>
+								<td><strong><?php echo (int) $website['score']; ?></strong></td>
+								<td><strong>100</strong></td>
+								<td>
+									<span class="badge badge-info">
+										<?php echo (int) $website['score']; ?>%
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<?php endif; ?>
+
 	<div class="mt-5" id="update_form">
 		<!-- JS is enqueued via WordPress plugin file. Remove direct <script> and rely on enqueued assets. -->
 
