@@ -281,10 +281,11 @@ class V_WPSA_DB {
 		// Define which fields contain JSON data for each table.
 		$json_fields = array(
 			'cloud'    => array( 'words', 'matrix' ),
-			'content'  => array( 'headings', 'deprecated' ),
+			'content'  => array( 'headings', 'deprecated', 'images_missing_alt' ),
 			'links'    => array( 'links' ),
 			'metatags' => array( 'ogproperties' ),
 			'misc'     => array( 'sitemap', 'analytics' ),
+			'w3c'      => array( 'messages' ),
 		);
 
 		// If this table has JSON fields, decode them.
