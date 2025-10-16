@@ -1,18 +1,15 @@
 <?php
 /**
- * File: v-wpsa.php
- *
- * @package v_wpsa
+ * Plugin Name: v-wp-seo-audit
+ * Description: WordPress SEO Audit plugin - Analyze your website's SEO performance
+ * Version: 1.0.0
+ * Author: Vontainment
+ * Author URI: https://vontainment.com
+ * License: MIT
+ * License URI: https://opensource.org/licenses/MIT
+ * Text Domain: v-wpsa
+ * Requires PHP: 8.0
  */
-
-/*
-Plugin Name: v-wpsa
-Description: WordPress SEO Audit plugin - Analyze your website's SEO performance
-Version: 1.0.0
-Author: djav1985
-License: GPL2
-Text Domain: v-wpsa
-*/
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
