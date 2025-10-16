@@ -715,6 +715,33 @@ if ( $advice === 'success' ) {
 <?php echo 'Errors'; ?> : <?php echo (int) $w3c['errors']; ?>
 <br/>
 <?php echo 'Warnings'; ?> : <?php echo (int) $w3c['warnings']; ?>
+<br/><br/>
+<?php if ( ! empty( $w3c['messages'] ) && is_array( $w3c['messages'] ) ) : ?>
+<table class="table table-striped table-fluid table-inner" cellpadding="5">
+<tr nobr="true" class="odd">
+<td width="60px"><span class="suh-header"><?php echo 'Type'; ?></span></td>
+<td width="40px"><span class="suh-header"><?php echo 'Line'; ?></span></td>
+<td width="250px"><span class="suh-header"><?php echo 'Message'; ?></span></td>
+</tr>
+	<?php
+	$i = 0;
+	foreach ( $w3c['messages'] as $msg ) :
+		$even       = $i % 2 === 0;
+		$msg_type   = isset( $msg['type'] ) ? $msg['type'] : 'unknown';
+		$msg_line   = isset( $msg['line'] ) ? $msg['line'] : '-';
+		$msg_text   = isset( $msg['message'] ) ? $msg['message'] : '';
+		?>
+<tr nobr="true" class="<?php echo $even ? 'even' : 'odd'; ?>">
+<td><?php echo esc_html( ucfirst( $msg_type ) ); ?></td>
+<td><?php echo esc_html( $msg_line ); ?></td>
+<td><?php echo esc_html( $msg_text ); ?></td>
+</tr>
+		<?php
+		$i++;
+	endforeach;
+	?>
+</table>
+<?php endif; ?>
 </td>
 </tr>
 

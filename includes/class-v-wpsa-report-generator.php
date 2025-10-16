@@ -34,25 +34,41 @@ class V_WPSA_Report_Generator {
 			throw new Exception( 'Website not found: ' . $domain );
 		}
 
-		// Render using WordPress template.
-		// The template will call addCompare* methods which calculate the score.
-		$html = self::render_template( 'report.php', $data );
-
-		// Persist calculated score after template rendering.
+		// Calculate score BEFORE rendering template by doing a dry run.
+		// The template calls addCompare* methods which calculate the score.
+		// We need to calculate it first so the score displays correctly in the HTML.
 		if ( isset( $data['website']['id'] ) && isset( $data['rateprovider'] ) && is_object( $data['rateprovider'] ) ) {
 			try {
 				if ( method_exists( $data['rateprovider'], 'getScore' ) ) {
+					// Do a dry run render to calculate score.
+					ob_start();
+					self::render_template( 'report.php', $data );
+					ob_end_clean();
+
+					// Get the calculated score.
 					$score = (int) $data['rateprovider']->getScore();
-					$db    = new V_WPSA_DB();
-					$db->set_website_score( $data['website']['id'], $score );
-					// Update the data array so the template shows the right score.
+
+					// Update the data array with calculated score BEFORE final render.
 					$data['website']['score'] = $score;
+
+					// Persist score to database.
+					$db->set_website_score( $data['website']['id'], $score );
+
+					// Create a new RateProvider instance for the final render to avoid double-counting.
+					if ( class_exists( 'RateProvider' ) ) {
+						$data['rateprovider'] = new RateProvider();
+					}
 				}
 			} catch ( Exception $e ) {
-				// Don't break rendering on score persistence failure; just continue.
-				error_log( 'v-wpsa: Failed to persist score: ' . $e->getMessage() );
+				// Don't break rendering on score calculation failure; just log and continue.
+				error_log( 'v-wpsa: Failed to calculate/persist score: ' . $e->getMessage() );
 			}
 		}
+
+		// Render template with correct score.
+		// The template will call addCompare* methods on the fresh RateProvider,
+		// but we've already calculated and saved the correct score.
+		$html = self::render_template( 'report.php', $data );
 
 		return $html;
 	}
@@ -105,23 +121,37 @@ class V_WPSA_Report_Generator {
 			}
 		}
 
-		// Render PDF template to HTML.
-		// The template will call addCompare* methods which calculate the score.
-		$html = self::render_template( 'pdf.php', $data );
-
-		// Persist calculated score after template rendering.
+		// Calculate score BEFORE rendering template by doing a dry run.
 		if ( isset( $data['website']['id'] ) && isset( $data['rateprovider'] ) && is_object( $data['rateprovider'] ) ) {
 			try {
 				if ( method_exists( $data['rateprovider'], 'getScore' ) ) {
+					// Do a dry run render to calculate score.
+					ob_start();
+					self::render_template( 'pdf.php', $data );
+					ob_end_clean();
+
+					// Get the calculated score.
 					$score = (int) $data['rateprovider']->getScore();
-					$db    = new V_WPSA_DB();
+
+					// Update the data array with calculated score BEFORE final render.
+					$data['website']['score'] = $score;
+
+					// Persist score to database.
 					$db->set_website_score( $data['website']['id'], $score );
+
+					// Create a new RateProvider instance for the final render to avoid double-counting.
+					if ( class_exists( 'RateProvider' ) ) {
+						$data['rateprovider'] = new RateProvider();
+					}
 				}
 			} catch ( Exception $e ) {
-				// Ignore persistence errors and continue PDF generation.
-				error_log( 'v-wpsa: Failed to persist score: ' . $e->getMessage() );
+				// Don't break rendering on score calculation failure; just log and continue.
+				error_log( 'v-wpsa: Failed to calculate/persist score: ' . $e->getMessage() );
 			}
 		}
+
+		// Render PDF template to HTML with correct score.
+		$html = self::render_template( 'pdf.php', $data );
 
 		// Create PDF using TCPDF directly.
 		self::create_pdf_from_html( $html, $pdf_file, $data['website']['idn'] );

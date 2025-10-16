@@ -430,6 +430,27 @@ endif;
 				?>
 			</p>
 
+			<?php
+			// Debug output to help diagnose why tables aren't showing
+			if ( $advice !== 'success' && empty( $content['images_missing_alt'] ) ) {
+				echo '<div class="alert alert-warning mt-3">';
+				echo '<p><strong>Debug Info:</strong></p>';
+				echo '<p>Images missing alt list status: ';
+				if ( ! isset( $content['images_missing_alt'] ) ) {
+					echo 'NOT SET';
+				} elseif ( ! is_array( $content['images_missing_alt'] ) ) {
+					echo 'NOT AN ARRAY (type: ' . gettype( $content['images_missing_alt'] ) . ')';
+				} elseif ( empty( $content['images_missing_alt'] ) ) {
+					echo 'EMPTY ARRAY';
+				} else {
+					echo 'HAS DATA (' . count( $content['images_missing_alt'] ) . ' items)';
+				}
+				echo '</p>';
+				echo '<p>To see which images are missing alt text, please click the UPDATE button above to re-analyze this website.</p>';
+				echo '</div>';
+			}
+			?>
+
 			<?php if ( $advice !== 'success' && ! empty( $content['images_missing_alt'] ) && is_array( $content['images_missing_alt'] ) ) : ?>
 				<div class="table-responsive table-items mb-3 task-list">
 					<table class="table table-striped">
@@ -860,6 +881,27 @@ endif;
 			<p>
 				<?php echo 'Warnings'; ?> : <strong><?php echo (int) $w3c['warnings']; ?></strong>
 			</p>
+
+			<?php
+			// Debug output to help diagnose why tables aren't showing
+			if ( ( ! empty( $w3c['errors'] ) || ! empty( $w3c['warnings'] ) ) && empty( $w3c['messages'] ) ) {
+				echo '<div class="alert alert-warning mt-3">';
+				echo '<p><strong>Debug Info:</strong></p>';
+				echo '<p>Messages array status: ';
+				if ( ! isset( $w3c['messages'] ) ) {
+					echo 'NOT SET';
+				} elseif ( ! is_array( $w3c['messages'] ) ) {
+					echo 'NOT AN ARRAY (type: ' . gettype( $w3c['messages'] ) . ')';
+				} elseif ( empty( $w3c['messages'] ) ) {
+					echo 'EMPTY ARRAY';
+				} else {
+					echo 'HAS DATA (' . count( $w3c['messages'] ) . ' items)';
+				}
+				echo '</p>';
+				echo '<p>To see detailed error messages, please click the UPDATE button above to re-analyze this website.</p>';
+				echo '</div>';
+			}
+			?>
 
 			<?php if ( ! empty( $w3c['messages'] ) && is_array( $w3c['messages'] ) ) : ?>
 				<div class="table-responsive table-items mb-3 task-list">
