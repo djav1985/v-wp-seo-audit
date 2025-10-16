@@ -53,16 +53,15 @@ class V_WPSA_Report_Generator {
 
 					// Persist score to database.
 					$db->set_website_score( $data['website']['id'], $score );
-
-					// Create a new RateProvider instance for the final render to avoid double-counting.
-					if ( class_exists( 'RateProvider' ) ) {
-						$data['rateprovider'] = new RateProvider();
-					}
 				}
 			} catch ( Exception $e ) {
 				// Don't break rendering on score calculation failure; just log and continue.
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for troubleshooting.
 				error_log( 'v-wpsa: Failed to calculate/persist score: ' . $e->getMessage() );
+			}
+			// Always create a fresh RateProvider for the final render to avoid double-counting.
+			if ( class_exists( 'RateProvider' ) ) {
+				$data['rateprovider'] = new RateProvider();
 			}
 		}
 
@@ -139,16 +138,15 @@ class V_WPSA_Report_Generator {
 
 					// Persist score to database.
 					$db->set_website_score( $data['website']['id'], $score );
-
-					// Create a new RateProvider instance for the final render to avoid double-counting.
-					if ( class_exists( 'RateProvider' ) ) {
-						$data['rateprovider'] = new RateProvider();
-					}
 				}
 			} catch ( Exception $e ) {
 				// Don't break rendering on score calculation failure; just log and continue.
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for troubleshooting.
 				error_log( 'v-wpsa: Failed to calculate/persist score: ' . $e->getMessage() );
+			}
+			// Always create a fresh RateProvider for the final render to avoid double-counting.
+			if ( class_exists( 'RateProvider' ) ) {
+				$data['rateprovider'] = new RateProvider();
 			}
 		}
 

@@ -50,124 +50,124 @@ By default {N} equals 5, so
 Advice. Be careful if you want to change the rates.
 */
 return array(
-	'noFlash'            => 3.5,
-	'noIframe'           => 3.5,
-	'issetHeadings'      => 1.5,
-	'noNestedtables'     => 1.5,
-	'noInlineCSS'        => 2,
-	'issetFavicon'       => 1.5,
-	'noEmail'            => 0,
-	'keywords'           => 0,
-	'imgHasAlt'          => 3.5,
-	'isFriendlyUrl'      => 5,
-	'noUnderScore'       => 4,
-	'issetInternalLinks' => 2,
-	'hasRobotsTxt'       => 2,
-	'hasSitemap'         => 3,
-	'hasGzip'            => 1.5,
-	'hasAnalytics'       => 2,
+    'noFlash'            => 2.5,
+    'noIframe'           => 2.5,
+    'issetHeadings'      => 1.0,
+    'noNestedtables'     => 1.0,
+    'noInlineCSS'        => 1.5,
+    'issetFavicon'       => 1.0,
+    'noEmail'            => 0,
+    'keywords'           => 0,
+    'imgHasAlt'          => 2.5,
+    'isFriendlyUrl'      => 3.0,
+    'noUnderScore'       => 2.0,
+    'issetInternalLinks' => 1.5,
+    'hasRobotsTxt'       => 1.5,
+    'hasSitemap'         => 2.0,
+    'hasGzip'            => 1.0,
+    'hasAnalytics'       => 1.5,
 	// 32
 
-	'title'              => array(
-		'$value == _RATE_TITLE_BAD' => array(
-			'score'  => 0,
-			'advice' => _RATE_ERROR,
-		),
-		'$value > _RATE_TITLE_BAD and $value < _RATE_TITLE_GOOD' => array(
-			'score'  => 2,
-			'advice' => _RATE_WARNING,
-		),
-		'$value >= _RATE_TITLE_GOOD and $value <= _RATE_TITLE_BEST' => array(
-			'score'  => 4,
-			'advice' => _RATE_OK,
-		),
-		'$value > _RATE_TITLE_BEST' => array(
-			'score'  => 2,
-			'advice' => _RATE_WARNING,
-		),
-	),
+    'title'              => array(
+        '$value == _RATE_TITLE_BAD' => array(
+            'score'  => 0,
+            'advice' => _RATE_ERROR,
+        ),
+        '$value > _RATE_TITLE_BAD and $value < _RATE_TITLE_GOOD' => array(
+            'score'  => 1.5,
+            'advice' => _RATE_WARNING,
+        ),
+        '$value >= _RATE_TITLE_GOOD and $value <= _RATE_TITLE_BEST' => array(
+            'score'  => 3.0,
+            'advice' => _RATE_OK,
+        ),
+        '$value > _RATE_TITLE_BEST' => array(
+            'score'  => 1.5,
+            'advice' => _RATE_WARNING,
+        ),
+    ),
 
-	'description'        => array(
-		'$value == _RATE_DESC_BAD' => array(
-			'score'  => 0,
-			'advice' => _RATE_ERROR,
-		),
-		'$value > _RATE_DESC_BAD and $value < _RATE_DESC_GOOD' => array(
-			'score'  => 2,
-			'advice' => _RATE_WARNING,
-		),
-		'$value >= _RATE_DESC_GOOD and $value <= _RATE_DESC_BEST' => array(
-			'score'  => 4,
-			'advice' => _RATE_OK,
-		),
-		'$value > _RATE_DESC_BEST' => array(
-			'score'  => 2,
-			'advice' => _RATE_WARNING,
-		),
-	),
+    'description'        => array(
+        '$value == _RATE_DESC_BAD' => array(
+            'score'  => 0,
+            'advice' => _RATE_ERROR,
+        ),
+        '$value > _RATE_DESC_BAD and $value < _RATE_DESC_GOOD' => array(
+            'score'  => 1.5,
+            'advice' => _RATE_WARNING,
+        ),
+        '$value >= _RATE_DESC_GOOD and $value <= _RATE_DESC_BEST' => array(
+            'score'  => 3.0,
+            'advice' => _RATE_OK,
+        ),
+        '$value > _RATE_DESC_BEST' => array(
+            'score'  => 1.5,
+            'advice' => _RATE_WARNING,
+        ),
+    ),
 
-	'charset'            => 3,
-	'viewport'           => 1.5,
-	'dublincore'         => 1,
-	'ogmetaproperties'   => 3,
+    'charset'            => 2.0,
+    'viewport'           => 1.0,
+    'dublincore'         => 1.0,
+    'ogmetaproperties'   => 2.0,
 	// 49,5
 
-	'htmlratio'          => array(
-		'$value < _RATE_HRATIO_BAD'  => array(
-			'score'  => 2,
-			'advice' => _RATE_ERROR_LESSTHAN, // Very little visible text
-		),
-		'$value >= _RATE_HRATIO_BAD and $value < _RATE_HRATIO_GOOD' => array(
-			'score'  => 7.5,
-			'advice' => _RATE_OK, // Acceptable, but could be stronger
-		),
-		'$value >= _RATE_HRATIO_GOOD and $value <= _RATE_HRATIO_BEST' => array(
-			'score'  => 9,
-			'advice' => _RATE_OK_IDEAL, // Ideal text balance
-		),
-		'$value > _RATE_HRATIO_BEST' => array(
-			'score'  => 7.5, // Slight drop for being too text-heavy
-			'advice' => _RATE_WARNING,  // Informative warning instead of failure
-		),
-	),
+    'htmlratio'          => array(
+        '$value < _RATE_HRATIO_BAD'  => array(
+            'score'  => 1.5,
+            'advice' => _RATE_ERROR_LESSTHAN, // Very little visible text
+        ),
+        '$value >= _RATE_HRATIO_BAD and $value < _RATE_HRATIO_GOOD' => array(
+            'score'  => 3.0,
+            'advice' => _RATE_OK, // Acceptable, but could be stronger
+        ),
+        '$value >= _RATE_HRATIO_GOOD and $value <= _RATE_HRATIO_BEST' => array(
+            'score'  => 4.0,
+            'advice' => _RATE_OK_IDEAL, // Ideal text balance
+        ),
+        '$value > _RATE_HRATIO_BEST' => array(
+            'score'  => 3.0, // Slight drop for being too text-heavy
+            'advice' => _RATE_WARNING,  // Informative warning instead of failure
+        ),
+    ),
 
 
-	'w3c'                => 5,
-	'doctype'            => 2,
-	'isPrintable'        => 0,
-	'issetAppleIcons'    => 2,
-	'noDeprecated'       => 1.5,
-	'lang'               => 2,
+    'w3c'                => 3.0,
+    'doctype'            => 1.0,
+    'isPrintable'        => 0,
+    'issetAppleIcons'    => 1.0,
+    'noDeprecated'       => 1.0,
+    'lang'               => 1.0,
 	// 78,5
 
-	'cssCount'           => array(
-		'$value <= _RATE_CSS_COUNT' => array(
-			'score'  => 4,
-			'advice' => _RATE_OK,
-		),
-		'$value > _RATE_CSS_COUNT'  => array(
-			'score'  => 1.5,
-			'advice' => _RATE_ERROR,
-		),
-	),
+    'cssCount'           => array(
+        '$value <= _RATE_CSS_COUNT' => array(
+            'score'  => 2.0,
+            'advice' => _RATE_OK,
+        ),
+        '$value > _RATE_CSS_COUNT'  => array(
+            'score'  => 1.0,
+            'advice' => _RATE_ERROR,
+        ),
+    ),
 
-	'jsCount'            => array(
-		'$value <= _RATE_JS_COUNT' => array(
-			'score'  => 4,
-			'advice' => _RATE_OK,
-		),
-		'$value > _RATE_JS_COUNT'  => array(
-			'score'  => 1.5,
-			'advice' => _RATE_ERROR,
-		),
-	),
+    'jsCount'            => array(
+        '$value <= _RATE_JS_COUNT' => array(
+            'score'  => 2.0,
+            'advice' => _RATE_OK,
+        ),
+        '$value > _RATE_JS_COUNT'  => array(
+            'score'  => 1.0,
+            'advice' => _RATE_ERROR,
+        ),
+    ),
 	// 86,5
 
-	'wordConsistency'    => array(
-		'keywords'    => 0,
-		'description' => 1,
-		'title'       => 1.5,
-		'headings'    => 1,
-	),
+    'wordConsistency'    => array(
+        'keywords'    => 0,
+        'description' => 1.0,
+        'title'       => 1.0,
+        'headings'    => 1.0,
+    ),
 	// 100
 );
