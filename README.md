@@ -35,6 +35,7 @@ The plugin will display on the front-end where the shortcode is placed.
 - AJAX-based form submission for seamless user experience
 - Client-side form validation
 - Dynamic content updates without page redirects
+- **Internal function for AI integrations** - `V_WPSA_external_generation()` for function calling and AI chatbots
 
 ## Technical Architecture
 
@@ -70,6 +71,123 @@ The plugin registers the following AJAX actions:
    - Response: PDF file download
 
 **Note:** The `v_wpsa_generate_report` endpoint supports a `force` parameter (set to `'1'`) to force deletion of cached data and re-analysis. This is used by the UPDATE button in generated reports.
+
+### Internal Function for AI Integrations
+
+The plugin provides an internal function `V_WPSA_external_generation()` that can be called from anywhere in WordPress for AI chatbots, custom integrations, and function calling.
+
+#### Function Signature
+
+```php
+V_WPSA_external_generation( string $domain, bool $report = true )
+```
+
+**Parameters:**
+- `$domain` (string, required): Domain to analyze (without http://)
+- `$report` (bool, optional): If `true` returns full report with all sections, if `false` returns only domain, score, and PDF URL. Default: `true`
+
+**Returns:**
+- Always returns JSON string (never a plain string)
+- When `$report` is `true`: JSON with domain, score, pdf_url, and complete report sections
+- When `$report` is `false`: JSON with only domain, score, and pdf_url
+- On error: `WP_Error` object
+
+**Example Usage:**
+
+```php
+// Get full report as JSON string
+$json_report = V_WPSA_external_generation( 'example.com', true );
+$data = json_decode( $json_report, true );
+// Returns: {"domain": "...", "score": 85, "pdf_url": "...", "report": {...}}
+
+// Get minimal data (just domain, score, PDF URL)
+$json_minimal = V_WPSA_external_generation( 'example.com', false );
+$data = json_decode( $json_minimal, true );
+// Returns: {"domain": "...", "score": 85, "pdf_url": "..."}
+
+// Error handling
+$result = V_WPSA_external_generation( 'invalid-domain', true );
+if ( is_wp_error( $result ) ) {
+    echo 'Error: ' . $result->get_error_message();
+}
+
+// Wrapper function pattern for AI chatbots
+function get_seo_report( $domain ) {
+    $result = V_WPSA_external_generation( $domain, true );
+    
+    if ( is_wp_error( $result ) ) {
+        return json_encode( array( 'error' => $result->get_error_message() ) );
+    }
+    
+    // Result is already JSON, return directly
+    return $result;
+}
+```
+
+**JSON Response Structure:**
+
+When `$report` is `false` (minimal):
+```json
+{
+  "domain": "example.com",
+  "score": 85,
+  "pdf_url": "https://yoursite.com/wp-content/uploads/seo-audit/pdf/example.com.pdf"
+}
+```
+
+When `$report` is `true` (full):
+```json
+{
+  "domain": "example.com",
+  "score": 85,
+  "pdf_url": "https://yoursite.com/wp-content/uploads/seo-audit/pdf/example.com.pdf",
+  "report": {
+    "website": { "score": 85, "score_breakdown": {...} },
+    "meta": { "title": "...", "description": "..." },
+    "links": { "internal": 10, "external_dofollow": 5 },
+    "content": { "word_count": 1500, "headings": {...} },
+    "document": { "title": "...", "lang": "en" },
+    "w3c": { "errors": 0, "warnings": 2 },
+    "cloud": { "words": [...] },
+    "misc": { "analytics": true, "sitemap": true },
+    "thumbnail": { "url": "..." }
+  }
+}
+```
+
+**Use Cases:**
+- AI chatbot function calling
+- Custom WordPress plugins
+- Theme functions
+- Automated reporting systems
+- Integration with external APIs
+- Bulk domain analysis
+
+**Integration Example (AI Chatbot):**
+
+```php
+// In your AI chatbot plugin
+function handle_seo_analysis_request( $domain ) {
+    $result = V_WPSA_external_generation( $domain, true );
+    
+    if ( is_wp_error( $result ) ) {
+        return array(
+            'status' => 'error',
+            'message' => $result->get_error_message()
+        );
+    }
+    
+    $data = json_decode( $result, true );
+    
+    return array(
+        'status' => 'success',
+        'domain' => $data['domain'],
+        'score' => $data['score'],
+        'pdf_link' => $data['pdf_url'],
+        'recommendations' => get_top_recommendations( $data['report'] )
+    );
+}
+```
 
 ### Form Workflow
 

@@ -113,3 +113,40 @@ add_shortcode( 'v_wpsa', 'v_wpsa_shortcode' );
 
 // Initialize AJAX handlers.
 V_WPSA_Ajax_Handlers::init();
+
+/**
+ * External generation function for AI integrations and function calling.
+ *
+ * This function provides a simple interface for generating SEO reports
+ * that can be called from anywhere in WordPress, including AI chatbots
+ * and external integrations.
+ *
+ * @param string $domain The domain to analyze.
+ * @param bool   $report Whether to return full report data (true) or minimal data (false).
+ * @return string|WP_Error JSON string with report data, or WP_Error on failure.
+ *
+ * phpcs:disable WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
+ */
+function V_WPSA_external_generation( $domain, $report = true ) {
+	// Use the service layer to prepare the report.
+	$result = V_WPSA_Report_Service::prepare_report( $domain, array( 'force' => false ) );
+
+	// Handle errors.
+	if ( is_wp_error( $result ) ) {
+		return $result;
+	}
+
+	// If minimal data is requested (no full report).
+	if ( ! $report ) {
+		// Return only domain, score, and PDF URL as JSON.
+		$minimal = array(
+			'domain'  => $result['domain'],
+			'score'   => $result['score'],
+			'pdf_url' => $result['pdf_url'],
+		);
+		return wp_json_encode( $minimal );
+	}
+
+	// Return full report as JSON string.
+	return wp_json_encode( $result );
+}
