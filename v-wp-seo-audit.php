@@ -114,21 +114,33 @@ add_shortcode( 'v_wpsa', 'v_wpsa_shortcode' );
 // Initialize AJAX handlers.
 V_WPSA_Ajax_Handlers::init();
 
-// Register REST API routes.
-add_action( 'rest_api_init', array( 'V_WPSA_Rest_API', 'register_routes' ) );
-
 /**
- * Helper function to get report data for a domain.
+ * External generation function for AI integrations and function calling.
  *
- * This function provides a simple interface for other plugins or AI integrations
- * to get SEO audit report data programmatically.
+ * This function provides a simple interface for generating SEO reports
+ * that can be called from anywhere in WordPress, including AI chatbots
+ * and external integrations.
  *
- * @param string $domain Domain to analyze.
- * @param array  $args Optional arguments.
- *                     - 'force' (bool): Force re-analysis even if cached data exists.
- * @return array|WP_Error Array with report data on success, WP_Error on failure.
+ * @param string $domain The domain to analyze.
+ * @param bool   $report Whether to return full report data (true) or just PDF link (false).
+ * @return string|WP_Error JSON string with report data or PDF link, or WP_Error on failure.
+ *
+ * phpcs:disable WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
  */
-function v_wpsa_get_report_data( $domain, $args = array() ) {
-	return V_WPSA_Report_Service::prepare_report( $domain, $args );
-}
+function V_WPSA_external_generation( $domain, $report = true ) {
+	// Use the service layer to prepare the report.
+	$result = V_WPSA_Report_Service::prepare_report( $domain, array( 'force' => false ) );
 
+	// Handle errors.
+	if ( is_wp_error( $result ) ) {
+		return $result;
+	}
+
+	// If only PDF link is requested.
+	if ( ! $report ) {
+		return $result['pdf_url'];
+	}
+
+	// Return full report as JSON string.
+	return wp_json_encode( $result );
+}

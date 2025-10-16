@@ -8,21 +8,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Internal REST API for Domain Analysis**: New REST API endpoint at `v-wpsa/v1/report` for submitting domains for SEO analysis and receiving JSON reports with PDF links
-- **Report Service Layer**: New `V_WPSA_Report_Service` class that provides a unified interface for report generation across AJAX handlers, REST API, and direct function calls
-- **PHP Helper Function**: New `v_wpsa_get_report_data($domain, $args)` function for programmatic access to report data from other plugins or AI integrations
-- **REST API Controller**: New `V_WPSA_Rest_API` class to handle REST API endpoints with admin authentication (`manage_options` capability by default)
+- **Internal Function for AI Integrations**: New `V_WPSA_external_generation()` function for internal use with AI chatbots and function calling
+- **Report Service Layer**: New `V_WPSA_Report_Service` class that provides unified interface for report generation
+- **Flexible Return Options**: Function can return full JSON report or just PDF download link based on parameter
 
-### Changed
-- **Refactored AJAX Handler**: Updated `V_WPSA_Ajax_Handlers::generate_report()` to use the new `V_WPSA_Report_Service` for consistency and code reuse
-- **Report Data Structure**: Report data now includes structured JSON payload with domain, score, timestamps, PDF URL, and comprehensive report sections
-- Reports generated via REST API or helper function exclude non-serializable objects (e.g., RateProvider) for JSON compatibility
+### Function Signature
+```php
+V_WPSA_external_generation( string $domain, bool $report = true )
+```
+
+**Parameters:**
+- `$domain` (string, required): Domain to analyze (without http://)
+- `$report` (bool, optional): If `true` returns full JSON report, if `false` returns only PDF URL. Default: `true`
+
+**Returns:**
+- When `$report` is `true`: JSON string with complete report data including domain, score, PDF URL, and all report sections
+- When `$report` is `false`: String with PDF download URL
+- On error: `WP_Error` object
+
+**Usage Examples:**
+```php
+// Get full report as JSON
+$json_report = V_WPSA_external_generation( 'example.com', true );
+
+// Get only PDF download link
+$pdf_url = V_WPSA_external_generation( 'example.com', false );
+
+// Error handling
+$result = V_WPSA_external_generation( 'example.com', true );
+if ( is_wp_error( $result ) ) {
+    echo 'Error: ' . $result->get_error_message();
+}
+```
 
 ### Technical Details
-- All reports (AJAX, REST, direct calls) now go through the same validation and analysis pipeline
-- REST API requires `manage_options` capability (admin access) by default, but can be customized via the `v_wpsa_rest_api_capability` filter
-- PDF files are automatically generated and made accessible via a publicly accessible URL
-- Cached reports are served when available (unless force flag is set)
+- Function can be called from anywhere in WordPress (themes, plugins, functions.php)
+- Uses existing analysis engine and database
+- Reports are cached for 24 hours by default
+- PDF files are automatically generated and cached
 - Full backward compatibility maintained with existing AJAX endpoints
 
 ## [1.0.0] - Previous Releases

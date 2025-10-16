@@ -70,26 +70,81 @@ class V_WPSA_Ajax_Handlers {
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitization handled in V_WPSA_Validation.
 		$domain_raw = isset( $_POST['domain'] ) ? wp_unslash( $_POST['domain'] ) : '';
 
-		// Check if this is a forced update (from update button).
-		$force_update = isset( $_POST['force'] ) && '1' === $_POST['force'];
-
-		// Use the report service to prepare the report.
-		$report = V_WPSA_Report_Service::prepare_report(
-			$domain_raw,
-			array(
-				'force' => $force_update,
-			)
-		);
-
-		// Handle errors from the service.
-		if ( is_wp_error( $report ) ) {
-			wp_send_json_error( array( 'message' => $report->get_error_message() ) );
+		if ( empty( $domain_raw ) ) {
+			wp_send_json_error( array( 'message' => 'Domain is required' ) );
 			return;
 		}
 
+		// Check if this is a forced update (from update button).
+		$force_update = isset( $_POST['force'] ) && '1' === $_POST['force'];
+
+		// Validate domain using WordPress-native validation.
+		$validation = V_WPSA_Validation::validate_domain( $domain_raw );
+
+		if ( ! $validation['valid'] ) {
+			wp_send_json_error( array( 'message' => implode( '<br>', $validation['errors'] ) ) );
+			return;
+		}
+
+		// Extract validated domain data.
+		$domain = $validation['domain'];
+		$idn    = $validation['idn'];
+		$ip     = $validation['ip'];
+
+		// Check if website needs analysis or if cached data can be used.
+		$db      = new V_WPSA_DB();
+		$website = $db->get_website_by_domain( $domain, array( 'modified', 'id' ) );
+
+		// Get cache time - default to 24 hours.
+		$cache_time = apply_filters( 'v_wpsa_cache_time', DAY_IN_SECONDS );
+
+		$needs_analysis = false;
+		$wid            = null;
+
+		if ( ! $website ) {
+			// Website doesn't exist - needs analysis.
+			$needs_analysis = true;
+		} elseif ( $force_update ) {
+			// Force update requested - delete everything and re-analyze from scratch.
+			$needs_analysis = true;
+			$wid            = null; // Set to null to force creation of new record.
+
+			// Delete the complete website record from database.
+			$db->delete_website( $website['id'] );
+
+			// Delete old PDFs and thumbnails when force updating.
+			V_WPSA_Helpers::delete_pdf( $domain );
+			V_WPSA_Helpers::delete_pdf( $domain . '_pagespeed' );
+		} elseif ( strtotime( $website['modified'] ) + $cache_time <= time() ) {
+			// Website exists but data is stale - needs re-analysis.
+			$needs_analysis = true;
+			$wid            = $website['id'];
+
+			// Delete old PDFs when re-analyzing.
+			V_WPSA_Helpers::delete_pdf( $domain );
+			V_WPSA_Helpers::delete_pdf( $domain . '_pagespeed' );
+		}
+
+		// Perform analysis if needed.
+		if ( $needs_analysis ) {
+			$result = V_WPSA_DB::analyze_website( $domain, $idn, $ip, $wid );
+
+			if ( is_wp_error( $result ) ) {
+				wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+				return;
+			}
+
+			// Verify analysis created the record.
+			$website_check = $db->get_website_by_domain( $domain, array( 'id' ) );
+			if ( ! $website_check ) {
+				wp_send_json_error( array( 'message' => 'Analysis failed: domain record not created. Please try again or check your domain input.' ) );
+				return;
+			}
+		}
+
 		try {
-			// Generate HTML report using the validated domain.
-			$content = V_WPSA_Report_Generator::generate_html_report( $report['domain'] );
+			// Generate report using WordPress-native template system.
+			$content = V_WPSA_Report_Generator::generate_html_report( $domain );
 
 			// Also provide a fresh nonce in case the frontend lost the original one.
 			$response_data = array(
@@ -102,7 +157,7 @@ class V_WPSA_Ajax_Handlers {
 		} catch ( Throwable $t ) {
 			// Log and return JSON error for the client.
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for troubleshooting.
-			error_log( sprintf( 'v-wpsa: unhandled throwable during report generation for %s: %s in %s on line %d', $report['domain'], $t->getMessage(), $t->getFile(), $t->getLine() ) );
+			error_log( sprintf( 'v-wpsa: unhandled throwable during report generation for %s: %s in %s on line %d', $domain, $t->getMessage(), $t->getFile(), $t->getLine() ) );
 			wp_send_json_error( array( 'message' => 'Internal error while generating report: ' . $t->getMessage() ) );
 		}
 	}

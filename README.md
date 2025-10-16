@@ -35,8 +35,7 @@ The plugin will display on the front-end where the shortcode is placed.
 - AJAX-based form submission for seamless user experience
 - Client-side form validation
 - Dynamic content updates without page redirects
-- **REST API for programmatic access** - Internal API for AI chatbots and integrations
-- **PHP helper function** - Direct function calls for custom integrations
+- **Internal function for AI integrations** - `V_WPSA_external_generation()` for function calling and AI chatbots
 
 ## Technical Architecture
 
@@ -73,29 +72,50 @@ The plugin registers the following AJAX actions:
 
 **Note:** The `v_wpsa_generate_report` endpoint supports a `force` parameter (set to `'1'`) to force deletion of cached data and re-analysis. This is used by the UPDATE button in generated reports.
 
-### REST API Endpoints
+### Internal Function for AI Integrations
 
-The plugin provides a REST API for programmatic access to SEO audit reports. This is useful for AI chatbots, custom integrations, and automation tools.
+The plugin provides an internal function `V_WPSA_external_generation()` that can be called from anywhere in WordPress for AI chatbots, custom integrations, and function calling.
 
-#### POST /wp-json/v-wpsa/v1/report
+#### Function Signature
 
-Generate an SEO audit report for a domain.
-
-**Authentication:** Requires admin privileges (`manage_options` capability by default). The required capability can be customized using the `v_wpsa_rest_api_capability` filter.
-
-**Request Body:**
-```json
-{
-  "domain": "example.com",
-  "force": false
-}
+```php
+V_WPSA_external_generation( string $domain, bool $report = true )
 ```
 
 **Parameters:**
-- `domain` (string, required): Domain to analyze
-- `force` (boolean, optional): Force re-analysis even if cached data exists. Default: `false`
+- `$domain` (string, required): Domain to analyze (without http://)
+- `$report` (bool, optional): If `true` returns full JSON report, if `false` returns only PDF URL. Default: `true`
 
-**Response (Success):**
+**Returns:**
+- When `$report` is `true`: JSON string with complete report data
+- When `$report` is `false`: String with PDF download URL
+- On error: `WP_Error` object
+
+**Example Usage:**
+
+```php
+// Get full report as JSON
+$json_report = V_WPSA_external_generation( 'example.com', true );
+
+// Decode and use the data
+$data = json_decode( $json_report, true );
+echo 'Domain: ' . $data['domain'];
+echo 'Score: ' . $data['score'];
+echo 'PDF URL: ' . $data['pdf_url'];
+
+// Get only PDF download link
+$pdf_url = V_WPSA_external_generation( 'example.com', false );
+echo 'Download PDF: ' . $pdf_url;
+
+// Error handling
+$result = V_WPSA_external_generation( 'invalid-domain', true );
+if ( is_wp_error( $result ) ) {
+    echo 'Error: ' . $result->get_error_message();
+}
+```
+
+**JSON Response Structure (when `$report` is `true`):**
+
 ```json
 {
   "domain": "example.com",
@@ -106,17 +126,10 @@ Generate an SEO audit report for a domain.
   "pdf_cached": false,
   "generated": {
     "time": "2 minutes ago",
-    "seconds": 120,
-    "A": "PM",
-    "Y": "2025",
-    "M": "Oct",
-    "d": "16",
-    "H": "14",
-    "i": "30"
+    "seconds": 120
   },
   "report": {
     "website": {
-      "id": 123,
       "score": 85,
       "score_breakdown": {...}
     },
@@ -132,71 +145,39 @@ Generate an SEO audit report for a domain.
 }
 ```
 
-**Response (Error):**
-```json
-{
-  "code": "invalid_domain",
-  "message": "Invalid domain format",
-  "data": {
-    "status": 400
-  }
-}
-```
+**Use Cases:**
+- AI chatbot function calling
+- Custom WordPress plugins
+- Theme functions
+- Automated reporting systems
+- Integration with external APIs
+- Bulk domain analysis
 
-**Example Usage:**
-
-```bash
-# Using curl
-curl -X POST https://yoursite.com/wp-json/v-wpsa/v1/report \
-  -H "Content-Type: application/json" \
-  -u admin:your-application-password \
-  -d '{"domain":"example.com"}'
-
-# Force re-analysis
-curl -X POST https://yoursite.com/wp-json/v-wpsa/v1/report \
-  -H "Content-Type: application/json" \
-  -u admin:your-application-password \
-  -d '{"domain":"example.com","force":true}'
-```
-
-### PHP Helper Function
-
-For custom integrations within WordPress (other plugins, themes, or custom code), you can use the `v_wpsa_get_report_data()` helper function:
+**Integration Example (AI Chatbot):**
 
 ```php
-/**
- * Get SEO audit report data for a domain.
- *
- * @param string $domain Domain to analyze.
- * @param array  $args   Optional arguments.
- *                       - 'force' (bool): Force re-analysis. Default: false.
- * @return array|WP_Error Report data array or WP_Error on failure.
- */
-$report = v_wpsa_get_report_data( 'example.com' );
-
-if ( is_wp_error( $report ) ) {
-    // Handle error
-    echo 'Error: ' . $report->get_error_message();
-} else {
-    // Use report data
-    echo 'Score: ' . $report['score'];
-    echo 'PDF URL: ' . $report['pdf_url'];
+// In your AI chatbot plugin
+function handle_seo_analysis_request( $domain ) {
+    $result = V_WPSA_external_generation( $domain, true );
     
-    // Access detailed report sections
-    $meta_tags = $report['report']['meta'];
-    $links = $report['report']['links'];
+    if ( is_wp_error( $result ) ) {
+        return array(
+            'status' => 'error',
+            'message' => $result->get_error_message()
+        );
+    }
+    
+    $data = json_decode( $result, true );
+    
+    return array(
+        'status' => 'success',
+        'domain' => $data['domain'],
+        'score' => $data['score'],
+        'pdf_link' => $data['pdf_url'],
+        'recommendations' => get_top_recommendations( $data['report'] )
+    );
 }
-
-// Force re-analysis
-$fresh_report = v_wpsa_get_report_data( 'example.com', array( 'force' => true ) );
 ```
-
-**Use Cases:**
-- AI chatbot integrations
-- Custom admin dashboards
-- Automated reporting systems
-- Bulk domain analysis scripts
-- Integration with CRM or project management tools
 
 ### Form Workflow
 
