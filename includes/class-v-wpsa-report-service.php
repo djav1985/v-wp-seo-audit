@@ -120,13 +120,20 @@ class V_WPSA_Report_Service {
 			$upload_dir = wp_upload_dir();
 			$pdf_url    = $upload_dir['baseurl'] . '/seo-audit/pdf/' . $domain . '.pdf';
 
+			// Construct report URL with hash fragment for deep linking.
+			// Allow filtering of the base URL where the shortcode is located.
+			$shortcode_page_url = apply_filters( 'v_wpsa_shortcode_page_url', home_url( '/' ) );
+			$hash_domain        = str_replace( '.', '-', $domain );
+			$report_url         = rtrim( $shortcode_page_url, '/' ) . '/#' . $hash_domain;
+
 			// Prepare simplified JSON-safe payload.
 			// Remove rateprovider object and include key report sections.
 			$payload = array(
-				'domain'  => $domain,
-				'score'   => isset( $report_data['website']['score'] ) ? (int) $report_data['website']['score'] : 0,
-				'pdf_url' => $pdf_url,
-				'report'  => array(
+				'domain'     => $domain,
+				'score'      => isset( $report_data['website']['score'] ) ? (int) $report_data['website']['score'] : 0,
+				'pdf_url'    => $pdf_url,
+				'report_url' => $report_url,
+				'report'     => array(
 					'website'   => isset( $report_data['website'] ) ? self::sanitize_website_data( $report_data['website'] ) : array(),
 					'content'   => isset( $report_data['content'] ) ? $report_data['content'] : array(),
 					'document'  => isset( $report_data['document'] ) ? $report_data['document'] : array(),

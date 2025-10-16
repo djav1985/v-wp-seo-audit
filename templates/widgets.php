@@ -104,9 +104,10 @@ function v_wpsa_render_website_list_template( $websites, $thumbnail_stack, $args
 	<div class="row">
 		<?php foreach ( $websites as $website ) : ?>
 			<?php
-			// Generate view report URL.
-			$url    = add_query_arg( array( 'domain' => $website['domain'] ), home_url( '/' ) );
-			$domain = $website['domain'];
+			// Generate view report URL with hash fragment for deep linking.
+			$domain      = $website['domain'];
+			$hash_domain = str_replace( '.', '-', $domain );
+			$url         = home_url( '/#' . $hash_domain );
 			?>
 			<div class="col col-12 col-md-6 col-lg-4 mb-4">
 				<div class="card mb-3">

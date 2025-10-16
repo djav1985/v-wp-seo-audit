@@ -138,11 +138,12 @@ function V_WPSA_external_generation( $domain, $report = true ) {
 
 	// If minimal data is requested (no full report).
 	if ( ! $report ) {
-		// Return only domain, score, and PDF URL as JSON.
+		// Return only domain, score, PDF URL, and report URL as JSON.
 		$minimal = array(
-			'domain'  => $result['domain'],
-			'score'   => $result['score'],
-			'pdf_url' => $result['pdf_url'],
+			'domain'     => $result['domain'],
+			'score'      => $result['score'],
+			'pdf_url'    => $result['pdf_url'],
+			'report_url' => $result['report_url'],
 		);
 		return wp_json_encode( $minimal );
 	}
