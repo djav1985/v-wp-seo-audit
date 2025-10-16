@@ -518,6 +518,9 @@ class V_WPSA_DB {
 		if ( ! isset( $data['content']['total_alt'] ) ) {
 			$data['content']['total_alt'] = 0;
 		}
+		if ( ! isset( $data['content']['images_missing_alt'] ) || ! is_array( $data['content']['images_missing_alt'] ) ) {
+			$data['content']['images_missing_alt'] = array();
+		}
 		if ( ! isset( $data['content']['deprecated'] ) || ! is_array( $data['content']['deprecated'] ) ) {
 			$data['content']['deprecated'] = array();
 		}
@@ -686,6 +689,9 @@ class V_WPSA_DB {
 		}
 		if ( ! isset( $data['w3c']['warnings'] ) ) {
 			$data['w3c']['warnings'] = 0;
+		}
+		if ( ! isset( $data['w3c']['messages'] ) || ! is_array( $data['w3c']['messages'] ) ) {
+			$data['w3c']['messages'] = array();
 		}
 
 		// Website defaults (ensure score and id exist for template usage).
@@ -941,13 +947,27 @@ class V_WPSA_DB {
 				$headings         = $content_analyzer->getHeadings();
 				$deprecated       = array();
 
+				// Analyze images if Image class is available.
+				$total_img = 0;
+				$total_alt = 0;
+				$images_missing_alt = array();
+				if ( class_exists( 'Image' ) ) {
+					$image_analyzer = new Image( $html );
+					$total_img      = $image_analyzer->getTotal();
+					$total_alt      = $image_analyzer->getAltCount();
+					
+					// Get images missing alt text for reporting.
+					$images_missing_alt = $image_analyzer->getImagesMissingAlt();
+				}
+
 				$content_data = array(
 					'wid'            => $wid,
 					'headings'       => wp_json_encode( $headings ),
 					'isset_headings' => ! empty( $headings['h1'] ) ? 1 : 0,
 					'deprecated'     => wp_json_encode( $deprecated ),
-					'total_img'      => 0, // Will be set later if Image analyzer is available.
-					'total_alt'      => 0,
+					'total_img'      => $total_img,
+					'total_alt'      => $total_alt,
+					'images_missing_alt' => wp_json_encode( $images_missing_alt ),
 				);
 
 				// Check if record exists.
@@ -1177,6 +1197,7 @@ class V_WPSA_DB {
 					'valid'     => ! empty( $w3c_result['status'] ) ? 1 : 0,
 					'errors'    => isset( $w3c_result['errors'] ) ? (int) $w3c_result['errors'] : 0,
 					'warnings'  => isset( $w3c_result['warnings'] ) ? (int) $w3c_result['warnings'] : 0,
+					'messages'  => isset( $w3c_result['messages'] ) ? wp_json_encode( $w3c_result['messages'] ) : wp_json_encode( array() ),
 				);
 
 				$w3c_data = $db->filter_columns( 'w3c', $w3c_data );
@@ -1204,7 +1225,7 @@ class V_WPSA_DB {
 				);
 			}
 
-			// Generate tag cloud if classes are available.
+			// Generate tag cloud and keyword consistency matrix if classes are available.
 			if ( class_exists( 'TagCloud' ) && class_exists( 'Document' ) ) {
 				$doc_analyzer = new Document( $html );
 				$lang         = $doc_analyzer->getLanguageID();
@@ -1215,10 +1236,31 @@ class V_WPSA_DB {
 				$cloud_analyzer = new TagCloud( $html, $lang );
 				$words          = $cloud_analyzer->generate( 10 );
 
+				// Generate keyword consistency matrix.
+				$matrix = array();
+				if ( class_exists( 'SearchMatrix' ) && class_exists( 'MetaTags' ) && class_exists( 'Content' ) ) {
+					$meta_analyzer    = new MetaTags( $html );
+					$content_analyzer = new Content( $html );
+					
+					$search_matrix = new SearchMatrix();
+					
+					// Get top words from the cloud.
+					$top_words = array_slice( array_keys( $words ), 0, 10 );
+					$search_matrix->addWords( $top_words );
+					
+					// Add search targets.
+					$search_matrix->addSearchInString( 'title', (string) $meta_analyzer->getTitle() );
+					$search_matrix->addSearchInString( 'description', (string) $meta_analyzer->getDescription() );
+					$search_matrix->addSearchInArrayRecursive( 'headings', $content_analyzer->getHeadings() );
+					
+					// Generate the matrix.
+					$matrix = $search_matrix->generate();
+				}
+
 				$cloud_data = array(
 					'wid'    => $wid,
 					'words'  => wp_json_encode( $words ),
-					'matrix' => wp_json_encode( array() ), // Matrix might be computed elsewhere.
+					'matrix' => wp_json_encode( $matrix ),
 				);
 
 				$cloud_data = $db->filter_columns( 'cloud', $cloud_data );
