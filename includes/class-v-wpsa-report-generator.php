@@ -163,8 +163,8 @@ class V_WPSA_Report_Generator {
 		}
 
 		// Store the calculated score back in the data.
-		$score                     = (int) $rateprovider->getScore();
-		$data['website']['score']  = $score;
+		$score                    = (int) $rateprovider->getScore();
+		$data['website']['score'] = $score;
 
 		return $score;
 	}

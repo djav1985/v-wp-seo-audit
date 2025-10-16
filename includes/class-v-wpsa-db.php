@@ -948,25 +948,25 @@ class V_WPSA_DB {
 				$deprecated       = array();
 
 				// Analyze images if Image class is available.
-				$total_img = 0;
-				$total_alt = 0;
+				$total_img          = 0;
+				$total_alt          = 0;
 				$images_missing_alt = array();
 				if ( class_exists( 'Image' ) ) {
 					$image_analyzer = new Image( $html );
 					$total_img      = $image_analyzer->getTotal();
 					$total_alt      = $image_analyzer->getAltCount();
-					
+
 					// Get images missing alt text for reporting.
 					$images_missing_alt = $image_analyzer->getImagesMissingAlt();
 				}
 
 				$content_data = array(
-					'wid'            => $wid,
-					'headings'       => wp_json_encode( $headings ),
-					'isset_headings' => ! empty( $headings['h1'] ) ? 1 : 0,
-					'deprecated'     => wp_json_encode( $deprecated ),
-					'total_img'      => $total_img,
-					'total_alt'      => $total_alt,
+					'wid'                => $wid,
+					'headings'           => wp_json_encode( $headings ),
+					'isset_headings'     => ! empty( $headings['h1'] ) ? 1 : 0,
+					'deprecated'         => wp_json_encode( $deprecated ),
+					'total_img'          => $total_img,
+					'total_alt'          => $total_alt,
 					'images_missing_alt' => wp_json_encode( $images_missing_alt ),
 				);
 
@@ -1241,18 +1241,18 @@ class V_WPSA_DB {
 				if ( class_exists( 'SearchMatrix' ) && class_exists( 'MetaTags' ) && class_exists( 'Content' ) ) {
 					$meta_analyzer    = new MetaTags( $html );
 					$content_analyzer = new Content( $html );
-					
+
 					$search_matrix = new SearchMatrix();
-					
+
 					// Get top words from the cloud.
 					$top_words = array_slice( array_keys( $words ), 0, 10 );
 					$search_matrix->addWords( $top_words );
-					
+
 					// Add search targets.
 					$search_matrix->addSearchInString( 'title', (string) $meta_analyzer->getTitle() );
 					$search_matrix->addSearchInString( 'description', (string) $meta_analyzer->getDescription() );
 					$search_matrix->addSearchInArrayRecursive( 'headings', $content_analyzer->getHeadings() );
-					
+
 					// Generate the matrix.
 					$matrix = $search_matrix->generate();
 				}
