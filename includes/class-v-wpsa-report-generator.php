@@ -53,6 +53,11 @@ class V_WPSA_Report_Generator {
 
 					// Persist score to database.
 					$db->set_website_score( $data['website']['id'], $score );
+
+					// Create a new RateProvider instance for the final render to avoid double-counting.
+					if ( class_exists( 'RateProvider' ) ) {
+						$data['rateprovider'] = new RateProvider();
+					}
 				}
 			} catch ( Exception $e ) {
 				// Don't break rendering on score calculation failure; just log and continue.
@@ -61,6 +66,8 @@ class V_WPSA_Report_Generator {
 		}
 
 		// Render template with correct score.
+		// The template will call addCompare* methods on the fresh RateProvider,
+		// but we've already calculated and saved the correct score.
 		$html = self::render_template( 'report.php', $data );
 
 		return $html;
@@ -131,6 +138,11 @@ class V_WPSA_Report_Generator {
 
 					// Persist score to database.
 					$db->set_website_score( $data['website']['id'], $score );
+
+					// Create a new RateProvider instance for the final render to avoid double-counting.
+					if ( class_exists( 'RateProvider' ) ) {
+						$data['rateprovider'] = new RateProvider();
+					}
 				}
 			} catch ( Exception $e ) {
 				// Don't break rendering on score calculation failure; just log and continue.
