@@ -58,12 +58,17 @@ class V_WPSA_DB {
 	 * @param string $table Table name without plugin prefix.
 	 * @return array List of column names.
 	 */
-	public function get_table_columns( $table ) {
-		static $cache = array();
-		$key          = $table;
-		if ( isset( $cache[ $key ] ) ) {
-			return $cache[ $key ];
-		}
+        public function get_table_columns( $table, $refresh = false ) {
+                static $cache = array();
+                $key          = $table;
+
+                if ( $refresh && isset( $cache[ $key ] ) ) {
+                        unset( $cache[ $key ] );
+                }
+
+                if ( isset( $cache[ $key ] ) ) {
+                        return $cache[ $key ];
+                }
 		$table_name = $this->get_table_name( $table );
 		$cols       = array();
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -354,10 +359,16 @@ class V_WPSA_DB {
 			return null;
 		}
 
-		$wid = $website['id'];
+                $wid = $website['id'];
 
-		// Get all related table data.
-		$report_data = $this->get_website_report_data( $wid );
+                if ( isset( $website['score_breakdown'] ) ) {
+                        $website['score_breakdown'] = $this->decode_json_field( $website['score_breakdown'] );
+                } else {
+                        $website['score_breakdown'] = array();
+                }
+
+                // Get all related table data.
+                $report_data = $this->get_website_report_data( $wid );
 
 		// Get thumbnail data.
 		$thumbnail = array();
@@ -413,45 +424,31 @@ class V_WPSA_DB {
 			'i'       => gmdate( 'i', $modified_timestamp ),
 		);
 
-		// Prepare RateProvider instance.
-		$rateprovider = null;
-		if ( class_exists( 'RateProvider' ) ) {
-			$rateprovider = new RateProvider();
-		}
+                $rates_config = array();
+                if ( class_exists( 'RateProvider' ) ) {
+                        $rates_config = RateProvider::getRatesConfig();
+                }
 
-		// Provide a minimal fallback RateProvider so templates can safely call methods
-		// even when the legacy RateProvider class/file is not available.
-		if ( null === $rateprovider ) {
-			// phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid, Squiz.Commenting.FunctionComment.Missing
-			$rateprovider = new class() {
-				/**
-				 * Mock addCompare method for fallback.
-				 *
-				 * @param string $key Unused key parameter.
-				 * @param mixed  $value Value to check.
-				 * @return string Status string.
-				 */
-				// phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid, Squiz.Commenting.FunctionComment.Missing
-				public function addCompare( $key, $value ) {
-					return $value ? 'success' : 'neutral';
-				}
+                if ( class_exists( 'V_WPSA_Score_Calculator' ) ) {
+                        $needs_fallback = empty( $website['score_breakdown']['categories'] ) || ! isset( $website['score_breakdown']['total'] );
+                        if ( $needs_fallback ) {
+                                try {
+                                        $calculator        = new V_WPSA_Score_Calculator( null, $rates_config );
+                                        $calculated        = $calculator->calculate( $report_data );
+                                        $website_breakdown = is_array( $calculated ) ? $calculated : array();
 
-				/**
-				 * Mock addCompareArray method for fallback.
-				 *
-				 * @param string $key Unused key parameter.
-				 * @param mixed  $value Value to check.
-				 * @return string Status string.
-				 */
-				// phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid, Squiz.Commenting.FunctionComment.Missing
-				public function addCompareArray( $key, $value ) {
-					if ( is_numeric( $value ) ) {
-						return ( $value > 0 ) ? 'success' : 'neutral';
-					}
-					return ! empty( $value ) ? 'success' : 'neutral';
-				}
-			};
-		}
+                                        if ( ! empty( $website_breakdown ) ) {
+                                                $website['score_breakdown'] = $website_breakdown;
+                                                if ( isset( $website_breakdown['total'] ) ) {
+                                                        $website['score'] = (int) round( (float) $website_breakdown['total'] );
+                                                }
+                                        }
+                                } catch ( Exception $e ) {
+                                        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Diagnostic logging only.
+                                        error_log( 'v-wpsa: fallback score calculation failed: ' . $e->getMessage() );
+                                }
+                        }
+                }
 
 		// Calculate URL for update form.
 		$upd_url = '#';
@@ -471,7 +468,7 @@ class V_WPSA_DB {
 
 		// Assemble full data array matching WebsitestatController structure.
 		$full_data = array(
-			'website'      => $website,
+                        'website'      => $website,
 			'cloud'        => $cloud,
 			'content'      => $content,
 			'document'     => $document,
@@ -485,7 +482,7 @@ class V_WPSA_DB {
 			'diff'         => $diff,
 			'over_max'     => 6,
 			'linkcount'    => isset( $links['links'] ) && is_array( $links['links'] ) ? count( $links['links'] ) : 0,
-			'rateprovider' => $rateprovider,
+                        'rates'        => $rates_config,
 			'updUrl'       => $upd_url,
 		);
 
@@ -701,23 +698,40 @@ class V_WPSA_DB {
 		if ( ! isset( $data['website'] ) || ! is_array( $data['website'] ) ) {
 			$data['website'] = array();
 		}
-		if ( ! isset( $data['website']['score'] ) ) {
-			$data['website']['score'] = 0;
-		}
-		if ( ! isset( $data['website']['id'] ) ) {
-			$data['website']['id'] = 0;
-		}
-		if ( ! isset( $data['website']['idn'] ) ) {
-			$data['website']['idn'] = isset( $data['website']['domain'] ) ? $data['website']['domain'] : '';
-		}
-		if ( ! isset( $data['website']['domain'] ) ) {
-			$data['website']['domain'] = '';
-		}
+                if ( ! isset( $data['website']['score'] ) ) {
+                        $data['website']['score'] = 0;
+                }
+                if ( ! isset( $data['website']['id'] ) ) {
+                        $data['website']['id'] = 0;
+                }
+                if ( ! isset( $data['website']['idn'] ) ) {
+                        $data['website']['idn'] = isset( $data['website']['domain'] ) ? $data['website']['domain'] : '';
+                }
+                if ( ! isset( $data['website']['domain'] ) ) {
+                        $data['website']['domain'] = '';
+                }
+                if ( ! isset( $data['website']['score_breakdown'] ) || ! is_array( $data['website']['score_breakdown'] ) ) {
+                        $data['website']['score_breakdown'] = array(
+                                'total'      => isset( $data['website']['score'] ) ? (float) $data['website']['score'] : 0.0,
+                                'categories' => array(),
+                        );
+                } else {
+                        if ( ! isset( $data['website']['score_breakdown']['total'] ) ) {
+                                $data['website']['score_breakdown']['total'] = isset( $data['website']['score'] ) ? (float) $data['website']['score'] : 0.0;
+                        }
+                        if ( ! isset( $data['website']['score_breakdown']['categories'] ) || ! is_array( $data['website']['score_breakdown']['categories'] ) ) {
+                                $data['website']['score_breakdown']['categories'] = array();
+                        }
+                }
 
-		// Ensure linkcount exists.
-		if ( ! isset( $data['linkcount'] ) || ! is_numeric( $data['linkcount'] ) ) {
-			$data['linkcount'] = 0;
-		}
+                if ( ! isset( $data['rates'] ) || ! is_array( $data['rates'] ) ) {
+                        $data['rates'] = array();
+                }
+
+                // Ensure linkcount exists.
+                if ( ! isset( $data['linkcount'] ) || ! is_numeric( $data['linkcount'] ) ) {
+                        $data['linkcount'] = 0;
+                }
 
 		return $data;
 	}
@@ -1284,7 +1298,23 @@ class V_WPSA_DB {
 				}
 			}
 
-			return $wid;
+                        // Calculate and persist score breakdown after all analysis data is saved.
+                        if ( class_exists( 'V_WPSA_Score_Calculator' ) ) {
+                                try {
+                                        $report_snapshot = $db->get_website_report_data( $wid );
+                                        $calculator      = new V_WPSA_Score_Calculator();
+                                        $breakdown       = $calculator->calculate( $report_snapshot );
+                                        $total_score     = isset( $breakdown['total'] ) ? (float) $breakdown['total'] : 0.0;
+
+                                        $db->set_website_score( $wid, (int) round( $total_score ) );
+                                        $db->set_website_score_breakdown( $wid, $breakdown );
+                                } catch ( Exception $e ) {
+                                        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Persisting failure for troubleshooting.
+                                        error_log( 'v-wpsa: score calculation failed: ' . $e->getMessage() );
+                                }
+                        }
+
+                        return $wid;
 
 		} catch ( Exception $e ) {
 			return new WP_Error( 'analysis_error', 'Analysis failed: ' . $e->getMessage() );
@@ -1368,23 +1398,55 @@ class V_WPSA_DB {
 		$data  = array( 'score' => intval( $score ) );
 
 		// If schema does not contain 'score' column, attempt to add it (best-effort).
-		$cols = $this->get_table_columns( $table );
-		if ( ! in_array( 'score', $cols, true ) ) {
-			$table_name = $this->get_table_name( $table );
-			// Try to add the column; ignore failures. DDL statements cannot use prepare().
-			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.PHP.NoSilencedErrors.Discouraged
-			$alter_sql = "ALTER TABLE {$table_name} ADD COLUMN score INT(3) NOT NULL DEFAULT 0";
-			@ $this->wpdb->query( $alter_sql );
-			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.PHP.NoSilencedErrors.Discouraged
-			// Refresh cached columns.
-			$cols = $this->get_table_columns( $table );
-		}
+                $cols = $this->get_table_columns( $table );
+                if ( ! in_array( 'score', $cols, true ) ) {
+                        $table_name = $this->get_table_name( $table );
+                        // Try to add the column; ignore failures. DDL statements cannot use prepare().
+                        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.PHP.NoSilencedErrors.Discouraged
+                        $alter_sql = "ALTER TABLE {$table_name} ADD COLUMN score INT(3) NOT NULL DEFAULT 0";
+                        @ $this->wpdb->query( $alter_sql );
+                        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.PHP.NoSilencedErrors.Discouraged
+                        // Refresh cached columns.
+                        $cols = $this->get_table_columns( $table, true );
+                }
 
-		$data = $this->filter_columns( $table, $data );
-		if ( empty( $data ) ) {
-			return false;
-		}
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		return false !== $this->wpdb->update( $this->get_table_name( $table ), $data, array( 'id' => intval( $wid ) ) );
-	}
+                $data = $this->filter_columns( $table, $data );
+                if ( empty( $data ) ) {
+                        return false;
+                }
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                return false !== $this->wpdb->update( $this->get_table_name( $table ), $data, array( 'id' => intval( $wid ) ) );
+        }
+
+        /**
+         * Persist website score breakdown JSON payload.
+         *
+         * @param int   $wid       Website ID.
+         * @param array $breakdown Score breakdown data.
+         *
+         * @return bool True on success, false on failure.
+         */
+        public function set_website_score_breakdown( $wid, array $breakdown ) {
+                $table = 'website';
+                $json  = function_exists( 'wp_json_encode' ) ? wp_json_encode( $breakdown ) : json_encode( $breakdown );
+                $data  = array( 'score_breakdown' => $json );
+
+                $cols = $this->get_table_columns( $table );
+                if ( ! in_array( 'score_breakdown', $cols, true ) ) {
+                        $table_name = $this->get_table_name( $table );
+                        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.PHP.NoSilencedErrors.Discouraged
+                        $alter_sql = "ALTER TABLE {$table_name} ADD COLUMN score_breakdown LONGTEXT NULL";
+                        @ $this->wpdb->query( $alter_sql );
+                        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.PHP.NoSilencedErrors.Discouraged
+                        $cols = $this->get_table_columns( $table, true );
+                }
+
+                $data = $this->filter_columns( $table, $data );
+                if ( empty( $data ) ) {
+                        return false;
+                }
+
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                return false !== $this->wpdb->update( $this->get_table_name( $table ), $data, array( 'id' => intval( $wid ) ) );
+        }
 }

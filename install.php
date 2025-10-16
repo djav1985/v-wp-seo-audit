@@ -137,6 +137,7 @@ function v_wpsa_activate() {
         `added` timestamp NULL DEFAULT NULL,
         `modified` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
         `score` tinyint unsigned DEFAULT NULL,
+        `score_breakdown` longtext NULL,
         PRIMARY KEY (`id`),
         KEY `ix_md5domain` (`md5domain`),
         KEY `ix_rating` (`score`)
@@ -181,16 +182,26 @@ function v_wpsa_upgrade_database() {
 		$wpdb->query( "ALTER TABLE {$content_table} ADD COLUMN `images_missing_alt` mediumtext NOT NULL" );
 	}
 
-	// Check if messages column exists in ca_w3c table.
-	$w3c_table = $table_prefix . 'w3c';
+        // Check if messages column exists in ca_w3c table.
+        $w3c_table = $table_prefix . 'w3c';
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	$column_exists = $wpdb->get_results( "SHOW COLUMNS FROM {$w3c_table} LIKE 'messages'" );
 
 	if ( empty( $column_exists ) ) {
 		// Add messages column.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$wpdb->query( "ALTER TABLE {$w3c_table} ADD COLUMN `messages` mediumtext NOT NULL" );
-	}
+                $wpdb->query( "ALTER TABLE {$w3c_table} ADD COLUMN `messages` mediumtext NOT NULL" );
+        }
+
+        // Ensure score_breakdown column exists on website table for score summaries.
+        $website_table = $table_prefix . 'website';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $column_exists = $wpdb->get_results( "SHOW COLUMNS FROM {$website_table} LIKE 'score_breakdown'" );
+
+        if ( empty( $column_exists ) ) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                $wpdb->query( "ALTER TABLE {$website_table} ADD COLUMN `score_breakdown` longtext NULL" );
+        }
 }
 
 // WordPress Cron cleanup function.
