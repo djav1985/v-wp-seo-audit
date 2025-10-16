@@ -98,7 +98,7 @@ class V_WPSA_Helpers {
 	 */
 	public static function load_config_file( $config_name ) {
 		// Try old directory first (moved files).
-		$config_dir   = v_wpsa_PLUGIN_DIR . 'old/protected/config/';
+		$config_dir   = V_WPSA_PLUGIN_DIR . 'old/protected/config/';
 		$config_local = $config_dir . $config_name . '_local.php';
 		$config_prod  = $config_dir . $config_name . '.php';
 

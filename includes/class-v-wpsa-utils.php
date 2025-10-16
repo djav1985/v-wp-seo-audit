@@ -64,8 +64,10 @@ class V_WPSA_Utils {
 		}
 
 		// Fallback to PHP recursive mkdir with permission bits.
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Fallback directory creation with error suppression.
 		$created = @mkdir( $dir, 0777, true );
 		if ( $created ) {
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Fallback chmod with error suppression.
 			@chmod( $dir, 0777 );
 		}
 		return (bool) $created;
@@ -115,6 +117,7 @@ class V_WPSA_Utils {
 			);
 			foreach ( $paths as $pdf ) {
 				if ( file_exists( $pdf ) ) {
+					// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Suppress errors for optional file deletion.
 					@unlink( $pdf );
 				}
 			}
@@ -185,6 +188,7 @@ class V_WPSA_Utils {
 		$sep_length    = mb_strlen( $separator );
 		$back_len      = 6;
 		$available_len = $length - $sep_length - $back_len;
+		// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- This is an arithmetic example comment, not code.
 		// 20-3-6=11.
 		$first_part = mb_substr( $domain, 0, $available_len );
 		$last_part  = mb_substr( $domain, -$back_len );
@@ -194,12 +198,16 @@ class V_WPSA_Utils {
 	/**
 	 * Perform a cURL request.
 	 *
+	 * NOTE: This method uses cURL directly for compatibility with legacy Yii code.
+	 * TODO: Migrate to wp_remote_get() as part of the Yii migration.
+	 *
 	 * @param string $url The URL to request.
 	 * @param array  $headers Optional headers.
 	 * @param bool   $cookie Whether to use cookies.
 	 * @return mixed The response.
 	 */
 	public static function curl( $url, array $headers = array(), $cookie = false ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_init -- Legacy code, will be migrated to wp_remote_get().
 		$ch = curl_init( $url );
 		if ( $cookie ) {
 			// Use WP uploads folder for cookies.
@@ -207,6 +215,7 @@ class V_WPSA_Utils {
 				$upload_dir = wp_upload_dir();
 				$cookie_dir = rtrim( $upload_dir['basedir'], "\/'" ) . '/seo-audit/cookies/';
 				if ( ! is_dir( $cookie_dir ) ) {
+					// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Fallback directory creation.
 					@mkdir( $cookie_dir, 0755, true );
 				}
 				$cookie = $cookie_dir . "cookie_{$cookie}.txt";
@@ -215,12 +224,16 @@ class V_WPSA_Utils {
 			}
 		}
 		$html = self::curl_exec( $ch, $headers, $cookie );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_close -- Legacy code, will be migrated to wp_remote_get().
 		curl_close( $ch );
 		return $html;
 	}
 
 	/**
 	 * Execute cURL request with options.
+	 *
+	 * NOTE: This method uses cURL directly for compatibility with legacy Yii code.
+	 * TODO: Migrate to wp_remote_get() as part of the Yii migration.
 	 *
 	 * @param resource $ch The cURL handle.
 	 * @param array    $headers Optional headers.
@@ -229,11 +242,15 @@ class V_WPSA_Utils {
 	 * @return mixed The response.
 	 */
 	public static function curl_exec( $ch, $headers = array(), $cookie = false, &$maxredirect = null ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_exec -- Legacy code, will be migrated to wp_remote_get().
 		return curl_exec( self::ch( $ch, $headers, $cookie, $maxredirect ) );
 	}
 
 	/**
 	 * Configure cURL handle with options.
+	 *
+	 * NOTE: This method uses cURL directly for compatibility with legacy Yii code.
+	 * TODO: Migrate to wp_remote_get() as part of the Yii migration.
 	 *
 	 * @param resource $ch The cURL handle.
 	 * @param array    $headers Optional headers.
@@ -242,6 +259,7 @@ class V_WPSA_Utils {
 	 * @return resource The configured cURL handle.
 	 */
 	public static function ch( $ch, $headers = array(), $cookie = false, &$maxredirect = null ) {
+		// phpcs:disable WordPress.WP.AlternativeFunctions -- Legacy code, will be migrated to wp_remote_get().
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
 		curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
@@ -334,6 +352,7 @@ class V_WPSA_Utils {
 				curl_setopt( $ch, CURLOPT_URL, $newurl );
 			}
 		}
+		// phpcs:enable WordPress.WP.AlternativeFunctions
 		return $ch;
 	}
 

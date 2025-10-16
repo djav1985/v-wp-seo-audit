@@ -54,7 +54,7 @@ class V_WPSA_Config {
 	 * Load configuration from config/config.php.
 	 */
 	private static function load_config() {
-		$config_file = v_wpsa_PLUGIN_DIR . 'config/config.php';
+		$config_file = V_WPSA_PLUGIN_DIR . 'config/config.php';
 
 		if ( file_exists( $config_file ) ) {
 			self::$config = require $config_file;
@@ -100,8 +100,8 @@ class V_WPSA_Config {
 	 */
 	public static function get_base_url( $absolute = false ) {
 		if ( $absolute ) {
-			return untrailingslashit( v_wpsa_PLUGIN_URL );
+			return untrailingslashit( V_WPSA_PLUGIN_URL );
 		}
-		return untrailingslashit( str_replace( home_url(), '', v_wpsa_PLUGIN_URL ) );
+		return untrailingslashit( str_replace( home_url(), '', V_WPSA_PLUGIN_URL ) );
 	}
 }

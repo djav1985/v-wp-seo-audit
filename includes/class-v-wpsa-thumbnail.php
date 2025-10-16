@@ -120,6 +120,7 @@ class V_WPSA_Thumbnail {
 		}
 
 		if ( $thumbnail_data && strlen( $thumbnail_data ) > 0 ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents -- Writing thumbnail cache file.
 			file_put_contents( $thumbnail_path, $thumbnail_data );
 			return self::get_cached_thumbnail_url( $domain );
 		}
