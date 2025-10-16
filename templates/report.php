@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Report Template
  * WordPress-native template for SEO audit report.
@@ -102,7 +103,7 @@ endif;
 
 			var $button = $(this);
 			var originalText = $button.text();
-			
+
 			// Show loading state on button.
 			$button.prop('disabled', true)
 				.html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Updating...')
@@ -146,7 +147,7 @@ endif;
 			}
 		});
 
-				$('body').on("click", ".pdf_review", function() {
+		$('body').on("click", ".pdf_review", function() {
 			$(this).hide();
 			$(this).closest(".form-container").find(".download_form").fadeIn();
 			return false;
@@ -154,20 +155,20 @@ endif;
 
 		<?php if ( V_WPSA_Config::get( 'psi.show' ) ) : ?>
 			WrPsi(
-			<?php
-			echo wp_json_encode(
-				array(
-					'i18nEnterFullscreen' => 'Enter fullscreen mode',
-					'i18nExitFullscreen'  => 'Exit fullscreen mode',
-					'runInstantly'        => V_WPSA_Config::get( 'psi.run_instantly' ),
-					'url'                 => ! empty( $website['final_url'] ) ? $website['final_url'] : 'http://' . $website['domain'],
-					'locale'              => 'en',
+				<?php
+				echo wp_json_encode(
+					array(
+						'i18nEnterFullscreen' => 'Enter fullscreen mode',
+						'i18nExitFullscreen'  => 'Exit fullscreen mode',
+						'runInstantly'        => V_WPSA_Config::get( 'psi.run_instantly' ),
+						'url'                 => ! empty( $website['final_url'] ) ? $website['final_url'] : 'http://' . $website['domain'],
+						'locale'              => 'en',
+					)
 				)
-			)
-			?>
-					);
+				?>
+			);
 		<?php endif; ?>
-		});
+	});
 </script>
 
 <div class="jumbotron">
@@ -182,24 +183,24 @@ endif;
 
 			<p>
 				<i class="fas fa-clock"></i>&nbsp;<small><?php echo 'Generated on'; ?>
-				<?php
-				$monthNames = array(
-					'Jan' => 'January',
-					'Feb' => 'February',
-					'Mar' => 'March',
-					'Apr' => 'April',
-					'May' => 'May',
-					'Jun' => 'June',
-					'Jul' => 'July',
-					'Aug' => 'August',
-					'Sep' => 'September',
-					'Oct' => 'October',
-					'Nov' => 'November',
-					'Dec' => 'December',
-				);
-				$month      = isset( $monthNames[ $generated['M'] ] ) ? $monthNames[ $generated['M'] ] : $generated['M'];
-				echo $month . ' ' . $generated['d'] . ' ' . $generated['Y'] . ' ' . $generated['H'] . ':' . $generated['i'] . ' ' . $generated['A'];
-				?>
+					<?php
+					$monthNames = array(
+						'Jan' => 'January',
+						'Feb' => 'February',
+						'Mar' => 'March',
+						'Apr' => 'April',
+						'May' => 'May',
+						'Jun' => 'June',
+						'Jul' => 'July',
+						'Aug' => 'August',
+						'Sep' => 'September',
+						'Oct' => 'October',
+						'Nov' => 'November',
+						'Dec' => 'December',
+					);
+					$month      = isset( $monthNames[ $generated['M'] ] ) ? $monthNames[ $generated['M'] ] : $generated['M'];
+					echo $month . ' ' . $generated['d'] . ' ' . $generated['Y'] . ' ' . $generated['H'] . ':' . $generated['i'] . ' ' . $generated['A'];
+					?>
 				</small>
 			</p>
 
@@ -1279,7 +1280,7 @@ endif;
 				<div class="form-row">
 					<div class="form-group col-md-6">
 						<div class="input-group mb-3">
-							<input type="text"  name="Website[domain]" id="domain" class="form-control form-control-lg" placeholder="<?php echo V_WPSA_Config::get( 'param.placeholder' ); ?>">
+							<input type="text" name="Website[domain]" id="domain" class="form-control form-control-lg" placeholder="<?php echo V_WPSA_Config::get( 'param.placeholder' ); ?>">
 							<div class="input-group-append">
 								<button class="btn btn-primary" type="button" id="submit">
 									Analyze

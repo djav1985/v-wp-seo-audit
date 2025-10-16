@@ -1,53 +1,14 @@
 <?xml version="1.0"?>
 <ruleset name="v-wpsa">
     <description>PHP_CodeSniffer rules for v-wpsa plugin</description>
-    <rule ref="WordPress">
-        <!-- Exclude ControlStructureSpacing sniff due to WPCS bug with vsprintf -->
-        <exclude name="WordPress.WhiteSpace.ControlStructureSpacing"/>
-        <!-- Exclude variable naming rules due to Yii framework conventions using camelCase -->
-        <exclude name="WordPress.NamingConventions.ValidVariableName"/>
-        <!-- Exclude file naming rules - conflicts with Yii framework class naming conventions -->
-        <exclude name="WordPress.Files.FileName"/>
-    </rule>
-    <!-- Exclude WordPress escaping rules from Yii framework files -->
-    <!-- Yii uses its own security mechanisms (CHtml::encode, Yii::t with proper encoding) -->
-    <rule ref="WordPress.Security.EscapeOutput">
-        <exclude-pattern>protected/views/*</exclude-pattern>
-        <exclude-pattern>protected/widgets/views/*</exclude-pattern>
-        <exclude-pattern>protected/controllers/*</exclude-pattern>
-    </rule>
-    <!-- Exclude WordPress function naming rules from Yii framework system files -->
-    <rule ref="WordPress.NamingConventions.ValidFunctionName">
-        <exclude-pattern>protected/*</exclude-pattern>
-    </rule>
-    <!-- Exclude WordPress alternative function warnings from Yii framework files -->
-    <!-- Yii uses its own HTTP client and encoding methods -->
-    <rule ref="WordPress.WP.AlternativeFunctions">
-        <exclude-pattern>protected/*</exclude-pattern>
-    </rule>
-    <!-- Exclude WordPress nonce verification from Yii controllers -->
-    <!-- Nonce verification is done in WordPress AJAX handlers, not in Yii controllers -->
-    <rule ref="WordPress.Security.NonceVerification">
-        <exclude-pattern>protected/controllers/*</exclude-pattern>
-    </rule>
-    <!-- Exclude WordPress sanitized input rules from Yii controllers -->
-    <!-- Input validation is done in WordPress AJAX handlers before calling Yii -->
-    <rule ref="WordPress.Security.ValidatedSanitizedInput">
-        <exclude-pattern>protected/controllers/*</exclude-pattern>
-    </rule>
-    <!-- Exclude WordPress date/time functions from Yii code -->
-    <!-- Yii uses its own timezone handling -->
-    <rule ref="WordPress.DateTime.RestrictedFunctions">
-        <exclude-pattern>protected/*</exclude-pattern>
-    </rule>
-    <exclude-pattern>assets/*</exclude-pattern>
-    <exclude-pattern>css/*</exclude-pattern>
-    <exclude-pattern>img/*</exclude-pattern>
-    <exclude-pattern>js/*</exclude-pattern>
-    <exclude-pattern>pdf/*</exclude-pattern>
-    <exclude-pattern>webfonts/*</exclude-pattern>
-    <exclude-pattern>framework/*</exclude-pattern>
-    <exclude-pattern>vendors/*</exclude-pattern>
-    <exclude-pattern>protected/vendors/*</exclude-pattern>
+    <rule ref="WordPress"/>
+    <rule ref="WordPress-Core"/>
+    <rule ref="WordPress-Docs"/>
+    <rule ref="WordPress-Extra"/>
     <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>assets/*</exclude-pattern>
+    <exclude-pattern>tcpdf/*</exclude-pattern>
+    <exclude-pattern>protected/*</exclude-pattern>
+    <file>includes/</file>
+    <file>v-wp-seo-audit.php</file>
 </ruleset>
