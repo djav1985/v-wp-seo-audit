@@ -165,6 +165,11 @@ class V_WPSA_Report_Generator {
 			define( 'K_PATH_CACHE', $cache_dir );
 		}
 
+		// Define K_PATH_FONTS for TCPDF if not already defined.
+		if ( ! defined( 'K_PATH_FONTS' ) ) {
+			define( 'K_PATH_FONTS', v_wpsa_PLUGIN_DIR . 'tcpdf/tcpdf/fonts/' );
+		}
+
 		require_once $tcpdf_path;
 
 		// Create new PDF document.
@@ -183,8 +188,8 @@ class V_WPSA_Report_Generator {
 		// Add a page.
 		$pdf->AddPage();
 
-		// Set font.
-		$pdf->SetFont( 'dejavusans', '', 10, '', false );
+		// Set font - use a standard font to avoid cache issues.
+		$pdf->SetFont( 'helvetica', '', 10, '', false );
 
 		// Write HTML content.
 		// Suppress warnings (e.g., for remote images that may fail to load).

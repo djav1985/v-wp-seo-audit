@@ -24,8 +24,9 @@ if ( ! defined( 'DB_CHARSET' ) ) {
 	define( 'DB_CHARSET', 'utf8mb4' );
 }
 
+// Get WordPress database table prefix.
 global $wpdb;
-$table_prefix = isset( $wpdb ) && isset( $wpdb->prefix ) ? $wpdb->prefix : 'wp_';
+$db_table_prefix = isset( $wpdb ) && isset( $wpdb->prefix ) ? $wpdb->prefix : 'wp_';
 
 return array(
 	'basePath'   => dirname( __FILE__ ) . DIRECTORY_SEPARATOR . '..',
@@ -51,7 +52,7 @@ return array(
 			'cacheID'        => 'cache',
 		),
 
-		// File Cache. ~/root/website_review/runtime/cache direcotry.
+		// File Cache. ~/root/website_review/runtime/cache directory.
 		'cache'           => array(
 			'class' => 'CFileCache',
 		),
@@ -63,13 +64,13 @@ return array(
 			'username'              => DB_USER,
 			'password'              => DB_PASSWORD,
 			'charset'               => defined( 'DB_CHARSET' ) ? DB_CHARSET : 'utf8mb4',
-			'tablePrefix'           => $table_prefix . 'ca_',
+			'tablePrefix'           => $db_table_prefix . 'ca_',
 			'schemaCachingDuration' => 60 * 60 * 24 * 30,
 			'enableProfiling'       => defined( 'YII_DEBUG' ) ? YII_DEBUG : false,
 			'enableParamLogging'    => defined( 'YII_DEBUG' ) ? YII_DEBUG : false,
 		),
 
-		// Error handler - removed custom error view, WordPress will handle 404s
+		// Error handler - removed custom error view, WordPress will handle 404s.
 
 		// Log errors into ~/root/website_review/runtime/application.log file.
 		'log'             => array(

@@ -66,7 +66,7 @@ class V_WPSA_DB {
 		}
 		$table_name = $this->get_table_name( $table );
 		$cols       = array();
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$results = $this->wpdb->get_results( "DESCRIBE {$table_name}", ARRAY_A );
 		if ( $results ) {
 			foreach ( $results as $row ) {
@@ -101,15 +101,15 @@ class V_WPSA_DB {
 	 */
 	public function get_by_wid( $table, $wid ) {
 		$table_name = $this->get_table_name( $table );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return $this->wpdb->get_row(
 			$this->wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"SELECT * FROM {$table_name} WHERE wid = %d",
 				$wid
 			),
 			ARRAY_A
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
 	/**
@@ -122,15 +122,15 @@ class V_WPSA_DB {
 	public function get_website_by_md5( $md5_domain, $fields = array( '*' ) ) {
 		$table_name = $this->get_table_name( 'website' );
 		$select     = is_array( $fields ) ? implode( ', ', array_map( 'esc_sql', $fields ) ) : '*';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return $this->wpdb->get_row(
 			$this->wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"SELECT {$select} FROM {$table_name} WHERE md5domain = %s",
 				$md5_domain
 			),
 			ARRAY_A
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
 	/**
@@ -189,15 +189,15 @@ class V_WPSA_DB {
 		$table_name = $this->get_table_name( 'pagespeed' );
 
 		// Check if record exists.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$exists = $this->wpdb->get_var(
 			$this->wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"SELECT COUNT(*) FROM {$table_name} WHERE wid = %d AND lang_id = %s",
 				$wid,
 				$lang_id
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( $exists ) {
 			// Update existing record.
@@ -236,15 +236,15 @@ class V_WPSA_DB {
 	 */
 	public function get_pagespeed_data( $wid, $lang_id ) {
 		$table_name = $this->get_table_name( 'pagespeed' );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return $this->wpdb->get_var(
 			$this->wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"SELECT data FROM {$table_name} WHERE wid = %d AND lang_id = %s",
 				$wid,
 				$lang_id
 			)
 		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
 	/**
@@ -373,6 +373,7 @@ class V_WPSA_DB {
 				);
 			} catch ( Exception $e ) {
 				// Log error but continue.
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 				error_log( 'v-wpsa: thumbnail error: ' . $e->getMessage() );
 				$thumbnail = array(
 					'thumb' => 'https://image.thum.io/get/maxAge/350/width/350/https://' . $domain,
@@ -1012,7 +1013,8 @@ class V_WPSA_DB {
 				$meta_analyzer = new MetaTags( $html );
 
 				// Calculate HTML to text ratio if possible.
-				$html_size  = strlen( $html );
+				$html_size = strlen( $html );
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags
 				$text_size  = strlen( strip_tags( $html ) );
 				$html_ratio = $html_size > 0 ? round( ( $text_size / $html_size ) * 100 ) : 0;
 
@@ -1363,7 +1365,7 @@ class V_WPSA_DB {
 		if ( ! in_array( 'score', $cols, true ) ) {
 			$table_name = $this->get_table_name( $table );
 			// Try to add the column; ignore failures.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.PHP.NoSilencedErrors.Discouraged
 			$alter_sql = "ALTER TABLE {$table_name} ADD COLUMN score INT(3) NOT NULL DEFAULT 0";
 			@ $this->wpdb->query( $alter_sql );
 			// Refresh cached columns.
