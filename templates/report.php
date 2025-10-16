@@ -431,11 +431,27 @@ endif;
 			</p>
 
 			<?php
-			$has_missing_images      = $advice !== 'success';
-			$has_missing_images_list = ! empty( $content['images_missing_alt'] ) && is_array( $content['images_missing_alt'] ) && count( $content['images_missing_alt'] ) > 0;
+			// Debug output to help diagnose why tables aren't showing
+			if ( $advice !== 'success' && empty( $content['images_missing_alt'] ) ) {
+				echo '<div class="alert alert-warning mt-3">';
+				echo '<p><strong>Debug Info:</strong></p>';
+				echo '<p>Images missing alt list status: ';
+				if ( ! isset( $content['images_missing_alt'] ) ) {
+					echo 'NOT SET';
+				} elseif ( ! is_array( $content['images_missing_alt'] ) ) {
+					echo 'NOT AN ARRAY (type: ' . gettype( $content['images_missing_alt'] ) . ')';
+				} elseif ( empty( $content['images_missing_alt'] ) ) {
+					echo 'EMPTY ARRAY';
+				} else {
+					echo 'HAS DATA (' . count( $content['images_missing_alt'] ) . ' items)';
+				}
+				echo '</p>';
+				echo '<p>To see which images are missing alt text, please click the UPDATE button above to re-analyze this website.</p>';
+				echo '</div>';
+			}
 			?>
 
-			<?php if ( $has_missing_images && $has_missing_images_list ) : ?>
+			<?php if ( $advice !== 'success' && ! empty( $content['images_missing_alt'] ) && is_array( $content['images_missing_alt'] ) ) : ?>
 				<div class="table-responsive table-items mb-3 task-list">
 					<table class="table table-striped">
 						<thead>
@@ -467,11 +483,6 @@ endif;
 						<button class="expand-task btn btn-primary float-right"><?php echo 'Expand'; ?></button>
 						<button class="collapse-task btn btn-primary float-right"><?php echo 'Collapse'; ?></button>
 					<?php endif; ?>
-				</div>
-			<?php elseif ( $has_missing_images && ! $has_missing_images_list ) : ?>
-				<div class="alert alert-info mt-3">
-					<p><strong><?php echo 'Detailed image information is not available.'; ?></strong></p>
-					<p><?php echo 'This report was generated before detailed image alt attribute data was collected. Please click the UPDATE button above to re-analyze this website and collect detailed image information.'; ?></p>
 				</div>
 			<?php endif; ?>
 		</div>
@@ -872,11 +883,27 @@ endif;
 			</p>
 
 			<?php
-			$has_errors_or_warnings = ( ! empty( $w3c['errors'] ) || ! empty( $w3c['warnings'] ) );
-			$has_messages           = ! empty( $w3c['messages'] ) && is_array( $w3c['messages'] ) && count( $w3c['messages'] ) > 0;
+			// Debug output to help diagnose why tables aren't showing
+			if ( ( ! empty( $w3c['errors'] ) || ! empty( $w3c['warnings'] ) ) && empty( $w3c['messages'] ) ) {
+				echo '<div class="alert alert-warning mt-3">';
+				echo '<p><strong>Debug Info:</strong></p>';
+				echo '<p>Messages array status: ';
+				if ( ! isset( $w3c['messages'] ) ) {
+					echo 'NOT SET';
+				} elseif ( ! is_array( $w3c['messages'] ) ) {
+					echo 'NOT AN ARRAY (type: ' . gettype( $w3c['messages'] ) . ')';
+				} elseif ( empty( $w3c['messages'] ) ) {
+					echo 'EMPTY ARRAY';
+				} else {
+					echo 'HAS DATA (' . count( $w3c['messages'] ) . ' items)';
+				}
+				echo '</p>';
+				echo '<p>To see detailed error messages, please click the UPDATE button above to re-analyze this website.</p>';
+				echo '</div>';
+			}
 			?>
 
-			<?php if ( $has_messages ) : ?>
+			<?php if ( ! empty( $w3c['messages'] ) && is_array( $w3c['messages'] ) ) : ?>
 				<div class="table-responsive table-items mb-3 task-list">
 					<table class="table table-striped">
 						<thead>
@@ -912,11 +939,6 @@ endif;
 						<button class="expand-task btn btn-primary float-right"><?php echo 'Expand'; ?></button>
 						<button class="collapse-task btn btn-primary float-right"><?php echo 'Collapse'; ?></button>
 					<?php endif; ?>
-				</div>
-			<?php elseif ( $has_errors_or_warnings ) : ?>
-				<div class="alert alert-info mt-3">
-					<p><strong><?php echo 'Detailed error messages are not available.'; ?></strong></p>
-					<p><?php echo 'This report was generated before detailed W3C validation messages were collected. Please click the UPDATE button above to re-analyze this website and collect detailed validation messages.'; ?></p>
 				</div>
 			<?php endif; ?>
 		</div>
