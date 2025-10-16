@@ -55,7 +55,6 @@ function v_wpsa_enqueue_assets() {
 	if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'v_wpsa' ) ) {
 		// Enqueue CSS files.
 		wp_enqueue_style( 'v-wpsa-bootstrap', V_WPSA_PLUGIN_URL . 'assets/css/bootstrap.min.css', array(), V_WPSA_VERSION );
-		wp_enqueue_style( 'v-wpsa-fontawesome', V_WPSA_PLUGIN_URL . 'assets/css/fontawesome.min.css', array(), V_WPSA_VERSION );
 		wp_enqueue_style( 'v-wpsa-app', V_WPSA_PLUGIN_URL . 'assets/css/app.css', array( 'v-wpsa-bootstrap' ), V_WPSA_VERSION );
 
 		// Enqueue JS files.
@@ -82,7 +81,6 @@ add_action( 'wp_enqueue_scripts', 'v_wpsa_enqueue_assets' );
 // Register shortcode.
 /**
  * V_wpsa_shortcode function.
- *
  *
  * @param mixed $atts Parameter.
  */
