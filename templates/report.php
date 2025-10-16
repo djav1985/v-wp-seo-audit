@@ -100,6 +100,14 @@ endif;
 		$('#update_stat').on('click', function(e) {
 			e.preventDefault();
 
+			var $button = $(this);
+			var originalText = $button.text();
+			
+			// Show loading state on button.
+			$button.prop('disabled', true)
+				.html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Updating...')
+				.addClass('disabled');
+
 			// Always call generateReport directly with force=true to update the report
 			if (window.vWpSeoAudit && typeof window.vWpSeoAudit.generateReport === 'function') {
 				var $container = $('.v-wpsa-container').first();
@@ -122,9 +130,18 @@ endif;
 					$container: $container,
 					$errors: $errors,
 					$progressBar: $progressBar,
-					force: true
+					force: true,
+					afterSend: function() {
+						// Restore button state after completion.
+						$button.prop('disabled', false)
+							.text(originalText)
+							.removeClass('disabled');
+					}
 				});
 			} else {
+				$button.prop('disabled', false)
+					.text(originalText)
+					.removeClass('disabled');
 				window.alert('Error: Report generation function not available. Please refresh the page and try again.');
 			}
 		});
@@ -407,10 +424,46 @@ endif;
 				if ( $advice === 'success' ) {
 					echo 'Excellent! All images have alt attributes, which is great for SEO and accessibility.';
 				} else {
-					echo 'Some images are missing alt attributes. Alt text is important for SEO and accessibility. ' . (int) $content['total_alt'] . ' out of ' . (int) $content['total_img'] . ' images have alt attributes.';
+					$missing_count = (int) $content['total_img'] - (int) $content['total_alt'];
+					echo 'Some images are missing alt attributes. Alt text is important for SEO and accessibility. ' . (int) $content['total_alt'] . ' out of ' . (int) $content['total_img'] . ' images have alt attributes. ' . $missing_count . ' images are missing alt text.';
 				}
 				?>
 			</p>
+
+			<?php if ( $advice !== 'success' && ! empty( $content['images_missing_alt'] ) && is_array( $content['images_missing_alt'] ) ) : ?>
+				<div class="table-responsive table-items mb-3 task-list">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th><?php echo 'Image Source (Missing Alt Text)'; ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							$i = 0;
+							foreach ( $content['images_missing_alt'] as $img_src ) :
+								$i++;
+								// Extract filename from URL for display.
+								$filename = basename( parse_url( $img_src, PHP_URL_PATH ) );
+								if ( empty( $filename ) ) {
+									$filename = $img_src;
+								}
+								?>
+								<tr <?php echo $i > $over_max ? 'class="over-max"' : ''; ?>>
+									<td class="text-break" title="<?php echo esc_attr( $img_src ); ?>">
+										<?php echo esc_html( $filename ); ?>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+
+					<?php if ( $i > $over_max ) : ?>
+						<button class="expand-task btn btn-primary float-right"><?php echo 'Expand'; ?></button>
+						<button class="collapse-task btn btn-primary float-right"><?php echo 'Collapse'; ?></button>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
 		</div>
 	</div>
 
@@ -807,6 +860,45 @@ endif;
 			<p>
 				<?php echo 'Warnings'; ?> : <strong><?php echo (int) $w3c['warnings']; ?></strong>
 			</p>
+
+			<?php if ( ! empty( $w3c['messages'] ) && is_array( $w3c['messages'] ) ) : ?>
+				<div class="table-responsive table-items mb-3 task-list">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th><?php echo 'Type'; ?></th>
+								<th><?php echo 'Line'; ?></th>
+								<th><?php echo 'Message'; ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							$i = 0;
+							foreach ( $w3c['messages'] as $msg ) :
+								$i++;
+								$msg_type = isset( $msg['type'] ) ? $msg['type'] : 'unknown';
+								$msg_line = isset( $msg['line'] ) ? $msg['line'] : '-';
+								$msg_text = isset( $msg['message'] ) ? $msg['message'] : '';
+								?>
+								<tr <?php echo $i > $over_max ? 'class="over-max"' : ''; ?>>
+									<td>
+										<span class="badge badge-<?php echo $msg_type === 'error' ? 'danger' : 'warning'; ?>">
+											<?php echo esc_html( ucfirst( $msg_type ) ); ?>
+										</span>
+									</td>
+									<td><?php echo esc_html( $msg_line ); ?></td>
+									<td class="text-break"><?php echo esc_html( $msg_text ); ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+
+					<?php if ( $i > $over_max ) : ?>
+						<button class="expand-task btn btn-primary float-right"><?php echo 'Expand'; ?></button>
+						<button class="collapse-task btn btn-primary float-right"><?php echo 'Collapse'; ?></button>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
 		</div>
 	</div>
 

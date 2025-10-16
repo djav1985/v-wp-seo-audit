@@ -13,6 +13,7 @@ class Validation {
             'status'=>false,
             'errors'=>0,
             'warnings'=>0,
+            'messages'=>array(),
         );
         if(!$response = @json_decode(V_WPSA_Utils::curl($url), true)) {
             return $d;
@@ -26,18 +27,32 @@ class Validation {
         }
         $numOfErrors = 0;
         $numOfWarnings = 0;
+        $errorMessages = array();
+        $warningMessages = array();
+        
         foreach($response['messages'] as $message) {
             if($message['type'] == 'info' AND isset($message['subType']) AND $message['subType'] == 'warning') {
                 $numOfWarnings++;
+                $warningMessages[] = array(
+                    'type' => 'warning',
+                    'message' => isset($message['message']) ? $message['message'] : '',
+                    'line' => isset($message['lastLine']) ? $message['lastLine'] : '',
+                );
                 continue;
             }
             if($message['type'] == 'error' OR $message['type'] == 'non-document-error') {
                 $numOfErrors++;
+                $errorMessages[] = array(
+                    'type' => 'error',
+                    'message' => isset($message['message']) ? $message['message'] : '',
+                    'line' => isset($message['lastLine']) ? $message['lastLine'] : '',
+                );
             }
         }
         $d['status'] = !($numOfErrors > 0);
         $d['errors'] = $numOfErrors;
         $d['warnings'] = $numOfWarnings;
+        $d['messages'] = array_merge($errorMessages, $warningMessages);
         return $d;
 	}
 
