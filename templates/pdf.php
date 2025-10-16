@@ -152,7 +152,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<h1 class="h-review"><?php echo 'Website review for ' . esc_html( $website['idn'] ); ?></h1>
 			<i class="icon-time"></i>&nbsp;<small><?php echo 'Generated on'; ?>
 				<?php
-				$monthNames = array(
+				$month_names = array(
 					'Jan' => 'January',
 					'Feb' => 'February',
 					'Mar' => 'March',
@@ -166,7 +166,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					'Nov' => 'November',
 					'Dec' => 'December',
 				);
-				$month      = isset( $monthNames[ $generated['M'] ] ) ? $monthNames[ $generated['M'] ] : $generated['M'];
+				$month       = isset( $month_names[ $generated['M'] ] ) ? $month_names[ $generated['M'] ] : $generated['M'];
 				echo $month . ' ' . $generated['d'] . ' ' . $generated['Y'] . ' ' . $generated['H'] . ':' . $generated['i'] . ' ' . $generated['A'];
 				?>
 			</small><br /><br />
@@ -395,7 +395,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 									break;
 								}
 								// Extract filename from URL for display.
-								$filename = basename( parse_url( $img_src, PHP_URL_PATH ) );
+								$parsed   = wp_parse_url( $img_src );
+								$filename = isset( $parsed['path'] ) ? basename( $parsed['path'] ) : '';
 								if ( empty( $filename ) ) {
 									$filename = $img_src;
 								}
@@ -565,13 +566,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<td>
 				<?php
 				$file_links = 0;
-				foreach ( $links['links'] as $link ) {
-					if ( ! empty( $link['Link'] ) && preg_match( '/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|txt|csv)$/i', $link['Link'] ) ) {
+				foreach ( $links['links'] as $link_item ) {
+					if ( ! empty( $link_item['Link'] ) && preg_match( '/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|txt|csv)$/i', $link_item['Link'] ) ) {
 						$file_links++;
 					}
 				}
 				$total_links = count( $links['links'] );
-				echo 'We found a total of ' . $total_links . ' links including ' . $file_links . ' link(s) to files';
+				echo 'We found a total of ' . $total_links . ' link(s) including ' . $file_links . ' link(s) to files';
 				?>
 
 			</td>
@@ -614,17 +615,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 		<?php
 		$i = 0;
-		foreach ( $links['links'] as $link ) :
-			$even = $i % 2 === 0;
+		foreach ( $links['links'] as $link_item ) :
+			$even = 0 === $i % 2;
 			?>
 			<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 				<td>
-					<a href="<?php echo $link['Link']; ?>" target="_blank">
-						<?php echo ! empty( $link['Name'] ) ? esc_html( $link['Name'] ) : '-'; ?>
+					<a href="<?php echo $link_item['Link']; ?>" target="_blank">
+						<?php echo ! empty( $link_item['Name'] ) ? esc_html( $link_item['Name'] ) : '-'; ?>
 					</a>
 				</td>
-				<td><?php echo ( $link['Type'] === 'internal' ? 'Internal' : 'External' ); ?></td>
-				<td><?php echo ( $link['Juice'] === 'nofollow' ? 'noFollow' : 'Passing Juice' ); ?></td>
+				<td><?php echo ( 'internal' === $link_item['Type'] ? 'Internal' : 'External' ); ?></td>
+				<td><?php echo ( 'nofollow' === $link_item['Juice'] ? 'noFollow' : 'Passing Juice' ); ?></td>
 			</tr>
 			<?php
 			$i++;
@@ -686,7 +687,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php
 		$i = 0;
 		foreach ( $cloud['matrix'] as $word => $object ) :
-			$even = $i % 2 === 0;
+			$even = 0 === $i % 2;
 			?>
 			<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 				<td><?php echo esc_html( $word ); ?></td>
@@ -916,11 +917,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</tr>
 						<?php
 						$i = 0;
-						foreach ( $content['deprecated'] as $tag => $count ) :
-							$even = $i % 2 === 0;
+						foreach ( $content['deprecated'] as $tag_name => $count ) :
+							$even = 0 === $i % 2;
 							?>
 							<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
-								<td align="center"><?php echo htmlspecialchars( '<' . $tag . '>' ); ?></td>
+								<td align="center"><?php echo htmlspecialchars( '<' . $tag_name . '>' ); ?></td>
 								<td align="center"><?php echo $count; ?></td>
 							</tr>
 							<?php

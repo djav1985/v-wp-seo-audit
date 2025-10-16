@@ -447,7 +447,7 @@ endif;
 							foreach ( $content['images_missing_alt'] as $img_src ) :
 								$i++;
 								// Extract filename from URL for display.
-								$parsed  = wp_parse_url( $img_src );
+								$parsed   = wp_parse_url( $img_src );
 								$filename = isset( $parsed['path'] ) ? basename( $parsed['path'] ) : '';
 								if ( empty( $filename ) ) {
 									$filename = $img_src;
