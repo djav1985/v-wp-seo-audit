@@ -235,11 +235,11 @@ class V_WPSA_Utils {
 	 * NOTE: This method uses cURL directly for compatibility with legacy Yii code.
 	 * TODO: Migrate to wp_remote_get() as part of the Yii migration.
 	 *
-	 * @param resource $ch The cURL handle.
-	 * @param array    $headers Optional headers.
-	 * @param mixed    $cookie Cookie file path or false.
-	 * @param int      $maxredirect Maximum redirects (by reference).
-	 * @return mixed The response.
+	 *     @param CurlHandle|resource $ch           The cURL handle (PHP 8+ uses CurlHandle, <8 uses resource).
+	 *     @param array               $headers      Optional headers.
+	 *     @param mixed               $cookie       Cookie file path or false.
+	 *     @param int                 $maxredirect  Maximum redirects (by reference).
+	 *     @return mixed The response.
 	 */
 	public static function curl_exec( $ch, $headers = array(), $cookie = false, &$maxredirect = null ) {
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_exec -- Legacy code, will be migrated to wp_remote_get().
@@ -252,11 +252,11 @@ class V_WPSA_Utils {
 	 * NOTE: This method uses cURL directly for compatibility with legacy Yii code.
 	 * TODO: Migrate to wp_remote_get() as part of the Yii migration.
 	 *
-	 * @param resource $ch The cURL handle.
-	 * @param array    $headers Optional headers.
-	 * @param mixed    $cookie Cookie file path or false.
-	 * @param int      $maxredirect Maximum redirects (by reference).
-	 * @return resource The configured cURL handle.
+	 *     @param CurlHandle|resource $ch           The cURL handle (PHP 8+ uses CurlHandle, <8 uses resource).
+	 *     @param array               $headers      Optional headers.
+	 *     @param mixed               $cookie       Cookie file path or false.
+	 *     @param int                 $maxredirect  Maximum redirects (by reference).
+	 *     @return CurlHandle|resource The configured cURL handle.
 	 */
 	public static function ch( $ch, $headers = array(), $cookie = false, &$maxredirect = null ) {
 		// phpcs:disable WordPress.WP.AlternativeFunctions -- Legacy code, will be migrated to wp_remote_get().

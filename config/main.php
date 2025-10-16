@@ -66,13 +66,11 @@ return array(
 			'charset'               => defined( 'DB_CHARSET' ) ? DB_CHARSET : 'utf8mb4',
 			'tablePrefix'           => $db_table_prefix . 'ca_',
 			'schemaCachingDuration' => 60 * 60 * 24 * 30,
-			'enableProfiling'       => defined( 'YII_DEBUG' ) ? YII_DEBUG : false,
-			'enableParamLogging'    => defined( 'YII_DEBUG' ) ? YII_DEBUG : false,
 		),
 
 		// Error handler - removed custom error view, WordPress will handle 404s.
 
-		// Log errors into ~/root/website_review/runtime/application.log file.
+	// Log errors using WordPress or plugin-specific logging.
 		'log'             => array(
 			'class'  => 'CLogRouter',
 			'routes' => array(
