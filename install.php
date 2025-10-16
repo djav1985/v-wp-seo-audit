@@ -43,6 +43,7 @@ function v_wpsa_activate() {
         `total_alt` int unsigned NOT NULL DEFAULT '0',
         `deprecated` mediumtext NOT NULL,
         `isset_headings` tinyint NOT NULL DEFAULT '0',
+        `images_missing_alt` mediumtext NOT NULL,
         PRIMARY KEY (`wid`)
     ) ENGINE=InnoDB $charset_collate;";
 
@@ -122,6 +123,7 @@ function v_wpsa_activate() {
         `valid` tinyint(1) NOT NULL DEFAULT '1',
         `errors` smallint unsigned NOT NULL DEFAULT '0',
         `warnings` smallint unsigned NOT NULL DEFAULT '0',
+        `messages` mediumtext NOT NULL,
         PRIMARY KEY (`wid`)
     ) ENGINE=InnoDB $charset_collate;";
 
@@ -149,9 +151,45 @@ function v_wpsa_activate() {
 	// Set plugin version option.
 	add_option( 'v_wpsa_version', v_wpsa_VERSION );
 
+	// Run database upgrades.
+	v_wpsa_upgrade_database();
+
 	// Schedule daily cleanup cron job.
 	if ( ! wp_next_scheduled( 'v_wpsa_daily_cleanup' ) ) {
 		wp_schedule_event( time(), 'daily', 'v_wpsa_daily_cleanup' );
+	}
+}
+
+/**
+ * Upgrade database schema.
+ * Adds missing columns to existing tables.
+ */
+function v_wpsa_upgrade_database() {
+	global $wpdb;
+
+	$table_prefix    = $wpdb->prefix . 'ca_';
+	$charset_collate = $wpdb->get_charset_collate();
+
+	// Check if images_missing_alt column exists in ca_content table.
+	$content_table = $table_prefix . 'content';
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$column_exists = $wpdb->get_results( "SHOW COLUMNS FROM {$content_table} LIKE 'images_missing_alt'" );
+
+	if ( empty( $column_exists ) ) {
+		// Add images_missing_alt column.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "ALTER TABLE {$content_table} ADD COLUMN `images_missing_alt` mediumtext NOT NULL" );
+	}
+
+	// Check if messages column exists in ca_w3c table.
+	$w3c_table = $table_prefix . 'w3c';
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$column_exists = $wpdb->get_results( "SHOW COLUMNS FROM {$w3c_table} LIKE 'messages'" );
+
+	if ( empty( $column_exists ) ) {
+		// Add messages column.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "ALTER TABLE {$w3c_table} ADD COLUMN `messages` mediumtext NOT NULL" );
 	}
 }
 
