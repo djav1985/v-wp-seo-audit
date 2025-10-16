@@ -19,15 +19,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants.
-define( 'v_wpsa_VERSION', '1.0.0' );
-define( 'v_wpsa_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'v_wpsa_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'V_WPSA_VERSION', '1.0.0' );
+define( 'V_WPSA_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'V_WPSA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 // Load installation hooks.
-require_once v_wpsa_PLUGIN_DIR . 'install.php';
+require_once V_WPSA_PLUGIN_DIR . 'install.php';
 
 // Load deactivation hooks.
-require_once v_wpsa_PLUGIN_DIR . 'deactivation.php';
+require_once V_WPSA_PLUGIN_DIR . 'deactivation.php';
 
 // Register activation and deactivation hooks.
 register_activation_hook( __FILE__, 'v_wpsa_activate' );
@@ -37,10 +37,10 @@ register_deactivation_hook( __FILE__, 'v_wpsa_deactivate' );
 add_action( 'v_wpsa_daily_cleanup', 'v_wpsa_cleanup' );
 
 // Load Composer autoloader for plugin classes.
-require_once v_wpsa_PLUGIN_DIR . 'vendor/autoload.php';
+require_once V_WPSA_PLUGIN_DIR . 'vendor/autoload.php';
 
 // Load WordPress-native widget templates.
-require_once v_wpsa_PLUGIN_DIR . 'templates/widgets.php';
+require_once V_WPSA_PLUGIN_DIR . 'templates/widgets.php';
 
 mb_internal_encoding( 'UTF-8' );
 
@@ -54,20 +54,20 @@ function v_wpsa_enqueue_assets() {
 	// Only load if shortcode is present on the page.
 	if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'v_wpsa' ) ) {
 		// Enqueue CSS files.
-		wp_enqueue_style( 'v-wpsa-bootstrap', v_wpsa_PLUGIN_URL . 'assets/css/bootstrap.min.css', array(), v_wpsa_VERSION );
-		wp_enqueue_style( 'v-wpsa-fontawesome', v_wpsa_PLUGIN_URL . 'assets/css/fontawesome.min.css', array(), v_wpsa_VERSION );
-		wp_enqueue_style( 'v-wpsa-app', v_wpsa_PLUGIN_URL . 'assets/css/app.css', array( 'v-wpsa-bootstrap' ), v_wpsa_VERSION );
+		wp_enqueue_style( 'v-wpsa-bootstrap', V_WPSA_PLUGIN_URL . 'assets/css/bootstrap.min.css', array(), V_WPSA_VERSION );
+		wp_enqueue_style( 'v-wpsa-fontawesome', V_WPSA_PLUGIN_URL . 'assets/css/fontawesome.min.css', array(), V_WPSA_VERSION );
+		wp_enqueue_style( 'v-wpsa-app', V_WPSA_PLUGIN_URL . 'assets/css/app.css', array( 'v-wpsa-bootstrap' ), V_WPSA_VERSION );
 
 		// Enqueue JS files.
 		wp_enqueue_script( 'jquery' ); // Use WordPress jQuery.
-		wp_enqueue_script( 'v-wpsa-bootstrap', v_wpsa_PLUGIN_URL . 'assets/js/bootstrap.bundle.min.js', array( 'jquery' ), v_wpsa_VERSION, true );
-		wp_enqueue_script( 'v-wpsa-flot', v_wpsa_PLUGIN_URL . 'assets/js/jquery.flot.js', array( 'jquery' ), v_wpsa_VERSION, true );
-		wp_enqueue_script( 'v-wpsa-flot-pie', v_wpsa_PLUGIN_URL . 'assets/js/jquery.flot.pie.js', array( 'jquery', 'v-wpsa-flot' ), v_wpsa_VERSION, true );
-		wp_enqueue_script( 'v-wpsa-base', v_wpsa_PLUGIN_URL . 'assets/js/base.js', array( 'jquery' ), v_wpsa_VERSION, true );
+		wp_enqueue_script( 'v-wpsa-bootstrap', V_WPSA_PLUGIN_URL . 'assets/js/bootstrap.bundle.min.js', array( 'jquery' ), V_WPSA_VERSION, true );
+		wp_enqueue_script( 'v-wpsa-flot', V_WPSA_PLUGIN_URL . 'assets/js/jquery.flot.js', array( 'jquery' ), V_WPSA_VERSION, true );
+		wp_enqueue_script( 'v-wpsa-flot-pie', V_WPSA_PLUGIN_URL . 'assets/js/jquery.flot.pie.js', array( 'jquery', 'v-wpsa-flot' ), V_WPSA_VERSION, true );
+		wp_enqueue_script( 'v-wpsa-base', V_WPSA_PLUGIN_URL . 'assets/js/base.js', array( 'jquery' ), V_WPSA_VERSION, true );
 
 		// Add global JavaScript variables needed by the plugin.
 		// Use plugin URL directly (no Yii dependency).
-		$base_url = rtrim( v_wpsa_PLUGIN_URL, '/' );
+		$base_url = rtrim( V_WPSA_PLUGIN_URL, '/' );
 
 		// Inject global variables into the page.
 		$global_vars = "var _global = { 
@@ -94,7 +94,7 @@ function v_wpsa_shortcode( $atts ) {
 	// This does NOT require Yii initialization.
 	ob_start();
 
-	$template_path = v_wpsa_PLUGIN_DIR . 'templates/main.php';
+	$template_path = V_WPSA_PLUGIN_DIR . 'templates/main.php';
 	if ( file_exists( $template_path ) ) {
 		include $template_path;
 	} else {

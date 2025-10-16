@@ -153,6 +153,7 @@ class V_WPSA_Ajax_Handlers {
 			wp_send_json_success( $response_data );
 		} catch ( Throwable $t ) {
 			// Log and return JSON error for the client.
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for troubleshooting.
 			error_log( sprintf( 'v-wpsa: unhandled throwable during report generation for %s: %s in %s on line %d', $domain, $t->getMessage(), $t->getFile(), $t->getLine() ) );
 			wp_send_json_error( array( 'message' => 'Internal error while generating report: ' . $t->getMessage() ) );
 		}
@@ -191,6 +192,7 @@ class V_WPSA_Ajax_Handlers {
 					$error = error_get_last();
 					if ( $error && in_array( $error['type'], array( E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE ), true ) ) {
 						$error_msg = sprintf( 'v-wpsa: fatal error during PDF generation for %s: %s in %s on line %d', $domain_for_shutdown, $error['message'], $error['file'], $error['line'] );
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for fatal errors.
 						error_log( $error_msg );
 						// Try to return a JSON error to the AJAX client.
 						if ( ! headers_sent() ) {
@@ -216,6 +218,7 @@ class V_WPSA_Ajax_Handlers {
 
 			// Read the PDF file.
 			if ( ! file_exists( $pdf_data['file'] ) ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for file operations.
 				error_log( sprintf( 'v-wpsa: PDF file not found after generation: %s', $pdf_data['file'] ) );
 				throw new Exception( 'PDF file not found' );
 			}
@@ -231,13 +234,16 @@ class V_WPSA_Ajax_Handlers {
 			header( 'Content-Length: ' . filesize( $pdf_data['file'] ) );
 			header( 'Cache-Control: private, max-age=0, must-revalidate' );
 			header( 'Pragma: public' );
-			// Explicitly disable compression for PDF downloads.
+			// Explicitly disable compression for PDF downloads to prevent corruption.
 			if ( function_exists( 'apache_setenv' ) ) {
+				// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_apache_setenv -- Necessary to prevent PDF corruption.
 				@apache_setenv( 'no-gzip', '1' );
 			}
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.IniSet.Risky -- Necessary to prevent PDF corruption.
 			@ini_set( 'zlib.output_compression', 'Off' );
 
-			// Output file and exit.
+			// Output file and exit. Convert PHP warnings to exceptions for better error handling.
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- Legitimate error handling pattern.
 			$prev_handler = set_error_handler(
 				function ( $errno, $errstr, $errfile, $errline ) {
 					throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
@@ -245,15 +251,18 @@ class V_WPSA_Ajax_Handlers {
 			);
 			$bytes        = false;
 			try {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_readfile -- Direct file read is appropriate for streaming PDFs.
 				$bytes = readfile( $pdf_data['file'] );
 			} finally {
 				if ( null !== $prev_handler ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- Restoring previous handler.
 					set_error_handler( $prev_handler );
 				} else {
 					restore_error_handler();
 				}
 			}
 			if ( false === $bytes ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for file operations.
 				error_log( sprintf( 'v-wpsa: readfile failed for %s', $pdf_data['file'] ) );
 				throw new Exception( 'Unable to read PDF file' );
 			}

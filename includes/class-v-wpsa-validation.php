@@ -149,7 +149,7 @@ class V_WPSA_Validation {
 	 * @return string|false Error message if banned, false otherwise.
 	 */
 	public static function check_banned_domain( $domain ) {
-		$restriction_file = v_wpsa_PLUGIN_DIR . 'config/domain_restriction.php';
+		$restriction_file = V_WPSA_PLUGIN_DIR . 'config/domain_restriction.php';
 
 		if ( ! file_exists( $restriction_file ) ) {
 			return false;

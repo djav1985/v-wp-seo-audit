@@ -101,7 +101,7 @@ class V_WPSA_DB {
 	 */
 	public function get_by_wid( $table, $wid ) {
 		$table_name = $this->get_table_name( $table );
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 		return $this->wpdb->get_row(
 			$this->wpdb->prepare(
 				"SELECT * FROM {$table_name} WHERE wid = %d",
@@ -109,7 +109,7 @@ class V_WPSA_DB {
 			),
 			ARRAY_A
 		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	/**
@@ -122,7 +122,7 @@ class V_WPSA_DB {
 	public function get_website_by_md5( $md5_domain, $fields = array( '*' ) ) {
 		$table_name = $this->get_table_name( 'website' );
 		$select     = is_array( $fields ) ? implode( ', ', array_map( 'esc_sql', $fields ) ) : '*';
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 		return $this->wpdb->get_row(
 			$this->wpdb->prepare(
 				"SELECT {$select} FROM {$table_name} WHERE md5domain = %s",
@@ -130,7 +130,7 @@ class V_WPSA_DB {
 			),
 			ARRAY_A
 		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	/**
@@ -189,7 +189,7 @@ class V_WPSA_DB {
 		$table_name = $this->get_table_name( 'pagespeed' );
 
 		// Check if record exists.
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 		$exists = $this->wpdb->get_var(
 			$this->wpdb->prepare(
 				"SELECT COUNT(*) FROM {$table_name} WHERE wid = %d AND lang_id = %s",
@@ -197,7 +197,7 @@ class V_WPSA_DB {
 				$lang_id
 			)
 		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( $exists ) {
 			// Update existing record.
@@ -236,7 +236,7 @@ class V_WPSA_DB {
 	 */
 	public function get_pagespeed_data( $wid, $lang_id ) {
 		$table_name = $this->get_table_name( 'pagespeed' );
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 		return $this->wpdb->get_var(
 			$this->wpdb->prepare(
 				"SELECT data FROM {$table_name} WHERE wid = %d AND lang_id = %s",
@@ -244,7 +244,7 @@ class V_WPSA_DB {
 				$lang_id
 			)
 		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	/**
@@ -312,6 +312,7 @@ class V_WPSA_DB {
 			return $value;
 		}
 
+		// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- This is a descriptive comment, not code.
 		// Null or empty.
 		if ( null === $value || '' === $value ) {
 			return array();
@@ -1364,10 +1365,11 @@ class V_WPSA_DB {
 		$cols = $this->get_table_columns( $table );
 		if ( ! in_array( 'score', $cols, true ) ) {
 			$table_name = $this->get_table_name( $table );
-			// Try to add the column; ignore failures.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.PHP.NoSilencedErrors.Discouraged
+			// Try to add the column; ignore failures. DDL statements cannot use prepare().
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.PHP.NoSilencedErrors.Discouraged
 			$alter_sql = "ALTER TABLE {$table_name} ADD COLUMN score INT(3) NOT NULL DEFAULT 0";
 			@ $this->wpdb->query( $alter_sql );
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.PHP.NoSilencedErrors.Discouraged
 			// Refresh cached columns.
 			$cols = $this->get_table_columns( $table );
 		}

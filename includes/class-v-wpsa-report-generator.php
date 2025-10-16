@@ -61,6 +61,7 @@ class V_WPSA_Report_Generator {
 				}
 			} catch ( Exception $e ) {
 				// Don't break rendering on score calculation failure; just log and continue.
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for troubleshooting.
 				error_log( 'v-wpsa: Failed to calculate/persist score: ' . $e->getMessage() );
 			}
 		}
@@ -146,6 +147,7 @@ class V_WPSA_Report_Generator {
 				}
 			} catch ( Exception $e ) {
 				// Don't break rendering on score calculation failure; just log and continue.
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for troubleshooting.
 				error_log( 'v-wpsa: Failed to calculate/persist score: ' . $e->getMessage() );
 			}
 		}
@@ -178,7 +180,7 @@ class V_WPSA_Report_Generator {
 	 */
 	private static function create_pdf_from_html( $html, $pdf_file, $title ) {
 		// Load TCPDF library directly.
-		$tcpdf_path = v_wpsa_PLUGIN_DIR . 'tcpdf/tcpdf/tcpdf.php';
+		$tcpdf_path = V_WPSA_PLUGIN_DIR . 'tcpdf/tcpdf/tcpdf.php';
 		if ( ! file_exists( $tcpdf_path ) ) {
 			throw new Exception( 'TCPDF library not found' );
 		}
@@ -197,7 +199,7 @@ class V_WPSA_Report_Generator {
 
 		// Define K_PATH_FONTS for TCPDF if not already defined.
 		if ( ! defined( 'K_PATH_FONTS' ) ) {
-			define( 'K_PATH_FONTS', v_wpsa_PLUGIN_DIR . 'tcpdf/tcpdf/fonts/' );
+			define( 'K_PATH_FONTS', V_WPSA_PLUGIN_DIR . 'tcpdf/tcpdf/fonts/' );
 		}
 
 		require_once $tcpdf_path;
@@ -227,6 +229,7 @@ class V_WPSA_Report_Generator {
 		@$pdf->writeHTML( $html, true, false, true, false, '' );
 
 		// Save PDF to disk. Convert PHP warnings (e.g., fopen failures) into exceptions.
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- Legitimate error handling pattern.
 		$prev_handler = set_error_handler(
 			function ( $errno, $errstr, $errfile, $errline ) {
 				throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
@@ -238,6 +241,7 @@ class V_WPSA_Report_Generator {
 		} finally {
 			// Restore previous error handler even if Output() threw.
 			if ( null !== $prev_handler ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- Restoring previous handler.
 				set_error_handler( $prev_handler );
 			} else {
 				restore_error_handler();
@@ -259,7 +263,7 @@ class V_WPSA_Report_Generator {
 	 * @throws Exception If template not found.
 	 */
 	private static function render_template( $template, $data ) {
-		$template_path = v_wpsa_PLUGIN_DIR . 'templates/' . $template;
+		$template_path = V_WPSA_PLUGIN_DIR . 'templates/' . $template;
 
 		if ( ! file_exists( $template_path ) ) {
 			throw new Exception( 'Template not found: ' . $template );

@@ -149,7 +149,7 @@ function v_wpsa_activate() {
 	}
 
 	// Set plugin version option.
-	add_option( 'v_wpsa_version', v_wpsa_VERSION );
+	add_option( 'v_wpsa_version', V_WPSA_VERSION );
 
 	// Run database upgrades.
 	v_wpsa_upgrade_database();
