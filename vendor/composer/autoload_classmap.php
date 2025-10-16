@@ -27,6 +27,7 @@ return array(
     'V_WPSA_DB' => $baseDir . '/includes/class-v-wpsa-db.php',
     'V_WPSA_Helpers' => $baseDir . '/includes/class-v-wpsa-helpers.php',
     'V_WPSA_Report_Generator' => $baseDir . '/includes/class-v-wpsa-report-generator.php',
+    'V_WPSA_Score_Calculator' => $baseDir . '/includes/class-v-wpsa-score-calculator.php',
     'V_WPSA_Thumbnail' => $baseDir . '/includes/class-v-wpsa-thumbnail.php',
     'V_WPSA_Utils' => $baseDir . '/includes/class-v-wpsa-utils.php',
     'V_WPSA_Validation' => $baseDir . '/includes/class-v-wpsa-validation.php',

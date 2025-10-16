@@ -34,41 +34,7 @@ class V_WPSA_Report_Generator {
 			throw new Exception( 'Website not found: ' . $domain );
 		}
 
-		// Calculate score BEFORE rendering template by doing a dry run.
-		// The template calls addCompare* methods which calculate the score.
-		// We need to calculate it first so the score displays correctly in the HTML.
-		if ( isset( $data['website']['id'] ) && isset( $data['rateprovider'] ) && is_object( $data['rateprovider'] ) ) {
-			try {
-				if ( method_exists( $data['rateprovider'], 'getScore' ) ) {
-					// Do a dry run render to calculate score.
-					ob_start();
-					self::render_template( 'report.php', $data );
-					ob_end_clean();
-
-					// Get the calculated score.
-					$score = (int) $data['rateprovider']->getScore();
-
-					// Update the data array with calculated score BEFORE final render.
-					$data['website']['score'] = $score;
-
-					// Persist score to database.
-					$db->set_website_score( $data['website']['id'], $score );
-				}
-			} catch ( Exception $e ) {
-				// Don't break rendering on score calculation failure; just log and continue.
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for troubleshooting.
-				error_log( 'v-wpsa: Failed to calculate/persist score: ' . $e->getMessage() );
-			}
-			// Always create a fresh RateProvider for the final render to avoid double-counting.
-			if ( class_exists( 'RateProvider' ) ) {
-				$data['rateprovider'] = new RateProvider();
-			}
-		}
-
-		// Render template with correct score.
-		// The template will call addCompare* methods on the fresh RateProvider,
-		// but we've already calculated and saved the correct score.
-		$html = self::render_template( 'report.php', $data );
+                $html = self::render_template( 'report.php', $data );
 
 		return $html;
 	}
@@ -121,37 +87,8 @@ class V_WPSA_Report_Generator {
 			}
 		}
 
-		// Calculate score BEFORE rendering template by doing a dry run.
-		if ( isset( $data['website']['id'] ) && isset( $data['rateprovider'] ) && is_object( $data['rateprovider'] ) ) {
-			try {
-				if ( method_exists( $data['rateprovider'], 'getScore' ) ) {
-					// Do a dry run render to calculate score.
-					ob_start();
-					self::render_template( 'pdf.php', $data );
-					ob_end_clean();
-
-					// Get the calculated score.
-					$score = (int) $data['rateprovider']->getScore();
-
-					// Update the data array with calculated score BEFORE final render.
-					$data['website']['score'] = $score;
-
-					// Persist score to database.
-					$db->set_website_score( $data['website']['id'], $score );
-				}
-			} catch ( Exception $e ) {
-				// Don't break rendering on score calculation failure; just log and continue.
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for troubleshooting.
-				error_log( 'v-wpsa: Failed to calculate/persist score: ' . $e->getMessage() );
-			}
-			// Always create a fresh RateProvider for the final render to avoid double-counting.
-			if ( class_exists( 'RateProvider' ) ) {
-				$data['rateprovider'] = new RateProvider();
-			}
-		}
-
-		// Render PDF template to HTML with correct score.
-		$html = self::render_template( 'pdf.php', $data );
+                // Render PDF template to HTML with correct score.
+                $html = self::render_template( 'pdf.php', $data );
 
 		// Create PDF using TCPDF directly.
 		self::create_pdf_from_html( $html, $pdf_file, $data['website']['idn'] );

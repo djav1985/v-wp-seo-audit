@@ -128,3 +128,11 @@ Autoloader tested and verified working for all classes.
 ## Migration Complete
 
 All requested tasks have been successfully implemented. The plugin now follows WordPress coding standards, uses modern PHP autoloading, and has improved performance through caching.
+
+## Recent Enhancements (Score Breakdown Storage)
+
+- Added a persistent `score_breakdown` column to the `ca_website` table and migration logic in `v_wpsa_upgrade_database()` so historical installs gain the field.
+- Introduced `V_WPSA_Score_Calculator` to centralize scoring. Each category now records both `points` and `advice`, while `wordConsistency` honours the configured `analyzer.consistency_count` limit.
+- Stored score payload structure: `{"total":<float>,"categories":{"<category>":{"points":<float>,"advice":"<status>"}}}`.
+- `V_WPSA_DB::analyze_website()` now saves the total score and the JSON payload via `set_website_score()` and the new `set_website_score_breakdown()` helper.
+- Report templates (`templates/report.php`, `templates/pdf.php`) read from `$website['score_breakdown']` and fall back gracefully when data is missing.

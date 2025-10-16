@@ -8,7 +8,8 @@
  * - $website: Website data array
  * - $thumbnail: Thumbnail URL
  * - $generated: Generated date array
- * - $rateprovider: Rate provider object
+ * - $rates: Rate configuration array
+ * - $website['score_breakdown']: Stored score breakdown data
  * - $meta: Meta data array
  * - $content: Content data array
  * - $document: Document data array
@@ -33,8 +34,49 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+        exit;
 }
+?>
+<?php
+$score_breakdown = isset( $website['score_breakdown'] ) && is_array( $website['score_breakdown'] ) ? $website['score_breakdown'] : array();
+$score_categories = isset( $score_breakdown['categories'] ) && is_array( $score_breakdown['categories'] ) ? $score_breakdown['categories'] : array();
+$score_lookup = static function ( $key, $field = null, $default = null ) use ( $score_categories ) {
+        if ( ! isset( $score_categories[ $key ] ) || ! is_array( $score_categories[ $key ] ) ) {
+                return $default;
+        }
+
+        if ( null === $field ) {
+                return $score_categories[ $key ];
+        }
+
+        return isset( $score_categories[ $key ][ $field ] ) ? $score_categories[ $key ][ $field ] : $default;
+};
+
+$score_advice = static function ( $key ) use ( $score_lookup ) {
+        $advice = $score_lookup( $key, 'advice', 'error' );
+
+        return $advice ? $advice : 'error';
+};
+
+$score_points = static function ( $key ) use ( $score_lookup ) {
+        $points = $score_lookup( $key, 'points', 0 );
+
+        return is_numeric( $points ) ? (float) $points : 0.0;
+};
+
+$score_total   = isset( $score_breakdown['total'] ) ? (float) $score_breakdown['total'] : ( isset( $website['score'] ) ? (float) $website['score'] : 0.0 );
+$display_score = (int) round( $score_total );
+$website['score'] = $display_score;
+$rates         = isset( $rates ) && is_array( $rates ) ? $rates : array();
+$format_points = static function ( $value ) {
+        $value = (float) $value;
+
+        if ( abs( $value - round( $value ) ) < 0.01 ) {
+                return (string) (int) round( $value );
+        }
+
+        return number_format( $value, 2 );
+};
 ?>
 <style>
 	table {
@@ -208,7 +250,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<tbody>
 
 		<!-- Title -->
-		<?php $advice = $rateprovider->addCompareArray( 'title', mb_strlen( (string) $meta['title'] ) ); ?>
+            <?php $advice = $score_advice( 'title' ); ?>
 		<?php list($img_advice,) = explode( ' ', $advice ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td class="td-icon">
@@ -237,7 +279,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- Description -->
-		<?php $advice = $rateprovider->addCompareArray( 'description', mb_strlen( (string) $meta['description'] ) ); ?>
+            <?php $advice = $score_advice( 'description' ); ?>
 		<?php list($img_advice,) = explode( ' ', $advice ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
@@ -266,7 +308,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- Og properties -->
-		<?php $advice = $rateprovider->addCompare( 'ogmetaproperties', ! empty( $meta['ogproperties'] ) ); ?>
+            <?php $advice = $score_advice( 'ogmetaproperties' ); ?>
 		<tr class="<?php echo $advice; ?>">
 
 			<td>
@@ -362,7 +404,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- Images -->
-		<?php $advice = $rateprovider->addCompare( 'imgHasAlt', $content['total_img'] === $content['total_alt'] ); ?>
+            <?php $advice = $score_advice( 'imgHasAlt' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -436,7 +478,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- Text/HTML Ratio -->
-		<?php $advice = $rateprovider->addCompareArray( 'htmlratio', $document['htmlratio'] ); ?>
+            <?php $advice = $score_advice( 'htmlratio' ); ?>
 		<?php list($img_advice,) = explode( ' ', $advice ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
@@ -470,7 +512,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- Flash -->
-		<?php $advice = $rateprovider->addCompare( 'noFlash', ! $isseter['flash'] ); ?>
+            <?php $advice = $score_advice( 'noFlash' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -491,7 +533,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- Iframe -->
-		<?php $advice = $rateprovider->addCompare( 'noIframe', ! $isseter['iframe'] ); ?>
+            <?php $advice = $score_advice( 'noIframe' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -528,7 +570,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</thead>
 	<tbody>
 		<!-- Friendly url -->
-		<?php $advice = $rateprovider->addCompare( 'isFriendlyUrl', $links['friendly'] ); ?>
+            <?php $advice = $score_advice( 'isFriendlyUrl' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td class="td-icon">
 				<br />
@@ -549,7 +591,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- Underscore -->
-		<?php $advice = $rateprovider->addCompare( 'noUnderScore', ! $links['isset_underscore'] ); ?>
+            <?php $advice = $score_advice( 'noUnderScore' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -570,7 +612,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- In-page links -->
-		<?php $advice = $rateprovider->addCompare( 'issetInternalLinks', $links['internal'] > 0 ); ?>
+            <?php $advice = $score_advice( 'issetInternalLinks' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -750,7 +792,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- Favicon -->
-		<?php $advice = $rateprovider->addCompare( 'issetFavicon', ! empty( $document['favicon'] ) ); ?>
+            <?php $advice = $score_advice( 'issetFavicon' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -771,7 +813,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- Language -->
-		<?php $advice = $rateprovider->addCompare( 'lang', $document['lang'] ); ?>
+            <?php $advice = $score_advice( 'lang' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -792,7 +834,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- Dublin Core -->
-		<?php $advice = $rateprovider->addCompare( 'lang', $isseter['dublincore'] ); ?>
+            <?php $advice = $score_advice( 'dublincore' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -829,7 +871,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<tbody>
 
 		<!-- Doctype -->
-		<?php $advice = $rateprovider->addCompare( 'doctype', $document['doctype'] ); ?>
+            <?php $advice = $score_advice( 'doctype' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td class="td-icon">
 				<br />
@@ -850,7 +892,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- Encoding -->
-		<?php $advice = $rateprovider->addCompare( 'charset', $document['charset'] ); ?>
+            <?php $advice = $score_advice( 'charset' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -871,7 +913,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- W3C Validity -->
-		<?php $advice = $rateprovider->addCompare( 'w3c', $w3c['valid'] ); ?>
+            <?php $advice = $score_advice( 'w3c' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -915,7 +957,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<!-- Deprecated -->
-		<?php $advice = $rateprovider->addCompare( 'noDeprecated', empty( $content['deprecated'] ) ); ?>
+            <?php $advice = $score_advice( 'noDeprecated' ); ?>
 		<tr class="<?php echo $advice; ?>">
 			<td>
 				<br />
@@ -971,7 +1013,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<tbody>
 
 						<tr class="no-top-line even">
-							<?php $advice = $rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] ); ?>
+                                                    <?php $advice = $score_advice( 'noNestedtables' ); ?>
 							<td width="20px"><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
 							<td width="330px">
 								<?php
@@ -985,7 +1027,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</tr>
 
 						<tr class="odd">
-							<?php $advice = $rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] ); ?>
+                                                    <?php $advice = $score_advice( 'noInlineCSS' ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
 							<td>
 								<?php
@@ -999,7 +1041,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</tr>
 
 						<tr class="even">
-							<?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
+                                                    <?php $advice = $score_advice( 'cssCount' ); ?>
 							<?php list($img_advice,) = explode( ' ', $advice ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $img_advice ? '1' : '0'; ?>.png" /></td>
 							<td>
@@ -1015,7 +1057,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</tr>
 
 						<tr class="odd">
-							<?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
+                                                    <?php $advice = $score_advice( 'jsCount' ); ?>
 							<?php list($img_advice,) = explode( ' ', $advice ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $img_advice ? '1' : '0'; ?>.png" /></td>
 							<td>
@@ -1031,7 +1073,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</tr>
 
 						<tr class="even">
-							<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
+                                                    <?php $advice = $score_advice( 'hasGzip' ); ?>
 							<?php list($img_advice,) = explode( ' ', $advice ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $img_advice ? '1' : '0'; ?>.png" /></td>
 							<td>
@@ -1122,7 +1164,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<tbody>
 
 			<!-- Sitemap -->
-			<?php $advice = $rateprovider->addCompare( 'hasSitemap', ! empty( $misc['sitemap'] ) ); ?>
+   <?php $advice = $score_advice( 'hasSitemap' ); ?>
 			<tr class="<?php echo $advice; ?>">
 				<td class="td-icon">
 					<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
@@ -1160,7 +1202,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</tr>
 
 			<!-- Robots -->
-			<?php $advice = $rateprovider->addCompare( 'hasRobotsTxt', $isseter['robotstxt'] ); ?>
+   <?php $advice = $score_advice( 'hasRobotsTxt' ); ?>
 			<tr class="<?php echo $advice; ?>">
 				<td class="td-icon">
 					<br />
@@ -1185,7 +1227,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</tr>
 
 			<!-- Analytics support -->
-			<?php $advice = $rateprovider->addCompare( 'hasAnalytics', ! empty( $misc['analytics'] ) ); ?>
+   <?php $advice = $score_advice( 'hasAnalytics' ); ?>
 			<tr class="<?php echo $advice; ?>">
 				<td class="td-icon">
 					<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />

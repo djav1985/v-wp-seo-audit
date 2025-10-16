@@ -10,7 +10,8 @@
  * - $generated: Generated date array
  * - $diff: Time difference
  * - $upd_url: Update URL (was $updUrl, renamed for snake_case compliance)
- * - $rateprovider: Rate provider object
+ * - $rates: Rate configuration array
+ * - $website['score_breakdown']: Stored score breakdown data
  * - $meta: Meta data array
  * - $content: Content data array
  * - $document: Document data array
@@ -51,8 +52,49 @@ if ( ! isset( $upd_url ) ) {
 	return;
 endif;
 ?>
+<?php
+$score_breakdown = isset( $website['score_breakdown'] ) && is_array( $website['score_breakdown'] ) ? $website['score_breakdown'] : array();
+$score_categories = isset( $score_breakdown['categories'] ) && is_array( $score_breakdown['categories'] ) ? $score_breakdown['categories'] : array();
+$score_lookup = static function ( $key, $field = null, $default = null ) use ( $score_categories ) {
+        if ( ! isset( $score_categories[ $key ] ) || ! is_array( $score_categories[ $key ] ) ) {
+                return $default;
+        }
+
+        if ( null === $field ) {
+                return $score_categories[ $key ];
+        }
+
+        return isset( $score_categories[ $key ][ $field ] ) ? $score_categories[ $key ][ $field ] : $default;
+};
+
+$score_advice = static function ( $key ) use ( $score_lookup ) {
+        $advice = $score_lookup( $key, 'advice', 'error' );
+
+        return $advice ? $advice : 'error';
+};
+
+$score_points = static function ( $key ) use ( $score_lookup ) {
+        $points = $score_lookup( $key, 'points', 0 );
+
+        return is_numeric( $points ) ? (float) $points : 0.0;
+};
+
+$score_total   = isset( $score_breakdown['total'] ) ? (float) $score_breakdown['total'] : ( isset( $website['score'] ) ? (float) $website['score'] : 0.0 );
+$display_score = (int) round( $score_total );
+$website['score'] = $display_score;
+$rates         = isset( $rates ) && is_array( $rates ) ? $rates : array();
+$format_points = static function ( $value ) {
+        $value = (float) $value;
+
+        if ( abs( $value - round( $value ) ) < 0.01 ) {
+                return (string) (int) round( $value );
+        }
+
+        return number_format( $value, 2 );
+};
+?>
 <script type="text/javascript">
-	"use strict";
+        "use strict";
 
 	jQuery(function($) {
 		dynamicThumbnail({
@@ -256,7 +298,7 @@ endif;
 <h3 id="section_content" class="mt-5 mb-3"><?php echo 'SEO Content'; ?></h3>
 <div class="category-wrapper">
 	<!-- Title -->
-	<?php $advice = $rateprovider->addCompareArray( 'title', mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) ) ); ?>
+        <?php $advice = $score_advice( 'title' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -289,7 +331,7 @@ endif;
 	</div>
 
 	<!-- Description -->
-	<?php $advice = $rateprovider->addCompareArray( 'description', mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) ) ); ?>
+        <?php $advice = $score_advice( 'description' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -322,7 +364,7 @@ endif;
 	</div>
 
 	<!-- Og properties -->
-	<?php $advice = $rateprovider->addCompare( 'ogmetaproperties', ! empty( $meta['ogproperties'] ) ); ?>
+        <?php $advice = $score_advice( 'ogmetaproperties' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -430,7 +472,7 @@ endif;
 	</div>
 
 	<!-- Images -->
-	<?php $advice = $rateprovider->addCompare( 'imgHasAlt', $content['total_img'] === $content['total_alt'] ); ?>
+        <?php $advice = $score_advice( 'imgHasAlt' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -494,7 +536,7 @@ endif;
 	</div>
 
 	<!-- Text/HTML Ratio -->
-	<?php $advice = $rateprovider->addCompareArray( 'htmlratio', $document['htmlratio'] ); ?>
+        <?php $advice = $score_advice( 'htmlratio' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -528,7 +570,7 @@ endif;
 	</div>
 
 	<!-- Flash -->
-	<?php $advice = $rateprovider->addCompare( 'noFlash', ! $isseter['flash'] ); ?>
+        <?php $advice = $score_advice( 'noFlash' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -550,7 +592,7 @@ endif;
 	</div>
 
 	<!-- Iframe -->
-	<?php $advice = $rateprovider->addCompare( 'noIframe', ! $isseter['iframe'] ); ?>
+        <?php $advice = $score_advice( 'noIframe' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -576,7 +618,7 @@ endif;
 <h3 id="section_links" class="mt-5 mb-3"><?php echo 'SEO Links'; ?></h3>
 <div class="category-wrapper">
 	<!-- Friendly url -->
-	<?php $advice = $rateprovider->addCompare( 'isFriendlyUrl', $links['friendly'] ); ?>
+        <?php $advice = $score_advice( 'isFriendlyUrl' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -598,7 +640,7 @@ endif;
 	</div>
 
 	<!-- Underscore -->
-	<?php $advice = $rateprovider->addCompare( 'noUnderScore', ! $links['isset_underscore'] ); ?>
+        <?php $advice = $score_advice( 'noUnderScore' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -620,7 +662,7 @@ endif;
 	</div>
 
 	<!-- In-page links -->
-	<?php $advice = $rateprovider->addCompare( 'issetInternalLinks', $links['internal'] > 0 ); ?>
+        <?php $advice = $score_advice( 'issetInternalLinks' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -764,7 +806,7 @@ endif;
 	</div>
 
 	<!-- Favicon -->
-	<?php $advice = $rateprovider->addCompare( 'issetFavicon', ! empty( $document['favicon'] ) ); ?>
+        <?php $advice = $score_advice( 'issetFavicon' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -786,7 +828,7 @@ endif;
 	</div>
 
 	<!-- Language -->
-	<?php $advice = $rateprovider->addCompare( 'lang', $document['lang'] ); ?>
+        <?php $advice = $score_advice( 'lang' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -808,7 +850,7 @@ endif;
 	</div>
 
 	<!-- Dublin Core -->
-	<?php $advice = $rateprovider->addCompare( 'lang', $isseter['dublincore'] ); ?>
+        <?php $advice = $score_advice( 'dublincore' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -834,7 +876,7 @@ endif;
 <h3 id="section_document" class="mt-5 mb-3"><?php echo 'Document'; ?></h3>
 <div class="category-wrapper">
 	<!-- Doctype -->
-	<?php $advice = $rateprovider->addCompare( 'doctype', $document['doctype'] ); ?>
+        <?php $advice = $score_advice( 'doctype' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -856,7 +898,7 @@ endif;
 	</div>
 
 	<!-- Encoding -->
-	<?php $advice = $rateprovider->addCompare( 'charset', $document['charset'] ); ?>
+        <?php $advice = $score_advice( 'charset' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -878,7 +920,7 @@ endif;
 	</div>
 
 	<!-- W3C Validity -->
-	<?php $advice = $rateprovider->addCompare( 'w3c', $w3c['valid'] ); ?>
+        <?php $advice = $score_advice( 'w3c' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -938,7 +980,7 @@ endif;
 	</div>
 
 	<!-- Deprecated -->
-	<?php $advice = $rateprovider->addCompare( 'noDeprecated', empty( $content['deprecated'] ) ); ?>
+        <?php $advice = $score_advice( 'noDeprecated' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -993,7 +1035,7 @@ endif;
 				<table class="table table-striped">
 					<tbody>
 						<tr>
-							<?php $advice = $rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] ); ?>
+                                                    <?php $advice = $score_advice( 'noNestedtables' ); ?>
 							<td width="50px"><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
 							<td>
 								<?php
@@ -1007,7 +1049,7 @@ endif;
 						</tr>
 
 						<tr>
-							<?php $advice = $rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] ); ?>
+                                                    <?php $advice = $score_advice( 'noInlineCSS' ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
 							<td>
 								<?php
@@ -1021,7 +1063,7 @@ endif;
 						</tr>
 
 						<tr>
-							<?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
+                                                    <?php $advice = $score_advice( 'cssCount' ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
@@ -1036,7 +1078,7 @@ endif;
 						</tr>
 
 						<tr>
-							<?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
+                                                    <?php $advice = $score_advice( 'jsCount' ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
@@ -1051,7 +1093,7 @@ endif;
 						</tr>
 
 						<tr>
-							<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
+                                                    <?php $advice = $score_advice( 'hasGzip' ); ?>
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
@@ -1113,7 +1155,7 @@ endif;
 <h3 id="section_optimization" class="mt-5 mb-3"><?php echo 'Optimization'; ?></h3>
 <div class="category-wrapper">
 	<!-- Sitemap -->
-	<?php $advice = $rateprovider->addCompare( 'hasSitemap', ! empty( $misc['sitemap'] ) ); ?>
+   <?php $advice = $score_advice( 'hasSitemap' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -1156,7 +1198,7 @@ endif;
 	</div>
 
 	<!-- Robots -->
-	<?php $advice = $rateprovider->addCompare( 'hasRobotsTxt', $isseter['robotstxt'] ); ?>
+   <?php $advice = $score_advice( 'hasRobotsTxt' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -1184,7 +1226,7 @@ endif;
 	</div>
 
 	<!-- Analytics support -->
-	<?php $advice = $rateprovider->addCompare( 'hasAnalytics', ! empty( $misc['analytics'] ) ); ?>
+   <?php $advice = $score_advice( 'hasAnalytics' ); ?>
 	<div class="row pt-3 pb-3 row-advice row-advice-<?php echo $advice; ?>">
 		<div class="col-md-4">
 			<div class="float-left mr-3 mr-md-5 adv-icon adv-icon-<?php echo $advice; ?>"></div>
@@ -1317,270 +1359,155 @@ endif;
 						</thead>
 						<tbody>
 							<?php
-							// Get the rates configuration.
-							$rates = $rateprovider->getRates();
-
-							// Define the categories with their human-readable names and checks.
-							$categories = array(
-								array(
-									'name'    => 'Title Tag',
-									'key'     => 'title',
-									'current' => $rateprovider->addCompareArray( 'title', mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) ) ),
-									'max'     => 4.0,
-									'type'    => 'array',
-								),
-								array(
-									'name'    => 'Meta Description',
-									'key'     => 'description',
-									'current' => $rateprovider->addCompareArray( 'description', mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) ) ),
-									'max'     => 4.0,
-									'type'    => 'array',
-								),
-								array(
-									'name'    => 'Text/HTML Ratio',
-									'key'     => 'htmlratio',
-									'current' => $rateprovider->addCompareArray( 'htmlratio', $document['htmlratio'] ),
-									'max'     => 2.5,
-									'type'    => 'array',
-								),
-								array(
-									'name'    => 'CSS Files Count',
-									'key'     => 'cssCount',
-									'current' => $rateprovider->addCompareArray( 'cssCount', $document['css'] ),
-									'max'     => 1.0,
-									'type'    => 'array',
-								),
-								array(
-									'name'    => 'JavaScript Files Count',
-									'key'     => 'jsCount',
-									'current' => $rateprovider->addCompareArray( 'jsCount', $document['js'] ),
-									'max'     => 1.0,
-									'type'    => 'array',
-								),
-								array(
-									'name'    => 'No Flash Content',
-									'key'     => 'noFlash',
-									'current' => $rateprovider->addCompare( 'noFlash', ! $isseter['flash'] ),
-									'max'     => 1.5,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'No Iframes',
-									'key'     => 'noIframe',
-									'current' => $rateprovider->addCompare( 'noIframe', ! $isseter['iframe'] ),
-									'max'     => 1.5,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Images Have Alt Text',
-									'key'     => 'imgHasAlt',
-									'current' => $rateprovider->addCompare( 'imgHasAlt', $content['total_img'] === $content['total_alt'] ),
-									'max'     => 1.5,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'SEO Friendly URLs',
-									'key'     => 'isFriendlyUrl',
-									'current' => $rateprovider->addCompare( 'isFriendlyUrl', $links['friendly'] ),
-									'max'     => 2.0,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'No Underscores in URLs',
-									'key'     => 'noUnderScore',
-									'current' => $rateprovider->addCompare( 'noUnderScore', ! $links['isset_underscore'] ),
-									'max'     => 1.0,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'OG Meta Properties',
-									'key'     => 'ogmetaproperties',
-									'current' => $rateprovider->addCompare( 'ogmetaproperties', ! empty( $meta['ogproperties'] ) ),
-									'max'     => 3,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Charset Declared',
-									'key'     => 'charset',
-									'current' => $rateprovider->addCompare( 'charset', $document['charset'] ),
-									'max'     => 3,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'XML Sitemap',
-									'key'     => 'hasSitemap',
-									'current' => $rateprovider->addCompare( 'hasSitemap', ! empty( $misc['sitemap'] ) ),
-									'max'     => 3,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Robots.txt',
-									'key'     => 'hasRobotsTxt',
-									'current' => $rateprovider->addCompare( 'hasRobotsTxt', $isseter['robotstxt'] ),
-									'max'     => 2,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Analytics',
-									'key'     => 'hasAnalytics',
-									'current' => $rateprovider->addCompare( 'hasAnalytics', ! empty( $misc['analytics'] ) ),
-									'max'     => 2,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Internal Links',
-									'key'     => 'issetInternalLinks',
-									'current' => $rateprovider->addCompare( 'issetInternalLinks', $links['internal'] > 0 ),
-									'max'     => 2,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'No Inline CSS',
-									'key'     => 'noInlineCSS',
-									'current' => $rateprovider->addCompare( 'noInlineCSS', ! $isseter['inlinecss'] ),
-									'max'     => 2,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Doctype Declared',
-									'key'     => 'doctype',
-									'current' => $rateprovider->addCompare( 'doctype', $document['doctype'] ),
-									'max'     => 2,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Language Declared',
-									'key'     => 'lang',
-									'current' => $rateprovider->addCompare( 'lang', $document['lang'] ),
-									'max'     => 2,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Apple Touch Icons',
-									'key'     => 'issetAppleIcons',
-									'current' => $rateprovider->addCompare( 'issetAppleIcons', $isseter['appleicons'] ),
-									'max'     => 2,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'No Nested Tables',
-									'key'     => 'noNestedtables',
-									'current' => $rateprovider->addCompare( 'noNestedtables', ! $isseter['nestedtables'] ),
-									'max'     => 1.5,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Favicon',
-									'key'     => 'issetFavicon',
-									'current' => $rateprovider->addCompare( 'issetFavicon', ! empty( $document['favicon'] ) ),
-									'max'     => 1.5,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Viewport Meta Tag',
-									'key'     => 'viewport',
-									'current' => $rateprovider->addCompare( 'viewport', $isseter['viewport'] ),
-									'max'     => 1.5,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Gzip Compression',
-									'key'     => 'hasGzip',
-									'current' => $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ),
-									'max'     => 1.5,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'No Deprecated HTML',
-									'key'     => 'noDeprecated',
-									'current' => $rateprovider->addCompare( 'noDeprecated', empty( $content['deprecated'] ) ),
-									'max'     => 1.5,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Headings Present',
-									'key'     => 'issetHeadings',
-									'current' => $rateprovider->addCompare( 'issetHeadings', $content['isset_headings'] ),
-									'max'     => 1.5,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'Dublin Core',
-									'key'     => 'dublincore',
-									'current' => $rateprovider->addCompare( 'dublincore', $isseter['dublincore'] ),
-									'max'     => 1,
-									'type'    => 'boolean',
-								),
-								array(
-									'name'    => 'W3C Validity',
-									'key'     => 'w3c',
-									'current' => array(
-										'errors'   => $w3c['errors'],
-										'warnings' => $w3c['warnings'],
-									),
-									'max'     => 4,
-									'type'    => 'array_w3c',
-								),
+							$category_labels = array(
+								'title'              => 'Title Tag',
+								'description'        => 'Meta Description',
+								'htmlratio'          => 'Text/HTML Ratio',
+								'cssCount'           => 'CSS Files Count',
+								'jsCount'            => 'JavaScript Files Count',
+								'noFlash'            => 'No Flash Content',
+								'noIframe'           => 'No Iframes',
+								'imgHasAlt'          => 'Images Have Alt Text',
+								'isFriendlyUrl'      => 'SEO Friendly URLs',
+								'noUnderScore'       => 'No Underscores in URLs',
+								'ogmetaproperties'   => 'Open Graph Properties',
+								'charset'            => 'Character Set Defined',
+								'hasSitemap'         => 'Sitemap Available',
+								'hasRobotsTxt'       => 'Robots.txt',
+								'hasAnalytics'       => 'Analytics Tracking',
+								'issetInternalLinks' => 'Internal Links Present',
+								'noInlineCSS'        => 'No Inline CSS',
+								'doctype'            => 'Document Doctype',
+								'lang'               => 'Language Attribute',
+								'issetAppleIcons'    => 'Apple Touch Icons',
+								'noNestedtables'     => 'No Nested Tables',
+								'issetFavicon'       => 'Favicon Present',
+								'viewport'           => 'Viewport Meta Tag',
+								'hasGzip'            => 'Gzip Compression',
+								'noDeprecated'       => 'No Deprecated HTML',
+								'issetHeadings'      => 'Headings Present',
+								'dublincore'         => 'Dublin Core',
+								'w3c'                => 'W3C Validity',
+								'wordConsistency'    => 'Keyword Consistency',
+								'isPrintable'        => 'Printable Version',
+								'noEmail'            => 'No Plain Email Addresses',
+								'keywords'           => 'Meta Keywords Tag',
 							);
 
-							// Add keyword consistency scores.
-							if ( ! empty( $cloud['matrix'] ) ) {
-								$rateprovider->addCompareMatrix( $cloud['matrix'] );
-								$categories[] = array(
-									'name'    => 'Keyword Consistency',
-									'key'     => 'wordConsistency',
-									'current' => 'calculated',
-									'max'     => 17.5,
-									'type'    => 'matrix',
-								);
+							$ordered_keys = array(
+								'title',
+								'description',
+								'htmlratio',
+								'cssCount',
+								'jsCount',
+								'noFlash',
+								'noIframe',
+								'imgHasAlt',
+								'isFriendlyUrl',
+								'noUnderScore',
+								'ogmetaproperties',
+								'charset',
+								'hasSitemap',
+								'hasRobotsTxt',
+								'hasAnalytics',
+								'issetInternalLinks',
+								'noInlineCSS',
+								'doctype',
+								'lang',
+								'issetAppleIcons',
+								'noNestedtables',
+								'issetFavicon',
+								'viewport',
+								'hasGzip',
+								'noDeprecated',
+								'issetHeadings',
+								'dublincore',
+								'w3c',
+								'wordConsistency',
+								'isPrintable',
+								'noEmail',
+								'keywords',
+							);
+
+							$display_keys = array();
+							foreach ( $ordered_keys as $ordered_key ) {
+								if ( isset( $rates[ $ordered_key ] ) ) {
+									$display_keys[] = $ordered_key;
+								}
+							}
+							foreach ( $rates as $rate_key => $definition ) {
+								if ( ! in_array( $rate_key, $display_keys, true ) ) {
+									$display_keys[] = $rate_key;
+								}
 							}
 
-							foreach ( $categories as $category ) :
-								$advice = $category['current'];
-								if ( 'array' === $category['type'] ) {
-									$array_value = 0;
-									if ( 'title' === $category['key'] ) {
-										$array_value = mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) );
-									} elseif ( 'description' === $category['key'] ) {
-										$array_value = mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) );
-									} elseif ( 'htmlratio' === $category['key'] ) {
-										$array_value = $document['htmlratio'];
-									} elseif ( 'cssCount' === $category['key'] ) {
-										$array_value = $document['css'];
-									} elseif ( 'jsCount' === $category['key'] ) {
-										$array_value = $document['js'];
-									}
-									$points_text = $rateprovider->getCompareArrayScore( $category['key'], $array_value );
-									$status_class = ( $points_text > 0 ) ? 'success' : 'danger';
-								} elseif ( 'array_w3c' === $category['type'] ) {
-									$w3c_errors = isset( $category['current']['errors'] ) ? $category['current']['errors'] : 0;
-									$w3c_warnings = isset( $category['current']['warnings'] ) ? $category['current']['warnings'] : 0;
-									list( $points_text, $advice ) = $rateprovider->getW3cScoreAdvice( $w3c_errors, $w3c_warnings );
-									$status_class = ( $points_text >= 3 ) ? 'success' : ( $points_text > 0 ? 'warning' : 'danger' );
-								} else {
-									$points_text = ( 'success' === $advice ? $category['max'] : 0 );
-									$status_class = 'success' === $advice || 'success ideal_ratio' === $advice ? 'success' : ( strpos( $advice, 'error' ) !== false ? 'danger' : 'warning' );
+							$consistency_limit = (int) V_WPSA_Config::get( 'analyzer.consistency_count' );
+							$matrix_count      = isset( $cloud['matrix'] ) && is_array( $cloud['matrix'] ) ? count( $cloud['matrix'] ) : 0;
+
+							foreach ( $display_keys as $key ) {
+								if ( ! isset( $rates[ $key ] ) ) {
+									continue;
 								}
+
+								$definition  = $rates[ $key ];
+								$label       = isset( $category_labels[ $key ] ) ? $category_labels[ $key ] : ucwords( preg_replace( '/([a-z])([A-Z])/', '$1 $2', $key ) );
+								$max_points  = 0.0;
+
+								if ( 'wordConsistency' === $key && is_array( $definition ) ) {
+									$per_tag_sum      = array_sum( $definition );
+									$effective_limit  = max( $consistency_limit, $matrix_count, 1 );
+									$max_points       = $per_tag_sum * $effective_limit;
+								} elseif ( is_array( $definition ) ) {
+									foreach ( $definition as $rule ) {
+										if ( is_array( $rule ) && isset( $rule['score'] ) ) {
+											$max_points = max( $max_points, (float) $rule['score'] );
+										} elseif ( is_numeric( $rule ) ) {
+											$max_points = max( $max_points, (float) $rule );
+										}
+									}
+								} else {
+									$max_points = (float) $definition;
+								}
+
+								if ( $max_points <= 0 ) {
+									continue;
+								}
+
+								$earned_points = $score_points( $key );
+								if ( 'wordConsistency' === $key && $earned_points > $max_points ) {
+									$earned_points = $max_points;
+								}
+
+								$advice       = $score_advice( $key );
+								$advice_value = is_string( $advice ) ? $advice : 'error';
+								$badge_class  = 'warning';
+								$status_label = 'Warning';
+
+								if ( false !== strpos( $advice_value, 'success' ) ) {
+									$badge_class  = 'success';
+									$status_label = 'Pass';
+								} elseif ( false !== strpos( $advice_value, 'error' ) ) {
+									$badge_class  = 'danger';
+									$status_label = 'Fail';
+								}
+
+								$points_display = $format_points( $earned_points );
+								$max_display    = $format_points( $max_points );
 								?>
 								<tr>
-									<td><?php echo esc_html( $category['name'] ); ?></td>
-									<td><?php echo esc_html( $points_text ); ?></td>
-									<td><?php echo esc_html( $category['max'] ); ?></td>
-									<td>
-										<span class="badge badge-<?php echo esc_attr( ( strpos( $advice, 'error' ) !== false ) ? 'danger' : $status_class ); ?>">
-											<?php
-											if ( 'success' === $advice || 'success ideal_ratio' === $advice ) {
-												echo 'Pass';
-											} elseif ( strpos( $advice, 'error' ) !== false ) {
-												echo 'Fail';
-											} else {
-												echo 'Warning';
-											}
-											?>
-										</span>
-									</td>
+								        <td><?php echo esc_html( $label ); ?></td>
+								        <td><?php echo esc_html( $points_display ); ?></td>
+								        <td><?php echo esc_html( $max_display ); ?></td>
+								        <td>
+								                <span class="badge badge-<?php echo esc_attr( $badge_class ); ?>">
+								                        <?php echo esc_html( $status_label ); ?>
+								                </span>
+								        </td>
 								</tr>
-							<?php endforeach; ?>
+								<?php
+							}
+							?>
+
 							<tr class="table-info">
 								<td><strong><?php echo 'Total Score'; ?></strong></td>
 								<td><strong><?php echo (int) $website['score']; ?></strong></td>
