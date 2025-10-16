@@ -935,11 +935,19 @@ class V_WPSA_DB {
 			}
 
 			// Analyze content if classes are available.
-			// Use false parameter to prevent autoloader from triggering.
-			if ( class_exists( 'Content', false ) ) {
+			// Allow autoloading by removing false parameter.
+			if ( class_exists( 'Content' ) ) {
 				$content_analyzer = new Content( $html );
-				$content_data     = array(
-					'wid' => $wid,
+				$headings         = $content_analyzer->getHeadings();
+				$deprecated       = array();
+
+				$content_data = array(
+					'wid'            => $wid,
+					'headings'       => wp_json_encode( $headings ),
+					'isset_headings' => ! empty( $headings['h1'] ) ? 1 : 0,
+					'deprecated'     => wp_json_encode( $deprecated ),
+					'total_img'      => 0, // Will be set later if Image analyzer is available.
+					'total_alt'      => 0,
 				);
 
 				// Check if record exists.
@@ -954,15 +962,42 @@ class V_WPSA_DB {
 					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 					$wpdb->insert( $table_prefix . 'content', $content_data );
 				}
+
+				// Store issetobject data (flash, iframe, nested tables, inline CSS).
+				$issetobj_data = array(
+					'wid'          => $wid,
+					'flash'        => $content_analyzer->issetFlash() ? 1 : 0,
+					'iframe'       => $content_analyzer->issetIframe() ? 1 : 0,
+					'nestedtables' => $content_analyzer->issetNestedTables() ? 1 : 0,
+					'inlinecss'    => $content_analyzer->issetInlineCss() ? 1 : 0,
+				);
+
+				$issetobj_data = $db->filter_columns( 'issetobject', $issetobj_data );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}issetobject WHERE wid = %d", $wid ) );
+				if ( $exists ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->update( $table_prefix . 'issetobject', $issetobj_data, array( 'wid' => $wid ) );
+				} else {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->insert( $table_prefix . 'issetobject', $issetobj_data );
+				}
 			}
 
 			// Analyze document structure.
-			// Use false parameter to prevent autoloader from triggering.
-			if ( class_exists( 'Document', false ) ) {
-				$doc_analyzer = new Document( $html );
-				$doc_data     = array(
-					'wid'     => $wid,
-					'doctype' => method_exists( $doc_analyzer, 'getDoctype' ) ? substr( (string) $doc_analyzer->getDoctype(), 0, 255 ) : '',
+			// Allow autoloading by removing false parameter.
+			if ( class_exists( 'Document' ) && class_exists( 'MetaTags' ) ) {
+				$doc_analyzer  = new Document( $html );
+				$meta_analyzer = new MetaTags( $html );
+
+				$doc_data = array(
+					'wid'       => $wid,
+					'doctype'   => substr( (string) $doc_analyzer->getDoctype(), 0, 255 ),
+					'css'       => $doc_analyzer->getCssFilesCount(),
+					'js'        => $doc_analyzer->getJsFilesCount(),
+					'lang'      => (string) $doc_analyzer->getLanguageID(),
+					'charset'   => (string) $meta_analyzer->getCharset(),
+					'printable' => $doc_analyzer->isPrintable() ? 1 : 0,
 				);
 
 				$doc_data = $db->filter_columns( 'document', $doc_data );
@@ -977,14 +1012,50 @@ class V_WPSA_DB {
 				}
 			}
 
+			// Add issetobject data from MetaTags and Document analyzers.
+			if ( class_exists( 'MetaTags' ) && class_exists( 'Document' ) ) {
+				$meta_analyzer = new MetaTags( $html );
+				$doc_analyzer  = new Document( $html );
+
+				$viewport_val   = $meta_analyzer->getViewPort();
+				$dublincore_val = $meta_analyzer->getDublinCore();
+
+				// Update issetobject with additional fields.
+				$issetobj_extra = array(
+					'viewport'   => ! empty( $viewport_val ) ? 1 : 0,
+					'dublincore' => ! empty( $dublincore_val ) ? 1 : 0,
+					'appleicons' => $doc_analyzer->issetAppleIcon() ? 1 : 0,
+				);
+
+				$issetobj_extra = $db->filter_columns( 'issetobject', $issetobj_extra );
+				if ( ! empty( $issetobj_extra ) ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}issetobject WHERE wid = %d", $wid ) );
+					if ( $exists ) {
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+						$wpdb->update( $table_prefix . 'issetobject', $issetobj_extra, array( 'wid' => $wid ) );
+					} else {
+						// If no record exists yet, insert with wid.
+						$issetobj_extra['wid'] = $wid;
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+						$wpdb->insert( $table_prefix . 'issetobject', $issetobj_extra );
+					}
+				}
+			}
+
 			// Analyze links - Pass $idn as third parameter.
-			// Use false parameter to prevent autoloader from triggering.
-			if ( class_exists( 'Links', false ) ) {
+			// Allow autoloading by removing false parameter.
+			if ( class_exists( 'Links' ) ) {
 				$links_analyzer = new Links( $html, $domain, $idn );
 				$links_data     = array(
-					'wid'      => $wid,
-					'internal' => method_exists( $links_analyzer, 'getInternalCount' ) ? $links_analyzer->getInternalCount() : 0,
-					'external' => method_exists( $links_analyzer, 'getExternalDofollowCount' ) ? $links_analyzer->getExternalDofollowCount() : 0,
+					'wid'               => $wid,
+					'internal'          => $links_analyzer->getInternalCount(),
+					'external_dofollow' => $links_analyzer->getExternalDofollowCount(),
+					'external_nofollow' => $links_analyzer->getExternalNofollowCount(),
+					'links'             => wp_json_encode( $links_analyzer->getLinks() ),
+					'friendly'          => $links_analyzer->isAllLinksAreFriendly() ? 1 : 0,
+					'isset_underscore'  => $links_analyzer->issetUnderscore() ? 1 : 0,
+					'files'             => $links_analyzer->getFilesCount(),
 				);
 
 				$links_data = $db->filter_columns( 'links', $links_data );
@@ -1000,13 +1071,15 @@ class V_WPSA_DB {
 			}
 
 			// Analyze meta tags.
-			// Use false parameter to prevent autoloader from triggering.
-			if ( class_exists( 'MetaTags', false ) ) {
+			// Allow autoloading by removing false parameter.
+			if ( class_exists( 'MetaTags' ) ) {
 				$meta_analyzer = new MetaTags( $html );
 				$meta_data     = array(
-					'wid'         => $wid,
-					'title'       => method_exists( $meta_analyzer, 'getTitle' ) ? substr( (string) $meta_analyzer->getTitle(), 0, 255 ) : '',
-					'description' => method_exists( $meta_analyzer, 'getDescription' ) ? substr( (string) $meta_analyzer->getDescription(), 0, 500 ) : '',
+					'wid'          => $wid,
+					'title'        => substr( (string) $meta_analyzer->getTitle(), 0, 255 ),
+					'description'  => substr( (string) $meta_analyzer->getDescription(), 0, 500 ),
+					'keyword'      => substr( (string) $meta_analyzer->getKeywords(), 0, 500 ),
+					'ogproperties' => wp_json_encode( $meta_analyzer->getOgMetaProperties() ),
 				);
 
 				$meta_data = $db->filter_columns( 'metatags', $meta_data );
@@ -1027,6 +1100,19 @@ class V_WPSA_DB {
 				'loadtime' => 0, // Could be calculated from response time.
 			);
 
+			// Add favicon if Favicon analyzer is available.
+			if ( class_exists( 'Favicon' ) ) {
+				$favicon_analyzer     = new Favicon( $html, $domain );
+				$misc_data['favicon'] = (string) $favicon_analyzer->getFavicon();
+			}
+
+			// Add analytics if AnalyticsFinder is available.
+			if ( class_exists( 'AnalyticsFinder' ) ) {
+				$analytics_analyzer     = new AnalyticsFinder( $html );
+				$analytics_found        = $analytics_analyzer->findAll();
+				$misc_data['analytics'] = wp_json_encode( $analytics_found );
+			}
+
 			$misc_data = $db->filter_columns( 'misc', $misc_data );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}misc WHERE wid = %d", $wid ) );
@@ -1036,6 +1122,35 @@ class V_WPSA_DB {
 			} else {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->insert( $table_prefix . 'misc', $misc_data );
+			}
+
+			// Generate tag cloud if classes are available.
+			if ( class_exists( 'TagCloud' ) && class_exists( 'Document' ) ) {
+				$doc_analyzer = new Document( $html );
+				$lang         = $doc_analyzer->getLanguageID();
+				if ( empty( $lang ) ) {
+					$lang = 'en';
+				}
+
+				$cloud_analyzer = new TagCloud( $html, $lang );
+				$words          = $cloud_analyzer->generate( 10 );
+
+				$cloud_data = array(
+					'wid'    => $wid,
+					'words'  => wp_json_encode( $words ),
+					'matrix' => wp_json_encode( array() ), // Matrix might be computed elsewhere.
+				);
+
+				$cloud_data = $db->filter_columns( 'cloud', $cloud_data );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}cloud WHERE wid = %d", $wid ) );
+				if ( $exists ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->update( $table_prefix . 'cloud', $cloud_data, array( 'wid' => $wid ) );
+				} else {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->insert( $table_prefix . 'cloud', $cloud_data );
+				}
 			}
 
 			return $wid;
