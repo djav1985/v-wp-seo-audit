@@ -1120,6 +1120,15 @@ class V_WPSA_DB {
 				$misc_data['analytics'] = wp_json_encode( $analytics_found );
 			}
 
+			// Add sitemap detection using Optimization analyzer.
+			if ( class_exists( 'Optimization' ) ) {
+				// Get the final URL after redirects.
+				$final_url            = isset( $response['http_response'] ) ? $response['http_response']->get_response_object()->url : $url;
+				$optimization         = new Optimization( $domain, $final_url );
+				$sitemaps             = $optimization->getSitemap();
+				$misc_data['sitemap'] = wp_json_encode( $sitemaps );
+			}
+
 			$misc_data = $db->filter_columns( 'misc', $misc_data );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}misc WHERE wid = %d", $wid ) );
@@ -1129,6 +1138,70 @@ class V_WPSA_DB {
 			} else {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->insert( $table_prefix . 'misc', $misc_data );
+			}
+
+			// Update issetobject with robots.txt and gzip support detection.
+			if ( class_exists( 'Optimization' ) ) {
+				$final_url    = isset( $response['http_response'] ) ? $response['http_response']->get_response_object()->url : $url;
+				$optimization = new Optimization( $domain, $final_url );
+
+				$issetobj_optimization = array(
+					'robotstxt' => $optimization->hasRobotsTxt() ? 1 : 0,
+					'gzip'      => $optimization->hasGzipSupport() ? 1 : 0,
+				);
+
+				$issetobj_optimization = $db->filter_columns( 'issetobject', $issetobj_optimization );
+				if ( ! empty( $issetobj_optimization ) ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}issetobject WHERE wid = %d", $wid ) );
+					if ( $exists ) {
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+						$wpdb->update( $table_prefix . 'issetobject', $issetobj_optimization, array( 'wid' => $wid ) );
+					} else {
+						// If no record exists yet, insert with wid.
+						$issetobj_optimization['wid'] = $wid;
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+						$wpdb->insert( $table_prefix . 'issetobject', $issetobj_optimization );
+					}
+				}
+			}
+
+			// Perform W3C HTML validation.
+			if ( class_exists( 'Validation' ) ) {
+				$validation = new Validation( $domain );
+				$w3c_result = $validation->w3cHTML();
+
+				$w3c_data = array(
+					'wid'       => $wid,
+					'validator' => 'html',
+					'valid'     => ! empty( $w3c_result['status'] ) ? 1 : 0,
+					'errors'    => isset( $w3c_result['errors'] ) ? (int) $w3c_result['errors'] : 0,
+					'warnings'  => isset( $w3c_result['warnings'] ) ? (int) $w3c_result['warnings'] : 0,
+				);
+
+				$w3c_data = $db->filter_columns( 'w3c', $w3c_data );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_prefix}w3c WHERE wid = %d", $wid ) );
+				if ( $exists ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->update( $table_prefix . 'w3c', $w3c_data, array( 'wid' => $wid ) );
+				} else {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->insert( $table_prefix . 'w3c', $w3c_data );
+				}
+			}
+
+			// Update website record with final URL.
+			if ( isset( $response['http_response'] ) ) {
+				$final_url_for_website = $response['http_response']->get_response_object()->url;
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->update(
+					$table_prefix . 'website',
+					array( 'final_url' => $final_url_for_website ),
+					array( 'id' => $wid ),
+					array( '%s' ),
+					array( '%d' )
+				);
 			}
 
 			// Generate tag cloud if classes are available.
