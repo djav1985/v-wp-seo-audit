@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => '37d2a12cb1cba82486281889aabf36c386b2871f',
+        'pretty_version' => 'dev-copilot/fix-phpcs-errors-and-warnings',
+        'version' => 'dev-copilot/fix-phpcs-errors-and-warnings',
+        'reference' => 'e9eb498638b806793a48ae9246c89462ba5d4699',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '37d2a12cb1cba82486281889aabf36c386b2871f',
+            'pretty_version' => 'dev-copilot/fix-phpcs-errors-and-warnings',
+            'version' => 'dev-copilot/fix-phpcs-errors-and-warnings',
+            'reference' => 'e9eb498638b806793a48ae9246c89462ba5d4699',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
