@@ -3,7 +3,7 @@
 <!-- HEADER STYLE: CLASSIC -->
 <div align="center">
 
-<img src="v-wp-seo-audit.png" width="60%" alt="project-logo">
+<img src="v-wp-seo-audit.jpg" width="60%" alt="project-logo">
 
 # V-WP-SEO-AUDIT
 
