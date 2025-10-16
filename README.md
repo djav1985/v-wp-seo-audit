@@ -94,7 +94,7 @@ V_WPSA_external_generation( string $domain, bool $report = true )
 **Example Usage:**
 
 ```php
-// Get full report as JSON
+// Get full report as JSON string
 $json_report = V_WPSA_external_generation( 'example.com', true );
 
 // Decode and use the data
@@ -111,6 +111,18 @@ echo 'Download PDF: ' . $pdf_url;
 $result = V_WPSA_external_generation( 'invalid-domain', true );
 if ( is_wp_error( $result ) ) {
     echo 'Error: ' . $result->get_error_message();
+}
+
+// Wrapper function pattern for AI chatbots
+function get_seo_report( $domain ) {
+    $result = V_WPSA_external_generation( $domain, true );
+    
+    if ( is_wp_error( $result ) ) {
+        return json_encode( array( 'error' => $result->get_error_message() ) );
+    }
+    
+    // Result is already JSON, return directly
+    return $result;
 }
 ```
 
