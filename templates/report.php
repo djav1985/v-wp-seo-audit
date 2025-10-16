@@ -430,7 +430,12 @@ endif;
 				?>
 			</p>
 
-			<?php if ( $advice !== 'success' && ! empty( $content['images_missing_alt'] ) && is_array( $content['images_missing_alt'] ) ) : ?>
+			<?php
+			$has_missing_images      = $advice !== 'success';
+			$has_missing_images_list = ! empty( $content['images_missing_alt'] ) && is_array( $content['images_missing_alt'] ) && count( $content['images_missing_alt'] ) > 0;
+			?>
+
+			<?php if ( $has_missing_images && $has_missing_images_list ) : ?>
 				<div class="table-responsive table-items mb-3 task-list">
 					<table class="table table-striped">
 						<thead>
@@ -462,6 +467,11 @@ endif;
 						<button class="expand-task btn btn-primary float-right"><?php echo 'Expand'; ?></button>
 						<button class="collapse-task btn btn-primary float-right"><?php echo 'Collapse'; ?></button>
 					<?php endif; ?>
+				</div>
+			<?php elseif ( $has_missing_images && ! $has_missing_images_list ) : ?>
+				<div class="alert alert-info mt-3">
+					<p><strong><?php echo 'Detailed image information is not available.'; ?></strong></p>
+					<p><?php echo 'This report was generated before detailed image alt attribute data was collected. Please click the UPDATE button above to re-analyze this website and collect detailed image information.'; ?></p>
 				</div>
 			<?php endif; ?>
 		</div>
@@ -861,7 +871,12 @@ endif;
 				<?php echo 'Warnings'; ?> : <strong><?php echo (int) $w3c['warnings']; ?></strong>
 			</p>
 
-			<?php if ( ! empty( $w3c['messages'] ) && is_array( $w3c['messages'] ) ) : ?>
+			<?php
+			$has_errors_or_warnings = ( ! empty( $w3c['errors'] ) || ! empty( $w3c['warnings'] ) );
+			$has_messages           = ! empty( $w3c['messages'] ) && is_array( $w3c['messages'] ) && count( $w3c['messages'] ) > 0;
+			?>
+
+			<?php if ( $has_messages ) : ?>
 				<div class="table-responsive table-items mb-3 task-list">
 					<table class="table table-striped">
 						<thead>
@@ -897,6 +912,11 @@ endif;
 						<button class="expand-task btn btn-primary float-right"><?php echo 'Expand'; ?></button>
 						<button class="collapse-task btn btn-primary float-right"><?php echo 'Collapse'; ?></button>
 					<?php endif; ?>
+				</div>
+			<?php elseif ( $has_errors_or_warnings ) : ?>
+				<div class="alert alert-info mt-3">
+					<p><strong><?php echo 'Detailed error messages are not available.'; ?></strong></p>
+					<p><?php echo 'This report was generated before detailed W3C validation messages were collected. Please click the UPDATE button above to re-analyze this website and collect detailed validation messages.'; ?></p>
 				</div>
 			<?php endif; ?>
 		</div>
