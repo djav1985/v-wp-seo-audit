@@ -184,6 +184,12 @@ var WrHelper = (function () {
                     }
                 }
 
+                // Update URL hash for deep linking (replace dots with dashes)
+                if (domain && window.history && window.history.replaceState) {
+                    var hashDomain = domain.replace(/\./g, '-');
+                    window.history.replaceState(null, null, '#' + hashDomain);
+                }
+
                 if (settings.scrollTo !== false && $targetContainer.length) {
                     $('html, body').animate({
                         scrollTop: $targetContainer.offset().top - 100
@@ -217,6 +223,29 @@ var WrHelper = (function () {
         var $submit = $('#submit');
         var $errors = $('#errors');
         var $progressBar = $('#progress-bar');
+
+        // Check for hash-based deep linking on page load
+        function checkHashAndLoadReport() {
+            var hash = window.location.hash;
+            if (hash && hash.length > 1) {
+                // Remove the # and convert dashes back to dots
+                var domain = hash.substring(1).replace(/-/g, '.');
+                if (domain) {
+                    // Load the report for this domain
+                    window.vWpSeoAudit.generateReport(domain, {
+                        scrollTo: true
+                    });
+                }
+            }
+        }
+
+        // Run on page load
+        checkHashAndLoadReport();
+
+        // Also listen for hash changes (e.g., user clicks browser back/forward)
+        $(window).on('hashchange', function() {
+            checkHashAndLoadReport();
+        });
 
         $('#submit').on('click', function(e) {
             e.preventDefault();

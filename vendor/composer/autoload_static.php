@@ -29,7 +29,6 @@ class ComposerStaticInit9a1a82bf44fcc845760e65630423ab4e
         'V_WPSA_Helpers' => __DIR__ . '/../..' . '/includes/class-v-wpsa-helpers.php',
         'V_WPSA_Report_Generator' => __DIR__ . '/../..' . '/includes/class-v-wpsa-report-generator.php',
         'V_WPSA_Report_Service' => __DIR__ . '/../..' . '/includes/class-v-wpsa-report-service.php',
-        'V_WPSA_Rest_API' => __DIR__ . '/../..' . '/includes/class-v-wpsa-rest-api.php',
         'V_WPSA_Score_Calculator' => __DIR__ . '/../..' . '/includes/class-v-wpsa-score-calculator.php',
         'V_WPSA_Thumbnail' => __DIR__ . '/../..' . '/includes/class-v-wpsa-thumbnail.php',
         'V_WPSA_Utils' => __DIR__ . '/../..' . '/includes/class-v-wpsa-utils.php',
