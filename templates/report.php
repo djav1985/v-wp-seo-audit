@@ -1250,6 +1250,7 @@ $format_points    = static function ( $value ) {
 			<?php endif; ?>
 		</div>
 	</div>
+	</div>
 
 <?php if ( V_WPSA_Config::get( 'psi.show' ) ) : ?>
 	<h4 id="section_page_speed" class="mt-5 mb-3"><?php echo 'PageSpeed Insights'; ?></h4>
@@ -1547,4 +1548,4 @@ $format_points    = static function ( $value ) {
 				</div>
 			</form>
 		</div>
-	</div>
+
