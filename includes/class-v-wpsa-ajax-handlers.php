@@ -57,7 +57,7 @@ class V_WPSA_Ajax_Handlers {
 
 	/**
 	 * AJAX handler for generating HTML report.
-	 * WordPress-native implementation - no Yii dependencies.
+	 * WordPress-native implementation.
 	 */
 	public static function generate_report() {
 		// Verify nonce for security.

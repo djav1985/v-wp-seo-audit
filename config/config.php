@@ -5,6 +5,10 @@
  * @package v_wpsa
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 return array(
 	'app.name'                   => 'SEO Audit By V - v2.0',
 	'app.timezone'               => 'America/New_york', // https://www.php.net/manual/en/timezones.php

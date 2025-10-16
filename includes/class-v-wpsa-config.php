@@ -2,7 +2,6 @@
 /**
  * Configuration Helper Class
  * Provides WordPress-native access to plugin configuration.
- * Replaces Yii::app()->params[] calls.
  *
  * @package v_wpsa
  */
@@ -98,13 +97,12 @@ class V_WPSA_Config {
 			'param.bad_words_validation' => false,
 			'param.addthis'              => '',
 			'param.placeholder'          => 'example.com',
-			'template.footer'            => '',
+			'template.footer'            => '<p>Developed by <strong><a href="https://vontainment.com">Vontainment</a></strong></p>',
 		);
 	}
 
 	/**
 	 * Get base URL for the plugin.
-	 * Replacement for Yii::app()->getBaseUrl(true).
 	 *
 	 * @param bool $absolute Whether to return absolute URL.
 	 * @return string Base URL.

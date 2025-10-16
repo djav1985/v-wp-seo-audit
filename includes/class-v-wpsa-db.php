@@ -1,7 +1,7 @@
 <?php
 /**
  * Database operations class for v-wpsa plugin.
- * Provides WordPress-native database access methods to replace Yii's CActiveRecord and CDbCommand.
+ * Provides WordPress-native database access methods.
  *
  * @package v_wpsa
  */
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class V_WPSA_DB
  *
- * WordPress-native database wrapper to replace Yii database operations.
+ * WordPress-native database wrapper for plugin operations.
  * Maintains the same table structure and schema while using $wpdb.
  */
 class V_WPSA_DB {
@@ -381,7 +381,7 @@ class V_WPSA_DB {
 		}
 
 		// Calculate time difference for cache expiration.
-		// Use 'modified' timestamp to match Yii controller behavior.
+		// Use 'modified' timestamp for date calculations.
 		$modified_timestamp = isset( $website['modified'] ) ? strtotime( $website['modified'] ) : (int) $website['added'];
 		$diff               = time() - $modified_timestamp;
 		$strtime            = '';
@@ -869,13 +869,12 @@ class V_WPSA_DB {
 				),
 			);
 
-			// Try HTTPS first (more common nowadays).
+			// Try HTTPS first (preferred for security and modern websites).
 			$url      = 'https://' . $domain;
 			$response = wp_remote_get( $url, $request_args );
 
-			// If HTTPS fails, try HTTP.
+			// If HTTPS fails, fall back to HTTP for older websites.
 			if ( is_wp_error( $response ) ) {
-				// Do not log here to avoid phpcs warnings. We silently fallback to HTTP.
 				$url      = 'http://' . $domain;
 				$response = wp_remote_get( $url, $request_args );
 			}
