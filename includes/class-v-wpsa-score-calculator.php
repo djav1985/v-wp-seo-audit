@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Score calculator for analyzer output.
  *

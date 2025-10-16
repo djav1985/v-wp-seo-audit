@@ -34,7 +34,7 @@ class V_WPSA_Report_Generator {
 			throw new Exception( 'Website not found: ' . $domain );
 		}
 
-                $html = self::render_template( 'report.php', $data );
+				$html = self::render_template( 'report.php', $data );
 
 		return $html;
 	}
@@ -87,8 +87,8 @@ class V_WPSA_Report_Generator {
 			}
 		}
 
-                // Render PDF template to HTML with correct score.
-                $html = self::render_template( 'pdf.php', $data );
+				// Render PDF template to HTML with correct score.
+				$html = self::render_template( 'pdf.php', $data );
 
 		// Create PDF using TCPDF directly.
 		self::create_pdf_from_html( $html, $pdf_file, $data['website']['idn'] );
