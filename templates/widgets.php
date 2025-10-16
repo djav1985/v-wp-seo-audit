@@ -233,13 +233,11 @@ function v_wpsa_get_website_thumbnail_url( $args = array() ) {
 
 	$args = wp_parse_args( $args, $defaults );
 
-	// If Yii is available, use WebsiteThumbnail class which handles caching.
 	if ( class_exists( 'V_WPSA_Thumbnail', false ) ) {
 		return V_WPSA_Thumbnail::get_og_image( $args );
 	}
 
 	// Try to return a cached thumbnail from the WordPress uploads directory
-	// so thumbnails can be displayed without bootstrapping Yii.
 	if ( function_exists( 'wp_upload_dir' ) ) {
 		$upload_dir  = wp_upload_dir();
 		$filename    = md5( $args['url'] ) . '.jpg';

@@ -66,7 +66,6 @@ function v_wpsa_enqueue_assets() {
 		wp_enqueue_script( 'v-wpsa-base', V_WPSA_PLUGIN_URL . 'assets/js/base.js', array( 'jquery' ), V_WPSA_VERSION, true );
 
 		// Add global JavaScript variables needed by the plugin.
-		// Use plugin URL directly (no Yii dependency).
 		$base_url = rtrim( V_WPSA_PLUGIN_URL, '/' );
 
 		// Inject global variables into the page.
@@ -84,14 +83,11 @@ add_action( 'wp_enqueue_scripts', 'v_wpsa_enqueue_assets' );
 /**
  * V_wpsa_shortcode function.
  *
- * Renders the plugin form WITHOUT loading Yii framework on page load.
- * Yii is only loaded via AJAX handlers when needed for report generation.
  *
  * @param mixed $atts Parameter.
  */
 function v_wpsa_shortcode( $atts ) {
 	// Load WordPress-native request form template.
-	// This does NOT require Yii initialization.
 	ob_start();
 
 	$template_path = V_WPSA_PLUGIN_DIR . 'templates/main.php';

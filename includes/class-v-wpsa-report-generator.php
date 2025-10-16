@@ -118,7 +118,7 @@ class V_WPSA_Report_Generator {
 	 */
 	private static function create_pdf_from_html( $html, $pdf_file, $title ) {
 		// Load TCPDF library directly.
-		$tcpdf_path = V_WPSA_PLUGIN_DIR . 'tcpdf/tcpdf/tcpdf.php';
+		$tcpdf_path = V_WPSA_PLUGIN_DIR . 'tcpdf/tcpdf.php';
 		if ( ! file_exists( $tcpdf_path ) ) {
 			throw new Exception( 'TCPDF library not found' );
 		}
@@ -137,7 +137,7 @@ class V_WPSA_Report_Generator {
 
 		// Define K_PATH_FONTS for TCPDF if not already defined.
 		if ( ! defined( 'K_PATH_FONTS' ) ) {
-			define( 'K_PATH_FONTS', V_WPSA_PLUGIN_DIR . 'tcpdf/tcpdf/fonts/' );
+				define( 'K_PATH_FONTS', V_WPSA_PLUGIN_DIR . 'tcpdf/fonts/' );
 		}
 
 		require_once $tcpdf_path;

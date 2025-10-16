@@ -201,9 +201,7 @@ class V_WPSA_Utils {
 
 	/**
 	 * Perform a cURL request.
-	 *
-	 * NOTE: This method uses cURL directly for compatibility with legacy Yii code.
-	 * TODO: Migrate to wp_remote_get() as part of the Yii migration.
+
 	 *
 	 * @param string $url The URL to request.
 	 * @param array  $headers Optional headers.
@@ -236,8 +234,6 @@ class V_WPSA_Utils {
 	/**
 	 * Execute cURL request with options.
 	 *
-	 * NOTE: This method uses cURL directly for compatibility with legacy Yii code.
-	 * TODO: Migrate to wp_remote_get() as part of the Yii migration.
 	 *
 	 *     @param CurlHandle|resource $ch           The cURL handle (PHP 8+ uses CurlHandle, <8 uses resource).
 	 *     @param array               $headers      Optional headers.
@@ -253,8 +249,6 @@ class V_WPSA_Utils {
 	/**
 	 * Configure cURL handle with options.
 	 *
-	 * NOTE: This method uses cURL directly for compatibility with legacy Yii code.
-	 * TODO: Migrate to wp_remote_get() as part of the Yii migration.
 	 *
 	 *     @param CurlHandle|resource $ch           The cURL handle (PHP 8+ uses CurlHandle, <8 uses resource).
 	 *     @param array               $headers      Optional headers.
