@@ -38,34 +38,6 @@ defined( '_RATE_W3C_ERR_WARN_LOW' ) or define( '_RATE_W3C_ERR_WARN_LOW', 10 );
 defined( '_RATE_W3C_ERR_WARN_MED' ) or define( '_RATE_W3C_ERR_WARN_MED', 25 );
 defined( '_RATE_W3C_ERR_WARN_HIGH' ) or define( '_RATE_W3C_ERR_WARN_HIGH', 50 );
 
-/*
-The Website Review is a dynamic grade on a 100-point scale.
-This mean that the sum of shown bellow points can't be more than 100.
-
-So, how points are added? Let's take a look on the first key=>value pair
-'noFlash' => 2,
-This mean, that if website do not have flash content then he will get +2 points to current score and etc.
-===========================
-Let's analyse pairs containing arrays. For example: 'title' => array(),
-if the $title length == 0, then website receives 0 points,
-if length > 0 and < 10 -> 2 points
-and etc
-===========================
-At the bottom of this config file you will see 'wordConsistency' key.
-'wordConsistency' => array(
-	'keywords' => 0.5,
-	'description' => 1,
-	'title' => 1,
-	'headings' => 1,
-),
-To calculate the total sum of this checkpoint you need to multiply each value by {N} and sum them.
-Where {N} -> is 'analyzer.consistency_count' => value in main config
-By default {N} equals 5, so
-(0.5 * 5) + (1 * 5) + (1 * 5) + (1 * 5) = 17.5
-17.5 - the maximum points, which website can be get at this checkpoint.
-
-Advice. Be careful if you want to change the rates.
-*/
 return array(
 
 	'noFlash'            => 2,
