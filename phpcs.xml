@@ -11,5 +11,6 @@
     <exclude-pattern>tcpdf/*</exclude-pattern>
     <exclude-pattern>protected/*</exclude-pattern>
     <file>includes/</file>
+    <file>templates/</file>
     <file>v-wp-seo-audit.php</file>
 </ruleset>
