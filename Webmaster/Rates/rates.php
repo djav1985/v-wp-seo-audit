@@ -1,25 +1,25 @@
 <?php
-defined('_RATE_OK') or define('_RATE_OK', 'success');
-defined('_RATE_WARNING') or define('_RATE_WARNING', 'warning');
-defined('_RATE_ERROR') or define('_RATE_ERROR', 'error');
-defined('_RATE_OK_IDEAL') or define('_RATE_OK_IDEAL', 'success ideal_ratio');
-defined('_RATE_ERROR_LESSTHAN') or define('_RATE_ERROR_LESSTHAN', 'error less_than');
-defined('_RATE_ERROR_MORETHAN') or define('_RATE_ERROR_MORETHAN', 'error more_than');
+defined( '_RATE_OK' ) or define( '_RATE_OK', 'success' );
+defined( '_RATE_WARNING' ) or define( '_RATE_WARNING', 'warning' );
+defined( '_RATE_ERROR' ) or define( '_RATE_ERROR', 'error' );
+defined( '_RATE_OK_IDEAL' ) or define( '_RATE_OK_IDEAL', 'success ideal_ratio' );
+defined( '_RATE_ERROR_LESSTHAN' ) or define( '_RATE_ERROR_LESSTHAN', 'error less_than' );
+defined( '_RATE_ERROR_MORETHAN' ) or define( '_RATE_ERROR_MORETHAN', 'error more_than' );
 
-defined('_RATE_CSS_COUNT') or define('_RATE_CSS_COUNT', 10);
-defined('_RATE_JS_COUNT') or define('_RATE_JS_COUNT', 15);
+defined( '_RATE_CSS_COUNT' ) or define( '_RATE_CSS_COUNT', 10 );
+defined( '_RATE_JS_COUNT' ) or define( '_RATE_JS_COUNT', 15 );
 
-defined('_RATE_TITLE_BAD') or define('_RATE_TITLE_BAD', 0);
-defined('_RATE_TITLE_GOOD') or define('_RATE_TITLE_GOOD', 10);
-defined('_RATE_TITLE_BEST') or define('_RATE_TITLE_BEST', 70);
+defined( '_RATE_TITLE_BAD' ) or define( '_RATE_TITLE_BAD', 0 );
+defined( '_RATE_TITLE_GOOD' ) or define( '_RATE_TITLE_GOOD', 10 );
+defined( '_RATE_TITLE_BEST' ) or define( '_RATE_TITLE_BEST', 70 );
 
-defined('_RATE_DESC_BAD') or define('_RATE_DESC_BAD', 0);
-defined('_RATE_DESC_GOOD') or define('_RATE_DESC_GOOD', 70);
-defined('_RATE_DESC_BEST') or define('_RATE_DESC_BEST', 160);
+defined( '_RATE_DESC_BAD' ) or define( '_RATE_DESC_BAD', 0 );
+defined( '_RATE_DESC_GOOD' ) or define( '_RATE_DESC_GOOD', 70 );
+defined( '_RATE_DESC_BEST' ) or define( '_RATE_DESC_BEST', 160 );
 
-defined('_RATE_HRATIO_BAD') or define('_RATE_HRATIO_BAD', 5);
-defined('_RATE_HRATIO_GOOD') or define('_RATE_HRATIO_GOOD', 40);
-defined('_RATE_HRATIO_BEST') or define('_RATE_HRATIO_BEST', 70);
+defined( '_RATE_HRATIO_BAD' ) or define( '_RATE_HRATIO_BAD', 5 );
+defined( '_RATE_HRATIO_GOOD' ) or define( '_RATE_HRATIO_GOOD', 40 );
+defined( '_RATE_HRATIO_BEST' ) or define( '_RATE_HRATIO_BEST', 70 );
 
 /*
 The Website Review is a dynamic grade on a 100-point scale.

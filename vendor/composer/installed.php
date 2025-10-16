@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-copilot/fix-gzip-detection-issues',
-        'version' => 'dev-copilot/fix-gzip-detection-issues',
-        'reference' => 'a8f2c2f5214b473a87d0fa2ebf1ea1e667556671',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '37d2a12cb1cba82486281889aabf36c386b2871f',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-copilot/fix-gzip-detection-issues',
-            'version' => 'dev-copilot/fix-gzip-detection-issues',
-            'reference' => 'a8f2c2f5214b473a87d0fa2ebf1ea1e667556671',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '37d2a12cb1cba82486281889aabf36c386b2871f',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
