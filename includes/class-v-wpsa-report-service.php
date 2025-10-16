@@ -1,11 +1,13 @@
 <?php
 /**
- * Report Service Class
+ * File: class-v-wpsa-report-service.php
  *
- * Service layer for domain analysis and report generation.
- * Provides a unified interface for AJAX handlers, REST API, and direct function calls.
+ * Description: Report service for handling report operations.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

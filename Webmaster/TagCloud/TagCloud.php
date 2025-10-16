@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: TagCloud.php
+ *
+ * Description: Tag cloud generation for keywords.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class TagCloud {
 	private $text;
 	private $commonWords;

@@ -2,7 +2,12 @@
 /**
  * File: main.php
  *
+ * Description: Configuration loader and database setup.
+ *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

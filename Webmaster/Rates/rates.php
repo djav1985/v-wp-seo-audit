@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: rates.php
+ *
+ * Description: Rate configuration and defaults.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 defined( '_RATE_OK' ) or define( '_RATE_OK', 'success' );
 defined( '_RATE_WARNING' ) or define( '_RATE_WARNING', 'warning' );
 defined( '_RATE_ERROR' ) or define( '_RATE_ERROR', 'error' );

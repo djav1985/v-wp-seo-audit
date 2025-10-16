@@ -1,10 +1,13 @@
 <?php
 /**
- * Helper Functions Class
+ * File: class-v-wpsa-helpers.php
  *
- * WordPress-native helper functions for the plugin.
+ * Description: Helper functions for the plugin.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

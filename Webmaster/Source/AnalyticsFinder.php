@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: AnalyticsFinder.php
+ *
+ * Description: Analytics tracking code detection.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class AnalyticsFinder {
 
 	private $html;

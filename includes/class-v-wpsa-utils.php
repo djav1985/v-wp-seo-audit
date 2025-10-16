@@ -1,9 +1,13 @@
 <?php
 /**
- * Utility Functions for v-wpsa Plugin
- * WordPress-native version of Utils class from protected/components/Utils.php
+ * File: class-v-wpsa-utils.php
+ *
+ * Description: Utility functions for the plugin.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

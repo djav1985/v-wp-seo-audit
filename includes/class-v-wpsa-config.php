@@ -1,9 +1,13 @@
 <?php
 /**
- * Configuration Helper Class
- * Provides WordPress-native access to plugin configuration.
+ * File: class-v-wpsa-config.php
+ *
+ * Description: Configuration management class.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

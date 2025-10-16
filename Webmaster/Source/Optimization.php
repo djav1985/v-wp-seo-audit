@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: Optimization.php
+ *
+ * Description: Optimization recommendations engine.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class Optimization {
 	private $domain;
 

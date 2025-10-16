@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: IDN.php
+ *
+ * Description: Internationalized Domain Name handling.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 // {{{ license
 
 /*

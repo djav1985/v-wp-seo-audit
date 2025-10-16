@@ -1,10 +1,13 @@
 <?php
 /**
- * Widgets Template
- * WordPress-native widget rendering functions.
- * Replaces protected/widgets/WebsiteList.php
+ * File: widgets.php
+ *
+ * Description: Widget templates for the plugin.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

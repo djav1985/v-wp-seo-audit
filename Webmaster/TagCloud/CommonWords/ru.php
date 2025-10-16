@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: ru.php
+ *
+ * Description: Common Russian words for filtering.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 return array(
 	'не',
 	'он',

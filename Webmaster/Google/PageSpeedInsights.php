@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: PageSpeedInsights.php
+ *
+ * Description: Google PageSpeed Insights API integration.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class PageSpeedInsights {
 	private $domain;
 	private $api_key;

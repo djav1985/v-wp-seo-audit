@@ -1,13 +1,13 @@
 <?php
 /**
- * Layout Template
- * WordPress-native layout wrapper for reports.
- * Replaces protected/views/layouts/main.php
+ * File: layout.php
  *
- * Variables available:
- * - $content: Main content to display
+ * Description: Main layout template for plugin pages.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

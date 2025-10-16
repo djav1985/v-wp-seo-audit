@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: Favicon.php
+ *
+ * Description: Favicon detection and analysis.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class Favicon {
 
 	private $html;

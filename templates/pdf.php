@@ -1,36 +1,13 @@
 <?php
 /**
- * PDF Template
- * WordPress-native template for PDF generation of SEO audit report.
- * Replaces protected/views/websitestat/pdf.php
+ * File: pdf.php
  *
- * Variables available:
- * - $website: Website data array
- * - $thumbnail: Thumbnail URL
- * - $generated: Generated date array
- * - $rates: Rate configuration array
- * - $website['score_breakdown']: Stored score breakdown data
- * - $meta: Meta data array
- * - $content: Content data array
- * - $document: Document data array
- * - $links: Links data array
- * - $linkcount: Total link count
- * - $cloud: Keywords cloud data
- * - $w3c: W3C validation data
- * - $isseter: Various boolean flags
- * - $misc: Miscellaneous data (optional)
+ * Description: PDF report template.
  *
  * @package v_wpsa
- *
- * Note: This template renders pre-analyzed SEO data for PDF output. Output escaping
- * is selectively applied based on data type and source:
- * - Numeric IDs, scores, counts: Safe integers, no escaping needed
- * - Analysis results ($advice, etc.): Hardcoded strings from rating system
- * - Configuration values: Trusted admin-configured content
- * - User-provided data (domain names, URLs): Escaped with esc_html()/esc_url()
- * - HTML content: Already sanitized during analysis phase
- *
- * phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

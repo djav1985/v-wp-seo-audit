@@ -1,10 +1,13 @@
 <?php
 /**
- * Report Generator Class
+ * File: class-v-wpsa-report-generator.php
  *
- * WordPress-native report generation.
+ * Description: Report generation and rendering logic.
  *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

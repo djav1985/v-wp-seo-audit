@@ -2,7 +2,12 @@
 /**
  * File: badwords.php
  *
+ * Description: List of inappropriate words to filter.
+ *
  * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

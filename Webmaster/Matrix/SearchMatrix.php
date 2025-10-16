@@ -1,4 +1,15 @@
 <?php
+/**
+ * File: SearchMatrix.php
+ *
+ * Description: Search engine matrix analysis.
+ *
+ * @package v_wpsa
+ * @author Vontainment
+ * @license MIT
+ * @license URI https://opensource.org/licenses/MIT
+ */
+
 class SearchMatrix {
 	private $words    = array();
 	private $searchin = array();
