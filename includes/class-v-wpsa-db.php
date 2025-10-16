@@ -970,6 +970,7 @@ class V_WPSA_DB {
 					'iframe'       => $content_analyzer->issetIframe() ? 1 : 0,
 					'nestedtables' => $content_analyzer->issetNestedTables() ? 1 : 0,
 					'inlinecss'    => $content_analyzer->issetInlineCss() ? 1 : 0,
+					'email'        => $content_analyzer->issetEmail() ? 1 : 0,
 				);
 
 				$issetobj_data = $db->filter_columns( 'issetobject', $issetobj_data );
@@ -990,6 +991,11 @@ class V_WPSA_DB {
 				$doc_analyzer  = new Document( $html );
 				$meta_analyzer = new MetaTags( $html );
 
+				// Calculate HTML to text ratio if possible.
+				$html_size  = strlen( $html );
+				$text_size  = strlen( strip_tags( $html ) );
+				$html_ratio = $html_size > 0 ? round( ( $text_size / $html_size ) * 100 ) : 0;
+
 				$doc_data = array(
 					'wid'       => $wid,
 					'doctype'   => substr( (string) $doc_analyzer->getDoctype(), 0, 255 ),
@@ -997,7 +1003,7 @@ class V_WPSA_DB {
 					'js'        => $doc_analyzer->getJsFilesCount(),
 					'lang'      => (string) $doc_analyzer->getLanguageID(),
 					'charset'   => (string) $meta_analyzer->getCharset(),
-					'printable' => $doc_analyzer->isPrintable() ? 1 : 0,
+					'htmlratio' => $html_ratio,
 				);
 
 				$doc_data = $db->filter_columns( 'document', $doc_data );
@@ -1025,6 +1031,7 @@ class V_WPSA_DB {
 					'viewport'   => ! empty( $viewport_val ) ? 1 : 0,
 					'dublincore' => ! empty( $dublincore_val ) ? 1 : 0,
 					'appleicons' => $doc_analyzer->issetAppleIcon() ? 1 : 0,
+					'printable'  => $doc_analyzer->isPrintable() ? 1 : 0,
 				);
 
 				$issetobj_extra = $db->filter_columns( 'issetobject', $issetobj_extra );
@@ -1055,7 +1062,7 @@ class V_WPSA_DB {
 					'links'             => wp_json_encode( $links_analyzer->getLinks() ),
 					'friendly'          => $links_analyzer->isAllLinksAreFriendly() ? 1 : 0,
 					'isset_underscore'  => $links_analyzer->issetUnderscore() ? 1 : 0,
-					'files'             => $links_analyzer->getFilesCount(),
+					'files_count'       => $links_analyzer->getFilesCount(),
 				);
 
 				$links_data = $db->filter_columns( 'links', $links_data );
