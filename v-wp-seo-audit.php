@@ -113,3 +113,22 @@ add_shortcode( 'v_wpsa', 'v_wpsa_shortcode' );
 
 // Initialize AJAX handlers.
 V_WPSA_Ajax_Handlers::init();
+
+// Register REST API routes.
+add_action( 'rest_api_init', array( 'V_WPSA_Rest_API', 'register_routes' ) );
+
+/**
+ * Helper function to get report data for a domain.
+ *
+ * This function provides a simple interface for other plugins or AI integrations
+ * to get SEO audit report data programmatically.
+ *
+ * @param string $domain Domain to analyze.
+ * @param array  $args Optional arguments.
+ *                     - 'force' (bool): Force re-analysis even if cached data exists.
+ * @return array|WP_Error Array with report data on success, WP_Error on failure.
+ */
+function v_wpsa_get_report_data( $domain, $args = array() ) {
+	return V_WPSA_Report_Service::prepare_report( $domain, $args );
+}
+

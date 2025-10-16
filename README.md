@@ -35,6 +35,8 @@ The plugin will display on the front-end where the shortcode is placed.
 - AJAX-based form submission for seamless user experience
 - Client-side form validation
 - Dynamic content updates without page redirects
+- **REST API for programmatic access** - Internal API for AI chatbots and integrations
+- **PHP helper function** - Direct function calls for custom integrations
 
 ## Technical Architecture
 
@@ -70,6 +72,131 @@ The plugin registers the following AJAX actions:
    - Response: PDF file download
 
 **Note:** The `v_wpsa_generate_report` endpoint supports a `force` parameter (set to `'1'`) to force deletion of cached data and re-analysis. This is used by the UPDATE button in generated reports.
+
+### REST API Endpoints
+
+The plugin provides a REST API for programmatic access to SEO audit reports. This is useful for AI chatbots, custom integrations, and automation tools.
+
+#### POST /wp-json/v-wpsa/v1/report
+
+Generate an SEO audit report for a domain.
+
+**Authentication:** Requires admin privileges (`manage_options` capability by default). The required capability can be customized using the `v_wpsa_rest_api_capability` filter.
+
+**Request Body:**
+```json
+{
+  "domain": "example.com",
+  "force": false
+}
+```
+
+**Parameters:**
+- `domain` (string, required): Domain to analyze
+- `force` (boolean, optional): Force re-analysis even if cached data exists. Default: `false`
+
+**Response (Success):**
+```json
+{
+  "domain": "example.com",
+  "idn": "example.com",
+  "score": 85,
+  "cached": false,
+  "pdf_url": "https://yoursite.com/wp-content/uploads/seo-audit/pdf/example.com.pdf",
+  "pdf_cached": false,
+  "generated": {
+    "time": "2 minutes ago",
+    "seconds": 120,
+    "A": "PM",
+    "Y": "2025",
+    "M": "Oct",
+    "d": "16",
+    "H": "14",
+    "i": "30"
+  },
+  "report": {
+    "website": {
+      "id": 123,
+      "score": 85,
+      "score_breakdown": {...}
+    },
+    "content": {...},
+    "document": {...},
+    "links": {...},
+    "meta": {...},
+    "w3c": {...},
+    "cloud": {...},
+    "misc": {...},
+    "thumbnail": {...}
+  }
+}
+```
+
+**Response (Error):**
+```json
+{
+  "code": "invalid_domain",
+  "message": "Invalid domain format",
+  "data": {
+    "status": 400
+  }
+}
+```
+
+**Example Usage:**
+
+```bash
+# Using curl
+curl -X POST https://yoursite.com/wp-json/v-wpsa/v1/report \
+  -H "Content-Type: application/json" \
+  -u admin:your-application-password \
+  -d '{"domain":"example.com"}'
+
+# Force re-analysis
+curl -X POST https://yoursite.com/wp-json/v-wpsa/v1/report \
+  -H "Content-Type: application/json" \
+  -u admin:your-application-password \
+  -d '{"domain":"example.com","force":true}'
+```
+
+### PHP Helper Function
+
+For custom integrations within WordPress (other plugins, themes, or custom code), you can use the `v_wpsa_get_report_data()` helper function:
+
+```php
+/**
+ * Get SEO audit report data for a domain.
+ *
+ * @param string $domain Domain to analyze.
+ * @param array  $args   Optional arguments.
+ *                       - 'force' (bool): Force re-analysis. Default: false.
+ * @return array|WP_Error Report data array or WP_Error on failure.
+ */
+$report = v_wpsa_get_report_data( 'example.com' );
+
+if ( is_wp_error( $report ) ) {
+    // Handle error
+    echo 'Error: ' . $report->get_error_message();
+} else {
+    // Use report data
+    echo 'Score: ' . $report['score'];
+    echo 'PDF URL: ' . $report['pdf_url'];
+    
+    // Access detailed report sections
+    $meta_tags = $report['report']['meta'];
+    $links = $report['report']['links'];
+}
+
+// Force re-analysis
+$fresh_report = v_wpsa_get_report_data( 'example.com', array( 'force' => true ) );
+```
+
+**Use Cases:**
+- AI chatbot integrations
+- Custom admin dashboards
+- Automated reporting systems
+- Bulk domain analysis scripts
+- Integration with CRM or project management tools
 
 ### Form Workflow
 
