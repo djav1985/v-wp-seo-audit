@@ -61,12 +61,12 @@ return array(
 	'imgHasAlt'          => 3.5,
 	'isFriendlyUrl'      => 5,
 	'noUnderScore'       => 4,
-	'issetInternalLinks' => 1.5,
-	'hasRobotsTxt'       => 1.5,
-	'hasSitemap'         => 2,
+	'issetInternalLinks' => 2,
+	'hasRobotsTxt'       => 2,
+	'hasSitemap'         => 3,
 	'hasGzip'            => 1.5,
-	'hasAnalytics'       => 1,
-	// 28
+	'hasAnalytics'       => 2,
+	// 32
 
 	'title'              => array(
 		'$value == _RATE_TITLE_BAD' => array(
@@ -106,11 +106,11 @@ return array(
 		),
 	),
 
-	'charset'            => 2.5,
+	'charset'            => 3,
 	'viewport'           => 1.5,
 	'dublincore'         => 1,
-	'ogmetaproperties'   => 2.5,
-	// 45,5
+	'ogmetaproperties'   => 3,
+	// 49,5
 
 
 	'htmlratio'          => array(
@@ -138,7 +138,7 @@ return array(
 	'issetAppleIcons'    => 2,
 	'noDeprecated'       => 1.5,
 	'lang'               => 2,
-	// 74,5
+	// 78,5
 
 	'cssCount'           => array(
 		'$value <= _RATE_CSS_COUNT' => array(
@@ -161,7 +161,7 @@ return array(
 			'advice' => _RATE_ERROR,
 		),
 	),
-	// 82,5
+	// 86,5
 
 	'wordConsistency'    => array(
 		'keywords'    => 0,

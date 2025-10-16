@@ -104,12 +104,14 @@ class Optimization {
 	}
 
 	public function hasGzipSupport() {
-		// Try HEAD request first - it's faster
+		// Try HEAD request first - it's faster.
+		// Disable automatic decompression to detect encoding even if PHP doesn't support it.
 		$ch = curl_init( $this->final_url );
 		curl_setopt( $ch, CURLOPT_HEADER, 1 );
-		curl_setopt( $ch, CURLOPT_NOBODY, true ); // HEAD request
+		curl_setopt( $ch, CURLOPT_NOBODY, true ); // HEAD request.
 		curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'HEAD' );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_ENCODING, '' ); // Disable auto-decompression.
 		$ch = V_WPSA_Utils::ch(
 			$ch,
 			array(
@@ -122,32 +124,37 @@ class Optimization {
 		}
 
 		$response = (string) curl_exec( $ch );
-		$info     = (array) curl_getinfo( $ch );
 		curl_close( $ch );
 
-		$h_size = V_WPSA_Utils::v( $info, 'header_size', 0 );
-		if ( $h_size > 0 ) {
-			$h = V_WPSA_Utils::get_headers_from_curl_response( substr( $response, 0, $h_size ) );
-			// Check for any modern compression: gzip, deflate, br (Brotli), or zstd (Zstandard)
-			if ( isset( $h['content-encoding'] ) ) {
-				$encoding = mb_strtolower( $h['content-encoding'] );
-				return ( mb_stripos( $encoding, 'gzip' ) !== false ) ||
-					   ( mb_stripos( $encoding, 'deflate' ) !== false ) ||
-					   ( mb_stripos( $encoding, 'br' ) !== false ) ||
-					   ( mb_stripos( $encoding, 'zstd' ) !== false );
-			}
+		// Check raw header text for Content-Encoding to detect compression
+		// even when PHP doesn't support decoding it (e.g., Brotli, Zstandard).
+		if ( preg_match( '/^Content-Encoding:\s*(gzip|deflate|br|zstd)/im', $response ) ) {
+			return true;
 		}
 
-		// Some servers don't send Content-Encoding in HEAD responses
-		// Fall back to checking if compression is accepted via curl_getinfo
-		// If the server supports compression, curl would decompress automatically
-		// Check for the encoding in the response info
-		if ( isset( $info['content_encoding'] ) && ! empty( $info['content_encoding'] ) ) {
-			$encoding = mb_strtolower( $info['content_encoding'] );
-			return ( mb_stripos( $encoding, 'gzip' ) !== false ) ||
-				   ( mb_stripos( $encoding, 'deflate' ) !== false ) ||
-				   ( mb_stripos( $encoding, 'br' ) !== false ) ||
-				   ( mb_stripos( $encoding, 'zstd' ) !== false );
+		// If HEAD request didn't show encoding, try GET request as fallback.
+		// Some servers only send Content-Encoding with actual content.
+		$ch = curl_init( $this->final_url );
+		curl_setopt( $ch, CURLOPT_HEADER, 1 );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_ENCODING, '' ); // Disable auto-decompression.
+		$ch = V_WPSA_Utils::ch(
+			$ch,
+			array(
+				'Accept-Encoding: gzip, deflate, br, zstd',
+			)
+		);
+
+		if ( false === $ch ) {
+			return false;
+		}
+
+		$response = (string) curl_exec( $ch );
+		curl_close( $ch );
+
+		// Check raw header text for Content-Encoding.
+		if ( preg_match( '/^Content-Encoding:\s*(gzip|deflate|br|zstd)/im', $response ) ) {
+			return true;
 		}
 
 		return false;

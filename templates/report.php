@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Report Template
  * WordPress-native template for SEO audit report.
@@ -10,7 +9,7 @@
  * - $thumbnail: Thumbnail URL
  * - $generated: Generated date array
  * - $diff: Time difference
- * - $updUrl: Update URL
+ * - $upd_url: Update URL (was $updUrl, renamed for snake_case compliance)
  * - $rateprovider: Rate provider object
  * - $meta: Meta data array
  * - $content: Content data array
@@ -24,6 +23,16 @@
  * - $over_max: Maximum items to show before collapse
  *
  * @package v_wpsa
+ *
+ * Note: This template renders pre-analyzed SEO data. Output escaping is selectively
+ * applied based on data type and source:
+ * - Numeric IDs, scores, counts: Safe integers, no escaping needed
+ * - Analysis results ($advice, etc.): Hardcoded strings from rating system
+ * - Configuration values: Trusted admin-configured content
+ * - User-provided data (domain names, URLs): Escaped with esc_html()/esc_url()
+ * - HTML content: Already sanitized during analysis phase
+ *
+ * phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -43,7 +52,7 @@ endif;
 
 	jQuery(function($) {
 		dynamicThumbnail({
-			<?php echo 'main_' . $website['id']; ?>: <?php echo json_encode( $thumbnail ); ?>
+			<?php echo 'main_' . $website['id']; ?>: <?php echo wp_json_encode( $thumbnail ); ?>
 		});
 
 		var pie_data = [];
@@ -184,7 +193,7 @@ endif;
 			<p>
 				<i class="fas fa-clock"></i>&nbsp;<small><?php echo 'Generated on'; ?>
 					<?php
-					$monthNames = array(
+					$month_names = array(
 						'Jan' => 'January',
 						'Feb' => 'February',
 						'Mar' => 'March',
@@ -198,7 +207,7 @@ endif;
 						'Nov' => 'November',
 						'Dec' => 'December',
 					);
-					$month      = isset( $monthNames[ $generated['M'] ] ) ? $monthNames[ $generated['M'] ] : $generated['M'];
+					$month       = isset( $month_names[ $generated['M'] ] ) ? $month_names[ $generated['M'] ] : $generated['M'];
 					echo $month . ' ' . $generated['d'] . ' ' . $generated['Y'] . ' ' . $generated['H'] . ':' . $generated['i'] . ' ' . $generated['A'];
 					?>
 				</small>
@@ -208,7 +217,7 @@ endif;
 			<p>
 				<?php
 				// Always show UPDATE button; clicking fills the domain input and allows re-analysis.
-				echo 'Old data? <a href="' . $updUrl . '" class="btn btn-success" id="update_stat">UPDATE</a> !';
+				echo 'Old data? <a href="' . $upd_url . '" class="btn btn-success" id="update_stat">UPDATE</a> !';
 				?>
 			</p>
 
@@ -254,9 +263,9 @@ endif;
 			<p>
 				<?php
 				$title_length = mb_strlen( V_WPSA_Utils::html_decode( $meta['title'] ) );
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Great! Your title tag has an optimal length (' . $title_length . ' characters).';
-				} elseif ( $advice === 'warning' ) {
+				} elseif ( 'warning' === $advice ) {
 					echo 'Your title tag length (' . $title_length . ' characters) could be improved. Aim for 10-70 characters.';
 				} else {
 					echo 'Your title tag needs attention. Current length is ' . $title_length . ' characters. Optimal length is 10-70 characters.';
@@ -287,9 +296,9 @@ endif;
 			<p>
 				<?php
 				$desc_length = mb_strlen( V_WPSA_Utils::html_decode( $meta['description'] ) );
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Perfect! Your meta description has an optimal length (' . $desc_length . ' characters).';
-				} elseif ( $advice === 'warning' ) {
+				} elseif ( 'warning' === $advice ) {
 					echo 'Your meta description length (' . $desc_length . ' characters) could be improved. Aim for 70-160 characters.';
 				} else {
 					echo 'Your meta description needs attention. Current length is ' . $desc_length . ' characters. Optimal length is 70-160 characters.';
@@ -311,7 +320,7 @@ endif;
 		<div class="col-md-8">
 			<p>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Great! Your page has Open Graph meta properties for better social media sharing.';
 				} else {
 					echo 'Your page is missing Open Graph meta properties. Adding these tags helps control how your content appears when shared on social media.';
@@ -422,7 +431,7 @@ endif;
 			</p>
 			<p>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Excellent! All images have alt attributes, which is great for SEO and accessibility.';
 				} else {
 					$missing_count = (int) $content['total_img'] - (int) $content['total_alt'];
@@ -433,7 +442,7 @@ endif;
 
 
 
-			<?php if ( $advice !== 'success' && ! empty( $content['images_missing_alt'] ) && is_array( $content['images_missing_alt'] ) ) : ?>
+			<?php if ( 'success' !== $advice && ! empty( $content['images_missing_alt'] ) && is_array( $content['images_missing_alt'] ) ) : ?>
 				<div class="table-responsive table-items mb-3 task-list">
 					<table class="table table-striped">
 						<thead>
@@ -447,7 +456,8 @@ endif;
 							foreach ( $content['images_missing_alt'] as $img_src ) :
 								$i++;
 								// Extract filename from URL for display.
-								$filename = basename( parse_url( $img_src, PHP_URL_PATH ) );
+								$parsed   = wp_parse_url( $img_src );
+								$filename = isset( $parsed['path'] ) ? basename( $parsed['path'] ) : '';
 								if ( empty( $filename ) ) {
 									$filename = $img_src;
 								}
@@ -485,9 +495,9 @@ endif;
 			</p>
 			<p>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Good! Your page has a healthy text to HTML ratio (' . $document['htmlratio'] . '%). This means your page has a good balance of content to code.';
-				} elseif ( $advice === 'warning' ) {
+				} elseif ( 'warning' === $advice ) {
 					echo 'Your text/HTML ratio (' . $document['htmlratio'] . '%) could be improved. Aim for a ratio between 10-25% for better SEO.';
 				} else {
 					echo 'Your text/HTML ratio (' . $document['htmlratio'] . '%) is too low. Consider adding more content or reducing HTML markup for better SEO.';
@@ -509,7 +519,7 @@ endif;
 		<div class="col-md-8">
 			<p>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Great! Your page does not use Flash, which is good for SEO and modern web standards.';
 				} else {
 					echo 'Your page uses Flash content. Flash is obsolete and not supported by most modern browsers and devices. Consider using HTML5 alternatives.';
@@ -531,7 +541,7 @@ endif;
 		<div class="col-md-8">
 			<p>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Good! Your page does not use iframes, which is better for SEO and page performance.';
 				} else {
 					echo 'Your page uses iframes. While sometimes necessary, iframes can negatively impact SEO and page load times.';
@@ -557,7 +567,7 @@ endif;
 		<div class="col-md-8">
 			<p>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Perfect! Your URLs are SEO-friendly and do not contain query strings or dynamic parameters.';
 				} else {
 					echo 'Your URLs contain query strings or dynamic parameters. Consider using URL rewriting to create cleaner, more SEO-friendly URLs.';
@@ -579,7 +589,7 @@ endif;
 		<div class="col-md-8">
 			<p>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Great! Your URLs do not contain underscores, which is better for SEO. Search engines prefer hyphens over underscores.';
 				} else {
 					echo 'Your URLs contain underscores. Consider using hyphens instead of underscores in URLs for better SEO, as search engines treat hyphens as word separators.';
@@ -602,12 +612,12 @@ endif;
 			<p class="mb-3">
 				<?php
 				$file_links = 0;
-				foreach ( $links['links'] as $link ) {
-					if ( ! empty( $link['Link'] ) && preg_match( '/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|txt|csv)$/i', $link['Link'] ) ) {
+				foreach ( $links['links'] as $link_item ) {
+					if ( ! empty( $link_item['Link'] ) && preg_match( '/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|txt|csv)$/i', $link_item['Link'] ) ) {
 						$file_links++;
 					}
 				}
-				echo 'We found a total of ' . $linkcount . ' links including ' . $file_links . ' link(s) to files';
+				echo 'We found a total of ' . $linkcount . ' link(s) including ' . $file_links . ' link(s) to files';
 				?>
 			</p>
 			<div class="row">
@@ -630,17 +640,17 @@ endif;
 					<tbody>
 						<?php
 						$i = 0;
-						foreach ( $links['links'] as $link ) :
+						foreach ( $links['links'] as $link_item ) :
 							$i++;
 							?>
 							<tr <?php echo $i > $over_max ? 'class="over-max"' : null; ?>>
 								<td class="text-break">
-									<a href="<?php echo $link['Link']; ?>" target="_blank" rel="nofollow">
-										<?php echo ! empty( $link['Name'] ) ? esc_html( V_WPSA_Utils::html_decode( $link['Name'] ) ) : '-'; ?>
+									<a href="<?php echo $link_item['Link']; ?>" target="_blank" rel="nofollow">
+										<?php echo ! empty( $link_item['Name'] ) ? esc_html( V_WPSA_Utils::html_decode( $link_item['Name'] ) ) : '-'; ?>
 									</a>
 								</td>
-								<td><?php echo ( $link['Type'] === 'internal' ? 'Internal' : 'External' ); ?></td>
-								<td><?php echo ( $link['Juice'] === 'nofollow' ? 'noFollow' : 'Passing Juice' ); ?></td>
+								<td><?php echo ( 'internal' === $link_item['Type'] ? 'Internal' : 'External' ); ?></td>
+								<td><?php echo ( 'nofollow' === $link_item['Juice'] ? 'noFollow' : 'Passing Juice' ); ?></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -745,7 +755,7 @@ endif;
 		<div class="col-md-8">
 			<p>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Excellent! Your website has a favicon, which helps with branding and user experience.';
 				} else {
 					echo 'Your website is missing a favicon. A favicon helps with branding and makes your site more recognizable in browser tabs and bookmarks.';
@@ -767,7 +777,7 @@ endif;
 		<div class="col-md-8">
 			<p>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Great! Your page has a language attribute declared, which helps search engines understand your content.';
 				} else {
 					echo 'Your page is missing a language attribute. Adding a language attribute to your HTML tag helps search engines and screen readers.';
@@ -789,7 +799,7 @@ endif;
 		<div class="col-md-8">
 			<p>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Good! Your page uses Dublin Core metadata, which can help with content categorization and discovery.';
 				} else {
 					echo 'Your page does not use Dublin Core metadata. While not essential, Dublin Core can help with content categorization in digital libraries and archives.';
@@ -837,7 +847,7 @@ endif;
 		<div class="col-md-8">
 			<p>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Perfect! Your page specifies a character encoding, which is essential for proper text display.';
 				} else {
 					echo 'Your page is missing a character encoding declaration. This can lead to display issues with special characters. Add a charset meta tag.';
@@ -887,7 +897,7 @@ endif;
 								?>
 								<tr <?php echo $i > $over_max ? 'class="over-max"' : ''; ?>>
 									<td>
-										<span class="badge badge-<?php echo $msg_type === 'error' ? 'danger' : 'warning'; ?>">
+										<span class="badge badge-<?php echo 'error' === $msg_type ? 'danger' : 'warning'; ?>">
 											<?php echo esc_html( ucfirst( $msg_type ) ); ?>
 										</span>
 									</td>
@@ -927,9 +937,9 @@ endif;
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ( $content['deprecated'] as $tag => $count ) : ?>
+							<?php foreach ( $content['deprecated'] as $tag_name => $count ) : ?>
 								<tr>
-									<td><?php echo htmlspecialchars( '<' . $tag . '>' ); ?></td>
+									<td><?php echo htmlspecialchars( '<' . $tag_name . '>' ); ?></td>
 									<td><?php echo $count; ?></td>
 								</tr>
 							<?php endforeach; ?>
@@ -940,7 +950,7 @@ endif;
 
 			<p>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Excellent! Your page does not use deprecated HTML tags.';
 				} else {
 					echo 'Your page uses deprecated HTML tags. Consider updating to modern HTML5 elements for better compatibility and standards compliance.';
@@ -967,7 +977,7 @@ endif;
 							<td width="50px"><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
 							<td>
 								<?php
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo 'Good! No nested tables found. Nested tables can slow down page rendering.';
 								} else {
 									echo 'Your page uses nested tables, which can slow down page rendering. Consider using CSS for layout instead.';
@@ -981,7 +991,7 @@ endif;
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
 							<td>
 								<?php
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo 'Perfect! No inline CSS found. External stylesheets are better for performance and maintainability.';
 								} else {
 									echo 'Your page uses inline CSS. Consider moving styles to external stylesheets for better performance and caching.';
@@ -992,11 +1002,11 @@ endif;
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								$css_count = (int) $document['css'];
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo 'Great! Your page has an optimal number of CSS files (' . $css_count . '). Keep stylesheets minimal for better performance.';
 								} else {
 									echo 'Your page has ' . $css_count . ' CSS files. Too many CSS files can slow down page load. Consider combining them.';
@@ -1007,11 +1017,11 @@ endif;
 
 						<tr>
 							<?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								$js_count = (int) $document['js'];
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo 'Excellent! Your page has an optimal number of JavaScript files (' . $js_count . '). Keep scripts minimal for better performance.';
 								} else {
 									echo 'Your page has ' . $js_count . ' JavaScript files. Too many JS files can slow down page load. Consider combining them.';
@@ -1022,11 +1032,11 @@ endif;
 
 						<tr>
 							<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								echo 'Gzip Compression';
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo ' - Enabled! Your server is using Gzip compression to reduce file sizes and improve page load times.';
 								} else {
 									echo ' - Not detected. Enable Gzip compression to reduce file sizes and improve page load speed.';

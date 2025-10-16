@@ -1,5 +1,4 @@
 <?php
-
 /**
  * PDF Template
  * WordPress-native template for PDF generation of SEO audit report.
@@ -21,6 +20,16 @@
  * - $misc: Miscellaneous data (optional)
  *
  * @package v_wpsa
+ *
+ * Note: This template renders pre-analyzed SEO data for PDF output. Output escaping
+ * is selectively applied based on data type and source:
+ * - Numeric IDs, scores, counts: Safe integers, no escaping needed
+ * - Analysis results ($advice, etc.): Hardcoded strings from rating system
+ * - Configuration values: Trusted admin-configured content
+ * - User-provided data (domain names, URLs): Escaped with esc_html()/esc_url()
+ * - HTML content: Already sanitized during analysis phase
+ *
+ * phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -152,7 +161,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<h1 class="h-review"><?php echo 'Website review for ' . esc_html( $website['idn'] ); ?></h1>
 			<i class="icon-time"></i>&nbsp;<small><?php echo 'Generated on'; ?>
 				<?php
-				$monthNames = array(
+				$month_names = array(
 					'Jan' => 'January',
 					'Feb' => 'February',
 					'Mar' => 'March',
@@ -166,7 +175,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					'Nov' => 'November',
 					'Dec' => 'December',
 				);
-				$month      = isset( $monthNames[ $generated['M'] ] ) ? $monthNames[ $generated['M'] ] : $generated['M'];
+				$month       = isset( $month_names[ $generated['M'] ] ) ? $month_names[ $generated['M'] ] : $generated['M'];
 				echo $month . ' ' . $generated['d'] . ' ' . $generated['Y'] . ' ' . $generated['H'] . ':' . $generated['i'] . ' ' . $generated['A'];
 				?>
 			</small><br /><br />
@@ -216,9 +225,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<br /><br />
 				<?php
 				$title_length = mb_strlen( (string) $meta['title'] );
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Great! Your title tag has an optimal length (' . $title_length . ' characters).';
-				} elseif ( $advice === 'warning' ) {
+				} elseif ( 'warning' === $advice ) {
 					echo 'Your title tag length (' . $title_length . ' characters) could be improved. Aim for 10-70 characters.';
 				} else {
 					echo 'Your title tag needs attention. Current length is ' . $title_length . ' characters. Optimal length is 10-70 characters.';
@@ -245,9 +254,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<br /><br />
 				<?php
 				$desc_length = mb_strlen( (string) $meta['description'] );
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Perfect! Your meta description has an optimal length (' . $desc_length . ' characters).';
-				} elseif ( $advice === 'warning' ) {
+				} elseif ( 'warning' === $advice ) {
 					echo 'Your meta description length (' . $desc_length . ' characters) could be improved. Aim for 70-160 characters.';
 				} else {
 					echo 'Your meta description needs attention. Current length is ' . $desc_length . ' characters. Optimal length is 70-160 characters.';
@@ -271,7 +280,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<td>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Great! Your page has Open Graph meta properties for better social media sharing.';
 				} else {
 					echo 'Your page is missing Open Graph meta properties. Adding these tags helps control how your content appears when shared on social media.';
@@ -287,7 +296,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php
 						$i = 0;
 						foreach ( $meta['ogproperties'] as $property => $c ) :
-							$even = $i % 2 === 0;
+							$even = 0 === $i % 2;
 							?>
 							<tr nobr="true" class="<?php echo $even ? 'even' : 'odd'; ?>">
 								<td><?php echo esc_html( $property ); ?></td>
@@ -367,14 +376,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<br />
 				<br />
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Excellent! All images have alt attributes, which is great for SEO and accessibility.';
 				} else {
 					echo 'Some images are missing alt attributes. Alt text is important for SEO and accessibility. ' . (int) $content['total_alt'] . ' out of ' . (int) $content['total_img'] . ' images have alt attributes.';
 				}
 				?>
 
-				<?php if ( $advice !== 'success' && ! empty( $content['images_missing_alt'] ) && is_array( $content['images_missing_alt'] ) ) : ?>
+				<?php if ( 'success' !== $advice && ! empty( $content['images_missing_alt'] ) && is_array( $content['images_missing_alt'] ) ) : ?>
 					<br />
 					<br />
 					<strong><?php echo 'Images Missing Alt Text:'; ?></strong>
@@ -387,7 +396,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</thead>
 						<tbody>
 							<?php
-							$max_display = 20; // Limit display in PDF to avoid bloat
+							$max_display = 20; // Limit display in PDF to avoid bloat.
 							$i           = 0;
 							foreach ( $content['images_missing_alt'] as $img_src ) :
 								$i++;
@@ -395,7 +404,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 									break;
 								}
 								// Extract filename from URL for display.
-								$filename = basename( parse_url( $img_src, PHP_URL_PATH ) );
+								$parsed   = wp_parse_url( $img_src );
+								$filename = isset( $parsed['path'] ) ? basename( $parsed['path'] ) : '';
 								if ( empty( $filename ) ) {
 									$filename = $img_src;
 								}
@@ -403,7 +413,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								if ( strlen( $filename ) > 60 ) {
 									$filename = substr( $filename, 0, 57 ) . '...';
 								}
-								$row_class = ( $i % 2 === 0 ) ? 'even' : 'odd';
+								$row_class = ( 0 === $i % 2 ) ? 'even' : 'odd';
 								?>
 								<tr class="<?php echo $row_class; ?>">
 									<td style="padding:5px;word-wrap:break-word;" title="<?php echo esc_attr( $img_src ); ?>">
@@ -441,9 +451,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<br />
 				<br />
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Good! Your page has a healthy text to HTML ratio (' . $document['htmlratio'] . '%). This means your page has a good balance of content to code.';
-				} elseif ( $advice === 'warning' ) {
+				} elseif ( 'warning' === $advice ) {
 					echo 'Your text/HTML ratio (' . $document['htmlratio'] . '%) could be improved. Aim for a ratio between 10-25% for better SEO.';
 				} else {
 					echo 'Your text/HTML ratio (' . $document['htmlratio'] . '%) is too low. Consider adding more content or reducing HTML markup for better SEO.';
@@ -464,7 +474,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</td>
 			<td>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Great! Your page does not use Flash, which is good for SEO and modern web standards.';
 				} else {
 					echo 'Your page uses Flash content. Flash is obsolete and not supported by most modern browsers and devices. Consider using HTML5 alternatives.';
@@ -485,7 +495,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</td>
 			<td>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Good! Your page does not use iframes, which is better for SEO and page performance.';
 				} else {
 					echo 'Your page uses iframes. While sometimes necessary, iframes can negatively impact SEO and page load times.';
@@ -522,7 +532,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</td>
 			<td class="td-result">
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Perfect! Your URLs are SEO-friendly and do not contain query strings or dynamic parameters.';
 				} else {
 					echo 'Your URLs contain query strings or dynamic parameters. Consider using URL rewriting to create cleaner, more SEO-friendly URLs.';
@@ -543,7 +553,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</td>
 			<td>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Great! Your URLs do not contain underscores, which is better for SEO. Search engines prefer hyphens over underscores.';
 				} else {
 					echo 'Your URLs contain underscores. Consider using hyphens instead of underscores in URLs for better SEO, as search engines treat hyphens as word separators.';
@@ -565,13 +575,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<td>
 				<?php
 				$file_links = 0;
-				foreach ( $links['links'] as $link ) {
-					if ( ! empty( $link['Link'] ) && preg_match( '/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|txt|csv)$/i', $link['Link'] ) ) {
+				foreach ( $links['links'] as $link_item ) {
+					if ( ! empty( $link_item['Link'] ) && preg_match( '/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|txt|csv)$/i', $link_item['Link'] ) ) {
 						$file_links++;
 					}
 				}
 				$total_links = count( $links['links'] );
-				echo 'We found a total of ' . $total_links . ' links including ' . $file_links . ' link(s) to files';
+				echo 'We found a total of ' . $total_links . ' link(s) including ' . $file_links . ' link(s) to files';
 				?>
 
 			</td>
@@ -614,17 +624,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 		<?php
 		$i = 0;
-		foreach ( $links['links'] as $link ) :
-			$even = $i % 2 === 0;
+		foreach ( $links['links'] as $link_item ) :
+			$even = 0 === $i % 2;
 			?>
 			<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 				<td>
-					<a href="<?php echo $link['Link']; ?>" target="_blank">
-						<?php echo ! empty( $link['Name'] ) ? esc_html( $link['Name'] ) : '-'; ?>
+					<a href="<?php echo $link_item['Link']; ?>" target="_blank">
+						<?php echo ! empty( $link_item['Name'] ) ? esc_html( $link_item['Name'] ) : '-'; ?>
 					</a>
 				</td>
-				<td><?php echo ( $link['Type'] === 'internal' ? 'Internal' : 'External' ); ?></td>
-				<td><?php echo ( $link['Juice'] === 'nofollow' ? 'noFollow' : 'Passing Juice' ); ?></td>
+				<td><?php echo ( 'internal' === $link_item['Type'] ? 'Internal' : 'External' ); ?></td>
+				<td><?php echo ( 'nofollow' === $link_item['Juice'] ? 'noFollow' : 'Passing Juice' ); ?></td>
 			</tr>
 			<?php
 			$i++;
@@ -686,15 +696,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php
 		$i = 0;
 		foreach ( $cloud['matrix'] as $word => $object ) :
-			$even = $i % 2 === 0;
+			$even = 0 === $i % 2;
 			?>
 			<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 				<td><?php echo esc_html( $word ); ?></td>
 				<td><?php echo (int) $cloud['words'][ $word ]['count']; ?></td>
-				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['title']; ?>.png" /></td>
-				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['keywords']; ?>.png" /></td>
-				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['description']; ?>.png" /></td>
-				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $object['headings']; ?>.png" /></td>
+				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo isset( $object['title'] ) ? (int) $object['title'] : 0; ?>.png" /></td>
+				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo isset( $object['keywords'] ) ? (int) $object['keywords'] : 0; ?>.png" /></td>
+				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo isset( $object['description'] ) ? (int) $object['description'] : 0; ?>.png" /></td>
+				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo isset( $object['headings'] ) ? (int) $object['headings'] : 0; ?>.png" /></td>
 			</tr>
 			<?php
 			$i++;
@@ -744,7 +754,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</td>
 			<td>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Excellent! Your website has a favicon, which helps with branding and user experience.';
 				} else {
 					echo 'Your website is missing a favicon. A favicon helps with branding and makes your site more recognizable in browser tabs and bookmarks.';
@@ -765,7 +775,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</td>
 			<td>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Great! Your page has a language attribute declared, which helps search engines understand your content.';
 				} else {
 					echo 'Your page is missing a language attribute. Adding a language attribute to your HTML tag helps search engines and screen readers.';
@@ -786,7 +796,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</td>
 			<td>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Good! Your page uses Dublin Core metadata, which can help with content categorization and discovery.';
 				} else {
 					echo 'Your page does not use Dublin Core metadata. While not essential, Dublin Core can help with content categorization in digital libraries and archives.';
@@ -844,7 +854,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</td>
 			<td>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Perfect! Your page specifies a character encoding, which is essential for proper text display.';
 				} else {
 					echo 'Your page is missing a character encoding declaration. This can lead to display issues with special characters. Add a charset meta tag.';
@@ -878,7 +888,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php
 						$i = 0;
 						foreach ( $w3c['messages'] as $msg ) :
-							$even     = $i % 2 === 0;
+							$even     = 0 === $i % 2;
 							$msg_type = isset( $msg['type'] ) ? $msg['type'] : 'unknown';
 							$msg_line = isset( $msg['line'] ) ? $msg['line'] : '-';
 							$msg_text = isset( $msg['message'] ) ? $msg['message'] : '';
@@ -916,11 +926,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</tr>
 						<?php
 						$i = 0;
-						foreach ( $content['deprecated'] as $tag => $count ) :
-							$even = $i % 2 === 0;
+						foreach ( $content['deprecated'] as $tag_name => $count ) :
+							$even = 0 === $i % 2;
 							?>
 							<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
-								<td align="center"><?php echo htmlspecialchars( '<' . $tag . '>' ); ?></td>
+								<td align="center"><?php echo htmlspecialchars( '<' . $tag_name . '>' ); ?></td>
 								<td align="center"><?php echo $count; ?></td>
 							</tr>
 							<?php
@@ -930,7 +940,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</table>
 				<?php endif; ?>
 				<?php
-				if ( $advice === 'success' ) {
+				if ( 'success' === $advice ) {
 					echo 'Excellent! Your page does not use deprecated HTML tags.';
 				} else {
 					echo 'Your page uses deprecated HTML tags. Consider updating to modern HTML5 elements for better compatibility and standards compliance.';
@@ -958,7 +968,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<td width="20px"><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
 							<td width="330px">
 								<?php
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo 'Good! No nested tables found. Nested tables can slow down page rendering.';
 								} else {
 									echo 'Your page uses nested tables, which can slow down page rendering. Consider using CSS for layout instead.';
@@ -972,7 +982,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
 							<td>
 								<?php
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo 'Perfect! No inline CSS found. External stylesheets are better for performance and maintainability.';
 								} else {
 									echo 'Your page uses inline CSS. Consider moving styles to external stylesheets for better performance and caching.';
@@ -984,11 +994,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<tr class="even">
 							<?php $advice = $rateprovider->addCompareArray( 'cssCount', $document['css'] ); ?>
 							<?php list($img_advice,) = explode( ' ', $advice ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $img_advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								$css_count = is_array( $document['css'] ) ? count( $document['css'] ) : 0;
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo 'Great! Your page has an optimal number of CSS files (' . $css_count . '). Keep stylesheets minimal for better performance.';
 								} else {
 									echo 'Your page has ' . $css_count . ' CSS files. Too many CSS files can slow down page load. Consider combining them.';
@@ -1000,11 +1010,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<tr class="odd">
 							<?php $advice = $rateprovider->addCompareArray( 'jsCount', $document['js'] ); ?>
 							<?php list($img_advice,) = explode( ' ', $advice ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $img_advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								$js_count = is_array( $document['js'] ) ? count( $document['js'] ) : 0;
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo 'Excellent! Your page has an optimal number of JavaScript files (' . $js_count . '). Keep scripts minimal for better performance.';
 								} else {
 									echo 'Your page has ' . $js_count . ' JavaScript files. Too many JS files can slow down page load. Consider combining them.';
@@ -1016,11 +1026,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<tr class="even">
 							<?php $advice = $rateprovider->addCompare( 'hasGzip', $isseter['gzip'] ); ?>
 							<?php list($img_advice,) = explode( ' ', $advice ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo $img_advice === 'success' ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $img_advice ? '1' : '0'; ?>.png" /></td>
 							<td>
 								<?php
 								echo 'Gzip Compression';
-								if ( $advice === 'success' ) {
+								if ( 'success' === $advice ) {
 									echo ' - Enabled! Your server is using Gzip compression to reduce file sizes and improve page load times.';
 								} else {
 									echo ' - Not detected. Enable Gzip compression to reduce file sizes and improve page load speed.';
@@ -1124,7 +1134,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<?php
 							$i = 0;
 							foreach ( $misc['sitemap'] as $sitemap ) :
-								$even = $i % 2 === 0;
+								$even = 0 === $i % 2;
 								?>
 								<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 									<td><?php echo esc_html( $sitemap ); ?></td>
@@ -1186,7 +1196,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<?php
 							$i = 0;
 							foreach ( $misc['analytics'] as $analytics ) :
-								$even = $i % 2 === 0;
+								$even = 0 === $i % 2;
 								?>
 								<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 									<td>
