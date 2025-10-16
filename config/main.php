@@ -16,12 +16,18 @@ $params    = is_file( $cfg_local ) ? require $cfg_local : require $cfg_main;
 
 // Ensure WordPress database constants are defined.
 // This plugin only works as a WordPress plugin.
+
 if ( ! defined( 'DB_NAME' ) || ! defined( 'DB_USER' ) || ! defined( 'DB_PASSWORD' ) || ! defined( 'DB_HOST' ) ) {
 	wp_die( 'WordPress database constants are not defined. This plugin requires WordPress to be installed and configured.' );
 }
 
 if ( ! defined( 'DB_CHARSET' ) ) {
 	define( 'DB_CHARSET', 'utf8mb4' );
+}
+
+// Ensure DB_PORT is defined (default to 3306 if not)
+if ( ! defined( 'DB_PORT' ) ) {
+	define( 'DB_PORT', '3306' );
 }
 
 // Get WordPress database table prefix.
