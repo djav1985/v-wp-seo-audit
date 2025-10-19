@@ -224,17 +224,31 @@ var WrHelper = (function () {
         var $errors = $('#errors');
         var $progressBar = $('#progress-bar');
 
-        // Check for hash-based deep linking on page load
+        // Check for hash-based deep linking on page load. Prefer cached loader to avoid re-analysis.
         function checkHashAndLoadReport() {
             var hash = window.location.hash;
             if (hash && hash.length > 1) {
                 // Remove the # and convert dashes back to dots
                 var domain = hash.substring(1).replace(/-/g, '.');
                 if (domain) {
-                    // Load the report for this domain
-                    window.vWpSeoAudit.generateReport(domain, {
-                        scrollTo: true
-                    });
+                    // Prefer cached loader if available to avoid regenerating the report.
+                    if (window.vWpSeoAudit && typeof window.vWpSeoAudit.loadCachedReport === 'function') {
+                        window.vWpSeoAudit.loadCachedReport(domain, {
+                            afterSend: function() {
+                                var $target = $('.v-wpsa-container').first();
+                                if ($target.length) {
+                                    $('html, body').animate({
+                                        scrollTop: $target.offset().top - 100
+                                    }, 500);
+                                }
+                            }
+                        });
+                    } else {
+                        // Fallback to generateReport which may re-run analysis if needed.
+                        window.vWpSeoAudit.generateReport(domain, {
+                            scrollTo: true
+                        });
+                    }
                 }
             }
         }
@@ -358,6 +372,57 @@ var WrHelper = (function () {
             }
         });
 
+        // Load cached HTML report (view-only) without triggering re-analysis.
+        window.vWpSeoAudit.loadCachedReport = function(domain, options) {
+            var settings = $.extend({
+                $container: null,
+                beforeSend: null,
+                afterSend: null
+            }, options || {});
+
+            var $container = normalizeElement(settings.$container, '.v-wpsa-container').first();
+
+            if (typeof settings.beforeSend === 'function') {
+                settings.beforeSend();
+            }
+
+            $.ajax({
+                url: getAjaxUrl(),
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'v_wpsa_get_cached_report',
+                    domain: domain,
+                    nonce: getNonce()
+                }
+            }).done(function(response) {
+                if (response && response.success) {
+                    var html = response.data && response.data.html ? response.data.html : '';
+                    if ($container.length) {
+                        $container.html(html);
+                        if (response.data && response.data.nonce) {
+                            $container.attr('data-nonce', response.data.nonce);
+                        }
+                    }
+                    if (typeof settings.afterSend === 'function') {
+                        settings.afterSend();
+                    }
+                } else {
+                    var message = response && response.data && response.data.message ? response.data.message : 'Failed to load report';
+                    window.alert(message);
+                    if (typeof settings.afterSend === 'function') {
+                        settings.afterSend();
+                    }
+                }
+            }).fail(function() {
+                window.alert('An error occurred while loading the report.');
+                if (typeof settings.afterSend === 'function') {
+                    settings.afterSend();
+                }
+            });
+        };
+
+        // Bind review button to load the cached report rather than regenerating it.
         $('body').on('click', '.v-wpsa-view-report', function(e) {
             e.preventDefault();
 
@@ -372,7 +437,7 @@ var WrHelper = (function () {
                 return;
             }
 
-            window.vWpSeoAudit.generateReport(domain, {
+            window.vWpSeoAudit.loadCachedReport(domain, {
                 $container: resolveContainer($trigger),
                 beforeSend: function() {
                     $trigger.addClass('disabled').attr('aria-busy', 'true');

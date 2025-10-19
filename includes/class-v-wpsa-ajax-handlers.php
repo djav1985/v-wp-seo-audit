@@ -31,12 +31,62 @@ class V_WPSA_Ajax_Handlers {
 		add_action( 'wp_ajax_v_wpsa_generate_report', array( __CLASS__, 'generate_report' ) );
 		add_action( 'wp_ajax_nopriv_v_wpsa_generate_report', array( __CLASS__, 'generate_report' ) );
 
+		// Cached report retrieval (view-only, do not trigger analysis).
+		add_action( 'wp_ajax_v_wpsa_get_cached_report', array( __CLASS__, 'get_cached_report' ) );
+		add_action( 'wp_ajax_nopriv_v_wpsa_get_cached_report', array( __CLASS__, 'get_cached_report' ) );
+
 		// PDF download handler.
 		add_action( 'wp_ajax_v_wpsa_download_pdf', array( __CLASS__, 'download_pdf' ) );
 		add_action( 'wp_ajax_nopriv_v_wpsa_download_pdf', array( __CLASS__, 'download_pdf' ) );
 
 		// Delete report handler (admin only).
 		add_action( 'wp_ajax_v_wpsa_delete_report', array( __CLASS__, 'delete_report' ) );
+	}
+
+	/**
+	 * AJAX handler that returns the cached HTML report without triggering re-analysis.
+	 *
+	 * This is used by the front-end "Review" buttons to view the stored report as-is.
+	 */
+	public static function get_cached_report() {
+		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
+
+		$domain_raw = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
+		if ( empty( $domain_raw ) ) {
+			wp_send_json_error( array( 'message' => 'Domain is required' ) );
+			return;
+		}
+
+		$validation = V_WPSA_Validation::validate_domain( $domain_raw );
+		if ( ! $validation['valid'] ) {
+			wp_send_json_error( array( 'message' => implode( '<br>', $validation['errors'] ) ) );
+			return;
+		}
+
+		$domain = $validation['domain'];
+
+		$db      = new V_WPSA_DB();
+		$website = $db->get_website_by_domain( $domain, array( 'modified', 'id' ) );
+
+		if ( ! $website ) {
+			wp_send_json_error( array( 'message' => 'Report not found for this domain' ) );
+			return;
+		}
+
+		// Render HTML using the report generator but do not trigger analysis.
+		try {
+			$content = V_WPSA_Report_Generator::generate_html_report( $domain );
+			wp_send_json_success(
+				array(
+					'html'  => $content,
+					'nonce' => wp_create_nonce( 'v_wpsa_nonce' ),
+				)
+			);
+		} catch ( Throwable $t ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- intentional logging for troubleshooting.
+			error_log( sprintf( 'v-wpsa: failed to render cached report for %s: %s in %s on line %d', $domain, $t->getMessage(), $t->getFile(), $t->getLine() ) );
+			wp_send_json_error( array( 'message' => 'Failed to load report' ) );
+		}
 	}
 
 	/**

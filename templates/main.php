@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Get plugin configuration.
-$plugin_name = apply_filters( 'v_wpsa_plugin_name', 'V WP SEO Audit' );
+$plugin_name = apply_filters( 'v_wpsa_plugin_name', 'SEO Audit by Vontainment' );
 $placeholder = apply_filters( 'v_wpsa_placeholder', 'example.com' );
 $base_url    = V_WPSA_PLUGIN_URL;
 ?>
