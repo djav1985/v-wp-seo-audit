@@ -132,12 +132,15 @@ function v_wpsa_shortcode( $atts ) {
 	// Create a fresh nonce for the container to support AJAX operations.
 	$nonce = wp_create_nonce( 'v_wpsa_nonce' );
 
+	// Generate unique ID for this shortcode instance to support multiple shortcodes per page.
+	$unique_id = 'v-wpsa-' . wp_rand( 1000, 9999 ) . '-' . time();
+
 	// Return a loading placeholder that will be populated via AJAX.
 	// This breaks server-side caching since content is loaded dynamically.
 	$base_url = V_WPSA_PLUGIN_URL;
 	ob_start();
 	?>
-	<div class="v-wpsa-container" data-nonce="<?php echo esc_attr( $nonce ); ?>" data-loading="true">
+	<div id="<?php echo esc_attr( $unique_id ); ?>" class="v-wpsa-container" data-nonce="<?php echo esc_attr( $nonce ); ?>" data-loading="true">
 		<div class="v-wpsa-loading text-center py-5">
 			<img src="<?php echo esc_url( $base_url . 'assets/img/loader.gif' ); ?>" alt="<?php esc_attr_e( 'Loading...', 'v-wpsa' ); ?>" style="max-width: 100px;" />
 			<p class="mt-3"><?php esc_html_e( 'Loading SEO Audit Tool...', 'v-wpsa' ); ?></p>
@@ -147,8 +150,10 @@ function v_wpsa_shortcode( $atts ) {
 		(function() {
 			'use strict';
 			jQuery(document).ready(function($) {
-				var $container = $('.v-wpsa-container[data-loading="true"]').last();
+				var $container = $('#<?php echo esc_js( $unique_id ); ?>');
 				if (!$container.length) return;
+
+				var errorMessage = '<div class="alert alert-danger">Failed to load content. Please refresh the page.</div>';
 
 				$.ajax({
 					url: <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>,
@@ -171,11 +176,11 @@ function v_wpsa_shortcode( $atts ) {
 								}
 							}
 						} else {
-							$container.html('<div class="alert alert-danger">Failed to load content. Please refresh the page.</div>');
+							$container.html(errorMessage);
 						}
 					},
 					error: function() {
-						$container.html('<div class="alert alert-danger">Failed to load content. Please refresh the page.</div>');
+						$container.html(errorMessage);
 					}
 				});
 			});

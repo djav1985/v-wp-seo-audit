@@ -33,19 +33,31 @@ class V_WPSA_Thumbnail {
 			// Create directory if it doesn't exist.
 			if ( ! file_exists( $thumbnail_dir ) ) {
 				wp_mkdir_p( $thumbnail_dir );
+			}
 
-				// Add .htaccess to ensure public access for all users (including logged-out).
-				$htaccess_file = $thumbnail_dir . '/.htaccess';
-				if ( ! file_exists( $htaccess_file ) ) {
-					$htaccess_content  = "# Allow public access to thumbnails\n";
-					$htaccess_content .= "<IfModule mod_authz_core.c>\n";
-					$htaccess_content .= "  Require all granted\n";
-					$htaccess_content .= "</IfModule>\n";
-					$htaccess_content .= "<IfModule !mod_authz_core.c>\n";
-					$htaccess_content .= "  Order allow,deny\n";
-					$htaccess_content .= "  Allow from all\n";
-					$htaccess_content .= "</IfModule>\n";
-					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents -- Creating .htaccess for public access.
+			// Ensure .htaccess exists for public access (for both logged-in and logged-out users).
+			// This is checked every time to handle cases where the file might be deleted.
+			$htaccess_file = $thumbnail_dir . '/.htaccess';
+			if ( ! file_exists( $htaccess_file ) ) {
+				$htaccess_content  = "# Allow public access to thumbnails\n";
+				$htaccess_content .= "<IfModule mod_authz_core.c>\n";
+				$htaccess_content .= "  Require all granted\n";
+				$htaccess_content .= "</IfModule>\n";
+				$htaccess_content .= "<IfModule !mod_authz_core.c>\n";
+				$htaccess_content .= "  Order allow,deny\n";
+				$htaccess_content .= "  Allow from all\n";
+				$htaccess_content .= "</IfModule>\n";
+
+				// Use WordPress filesystem API for better compatibility.
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+				WP_Filesystem();
+				global $wp_filesystem;
+
+				if ( $wp_filesystem ) {
+					$wp_filesystem->put_contents( $htaccess_file, $htaccess_content, FS_CHMOD_FILE );
+				} else {
+					// Fallback to direct file write if WP_Filesystem is not available.
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents -- Fallback when WP_Filesystem fails.
 					file_put_contents( $htaccess_file, $htaccess_content );
 				}
 			}
