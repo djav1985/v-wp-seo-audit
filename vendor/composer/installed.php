@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-copilot/add-cache-busting-for-ajax',
-        'version' => 'dev-copilot/add-cache-busting-for-ajax',
-        'reference' => '5fcf7c5cffbd63be6b7c67f00efd70976f7f9f0f',
+        'pretty_version' => 'dev-copilot/fix-ajax-loading-errors',
+        'version' => 'dev-copilot/fix-ajax-loading-errors',
+        'reference' => '590c5a73e4b6227a374d64380c9a06b44dbc43d8',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-copilot/add-cache-busting-for-ajax',
-            'version' => 'dev-copilot/add-cache-busting-for-ajax',
-            'reference' => '5fcf7c5cffbd63be6b7c67f00efd70976f7f9f0f',
+            'pretty_version' => 'dev-copilot/fix-ajax-loading-errors',
+            'version' => 'dev-copilot/fix-ajax-loading-errors',
+            'reference' => '590c5a73e4b6227a374d64380c9a06b44dbc43d8',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
