@@ -30,7 +30,7 @@ if ( ! defined( 'DB_CHARSET' ) ) {
 	define( 'DB_CHARSET', 'utf8mb4' );
 }
 
-// Ensure DB_PORT is defined (default to 3306 if not)
+// Ensure DB_PORT is defined (default to 3306 if not).
 if ( ! defined( 'DB_PORT' ) ) {
 	define( 'DB_PORT', '3306' );
 }
