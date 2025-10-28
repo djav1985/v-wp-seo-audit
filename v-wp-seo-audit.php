@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: v-wp-seo-audit
+ * Plugin Name: V WP SEO Audit
  * Description: WordPress SEO Audit plugin - Analyze your website's SEO performance
  * Version: 1.0.0
  * Author: Vontainment
