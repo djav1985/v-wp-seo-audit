@@ -174,7 +174,7 @@ $format_points    = static function ( $value ) {
 <table class="table table-fluid">
 	<tr class="no-top-line">
 		<td>
-			<img class="thumbnail" id="thumb_<?php echo $website['id']; ?>" src="<?php echo $thumbnail; ?>" alt="<?php echo $website['idn']; ?>" />	
+			<img class="thumbnail" id="thumb_<?php echo esc_attr( $website['id'] ); ?>" src="<?php echo esc_url( $thumbnail ); ?>" alt="<?php echo esc_attr( $website['idn'] ); ?>" />	
 		</td>
 		<td>
 			<h1 class="h-review"><?php echo 'Website review for ' . esc_html( $website['idn'] ); ?></h1>
@@ -195,7 +195,7 @@ $format_points    = static function ( $value ) {
 					'Dec' => 'December',
 				);
 				$month       = isset( $month_names[ $generated['M'] ] ) ? $month_names[ $generated['M'] ] : $generated['M'];
-				echo $month . ' ' . $generated['d'] . ' ' . $generated['Y'] . ' ' . $generated['H'] . ':' . $generated['i'] . ' ' . $generated['A'];
+				echo esc_html( $month . ' ' . $generated['d'] . ' ' . $generated['Y'] . ' ' . $generated['H'] . ':' . $generated['i'] . ' ' . $generated['A'] );
 				?>
 			</small><br /><br />
 
@@ -204,7 +204,7 @@ $format_points    = static function ( $value ) {
 
 			<table width="180px" cellspacing="0" cellpadding="0">
 				<tr>
-					<td width="<?php echo $website['score']; ?>%" class="bar"></td>
+					<td width="<?php echo esc_attr( $website['score'] ); ?>%" class="bar"></td>
 					<td class="progress"></td>
 				</tr>
 			</table>
@@ -229,10 +229,10 @@ $format_points    = static function ( $value ) {
 		<!-- Title -->
 			<?php $advice = $score_advice( 'title' ); ?>
 		<?php list($img_advice,) = explode( ' ', $advice ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td class="td-icon">
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $img_advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="td-compare" align="center" valign="middle">
 				<?php echo 'Title'; ?>
@@ -240,16 +240,16 @@ $format_points    = static function ( $value ) {
 			<td class="td-result">
 				<?php echo esc_html( $meta['title'] ); ?>
 				<br /><br />
-				<strong><?php echo 'Length'; ?> : <?php echo mb_strlen( (string) $meta['title'] ); ?></strong>
+				<strong><?php echo 'Length'; ?> : <?php echo esc_html( mb_strlen( (string) $meta['title'] ) ); ?></strong>
 				<br /><br />
 				<?php
 				$title_length = mb_strlen( (string) $meta['title'] );
 				if ( 'success' === $advice ) {
-					echo 'Great! Your title tag has an optimal length (' . $title_length . ' characters).';
+					echo esc_html( 'Great! Your title tag has an optimal length (' . $title_length . ' characters).' );
 				} elseif ( 'warning' === $advice ) {
-					echo 'Your title tag length (' . $title_length . ' characters) could be improved. Aim for 10-70 characters.';
+					echo esc_html( 'Your title tag length (' . $title_length . ' characters) could be improved. Aim for 10-70 characters.' );
 				} else {
-					echo 'Your title tag needs attention. Current length is ' . $title_length . ' characters. Optimal length is 10-70 characters.';
+					echo esc_html( 'Your title tag needs attention. Current length is ' . $title_length . ' characters. Optimal length is 10-70 characters.' );
 				}
 				?>
 			</td>
@@ -258,10 +258,10 @@ $format_points    = static function ( $value ) {
 		<!-- Description -->
 			<?php $advice = $score_advice( 'description' ); ?>
 		<?php list($img_advice,) = explode( ' ', $advice ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $img_advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="td-compare" align="center" valign="middle">
 				<?php echo 'Description'; ?>
@@ -269,16 +269,16 @@ $format_points    = static function ( $value ) {
 			<td>
 				<?php echo esc_html( $meta['description'] ); ?>
 				<br /><br />
-				<strong><?php echo 'Length'; ?> : <?php echo mb_strlen( (string) $meta['description'] ); ?></strong>
+				<strong><?php echo 'Length'; ?> : <?php echo esc_html( mb_strlen( (string) $meta['description'] ) ); ?></strong>
 				<br /><br />
 				<?php
 				$desc_length = mb_strlen( (string) $meta['description'] );
 				if ( 'success' === $advice ) {
-					echo 'Perfect! Your meta description has an optimal length (' . $desc_length . ' characters).';
+					echo esc_html( 'Perfect! Your meta description has an optimal length (' . $desc_length . ' characters).' );
 				} elseif ( 'warning' === $advice ) {
-					echo 'Your meta description length (' . $desc_length . ' characters) could be improved. Aim for 70-160 characters.';
+					echo esc_html( 'Your meta description length (' . $desc_length . ' characters) could be improved. Aim for 70-160 characters.' );
 				} else {
-					echo 'Your meta description needs attention. Current length is ' . $desc_length . ' characters. Optimal length is 70-160 characters.';
+					echo esc_html( 'Your meta description needs attention. Current length is ' . $desc_length . ' characters. Optimal length is 70-160 characters.' );
 				}
 				?>
 			</td>
@@ -286,11 +286,11 @@ $format_points    = static function ( $value ) {
 
 		<!-- Og properties -->
 			<?php $advice = $score_advice( 'ogmetaproperties' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 
 			<td class="td-compare" align="center" valign="middle">
@@ -300,9 +300,9 @@ $format_points    = static function ( $value ) {
 			<td>
 				<?php
 				if ( 'success' === $advice ) {
-					echo 'Great! Your page has Open Graph meta properties for better social media sharing.';
+					echo esc_html( 'Great! Your page has Open Graph meta properties for better social media sharing.' );
 				} else {
-					echo 'Your page is missing Open Graph meta properties. Adding these tags helps control how your content appears when shared on social media.';
+					echo esc_html( 'Your page is missing Open Graph meta properties. Adding these tags helps control how your content appears when shared on social media.' );
 				}
 				?>
 				<br /><br />
@@ -335,7 +335,7 @@ $format_points    = static function ( $value ) {
 		<tr class="odd">
 			<td>
 				<br /><br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/neutral.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="td-compare" align="center" valign="middle">
 				<?php echo 'Headings'; ?>
@@ -346,12 +346,12 @@ $format_points    = static function ( $value ) {
 					<tbody>
 						<tr class="no-top-line">
 							<?php foreach ( $content['headings'] as $heading => $headings ) : ?>
-								<td><strong><?php echo strtoupper( $heading ); ?></strong></td>
+								<td><strong><?php echo esc_html( strtoupper( $heading ) ); ?></strong></td>
 							<?php endforeach; ?>
 						</tr>
 						<tr>
 							<?php foreach ( $content['headings'] as $headings ) : ?>
-								<td><?php echo count( $headings ); ?></td>
+								<td><?php echo esc_html( (int) count( $headings ) ); ?></td>
 							<?php endforeach; ?>
 						</tr>
 					</tbody>
@@ -368,7 +368,7 @@ $format_points    = static function ( $value ) {
 								foreach ( $headings as $h ) :
 									$i++;
 									?>
-									<li>[<?php echo mb_strtoupper( (string) $heading ); ?>] <?php echo esc_html( $h ); ?></li>
+									<li>[<?php echo esc_html( mb_strtoupper( (string) $heading ) ); ?>] <?php echo esc_html( $h ); ?></li>
 									<?php
 								endforeach;
 							endif;
@@ -382,23 +382,23 @@ $format_points    = static function ( $value ) {
 
 		<!-- Images -->
 			<?php $advice = $score_advice( 'imgHasAlt' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="td-compare" align="center" valign="middle">
 				<?php echo 'Images'; ?>
 			</td>
 			<td>
-				<?php echo 'We found ' . (int) $content['total_img'] . ' images on this web page.'; ?>
+				<?php echo esc_html( 'We found ' . (int) $content['total_img'] . ' images on this web page.' ); ?>
 				<br />
 				<br />
 				<?php
 				if ( 'success' === $advice ) {
-					echo 'Excellent! All images have alt attributes, which is great for SEO and accessibility.';
+					echo esc_html( 'Excellent! All images have alt attributes, which is great for SEO and accessibility.' );
 				} else {
-					echo 'Some images are missing alt attributes. Alt text is important for SEO and accessibility. ' . (int) $content['total_alt'] . ' out of ' . (int) $content['total_img'] . ' images have alt attributes.';
+					echo esc_html( 'Some images are missing alt attributes. Alt text is important for SEO and accessibility. ' . (int) $content['total_alt'] . ' out of ' . (int) $content['total_img'] . ' images have alt attributes.' );
 				}
 				?>
 
@@ -434,7 +434,7 @@ $format_points    = static function ( $value ) {
 								}
 								$row_class = ( 0 === $i % 2 ) ? 'even' : 'odd';
 								?>
-								<tr class="<?php echo $row_class; ?>">
+								<tr class="<?php echo esc_attr( $row_class ); ?>">
 									<td style="padding:5px;word-wrap:break-word;" title="<?php echo esc_attr( $img_src ); ?>">
 										<?php echo esc_html( $filename ); ?>
 									</td>
@@ -443,7 +443,7 @@ $format_points    = static function ( $value ) {
 							<?php if ( count( $content['images_missing_alt'] ) > $max_display ) : ?>
 								<tr>
 									<td style="padding:5px;font-style:italic;">
-										<?php echo '... and ' . ( count( $content['images_missing_alt'] ) - $max_display ) . ' more images'; ?>
+										<?php echo esc_html( '... and ' . ( count( $content['images_missing_alt'] ) - $max_display ) . ' more images' ); ?>
 									</td>
 								</tr>
 							<?php endif; ?>
@@ -457,10 +457,10 @@ $format_points    = static function ( $value ) {
 		<!-- Text/HTML Ratio -->
 			<?php $advice = $score_advice( 'htmlratio' ); ?>
 		<?php list($img_advice,) = explode( ' ', $advice ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $img_advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $img_advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="td-compare" align="center" valign="middle">
 				<?php echo 'Text/HTML Ratio'; ?>
@@ -471,18 +471,18 @@ $format_points    = static function ( $value ) {
 				$html_percent = 100 - $text_percent;
 				echo 'Ratio';
 				?>
-				: <strong><?php echo $text_percent; ?>% text vs <?php echo $html_percent; ?>% HTML</strong>
+				: <strong><?php echo esc_html( $text_percent . '% text vs ' . $html_percent . '% HTML' ); ?></strong>
 				<br />
 				<br />
 				<?php
 				if ( 'error less_than' === $advice ) {
-					echo 'Your text/HTML ratio (' . $text_percent . '% text, ' . $html_percent . '% HTML) is very low. Add more readable content for better SEO.';
+					echo esc_html( 'Your text/HTML ratio (' . $text_percent . '% text, ' . $html_percent . '% HTML) is very low. Add more readable content for better SEO.' );
 				} elseif ( 'success' === $advice ) {
-					echo 'Your text/HTML ratio (' . $text_percent . '% text, ' . $html_percent . '% HTML) is acceptable, but could be stronger. Aim for 40%-70% text for best SEO.';
+					echo esc_html( 'Your text/HTML ratio (' . $text_percent . '% text, ' . $html_percent . '% HTML) is acceptable, but could be stronger. Aim for 40%-70% text for best SEO.' );
 				} elseif ( 'success ideal_ratio' === $advice ) {
-					echo 'Excellent! Your page has an ideal text to HTML ratio (' . $text_percent . '% text, ' . $html_percent . '% HTML). This is optimal for SEO and readability.';
+					echo esc_html( 'Excellent! Your page has an ideal text to HTML ratio (' . $text_percent . '% text, ' . $html_percent . '% HTML). This is optimal for SEO and readability.' );
 				} elseif ( 'warning' === $advice ) {
-					echo 'Your text/HTML ratio (' . $text_percent . '% text, ' . $html_percent . '% HTML) is a bit too text-heavy. Consider balancing content and markup for best results.';
+					echo esc_html( 'Your text/HTML ratio (' . $text_percent . '% text, ' . $html_percent . '% HTML) is a bit too text-heavy. Consider balancing content and markup for best results.' );
 				}
 				?>
 			</td>
@@ -490,10 +490,10 @@ $format_points    = static function ( $value ) {
 
 		<!-- Flash -->
 			<?php $advice = $score_advice( 'noFlash' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="td-compare" align="center" valign="middle">
 				<?php echo 'Flash'; ?>
@@ -501,9 +501,9 @@ $format_points    = static function ( $value ) {
 			<td>
 				<?php
 				if ( 'success' === $advice ) {
-					echo 'Great! Your page does not use Flash, which is good for SEO and modern web standards.';
+					echo esc_html( 'Great! Your page does not use Flash, which is good for SEO and modern web standards.' );
 				} else {
-					echo 'Your page uses Flash content. Flash is obsolete and not supported by most modern browsers and devices. Consider using HTML5 alternatives.';
+					echo esc_html( 'Your page uses Flash content. Flash is obsolete and not supported by most modern browsers and devices. Consider using HTML5 alternatives.' );
 				}
 				?>
 			</td>
@@ -511,10 +511,10 @@ $format_points    = static function ( $value ) {
 
 		<!-- Iframe -->
 			<?php $advice = $score_advice( 'noIframe' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="td-compare" align="center" valign="middle">
 				<?php echo 'Iframe'; ?>
@@ -522,9 +522,9 @@ $format_points    = static function ( $value ) {
 			<td>
 				<?php
 				if ( 'success' === $advice ) {
-					echo 'Good! Your page does not use iframes, which is better for SEO and page performance.';
+					echo esc_html( 'Good! Your page does not use iframes, which is better for SEO and page performance.' );
 				} else {
-					echo 'Your page uses iframes. While sometimes necessary, iframes can negatively impact SEO and page load times.';
+					echo esc_html( 'Your page uses iframes. While sometimes necessary, iframes can negatively impact SEO and page load times.' );
 				}
 				?>
 			</td>
@@ -548,10 +548,10 @@ $format_points    = static function ( $value ) {
 	<tbody>
 		<!-- Friendly url -->
 			<?php $advice = $score_advice( 'isFriendlyUrl' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td class="td-icon">
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="td-compare">
 				<?php echo 'URL Rewrite'; ?>
@@ -559,9 +559,9 @@ $format_points    = static function ( $value ) {
 			<td class="td-result">
 				<?php
 				if ( 'success' === $advice ) {
-					echo 'Perfect! Your URLs are SEO-friendly and do not contain query strings or dynamic parameters.';
+					echo esc_html( 'Perfect! Your URLs are SEO-friendly and do not contain query strings or dynamic parameters.' );
 				} else {
-					echo 'Your URLs contain query strings or dynamic parameters. Consider using URL rewriting to create cleaner, more SEO-friendly URLs.';
+					echo esc_html( 'Your URLs contain query strings or dynamic parameters. Consider using URL rewriting to create cleaner, more SEO-friendly URLs.' );
 				}
 				?>
 			</td>
@@ -569,10 +569,10 @@ $format_points    = static function ( $value ) {
 
 		<!-- Underscore -->
 			<?php $advice = $score_advice( 'noUnderScore' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="compare">
 				<?php echo 'Underscores in the URLs'; ?>
@@ -580,9 +580,9 @@ $format_points    = static function ( $value ) {
 			<td>
 				<?php
 				if ( 'success' === $advice ) {
-					echo 'Great! Your URLs do not contain underscores, which is better for SEO. Search engines prefer hyphens over underscores.';
+					echo esc_html( 'Great! Your URLs do not contain underscores, which is better for SEO. Search engines prefer hyphens over underscores.' );
 				} else {
-					echo 'Your URLs contain underscores. Consider using hyphens instead of underscores in URLs for better SEO, as search engines treat hyphens as word separators.';
+					echo esc_html( 'Your URLs contain underscores. Consider using hyphens instead of underscores in URLs for better SEO, as search engines treat hyphens as word separators.' );
 				}
 				?>
 			</td>
@@ -590,10 +590,10 @@ $format_points    = static function ( $value ) {
 
 		<!-- In-page links -->
 			<?php $advice = $score_advice( 'issetInternalLinks' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="compare">
 				<?php echo 'In-page links'; ?>
@@ -607,7 +607,7 @@ $format_points    = static function ( $value ) {
 					}
 				}
 				$total_links = count( $links['links'] );
-				echo 'We found a total of ' . $total_links . ' link(s) including ' . $file_links . ' link(s) to files';
+				echo esc_html( 'We found a total of ' . $total_links . ' link(s) including ' . $file_links . ' link(s) to files' );
 				?>
 
 			</td>
@@ -617,15 +617,15 @@ $format_points    = static function ( $value ) {
 		<tr class="odd">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/neutral.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="compare">
 				<?php echo 'Statistics'; ?>
 			</td>
 			<td>
-				<?php echo 'External Links'; ?> : <?php echo 'noFollow'; ?> <?php echo V_WPSA_Utils::proportion( $linkcount, $links['external_nofollow'] ); ?>%<br /><br />
-				<?php echo 'External Links'; ?> : <?php echo 'Passing Juice'; ?> <?php echo V_WPSA_Utils::proportion( $linkcount, $links['external_dofollow'] ); ?>%<br /><br />
-				<?php echo 'Internal Links'; ?> <?php echo V_WPSA_Utils::proportion( $linkcount, $links['internal'] ); ?>%
+				<?php echo 'External Links'; ?> : <?php echo 'noFollow'; ?> <?php echo esc_html( V_WPSA_Utils::proportion( $linkcount, $links['external_nofollow'] ) . '%' ); ?><br /><br />
+				<?php echo 'External Links'; ?> : <?php echo 'Passing Juice'; ?> <?php echo esc_html( V_WPSA_Utils::proportion( $linkcount, $links['external_dofollow'] ) . '%' ); ?><br /><br />
+				<?php echo 'Internal Links'; ?> <?php echo esc_html( V_WPSA_Utils::proportion( $linkcount, $links['internal'] ) . '%' ); ?>
 			</td>
 		</tr>
 	</tbody>
@@ -655,12 +655,12 @@ $format_points    = static function ( $value ) {
 			?>
 			<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 				<td>
-					<a href="<?php echo $link_item['Link']; ?>" target="_blank">
+					<a href="<?php echo esc_url( $link_item['Link'] ); ?>" target="_blank">
 						<?php echo ! empty( $link_item['Name'] ) ? esc_html( $link_item['Name'] ) : '-'; ?>
 					</a>
 				</td>
-				<td><?php echo ( 'internal' === $link_item['Type'] ? 'Internal' : 'External' ); ?></td>
-				<td><?php echo ( 'nofollow' === $link_item['Juice'] ? 'noFollow' : 'Passing Juice' ); ?></td>
+				<td><?php echo esc_html( 'internal' === $link_item['Type'] ? 'Internal' : 'External' ); ?></td>
+				<td><?php echo esc_html( 'nofollow' === $link_item['Juice'] ? 'noFollow' : 'Passing Juice' ); ?></td>
 			</tr>
 			<?php
 			$i++;
@@ -685,14 +685,14 @@ $format_points    = static function ( $value ) {
 		<tr class="odd">
 			<td class="td-icon">
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/neutral.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="td-compare">
 				<?php echo 'Keywords Cloud'; ?>
 			</td>
 			<td class="cloud-container td-result">
 				<?php foreach ( $cloud['words'] as $word => $stat ) : ?>
-					<span class="grade-<?php echo (int) $stat['grade']; ?>"><?php echo esc_html( $word ); ?></span>
+					<span class="grade-<?php echo esc_attr( (int) $stat['grade'] ); ?>"><?php echo esc_html( $word ); ?></span>
 				<?php endforeach; ?>
 			</td>
 		</tr>
@@ -726,11 +726,11 @@ $format_points    = static function ( $value ) {
 			?>
 			<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 				<td><?php echo esc_html( $word ); ?></td>
-				<td><?php echo (int) $cloud['words'][ $word ]['count']; ?></td>
-				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo isset( $object['title'] ) ? (int) $object['title'] : 0; ?>.png" /></td>
-				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo isset( $object['keywords'] ) ? (int) $object['keywords'] : 0; ?>.png" /></td>
-				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo isset( $object['description'] ) ? (int) $object['description'] : 0; ?>.png" /></td>
-				<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo isset( $object['headings'] ) ? (int) $object['headings'] : 0; ?>.png" /></td>
+				<td><?php echo esc_html( (int) $cloud['words'][ $word ]['count'] ); ?></td>
+				<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . ( isset( $object['title'] ) ? (int) $object['title'] : 0 ) . '.png' ); ?>" /></td>
+				<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . ( isset( $object['keywords'] ) ? (int) $object['keywords'] : 0 ) . '.png' ); ?>" /></td>
+				<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . ( isset( $object['description'] ) ? (int) $object['description'] : 0 ) . '.png' ); ?>" /></td>
+				<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . ( isset( $object['headings'] ) ? (int) $object['headings'] : 0 ) . '.png' ); ?>" /></td>
 			</tr>
 			<?php
 			$i++;
@@ -756,24 +756,24 @@ $format_points    = static function ( $value ) {
 		<tr class="odd">
 			<td class="td-icon">
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/neutral.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="td-compare">
 				<?php echo 'Url'; ?>
 			</td>
 			<td class="td-result">
-				<?php echo 'Domain'; ?> : <?php echo $website['idn']; ?>
+				<?php echo 'Domain'; ?> : <?php echo esc_html( $website['idn'] ); ?>
 				<br />
-				<?php echo 'Length'; ?> : <?php echo mb_strlen( $website['idn'] ); ?>
+				<?php echo 'Length'; ?> : <?php echo esc_html( mb_strlen( $website['idn'] ) ); ?>
 			</td>
 		</tr>
 
 		<!-- Favicon -->
 			<?php $advice = $score_advice( 'issetFavicon' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="compare">
 				<?php echo 'Favicon'; ?>
@@ -781,9 +781,9 @@ $format_points    = static function ( $value ) {
 			<td>
 				<?php
 				if ( 'success' === $advice ) {
-					echo 'Excellent! Your website has a favicon, which helps with branding and user experience.';
+					echo esc_html( 'Excellent! Your website has a favicon, which helps with branding and user experience.' );
 				} else {
-					echo 'Your website is missing a favicon. A favicon helps with branding and makes your site more recognizable in browser tabs and bookmarks.';
+					echo esc_html( 'Your website is missing a favicon. A favicon helps with branding and makes your site more recognizable in browser tabs and bookmarks.' );
 				}
 				?>
 			</td>
@@ -791,10 +791,10 @@ $format_points    = static function ( $value ) {
 
 		<!-- Language -->
 			<?php $advice = $score_advice( 'lang' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="compare">
 				<?php echo 'Language'; ?>
@@ -802,9 +802,9 @@ $format_points    = static function ( $value ) {
 			<td>
 				<?php
 				if ( 'success' === $advice ) {
-					echo 'Great! Your page has a language attribute declared, which helps search engines understand your content.';
+					echo esc_html( 'Great! Your page has a language attribute declared, which helps search engines understand your content.' );
 				} else {
-					echo 'Your page is missing a language attribute. Adding a language attribute to your HTML tag helps search engines and screen readers.';
+					echo esc_html( 'Your page is missing a language attribute. Adding a language attribute to your HTML tag helps search engines and screen readers.' );
 				}
 				?>
 			</td>
@@ -812,10 +812,10 @@ $format_points    = static function ( $value ) {
 
 		<!-- Dublin Core -->
 			<?php $advice = $score_advice( 'dublincore' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="compare">
 				<?php echo 'Dublin Core'; ?>
@@ -823,9 +823,9 @@ $format_points    = static function ( $value ) {
 			<td>
 				<?php
 				if ( 'success' === $advice ) {
-					echo 'Good! Your page uses Dublin Core metadata, which can help with content categorization and discovery.';
+					echo esc_html( 'Good! Your page uses Dublin Core metadata, which can help with content categorization and discovery.' );
 				} else {
-					echo 'Your page does not use Dublin Core metadata. While not essential, Dublin Core can help with content categorization in digital libraries and archives.';
+					echo esc_html( 'Your page does not use Dublin Core metadata. While not essential, Dublin Core can help with content categorization in digital libraries and archives.' );
 				}
 				?>
 			</td>
@@ -849,10 +849,10 @@ $format_points    = static function ( $value ) {
 
 		<!-- Doctype -->
 			<?php $advice = $score_advice( 'doctype' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td class="td-icon">
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="td-compare">
 				<?php echo 'Doctype'; ?>
@@ -860,7 +860,7 @@ $format_points    = static function ( $value ) {
 			<td class="td-result">
 				<?php
 				if ( $document['doctype'] ) :
-					echo $document['doctype'];
+					echo esc_html( $document['doctype'] );
 				else :
 					echo 'Missing doctype';
 				endif;
@@ -870,10 +870,10 @@ $format_points    = static function ( $value ) {
 
 		<!-- Encoding -->
 			<?php $advice = $score_advice( 'charset' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="compare">
 				<?php echo 'Encoding'; ?>
@@ -881,9 +881,9 @@ $format_points    = static function ( $value ) {
 			<td>
 				<?php
 				if ( 'success' === $advice ) {
-					echo 'Perfect! Your page specifies a character encoding, which is essential for proper text display.';
+					echo esc_html( 'Perfect! Your page specifies a character encoding, which is essential for proper text display.' );
 				} else {
-					echo 'Your page is missing a character encoding declaration. This can lead to display issues with special characters. Add a charset meta tag.';
+					echo esc_html( 'Your page is missing a character encoding declaration. This can lead to display issues with special characters. Add a charset meta tag.' );
 				}
 				?>
 			</td>
@@ -891,18 +891,18 @@ $format_points    = static function ( $value ) {
 
 		<!-- W3C Validity -->
 			<?php $advice = $score_advice( 'w3c' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="compare">
 				<?php echo 'W3C Validity'; ?>
 			</td>
 			<td>
-				<?php echo 'Errors'; ?> : <?php echo (int) $w3c['errors']; ?>
+				<?php echo 'Errors'; ?> : <?php echo esc_html( (int) $w3c['errors'] ); ?>
 				<br />
-				<?php echo 'Warnings'; ?> : <?php echo (int) $w3c['warnings']; ?>
+				<?php echo 'Warnings'; ?> : <?php echo esc_html( (int) $w3c['warnings'] ); ?>
 				<br /><br />
 				<?php if ( ! empty( $w3c['messages'] ) && is_array( $w3c['messages'] ) ) : ?>
 					<table class="table table-striped table-fluid table-inner" cellpadding="5">
@@ -935,10 +935,10 @@ $format_points    = static function ( $value ) {
 
 		<!-- Deprecated -->
 			<?php $advice = $score_advice( 'noDeprecated' ); ?>
-		<tr class="<?php echo $advice; ?>">
+		<tr class="<?php echo esc_attr( $advice ); ?>">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="compare">
 				<?php echo 'Deprecated HTML'; ?>
@@ -956,8 +956,8 @@ $format_points    = static function ( $value ) {
 							$even = 0 === $i % 2;
 							?>
 							<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
-								<td align="center"><?php echo htmlspecialchars( '<' . $tag_name . '>' ); ?></td>
-								<td align="center"><?php echo $count; ?></td>
+								<td align="center"><?php echo esc_html( '<' . $tag_name . '>' ); ?></td>
+								<td align="center"><?php echo esc_html( (int) $count ); ?></td>
 							</tr>
 							<?php
 							$i++;
@@ -967,9 +967,9 @@ $format_points    = static function ( $value ) {
 				<?php endif; ?>
 				<?php
 				if ( 'success' === $advice ) {
-					echo 'Excellent! Your page does not use deprecated HTML tags.';
+					echo esc_html( 'Excellent! Your page does not use deprecated HTML tags.' );
 				} else {
-					echo 'Your page uses deprecated HTML tags. Consider updating to modern HTML5 elements for better compatibility and standards compliance.';
+					echo esc_html( 'Your page uses deprecated HTML tags. Consider updating to modern HTML5 elements for better compatibility and standards compliance.' );
 				}
 				?>
 			</td>
@@ -979,7 +979,7 @@ $format_points    = static function ( $value ) {
 		<tr class="odd">
 			<td>
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/neutral.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="compare">
 				<?php echo 'Speed Tips'; ?>
@@ -991,13 +991,13 @@ $format_points    = static function ( $value ) {
 
 						<tr class="no-top-line even">
 													<?php $advice = $score_advice( 'noNestedtables' ); ?>
-							<td width="20px"><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['nestedtables']; ?>.png" /></td>
+							<td width="20px"><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . (int) ! $isseter['nestedtables'] . '.png' ); ?>" /></td>
 							<td width="330px">
 								<?php
 								if ( 'success' === $advice ) {
-									echo 'Good! No nested tables found. Nested tables can slow down page rendering.';
+									echo esc_html( 'Good! No nested tables found. Nested tables can slow down page rendering.' );
 								} else {
-									echo 'Your page uses nested tables, which can slow down page rendering. Consider using CSS for layout instead.';
+									echo esc_html( 'Your page uses nested tables, which can slow down page rendering. Consider using CSS for layout instead.' );
 								}
 								?>
 							</td>
@@ -1005,13 +1005,13 @@ $format_points    = static function ( $value ) {
 
 						<tr class="odd">
 													<?php $advice = $score_advice( 'noInlineCSS' ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['inlinecss']; ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . (int) ! $isseter['inlinecss'] . '.png' ); ?>" /></td>
 							<td>
 								<?php
 								if ( 'success' === $advice ) {
-									echo 'Perfect! No inline CSS found. External stylesheets are better for performance and maintainability.';
+									echo esc_html( 'Perfect! No inline CSS found. External stylesheets are better for performance and maintainability.' );
 								} else {
-									echo 'Your page uses inline CSS. Consider moving styles to external stylesheets for better performance and caching.';
+									echo esc_html( 'Your page uses inline CSS. Consider moving styles to external stylesheets for better performance and caching.' );
 								}
 								?>
 							</td>
@@ -1020,14 +1020,14 @@ $format_points    = static function ( $value ) {
 						<tr class="even">
 													<?php $advice = $score_advice( 'cssCount' ); ?>
 							<?php list($img_advice,) = explode( ' ', $advice ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $img_advice ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . ( 'success' === $img_advice ? '1' : '0' ) . '.png' ); ?>" /></td>
 							<td>
 								<?php
 								$css_count = is_array( $document['css'] ) ? count( $document['css'] ) : 0;
 								if ( 'success' === $advice ) {
-									echo 'Great! Your page has an optimal number of CSS files (' . $css_count . '). Keep stylesheets minimal for better performance.';
+									echo esc_html( 'Great! Your page has an optimal number of CSS files (' . $css_count . '). Keep stylesheets minimal for better performance.' );
 								} else {
-									echo 'Your page has ' . $css_count . ' CSS files. Too many CSS files can slow down page load. Consider combining them.';
+									echo esc_html( 'Your page has ' . $css_count . ' CSS files. Too many CSS files can slow down page load. Consider combining them.' );
 								}
 								?>
 							</td>
@@ -1036,14 +1036,14 @@ $format_points    = static function ( $value ) {
 						<tr class="odd">
 													<?php $advice = $score_advice( 'jsCount' ); ?>
 							<?php list($img_advice,) = explode( ' ', $advice ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $img_advice ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . ( 'success' === $img_advice ? '1' : '0' ) . '.png' ); ?>" /></td>
 							<td>
 								<?php
 								$js_count = is_array( $document['js'] ) ? count( $document['js'] ) : 0;
 								if ( 'success' === $advice ) {
-									echo 'Excellent! Your page has an optimal number of JavaScript files (' . $js_count . '). Keep scripts minimal for better performance.';
+									echo esc_html( 'Excellent! Your page has an optimal number of JavaScript files (' . $js_count . '). Keep scripts minimal for better performance.' );
 								} else {
-									echo 'Your page has ' . $js_count . ' JavaScript files. Too many JS files can slow down page load. Consider combining them.';
+									echo esc_html( 'Your page has ' . $js_count . ' JavaScript files. Too many JS files can slow down page load. Consider combining them.' );
 								}
 								?>
 							</td>
@@ -1052,14 +1052,14 @@ $format_points    = static function ( $value ) {
 						<tr class="even">
 													<?php $advice = $score_advice( 'hasGzip' ); ?>
 							<?php list($img_advice,) = explode( ' ', $advice ); ?>
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo 'success' === $img_advice ? '1' : '0'; ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . ( 'success' === $img_advice ? '1' : '0' ) . '.png' ); ?>" /></td>
 							<td>
 								<?php
 								echo 'Gzip Compression';
 								if ( 'success' === $advice ) {
-									echo ' - Enabled! Your server is using Gzip compression to reduce file sizes and improve page load times.';
+									echo esc_html( ' - Enabled! Your server is using Gzip compression to reduce file sizes and improve page load times.' );
 								} else {
-									echo ' - Not detected. Enable Gzip compression to reduce file sizes and improve page load speed.';
+									echo esc_html( ' - Not detected. Enable Gzip compression to reduce file sizes and improve page load speed.' );
 								}
 								?>
 							</td>
@@ -1092,7 +1092,7 @@ $format_points    = static function ( $value ) {
 		<tr class="odd">
 			<td class="td-icon">
 				<br />
-				<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/neutral.png" width="32px" height="32px" class="adv-icon" align="middle" />
+				<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/neutral.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 			</td>
 			<td class="td-compare">
 				<?php echo 'Mobile Optimization'; ?>
@@ -1103,17 +1103,17 @@ $format_points    = static function ( $value ) {
 					<tbody>
 
 						<tr class="even">
-							<td width="20px"><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $isseter['appleicons']; ?>.png" /></td>
+							<td width="20px"><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . (int) $isseter['appleicons'] . '.png' ); ?>" /></td>
 							<td width="330px"><?php echo 'Apple Icon'; ?></td>
 						</tr>
 
 						<tr class="odd">
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) $isseter['viewport']; ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . (int) $isseter['viewport'] . '.png' ); ?>" /></td>
 							<td><?php echo 'Meta Viewport Tag'; ?></td>
 						</tr>
 
 						<tr class="even">
-							<td><img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/isset_<?php echo (int) ! $isseter['flash']; ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . (int) ! $isseter['flash'] . '.png' ); ?>" /></td>
 							<td><?php echo 'Flash content'; ?></td>
 						</tr>
 
@@ -1142,9 +1142,9 @@ $format_points    = static function ( $value ) {
 
 			<!-- Sitemap -->
 	<?php $advice = $score_advice( 'hasSitemap' ); ?>
-			<tr class="<?php echo $advice; ?>">
+			<tr class="<?php echo esc_attr( $advice ); ?>">
 				<td class="td-icon">
-					<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+					<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 				</td>
 				<td class="td-compare">
 					<?php echo 'XML Sitemap'; ?>
@@ -1152,7 +1152,7 @@ $format_points    = static function ( $value ) {
 				<td class="td-result">
 					<?php if ( ! empty( $misc['sitemap'] ) ) : ?>
 						<?php
-						echo 'Great! We found an XML sitemap on your website. Sitemaps help search engines discover and index your pages more efficiently.';
+						echo esc_html( 'Great! We found an XML sitemap on your website. Sitemaps help search engines discover and index your pages more efficiently.' );
 						?>
 						<br><br>
 
@@ -1173,41 +1173,41 @@ $format_points    = static function ( $value ) {
 					<?php else : ?>
 						<?php echo 'Missing'; ?>
 						<br><br>
-						<?php echo 'Your website does not have an XML sitemap. Creating and submitting a sitemap helps search engines discover and index all your important pages.'; ?>
+						<?php echo esc_html( 'Your website does not have an XML sitemap. Creating and submitting a sitemap helps search engines discover and index all your important pages.' ); ?>
 					<?php endif; ?>
 				</td>
 			</tr>
 
 			<!-- Robots -->
 	<?php $advice = $score_advice( 'hasRobotsTxt' ); ?>
-			<tr class="<?php echo $advice; ?>">
+			<tr class="<?php echo esc_attr( $advice ); ?>">
 				<td class="td-icon">
 					<br />
-					<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+					<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 				</td>
 				<td class="compare">
 					<?php echo 'Robots.txt'; ?>
 				</td>
 				<td class="td-result">
 					<?php if ( $isseter['robotstxt'] ) : ?>
-						<?php echo 'http://' . $website['domain'] . '/robots.txt'; ?>
+						<?php echo esc_html( 'http://' . $website['domain'] . '/robots.txt' ); ?>
 						<br><br>
 						<?php
-						echo 'Great! Your website has a robots.txt file. This helps search engines understand which pages to crawl and index.';
+						echo esc_html( 'Great! Your website has a robots.txt file. This helps search engines understand which pages to crawl and index.' );
 						?>
 					<?php else : ?>
 						<?php echo 'Missing'; ?>
 						<br><br>
-						<?php echo 'Your website does not have a robots.txt file. While not always required, a robots.txt file helps control how search engines access your site.'; ?>
+						<?php echo esc_html( 'Your website does not have a robots.txt file. While not always required, a robots.txt file helps control how search engines access your site.' ); ?>
 					<?php endif; ?>
 				</td>
 			</tr>
 
 			<!-- Analytics support -->
 	<?php $advice = $score_advice( 'hasAnalytics' ); ?>
-			<tr class="<?php echo $advice; ?>">
+			<tr class="<?php echo esc_attr( $advice ); ?>">
 				<td class="td-icon">
-					<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/<?php echo $advice; ?>.png" width="32px" height="32px" class="adv-icon" align="middle" />
+					<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/' . $advice . '.png' ); ?>" width="32px" height="32px" class="adv-icon" align="middle" />
 				</td>
 				<td class="compare">
 					<?php echo 'Analytics'; ?>
@@ -1215,7 +1215,7 @@ $format_points    = static function ( $value ) {
 				<td class="td-result">
 					<?php if ( ! empty( $misc['analytics'] ) ) : ?>
 						<?php
-						echo 'Great! We detected analytics tracking on your website. Analytics help you understand visitor behavior and improve your site.';
+						echo esc_html( 'Great! We detected analytics tracking on your website. Analytics help you understand visitor behavior and improve your site.' );
 						?>
 						<br><br>
 						<table class="table table-striped table-fluid table-inner" cellpadding="5">
@@ -1226,7 +1226,7 @@ $format_points    = static function ( $value ) {
 								?>
 								<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 									<td>
-										<img src="<?php echo V_WPSA_Config::get_base_url( true ); ?>/assets/img/analytics/<?php echo $analytics; ?>.png" />
+										<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/analytics/' . $analytics . '.png' ); ?>" />
 										&nbsp;&nbsp;
 										<?php echo esc_html( AnalyticsFinder::getProviderName( $analytics ) ); ?>
 									</td>
@@ -1239,7 +1239,7 @@ $format_points    = static function ( $value ) {
 					<?php else : ?>
 						<?php echo 'Missing'; ?>
 						<br><br>
-						<?php echo 'Your website does not have analytics tracking installed. Consider adding analytics to gain insights into your visitors and improve your site performance.'; ?>
+						<?php echo esc_html( 'Your website does not have analytics tracking installed. Consider adding analytics to gain insights into your visitors and improve your site performance.' ); ?>
 					<?php endif; ?>
 				</td>
 			</tr>

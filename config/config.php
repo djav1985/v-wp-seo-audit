@@ -16,8 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 return array(
 	'app.name'                   => 'SEO Audit By V - v2.0',
-	'app.timezone'               => 'America/New_york',
-	'app.default_language'       => 'en',
 	'app.languages'              => array(
 		'en' => 'English',
 	),

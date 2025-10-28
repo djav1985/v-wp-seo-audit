@@ -30,7 +30,7 @@ if ( ! defined( 'DB_CHARSET' ) ) {
 	define( 'DB_CHARSET', 'utf8mb4' );
 }
 
-// Ensure DB_PORT is defined (default to 3306 if not)
+// Ensure DB_PORT is defined (default to 3306 if not).
 if ( ! defined( 'DB_PORT' ) ) {
 	define( 'DB_PORT', '3306' );
 }
@@ -39,12 +39,16 @@ if ( ! defined( 'DB_PORT' ) ) {
 global $wpdb;
 $db_table_prefix = isset( $wpdb ) && isset( $wpdb->prefix ) ? $wpdb->prefix : 'wp_';
 
+// Get timezone - wp_timezone()->getName() returns a valid identifier even for UTC offsets.
+$wp_timezone = wp_timezone();
+$timezone    = $wp_timezone instanceof DateTimeZone ? $wp_timezone->getName() : 'UTC';
+
 return array(
 	'basePath'   => dirname( __FILE__ ) . DIRECTORY_SEPARATOR . '..',
 	'name'       => $params['app.name'],
-	'language'   => $params['app.default_language'],
-	'timeZone'   => $params['app.timezone'],
-	'preload'    => array( 'log' ),
+	'language'   => get_locale(),
+	'timeZone'   => $timezone,
+	'preload'    => array(),
 
 
 	// autoloading model and component classes.
@@ -60,12 +64,6 @@ return array(
 			'urlFormat'      => 'path',
 			'showScriptName' => false,
 			'class'          => 'application.components.UrlManager',
-			'cacheID'        => 'cache',
-		),
-
-		// File Cache. ~/root/website_review/runtime/cache directory.
-		'cache'           => array(
-			'class' => 'CFileCache',
 		),
 
 		'db'              => array(
@@ -80,18 +78,6 @@ return array(
 		),
 
 		// Error handler - removed custom error view, WordPress will handle 404s.
-
-		// Log errors using WordPress or plugin-specific logging.
-			'log'         => array(
-				'class'  => 'CLogRouter',
-				'routes' => array(
-					array(
-						'class'  => 'CFileLogRoute',
-						'levels' => 'error, warning',
-						'except' => 'exception.CHttpException.*',
-					),
-				),
-			),
 
 		'securityManager' => array(
 			'encryptionKey' => wp_salt( 'auth' ),
