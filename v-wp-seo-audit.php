@@ -129,6 +129,32 @@ add_action( 'wp_enqueue_scripts', 'v_wpsa_enqueue_assets' );
  * @param mixed $atts Parameter.
  */
 function v_wpsa_shortcode( $atts ) {
+	// Ensure jQuery and our base script are enqueued for AJAX loading.
+	// This must be done before the shortcode renders.
+	wp_enqueue_script( 'jquery' );
+
+	// Enqueue base.js if not already enqueued (contains helper functions).
+	if ( ! wp_script_is( 'v-wpsa-base', 'enqueued' ) ) {
+		$js_base_file = V_WPSA_PLUGIN_DIR . 'assets/js/base.js';
+		wp_enqueue_script(
+			'v-wpsa-base',
+			V_WPSA_PLUGIN_URL . 'assets/js/base.js',
+			array( 'jquery' ),
+			file_exists( $js_base_file ) ? filemtime( $js_base_file ) : V_WPSA_VERSION,
+			true
+		);
+
+		// Add global JavaScript variables if not already added.
+		$base_url    = rtrim( V_WPSA_PLUGIN_URL, '/' );
+		$global_data = array(
+			'baseUrl' => $base_url,
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'nonce'   => wp_create_nonce( 'v_wpsa_nonce' ),
+		);
+		$global_vars = 'var _global = ' . wp_json_encode( $global_data ) . ';';
+		wp_add_inline_script( 'v-wpsa-base', $global_vars, 'before' );
+	}
+
 	// Create a fresh nonce for the container to support AJAX operations.
 	$nonce = wp_create_nonce( 'v_wpsa_nonce' );
 
@@ -139,6 +165,60 @@ function v_wpsa_shortcode( $atts ) {
 	// Return a loading placeholder that will be populated via AJAX.
 	// This breaks server-side caching since content is loaded dynamically.
 	$base_url = V_WPSA_PLUGIN_URL;
+
+	// Add inline script to handle AJAX loading using wp_add_inline_script for proper timing.
+	$ajax_url      = admin_url( 'admin-ajax.php' );
+	$inline_script = "
+	(function() {
+		'use strict';
+		jQuery(function($) {
+			var containerId = " . wp_json_encode( $unique_id ) . ";
+			var \$container = $('#' + containerId);
+			
+			if (!\$container.length) {
+				console.error('v-wpsa: Container not found:', containerId);
+				return;
+			}
+
+			var errorMessage = '<div class=\"alert alert-danger\">Failed to load content. Please refresh the page or contact support if this problem persists.</div>';
+
+			$.ajax({
+				url: " . wp_json_encode( $ajax_url ) . ",
+				type: 'POST',
+				data: {
+					action: 'v_wpsa_load_main_content',
+					nonce: " . wp_json_encode( $nonce ) . ",
+					_cache_bust: new Date().getTime()
+				},
+				dataType: 'json',
+				timeout: 30000,
+				success: function(response) {
+					if (response && response.success && response.data && response.data.html) {
+						\$container.html(response.data.html);
+						\$container.removeAttr('data-loading');
+						// Update nonce if server provided a fresh one
+						if (response.data.nonce) {
+							\$container.attr('data-nonce', response.data.nonce);
+							if (typeof _global !== 'undefined') {
+								_global.nonce = response.data.nonce;
+							}
+						}
+					} else {
+						console.error('v-wpsa: Invalid response from server', response);
+						\$container.html(errorMessage);
+					}
+				},
+				error: function(xhr, status, error) {
+					console.error('v-wpsa: AJAX error', status, error, xhr);
+					\$container.html(errorMessage);
+				}
+			});
+		});
+	})();
+	";
+
+	wp_add_inline_script( 'v-wpsa-base', $inline_script );
+
 	ob_start();
 	?>
 	<div id="<?php echo esc_attr( $unique_id ); ?>" class="v-wpsa-container" data-nonce="<?php echo esc_attr( $nonce ); ?>" data-loading="true">
@@ -147,46 +227,6 @@ function v_wpsa_shortcode( $atts ) {
 			<p class="mt-3"><?php esc_html_e( 'Loading SEO Audit Tool...', 'v-wpsa' ); ?></p>
 		</div>
 	</div>
-	<script type="text/javascript">
-		(function() {
-			'use strict';
-			jQuery(document).ready(function($) {
-				var $container = $('#<?php echo esc_js( $unique_id ); ?>');
-				if (!$container.length) return;
-
-				var errorMessage = '<div class="alert alert-danger">Failed to load content. Please refresh the page.</div>';
-
-				$.ajax({
-					url: <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>,
-					type: 'POST',
-					data: {
-						action: 'v_wpsa_load_main_content',
-						nonce: <?php echo wp_json_encode( $nonce ); ?>,
-						_cache_bust: new Date().getTime()
-					},
-					dataType: 'json',
-					success: function(response) {
-						if (response && response.success && response.data && response.data.html) {
-							$container.html(response.data.html);
-							$container.removeAttr('data-loading');
-							// Update nonce if server provided a fresh one
-							if (response.data.nonce) {
-								$container.attr('data-nonce', response.data.nonce);
-								if (typeof _global !== 'undefined') {
-									_global.nonce = response.data.nonce;
-								}
-							}
-						} else {
-							$container.html(errorMessage);
-						}
-					},
-					error: function() {
-						$container.html(errorMessage);
-					}
-				});
-			});
-		})();
-	</script>
 	<?php
 	return ob_get_clean();
 }
