@@ -174,6 +174,14 @@ function v_wpsa_shortcode( $atts ) {
 			<p class="mt-3"><?php esc_html_e( 'Loading SEO Audit Tool...', 'v-wpsa' ); ?></p>
 		</div>
 	</div>
+	<?php
+	/*
+	 * Inline script is intentionally placed here (not via wp_add_inline_script) to ensure
+	 * the container exists in the DOM before the script executes. This fixes the timing issue
+	 * where wp_add_inline_script would append the script BEFORE the container HTML is rendered,
+	 * causing "Container not found" errors. All dynamic values are safely escaped via wp_json_encode().
+	 */
+	?>
 	<script type="text/javascript">
 	(function() {
 		'use strict';
