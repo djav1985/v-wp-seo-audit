@@ -104,9 +104,7 @@ $base_url    = V_WPSA_PLUGIN_URL;
 	// Load latest reviews dynamically to prevent widget caching issues
 	(function() {
 		'use strict';
-		if (typeof jQuery === 'undefined') {
-			return;
-		}
+		// jQuery is enqueued by WordPress, so it should be available
 		jQuery(document).ready(function($) {
 			$.ajax({
 				url: <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>,
@@ -120,6 +118,10 @@ $base_url    = V_WPSA_PLUGIN_URL;
 					if (response && response.success && response.data && response.data.html) {
 						$('#v-wpsa-latest-reviews-container').html(response.data.html);
 					}
+				},
+				error: function() {
+					// Silent fail - widget is optional, no need to alert users
+					console.log('v-wpsa: Failed to load latest reviews widget');
 				}
 			});
 		});

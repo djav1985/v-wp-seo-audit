@@ -54,8 +54,7 @@ class V_WPSA_Ajax_Handlers {
 	 */
 	private static function add_cache_busting_headers() {
 		if ( ! headers_sent() ) {
-			header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
-			header( 'Cache-Control: post-check=0, pre-check=0', false );
+			header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0' );
 			header( 'Pragma: no-cache' );
 			header( 'Expires: Thu, 01 Jan 1970 00:00:00 GMT' );
 		}
