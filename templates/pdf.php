@@ -351,7 +351,7 @@ $format_points    = static function ( $value ) {
 						</tr>
 						<tr>
 							<?php foreach ( $content['headings'] as $headings ) : ?>
-								<td><?php echo (int) count( $headings ); ?></td>
+								<td><?php echo esc_html( (int) count( $headings ) ); ?></td>
 							<?php endforeach; ?>
 						</tr>
 					</tbody>
@@ -692,7 +692,7 @@ $format_points    = static function ( $value ) {
 			</td>
 			<td class="cloud-container td-result">
 				<?php foreach ( $cloud['words'] as $word => $stat ) : ?>
-					<span class="grade-<?php echo (int) $stat['grade']; ?>"><?php echo esc_html( $word ); ?></span>
+					<span class="grade-<?php echo esc_attr( (int) $stat['grade'] ); ?>"><?php echo esc_html( $word ); ?></span>
 				<?php endforeach; ?>
 			</td>
 		</tr>
@@ -726,7 +726,7 @@ $format_points    = static function ( $value ) {
 			?>
 			<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 				<td><?php echo esc_html( $word ); ?></td>
-				<td><?php echo (int) $cloud['words'][ $word ]['count']; ?></td>
+				<td><?php echo esc_html( (int) $cloud['words'][ $word ]['count'] ); ?></td>
 				<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . ( isset( $object['title'] ) ? (int) $object['title'] : 0 ) . '.png' ); ?>" /></td>
 				<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . ( isset( $object['keywords'] ) ? (int) $object['keywords'] : 0 ) . '.png' ); ?>" /></td>
 				<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/isset_' . ( isset( $object['description'] ) ? (int) $object['description'] : 0 ) . '.png' ); ?>" /></td>
@@ -900,9 +900,9 @@ $format_points    = static function ( $value ) {
 				<?php echo 'W3C Validity'; ?>
 			</td>
 			<td>
-				<?php echo 'Errors'; ?> : <?php echo (int) $w3c['errors']; ?>
+				<?php echo 'Errors'; ?> : <?php echo esc_html( (int) $w3c['errors'] ); ?>
 				<br />
-				<?php echo 'Warnings'; ?> : <?php echo (int) $w3c['warnings']; ?>
+				<?php echo 'Warnings'; ?> : <?php echo esc_html( (int) $w3c['warnings'] ); ?>
 				<br /><br />
 				<?php if ( ! empty( $w3c['messages'] ) && is_array( $w3c['messages'] ) ) : ?>
 					<table class="table table-striped table-fluid table-inner" cellpadding="5">
@@ -957,7 +957,7 @@ $format_points    = static function ( $value ) {
 							?>
 							<tr class="<?php echo $even ? 'even' : 'odd'; ?>">
 								<td align="center"><?php echo esc_html( '<' . $tag_name . '>' ); ?></td>
-								<td align="center"><?php echo (int) $count; ?></td>
+								<td align="center"><?php echo esc_html( (int) $count ); ?></td>
 							</tr>
 							<?php
 							$i++;
