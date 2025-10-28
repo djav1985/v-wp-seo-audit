@@ -111,7 +111,8 @@ $base_url    = V_WPSA_PLUGIN_URL;
 				type: 'POST',
 				data: {
 					action: 'v_wpsa_load_latest_reviews',
-					nonce: <?php echo wp_json_encode( wp_create_nonce( 'v_wpsa_nonce' ) ); ?>
+					nonce: <?php echo wp_json_encode( wp_create_nonce( 'v_wpsa_nonce' ) ); ?>,
+					_cache_bust: new Date().getTime()
 				},
 				dataType: 'json',
 				success: function(response) {

@@ -131,7 +131,8 @@ var WrHelper = (function () {
         var ajaxData = {
             action: 'v_wpsa_generate_report',
             domain: domain,
-            nonce: settings.nonce
+            nonce: settings.nonce,
+            _cache_bust: new Date().getTime()
         };
 
         if (settings.force) {
@@ -319,7 +320,8 @@ var WrHelper = (function () {
                 data: {
                     action: 'v_wpsa_validate',
                     domain: domain,
-                    nonce: nonce
+                    nonce: nonce,
+                    _cache_bust: new Date().getTime()
                 },
                 dataType: 'json'
             }).done(function(response) {
@@ -398,7 +400,8 @@ var WrHelper = (function () {
                 data: {
                     action: 'v_wpsa_get_cached_report',
                     domain: domain,
-                    nonce: getNonce()
+                    nonce: getNonce(),
+                    _cache_bust: new Date().getTime()
                 }
             }).done(function(response) {
                 if (response && response.success) {
@@ -597,7 +600,8 @@ var WrHelper = (function () {
                 data: {
                     action: 'v_wpsa_delete_report',
                     domain: domain,
-                    nonce: nonce
+                    nonce: nonce,
+                    _cache_bust: new Date().getTime()
                 },
                 dataType: 'json'
             }).done(function(response) {
