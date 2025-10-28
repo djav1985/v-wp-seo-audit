@@ -45,6 +45,10 @@ class V_WPSA_Ajax_Handlers {
 		// Latest reviews widget loader (for both logged-in and logged-out users).
 		add_action( 'wp_ajax_v_wpsa_load_latest_reviews', array( __CLASS__, 'load_latest_reviews' ) );
 		add_action( 'wp_ajax_nopriv_v_wpsa_load_latest_reviews', array( __CLASS__, 'load_latest_reviews' ) );
+
+		// Main shortcode content loader (for both logged-in and logged-out users).
+		add_action( 'wp_ajax_v_wpsa_load_main_content', array( __CLASS__, 'load_main_content' ) );
+		add_action( 'wp_ajax_nopriv_v_wpsa_load_main_content', array( __CLASS__, 'load_main_content' ) );
 	}
 
 	/**
@@ -439,5 +443,35 @@ class V_WPSA_Ajax_Handlers {
 		} else {
 			wp_send_json_success( array( 'html' => '' ) );
 		}
+	}
+
+	/**
+	 * AJAX handler for loading main shortcode content.
+	 * Returns the main template HTML to break caching.
+	 */
+	public static function load_main_content() {
+		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
+
+		// Add cache-busting headers.
+		self::add_cache_busting_headers();
+
+		// Load the main template.
+		ob_start();
+
+		$template_path = V_WPSA_PLUGIN_DIR . 'templates/main.php';
+		if ( file_exists( $template_path ) ) {
+			include $template_path;
+		} else {
+			echo '<div class="v-wpsa-error"><p>Error: Template not found.</p></div>';
+		}
+
+		$content = ob_get_clean();
+
+		wp_send_json_success(
+			array(
+				'html'  => $content,
+				'nonce' => wp_create_nonce( 'v_wpsa_nonce' ),
+			)
+		);
 	}
 }

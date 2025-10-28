@@ -129,23 +129,66 @@ add_action( 'wp_enqueue_scripts', 'v_wpsa_enqueue_assets' );
  * @param mixed $atts Parameter.
  */
 function v_wpsa_shortcode( $atts ) {
-	// Load WordPress-native request form template.
-	ob_start();
-
-	$template_path = V_WPSA_PLUGIN_DIR . 'templates/main.php';
-	if ( file_exists( $template_path ) ) {
-		include $template_path;
-	} else {
-		echo '<div class="v-wpsa-error"><p>Error: Template not found.</p></div>';
-	}
-
-	$content = ob_get_clean();
-
 	// Create a fresh nonce for the container to support AJAX operations.
 	$nonce = wp_create_nonce( 'v_wpsa_nonce' );
 
-	// Wrap in container with data-nonce attribute.
-	return '<div class="v-wpsa-container" data-nonce="' . esc_attr( $nonce ) . '">' . $content . '</div>';
+	// Generate unique ID for this shortcode instance to support multiple shortcodes per page.
+	// Use uniqid() with more_entropy for better uniqueness and less predictability.
+	$unique_id = 'v-wpsa-' . uniqid( '', true );
+
+	// Return a loading placeholder that will be populated via AJAX.
+	// This breaks server-side caching since content is loaded dynamically.
+	$base_url = V_WPSA_PLUGIN_URL;
+	ob_start();
+	?>
+	<div id="<?php echo esc_attr( $unique_id ); ?>" class="v-wpsa-container" data-nonce="<?php echo esc_attr( $nonce ); ?>" data-loading="true">
+		<div class="v-wpsa-loading text-center py-5">
+			<img src="<?php echo esc_url( $base_url . 'assets/img/loader.gif' ); ?>" alt="<?php esc_attr_e( 'Loading...', 'v-wpsa' ); ?>" style="max-width: 100px;" />
+			<p class="mt-3"><?php esc_html_e( 'Loading SEO Audit Tool...', 'v-wpsa' ); ?></p>
+		</div>
+	</div>
+	<script type="text/javascript">
+		(function() {
+			'use strict';
+			jQuery(document).ready(function($) {
+				var $container = $('#<?php echo esc_js( $unique_id ); ?>');
+				if (!$container.length) return;
+
+				var errorMessage = '<div class="alert alert-danger">Failed to load content. Please refresh the page.</div>';
+
+				$.ajax({
+					url: <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>,
+					type: 'POST',
+					data: {
+						action: 'v_wpsa_load_main_content',
+						nonce: <?php echo wp_json_encode( $nonce ); ?>,
+						_cache_bust: new Date().getTime()
+					},
+					dataType: 'json',
+					success: function(response) {
+						if (response && response.success && response.data && response.data.html) {
+							$container.html(response.data.html);
+							$container.removeAttr('data-loading');
+							// Update nonce if server provided a fresh one
+							if (response.data.nonce) {
+								$container.attr('data-nonce', response.data.nonce);
+								if (typeof _global !== 'undefined') {
+									_global.nonce = response.data.nonce;
+								}
+							}
+						} else {
+							$container.html(errorMessage);
+						}
+					},
+					error: function() {
+						$container.html(errorMessage);
+					}
+				});
+			});
+		})();
+	</script>
+	<?php
+	return ob_get_clean();
 }
 add_shortcode( 'v_wpsa', 'v_wpsa_shortcode' );
 
