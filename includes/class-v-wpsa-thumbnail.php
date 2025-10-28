@@ -33,6 +33,21 @@ class V_WPSA_Thumbnail {
 			// Create directory if it doesn't exist.
 			if ( ! file_exists( $thumbnail_dir ) ) {
 				wp_mkdir_p( $thumbnail_dir );
+
+				// Add .htaccess to ensure public access for all users (including logged-out).
+				$htaccess_file = $thumbnail_dir . '/.htaccess';
+				if ( ! file_exists( $htaccess_file ) ) {
+					$htaccess_content  = "# Allow public access to thumbnails\n";
+					$htaccess_content .= "<IfModule mod_authz_core.c>\n";
+					$htaccess_content .= "  Require all granted\n";
+					$htaccess_content .= "</IfModule>\n";
+					$htaccess_content .= "<IfModule !mod_authz_core.c>\n";
+					$htaccess_content .= "  Order allow,deny\n";
+					$htaccess_content .= "  Allow from all\n";
+					$htaccess_content .= "</IfModule>\n";
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents -- Creating .htaccess for public access.
+					file_put_contents( $htaccess_file, $htaccess_content );
+				}
 			}
 
 			return $thumbnail_dir;
