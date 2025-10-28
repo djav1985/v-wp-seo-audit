@@ -143,7 +143,8 @@ var WrHelper = (function () {
             url: settings.ajaxUrl,
             type: 'POST',
             data: ajaxData,
-            dataType: 'json'
+            dataType: 'json',
+            timeout: 300000 // 5 minutes to match server timeout
         });
 
         var finalize = function() {
@@ -191,9 +192,13 @@ var WrHelper = (function () {
                 }
 
                 // Update URL hash for deep linking (replace dots with dashes)
-                if (domain && window.history && window.history.replaceState) {
+                // This allows direct linking to specific reports via URL hash
+                if (domain && window.history && window.history.pushState) {
                     var hashDomain = domain.replace(/\./g, '-');
-                    window.history.replaceState(null, null, '#' + hashDomain);
+                    // Get current page URL without hash
+                    var baseUrl = window.location.href.split('#')[0];
+                    var newUrl = baseUrl + '#' + hashDomain;
+                    window.history.pushState(null, '', newUrl);
                 }
 
                 if (settings.scrollTo !== false && $targetContainer.length) {
@@ -203,7 +208,21 @@ var WrHelper = (function () {
                 }
             } else {
                 var message = response && response.data && response.data.message ? response.data.message : 'Failed to generate report';
-                if ($errors.length) {
+                
+                // Show error message with a back button
+                var errorHtml = '<div class="alert alert-danger mt-4">' + 
+                    '<h4>Error</h4>' +
+                    '<p>' + message + '</p>' +
+                    '<button type="button" class="btn btn-secondary v-wpsa-back-to-main mt-3">' +
+                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style="width: 0.75em; height: 0.75em; display: inline-block; vertical-align: -0.125em; margin-right: 0.5em;" aria-hidden="true">' +
+                    '<path fill="currentColor" d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"/>' +
+                    '</svg>Back' +
+                    '</button>' +
+                    '</div>';
+                
+                if ($container.length) {
+                    $container.html(errorHtml);
+                } else if ($errors.length) {
                     $errors.html(message).show();
                 } else {
                     window.alert(message);
@@ -214,7 +233,19 @@ var WrHelper = (function () {
         request.fail(function() {
             finalize();
 
-            if ($errors.length) {
+            var errorHtml = '<div class="alert alert-danger mt-4">' + 
+                '<h4>Connection Error</h4>' +
+                '<p>An error occurred while generating the report. Please try again.</p>' +
+                '<button type="button" class="btn btn-secondary v-wpsa-back-to-main mt-3">' +
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style="width: 0.75em; height: 0.75em; display: inline-block; vertical-align: -0.125em; margin-right: 0.5em;" aria-hidden="true">' +
+                '<path fill="currentColor" d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"/>' +
+                '</svg>Back' +
+                '</button>' +
+                '</div>';
+            
+            if ($container.length) {
+                $container.html(errorHtml);
+            } else if ($errors.length) {
                 $errors.html('An error occurred while generating the report. Please try again.').show();
             } else {
                 window.alert('An error occurred while generating the report. Please try again.');
@@ -414,6 +445,16 @@ var WrHelper = (function () {
                             $container.attr('data-nonce', response.data.nonce);
                         }
                     }
+
+                    // Update URL hash when cached report loads (replace dots with dashes)
+                    if (domain && window.history && window.history.pushState) {
+                        var hashDomain = domain.replace(/\./g, '-');
+                        // Get current page URL without hash
+                        var baseUrl = window.location.href.split('#')[0];
+                        var newUrl = baseUrl + '#' + hashDomain;
+                        window.history.pushState(null, '', newUrl);
+                    }
+
                     if (typeof settings.afterSend === 'function') {
                         settings.afterSend();
                     }
@@ -454,8 +495,30 @@ var WrHelper = (function () {
                 },
                 afterSend: function() {
                     $trigger.removeClass('disabled').removeAttr('aria-busy');
+                    
+                    // Scroll to the report container
+                    var $container = resolveContainer($trigger);
+                    if ($container.length) {
+                        $('html, body').animate({
+                            scrollTop: $container.offset().top - 100
+                        }, 500);
+                    }
                 }
             });
+        });
+
+        // Back button handler - remove hash from URL and reload page
+        $('body').on('click', '.v-wpsa-back-to-main', function(e) {
+            e.preventDefault();
+            
+            // Remove hash from URL (if present) and reload
+            var url = window.location.href.split('#')[0];
+            // Force reload by adding cache-busting parameter if URL hasn't changed
+            if (url === window.location.href) {
+                window.location.reload();
+            } else {
+                window.location.href = url;
+            }
         });
 
         $('body').on('click', '.v-wpsa-download-pdf', function(e) {
@@ -500,6 +563,7 @@ var WrHelper = (function () {
             var xhr = new XMLHttpRequest();
             xhr.open('POST', ajaxUrl, true);
             xhr.responseType = 'blob';
+            xhr.timeout = 300000; // 300 seconds (5 minutes) for PDF generation
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             
             xhr.onload = function() {
@@ -551,6 +615,14 @@ var WrHelper = (function () {
                     .prop('disabled', false)
                     .text(originalText);
                 window.alert('Error: Network error occurred. Please try again.');
+            };
+            
+            xhr.ontimeout = function() {
+                $trigger.removeClass('disabled')
+                    .removeAttr('aria-busy')
+                    .prop('disabled', false)
+                    .text(originalText);
+                window.alert('Error: PDF generation timed out. The report may be too large or the server is busy. Please try again later.');
             };
             
             // Send the request with form data
@@ -611,15 +683,43 @@ var WrHelper = (function () {
 
                 if (response && response.success) {
                     window.alert('Report deleted successfully!');
-                    // Remove the report container and show the form
+                    
+                    // Reload the main content via AJAX to show the form again
                     if ($container.length) {
-                        $container.fadeOut(400, function() {
-                            // Show the form again
-                            $('#update_form').fadeIn();
-                            // Scroll to the form
-                            $('html, body').animate({
-                                scrollTop: $('#update_form').offset().top - 100
-                            }, 500);
+                        // Show loading state
+                        $container.html('<div class="v-wpsa-loading text-center py-5"><p class="mt-3">Loading...</p></div>');
+                        
+                        // Load main content via AJAX
+                        $.ajax({
+                            url: ajaxUrl,
+                            type: 'POST',
+                            data: {
+                                action: 'v_wpsa_load_main_content',
+                                nonce: nonce,
+                                _cache_bust: new Date().getTime()
+                            },
+                            dataType: 'json',
+                            success: function(mainResponse) {
+                                if (mainResponse && mainResponse.success && mainResponse.data && mainResponse.data.html) {
+                                    $container.html(mainResponse.data.html);
+                                    // Update nonce if server provided a fresh one
+                                    if (mainResponse.data.nonce) {
+                                        $container.attr('data-nonce', mainResponse.data.nonce);
+                                        if (typeof _global !== 'undefined') {
+                                            _global.nonce = mainResponse.data.nonce;
+                                        }
+                                    }
+                                    // Scroll to the container
+                                    $('html, body').animate({
+                                        scrollTop: $container.offset().top - 100
+                                    }, 500);
+                                } else {
+                                    window.location.reload();
+                                }
+                            },
+                            error: function() {
+                                window.location.reload();
+                            }
                         });
                     } else {
                         // Fallback: just reload the page

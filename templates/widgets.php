@@ -92,7 +92,7 @@ function v_wpsa_render_website_list( $args = array() ) {
  * @param int   $total Total number of websites.
  */
 function v_wpsa_render_website_list_template( $websites, $thumbnail_stack, $args, $total ) {
-	$base_url = V_WPSA_Config::get_base_url( true );
+	$plugin_url = rtrim( V_WPSA_PLUGIN_URL, '/' ); // Use plugin URL constant for assets.
 	?>
 	<script type="text/javascript">
 		"use strict";
@@ -101,22 +101,36 @@ function v_wpsa_render_website_list_template( $websites, $thumbnail_stack, $args
 			if (typeof dynamicThumbnail === 'function') {
 				dynamicThumbnail(urls);
 			}
+
+			// Fix review button URLs to use current page URL instead of home URL
+			// This is needed when widgets are loaded via AJAX
+			$('.v-wpsa-view-report').each(function() {
+				var $link = $(this);
+				var domain = $link.data('domain');
+				if (domain) {
+					var hashDomain = domain.replace(/\./g, '-');
+					var baseUrl = window.location.href.split('#')[0];
+					var newUrl = baseUrl + '#' + hashDomain;
+					$link.attr('href', newUrl);
+				}
+			});
 		});
 	</script>
 
 	<div class="row">
 		<?php foreach ( $websites as $website ) : ?>
 			<?php
-			// Generate view report URL with hash fragment for deep linking.
+			// Domain hash for deep linking - actual URL will be set by JavaScript.
 			$domain      = $website['domain'];
 			$hash_domain = str_replace( '.', '-', $domain );
-			$url         = home_url( '/#' . $hash_domain );
+			// Fallback URL in case JavaScript is disabled.
+			$url = '#' . $hash_domain;
 			?>
 			<div class="col col-12 col-md-6 col-lg-4 mb-4">
 				<div class="card mb-3">
 					<h5 class="card-header"><?php echo esc_html( v_wpsa_crop_domain( $website['idn'] ) ); ?></h5>
 					<a class="v-wpsa-view-report" href="<?php echo esc_url( $url ); ?>" data-domain="<?php echo esc_attr( $domain ); ?>">
-						<img class="card-img-top" id="thumb_<?php echo absint( $website['id'] ); ?>" src="<?php echo esc_url( $base_url . '/assets/img/loader.gif' ); ?>" alt="<?php echo esc_attr( $website['idn'] ); ?>" />
+						<img class="card-img-top" id="thumb_<?php echo absint( $website['id'] ); ?>" src="<?php echo esc_url( $plugin_url . '/assets/img/loader.gif' ); ?>" alt="<?php echo esc_attr( $website['idn'] ); ?>" />
 					</a>
 					<ul class="list-group list-group-flush">
 						<li class="list-group-item">

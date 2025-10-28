@@ -65,6 +65,17 @@ class V_WPSA_Ajax_Handlers {
 	}
 
 	/**
+	 * Add robots noindex header to prevent search engines from indexing report pages.
+	 *
+	 * Reports are dynamic and should not be indexed by search engines.
+	 */
+	private static function add_noindex_header() {
+		if ( ! headers_sent() ) {
+			header( 'X-Robots-Tag: noindex, nofollow' );
+		}
+	}
+
+	/**
 	 * AJAX handler that returns the cached HTML report without triggering re-analysis.
 	 *
 	 * This is used by the front-end "Review" buttons to view the stored report as-is.
@@ -74,6 +85,9 @@ class V_WPSA_Ajax_Handlers {
 
 		// Add cache-busting headers to prevent browser/proxy caching of AJAX responses.
 		self::add_cache_busting_headers();
+
+		// Add robots noindex header to prevent indexing of report pages.
+		self::add_noindex_header();
 
 		$domain_raw = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
 		if ( empty( $domain_raw ) ) {
@@ -145,6 +159,17 @@ class V_WPSA_Ajax_Handlers {
 
 		// Add cache-busting headers to prevent browser/proxy caching of AJAX responses.
 		self::add_cache_busting_headers();
+
+		// Add robots noindex header to prevent indexing of report pages.
+		self::add_noindex_header();
+
+		// Increase memory and execution time for analysis which can be resource-intensive.
+		if ( function_exists( 'wp_raise_memory_limit' ) ) {
+			wp_raise_memory_limit( 'admin' );
+		}
+		if ( function_exists( 'set_time_limit' ) ) {
+			set_time_limit( 300 ); // 5 minutes for analysis.
+		}
 
 		// Get domain from request.
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitization handled in V_WPSA_Validation.
@@ -265,7 +290,7 @@ class V_WPSA_Ajax_Handlers {
 				wp_raise_memory_limit( 'admin' );
 			}
 			if ( function_exists( 'set_time_limit' ) ) {
-				set_time_limit( 0 );
+				set_time_limit( 300 ); // 300 seconds (5 minutes)
 			}
 
 			// Register shutdown function to capture fatal errors.

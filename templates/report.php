@@ -202,13 +202,22 @@ $format_points    = static function ( $value ) {
 	});
 </script>
 
+<div class="mb-4">
+	<button type="button" class="btn btn-secondary v-wpsa-back-to-main" id="v-wpsa-back-btn">
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style="width: 0.75em; height: 0.75em; display: inline-block; vertical-align: -0.125em; margin-right: 0.5em;" aria-hidden="true">
+			<path fill="currentColor" d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"/>
+		</svg>
+		<?php esc_html_e( 'Back', 'v-wpsa' ); ?>
+	</button>
+</div>
+
 <div class="jumbotron">
 	<div class="row">
 		<div class="col-md-4 col-lg-5 col-sm-12">
-					<img class="img-responsive img-thumbnail mb-20" id="thumb_main_<?php echo esc_attr( $website['id'] ); ?>" src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/loader.gif" alt="<?php echo esc_attr( $website['idn'] ); ?>" />
+			<img class="img-responsive img-thumbnail mb-20" id="thumb_main_<?php echo esc_attr( $website['id'] ); ?>" src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>assets/img/loader.gif" alt="<?php echo esc_attr( $website['idn'] ); ?>" />
 		</div>
 		<div class="col-md-8 col-lg-7 col-sm-12 text-left">
-<h1 class="text-break">
+			<h1 class="text-break">
 	<?php echo 'Website review for ' . esc_html( $website['idn'] ); ?>
 </h1>
 
@@ -753,9 +762,9 @@ $format_points    = static function ( $value ) {
 							<tr>
 								<td><?php echo esc_html( $word ); ?></td>
 								<td><?php echo (int) $cloud['words'][ $word ]['count']; ?></td>
-								<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/isset_<?php echo esc_html( (int) $object['title'] ); ?>.png" /></td>
-								<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/isset_<?php echo esc_html( (int) $object['description'] ); ?>.png" /></td>
-								<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/isset_<?php echo esc_html( (int) $object['headings'] ); ?>.png" /></td>
+								<td><img src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>/assets/img/isset_<?php echo esc_html( (int) $object['title'] ); ?>.png" /></td>
+								<td><img src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>/assets/img/isset_<?php echo esc_html( (int) $object['description'] ); ?>.png" /></td>
+								<td><img src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>/assets/img/isset_<?php echo esc_html( (int) $object['headings'] ); ?>.png" /></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -1016,7 +1025,7 @@ $format_points    = static function ( $value ) {
 					<tbody>
 						<tr>
 													<?php $advice = $score_advice( 'noNestedtables' ); ?>
-							<td width="50px"><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/isset_<?php echo esc_html( (int) ! $isseter['nestedtables'] ); ?>.png" /></td>
+							<td width="50px"><img src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>assets/img/isset_<?php echo esc_html( (int) ! $isseter['nestedtables'] ); ?>.png" /></td>
 							<td>
 								<?php
 								if ( 'success' === $advice ) {
@@ -1030,7 +1039,7 @@ $format_points    = static function ( $value ) {
 
 						<tr>
 													<?php $advice = $score_advice( 'noInlineCSS' ); ?>
-							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/isset_<?php echo esc_html( (int) ! $isseter['inlinecss'] ); ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>assets/img/isset_<?php echo esc_html( (int) ! $isseter['inlinecss'] ); ?>.png" /></td>
 							<td>
 								<?php
 								if ( 'success' === $advice ) {
@@ -1044,7 +1053,7 @@ $format_points    = static function ( $value ) {
 
 						<tr>
 													<?php $advice = $score_advice( 'cssCount' ); ?>
-							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/isset_<?php echo esc_html( 'success' === $advice ? '1' : '0' ); ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>/assets/img/isset_<?php echo esc_html( 'success' === $advice ? '1' : '0' ); ?>.png" /></td>
 							<td>
 								<?php
 								$css_count = (int) $document['css'];
@@ -1059,7 +1068,7 @@ $format_points    = static function ( $value ) {
 
 						<tr>
 													<?php $advice = $score_advice( 'jsCount' ); ?>
-							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/isset_<?php echo esc_html( 'success' === $advice ? '1' : '0' ); ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>/assets/img/isset_<?php echo esc_html( 'success' === $advice ? '1' : '0' ); ?>.png" /></td>
 							<td>
 								<?php
 								$js_count = (int) $document['js'];
@@ -1074,7 +1083,7 @@ $format_points    = static function ( $value ) {
 
 						<tr>
 													<?php $advice = $score_advice( 'hasGzip' ); ?>
-							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/isset_<?php echo esc_html( 'success' === $advice ? '1' : '0' ); ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>/assets/img/isset_<?php echo esc_html( 'success' === $advice ? '1' : '0' ); ?>.png" /></td>
 							<td>
 								<?php
 								echo 'Gzip Compression';
@@ -1110,17 +1119,17 @@ $format_points    = static function ( $value ) {
 					<tbody>
 
 						<tr class="no-top-line">
-							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/isset_<?php echo esc_html( (int) $isseter['appleicons'] ); ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>assets/img/isset_<?php echo esc_html( (int) $isseter['appleicons'] ); ?>.png" /></td>
 							<td><?php echo 'Apple Icon'; ?></td>
 						</tr>
 
 						<tr>
-							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/isset_<?php echo esc_html( (int) $isseter['viewport'] ); ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>assets/img/isset_<?php echo esc_html( (int) $isseter['viewport'] ); ?>.png" /></td>
 							<td><?php echo 'Meta Viewport Tag'; ?></td>
 						</tr>
 
 						<tr>
-							<td><img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) ); ?>/assets/img/isset_<?php echo esc_html( (int) ! $isseter['flash'] ); ?>.png" /></td>
+							<td><img src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>assets/img/isset_<?php echo esc_html( (int) ! $isseter['flash'] ); ?>.png" /></td>
 							<td><?php echo 'Flash content'; ?></td>
 						</tr>
 
@@ -1230,7 +1239,7 @@ $format_points    = static function ( $value ) {
 							<?php foreach ( $misc['analytics'] as $analytics ) : ?>
 								<tr>
 									<td>
-										<img src="<?php echo esc_url( V_WPSA_Config::get_base_url( true ) . '/assets/img/analytics/' . $analytics . '.png' ); ?>" />
+										<img src="<?php echo esc_url( V_WPSA_PLUGIN_URL . 'assets/img/analytics/' . $analytics . '.png' ); ?>" />
 										&nbsp;&nbsp;
 										<?php echo esc_html( AnalyticsFinder::getProviderName( $analytics ) ); ?>
 									</td>
@@ -1550,4 +1559,10 @@ $format_points    = static function ( $value ) {
 				</div>
 			</form>
 		</div>
+
+
+
+
+
+
 

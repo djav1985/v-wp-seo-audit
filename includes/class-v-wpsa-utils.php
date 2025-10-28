@@ -259,6 +259,7 @@ class V_WPSA_Utils {
 		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
 		curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
 		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 20 );
+		curl_setopt( $ch, CURLOPT_TIMEOUT, 60 ); // Total timeout for the entire request.
 
 		if ( $cookie ) {
 			curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie );
