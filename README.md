@@ -38,7 +38,6 @@
     5.1. [Prerequisites](#prerequisites)
     5.2. [Installation](#installation)
     5.3. [Usage](#usage)
-6. [Roadmap](#roadmap)
 8. [License](#license)
 
 ---
@@ -710,14 +709,6 @@ php path/to/your/script.php
 ```
 
 **Note:** Full plugin functionality requires WordPress. The analysis engine uses WordPress database tables and hooks.
-
----
-
-## Roadmap
-
-- [X] **`Task 1`**: <strike>Implement feature one.</strike>
-- [ ] **`Task 2`**: Implement feature two.
-- [ ] **`Task 3`**: Implement feature three.
 
 ---
 

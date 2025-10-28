@@ -16,9 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 return array(
 	'app.name'                   => 'SEO Audit By V - v2.0',
-	'app.languages'              => array(
-		'en' => 'English',
-	),
 
 	// PageSpeed Insights.
 	'psi.categories'             => array( 'performance', 'accessibility', 'best-practices', 'seo', 'pwa' ),

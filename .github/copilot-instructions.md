@@ -29,6 +29,9 @@
 - **Scoring:** All SEO scores are calculated via config-driven rules in `rates.php` and processed by `RateProvider.php`
 - **Caching:** 24-hour cache for reports, managed in DB and via helper classes
 - **Output Escaping:** All template output must use WordPress escaping functions (`esc_html`, `esc_attr`, etc.)
+- **Logging:** Uses native WordPress `error_log()` controlled by `WP_DEBUG_LOG`; all calls include phpcs:ignore comments
+- **Locale/Timezone:** Plugin reads locale via `get_locale()` and timezone via `wp_timezone()` directly from WordPress (not config params)
+- **No Yii Framework:** Former Yii 1.x config params removed; plugin uses only native WordPress APIs and TCPDF (vendor references are test fixtures only)
 - **AI Integration:** Use `V_WPSA_external_generation($domain, $report)` for programmatic report generation; returns JSON
 - **PDF Path:** All references to TCPDF must use `tcpdf/` (not nested)
 - **Domain Handling:** IDN support via `Webmaster/Utils/IDN.php`
