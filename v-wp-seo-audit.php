@@ -173,7 +173,7 @@ function v_wpsa_shortcode( $atts ) {
 	?>
 	<div id="<?php echo esc_attr( $unique_id ); ?>" class="v-wpsa-container" data-nonce="<?php echo esc_attr( $nonce ); ?>">
 		<div class="jumbotron">
-			<h1><?php echo esc_html( $plugin_name ); ?></h1>
+			<h2 class="h1"><?php echo esc_html( $plugin_name ); ?></h2>
 			<p class="lead mb-4">
 				<?php echo esc_html( $plugin_name ); ?> <?php esc_html_e( 'is a free SEO tool which provides you content analysis of the website.', 'v-wpsa' ); ?>
 			</p>

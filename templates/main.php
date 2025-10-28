@@ -21,7 +21,7 @@ $base_url    = V_WPSA_PLUGIN_URL;
 ?>
 
 <div class="jumbotron">
-	<h1><?php echo esc_html( $plugin_name ); ?></h1>
+	<h2 class="h1"><?php echo esc_html( $plugin_name ); ?></h2>
 	<p class="lead mb-4">
 		<?php echo esc_html( $plugin_name ); ?> <?php esc_html_e( 'is a free SEO tool which provides you content analysis of the website.', 'v-wpsa' ); ?>
 	</p>

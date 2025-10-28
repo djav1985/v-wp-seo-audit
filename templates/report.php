@@ -217,9 +217,9 @@ $format_points    = static function ( $value ) {
 			<img class="img-responsive img-thumbnail mb-20" id="thumb_main_<?php echo esc_attr( $website['id'] ); ?>" src="<?php echo esc_url( V_WPSA_PLUGIN_URL ); ?>assets/img/loader.gif" alt="<?php echo esc_attr( $website['idn'] ); ?>" />
 		</div>
 		<div class="col-md-8 col-lg-7 col-sm-12 text-left">
-			<h1 class="text-break">
+			<h2 class="h1 text-break">
 	<?php echo 'Website review for ' . esc_html( $website['idn'] ); ?>
-</h1>
+</h2>
 
 			<p>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 1em; height: 1em; display: inline-block; vertical-align: -0.125em;" aria-hidden="true">
@@ -1532,7 +1532,7 @@ $format_points    = static function ( $value ) {
 		<!-- JS is enqueued via WordPress plugin file. Remove direct <script> and rely on enqueued assets. -->
 
 		<div class="jumbotron">
-			<h1><?php echo esc_html( V_WPSA_Config::get( 'app.name' ) ); ?></h1>
+			<h2 class="h1"><?php echo esc_html( V_WPSA_Config::get( 'app.name' ) ); ?></h2>
 			<p class="lead mb-4">
 				<?php echo esc_html( V_WPSA_Config::get( 'app.name' ) ); ?> is a free SEO tool which provides you content analysis of the website.
 			</p>

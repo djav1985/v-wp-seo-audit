@@ -177,7 +177,7 @@ $format_points    = static function ( $value ) {
 			<img class="thumbnail" id="thumb_<?php echo esc_attr( $website['id'] ); ?>" src="<?php echo esc_url( $thumbnail ); ?>" alt="<?php echo esc_attr( $website['idn'] ); ?>" />	
 		</td>
 		<td>
-			<h1 class="h-review"><?php echo 'Website review for ' . esc_html( $website['idn'] ); ?></h1>
+			<h2 class="h-review" style="font-size: 2.5rem; margin-bottom: 0.5rem;"><?php echo 'Website review for ' . esc_html( $website['idn'] ); ?></h2>
 			<i class="icon-time"></i>&nbsp;<small><?php echo 'Generated on'; ?>
 				<?php
 				$month_names = array(
