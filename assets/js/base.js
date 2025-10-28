@@ -4,10 +4,15 @@ function dynamicThumbnail(url) {
     }
     jQuery.each(url, function(key, data) {
         var onReady = function(img, downloadUrl) {
-            img.attr("src", downloadUrl);
-            img.on("error", function() {
+            // Only try to load if we have a valid URL
+            if (downloadUrl && downloadUrl.length > 0) {
+                img.attr("src", downloadUrl);
+                img.on("error", function() {
+                    onError(img);
+                });
+            } else {
                 onError(img);
-            });
+            }
         };
         var onError = function(img) {
             var baseUrl = (typeof _global !== 'undefined' && _global.baseUrl) ? _global.baseUrl : '';

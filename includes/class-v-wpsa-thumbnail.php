@@ -204,13 +204,14 @@ class V_WPSA_Thumbnail {
 		// Try to get or create cached thumbnail.
 		$thumbnail_url = self::download_thumbnail( $domain, $width );
 
-		// Only return local cached version.
-		// If no cache exists, return empty string.
-		if ( ! $thumbnail_url ) {
-			return '';
+		// If cached thumbnail exists, return it.
+		if ( $thumbnail_url ) {
+			return $thumbnail_url;
 		}
 
-		return $thumbnail_url;
+		// Fallback to direct thum.io URL if no cache is available.
+		// This ensures thumbnails load for logged-out users even when caching fails.
+		return "https://image.thum.io/get/maxAge/350/width/{$width}/https://{$domain}";
 	}
 
 	/**

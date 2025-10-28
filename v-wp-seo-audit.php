@@ -67,12 +67,13 @@ function v_wpsa_enqueue_assets() {
 		// Add global JavaScript variables needed by the plugin.
 		$base_url = rtrim( V_WPSA_PLUGIN_URL, '/' );
 
-		// Inject global variables into the page.
-		$global_vars = "var _global = { 
-            baseUrl: '" . esc_js( $base_url ) . "',
-            ajaxUrl: '" . esc_js( admin_url( 'admin-ajax.php' ) ) . "',
-            nonce: '" . wp_create_nonce( 'v_wpsa_nonce' ) . "'
-        };";
+		// Inject global variables into the page (using JSON encoding for safety).
+		$global_data = array(
+			'baseUrl' => $base_url,
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'nonce'   => wp_create_nonce( 'v_wpsa_nonce' ),
+		);
+		$global_vars = 'var _global = ' . wp_json_encode( $global_data ) . ';';
 		wp_add_inline_script( 'v-wpsa-base', $global_vars, 'before' );
 	}
 }
