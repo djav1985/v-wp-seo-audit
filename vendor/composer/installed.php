@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-copilot/update-shortcode-and-seo-reports',
-        'version' => 'dev-copilot/update-shortcode-and-seo-reports',
-        'reference' => '3f93ba2608d4507023b8654de7b781c92104bd22',
+        'pretty_version' => 'dev-copilot/rewrite-readme-content',
+        'version' => 'dev-copilot/rewrite-readme-content',
+        'reference' => '218f6b3697552a6938aafc29503d87975df4aab8',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-copilot/update-shortcode-and-seo-reports',
-            'version' => 'dev-copilot/update-shortcode-and-seo-reports',
-            'reference' => '3f93ba2608d4507023b8654de7b781c92104bd22',
+            'pretty_version' => 'dev-copilot/rewrite-readme-content',
+            'version' => 'dev-copilot/rewrite-readme-content',
+            'reference' => '218f6b3697552a6938aafc29503d87975df4aab8',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
