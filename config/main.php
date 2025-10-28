@@ -39,11 +39,15 @@ if ( ! defined( 'DB_PORT' ) ) {
 global $wpdb;
 $db_table_prefix = isset( $wpdb ) && isset( $wpdb->prefix ) ? $wpdb->prefix : 'wp_';
 
+// Get timezone - wp_timezone()->getName() returns a valid identifier even for UTC offsets.
+$wp_timezone = wp_timezone();
+$timezone    = $wp_timezone instanceof DateTimeZone ? $wp_timezone->getName() : 'UTC';
+
 return array(
 	'basePath'   => dirname( __FILE__ ) . DIRECTORY_SEPARATOR . '..',
 	'name'       => $params['app.name'],
 	'language'   => get_locale(),
-	'timeZone'   => wp_timezone_string(),
+	'timeZone'   => $timezone,
 	'preload'    => array(),
 
 
