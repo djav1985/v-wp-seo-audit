@@ -225,11 +225,6 @@ var WrHelper = (function () {
     };
 
     $(function() {
-        var $domainInput = $('#domain');
-        var $submit = $('#submit');
-        var $errors = $('#errors');
-        var $progressBar = $('#progress-bar');
-
         // Check for hash-based deep linking on page load. Prefer cached loader to avoid re-analysis.
         function checkHashAndLoadReport() {
             var hash = window.location.hash;
@@ -267,9 +262,15 @@ var WrHelper = (function () {
             checkHashAndLoadReport();
         });
 
-        $('#submit').on('click', function(e) {
+        // Use delegated event handlers so they work with AJAX-loaded content
+        // Bind to body so handlers attach to dynamically loaded elements
+        $('body').on('click', '#submit', function(e) {
             e.preventDefault();
 
+            var $submit = $(this);
+            var $domainInput = $('#domain');
+            var $errors = $('#errors');
+            var $progressBar = $('#progress-bar');
             var domain = $domainInput.val().trim();
 
             if ($errors.length) {
@@ -372,7 +373,8 @@ var WrHelper = (function () {
             });
         });
 
-        $domainInput.on('keypress', function(e) {
+        // Use delegated event handler for Enter key in domain input
+        $('body').on('keypress', '#domain', function(e) {
             if (e.which === 13) {
                 e.preventDefault();
                 $('#submit').trigger('click');
