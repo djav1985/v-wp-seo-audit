@@ -49,9 +49,12 @@ class V_WPSA_Thumbnail {
 				$htaccess_content .= "</IfModule>\n";
 
 				// Use WordPress filesystem API for better compatibility.
-				require_once ABSPATH . 'wp-admin/includes/file.php';
-				WP_Filesystem();
+				// Only initialize if not already loaded to avoid overhead.
 				global $wp_filesystem;
+				if ( ! $wp_filesystem ) {
+					require_once ABSPATH . 'wp-admin/includes/file.php';
+					WP_Filesystem();
+				}
 
 				if ( $wp_filesystem ) {
 					$wp_filesystem->put_contents( $htaccess_file, $htaccess_content, FS_CHMOD_FILE );

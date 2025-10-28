@@ -133,7 +133,8 @@ function v_wpsa_shortcode( $atts ) {
 	$nonce = wp_create_nonce( 'v_wpsa_nonce' );
 
 	// Generate unique ID for this shortcode instance to support multiple shortcodes per page.
-	$unique_id = 'v-wpsa-' . wp_rand( 1000, 9999 ) . '-' . time();
+	// Use uniqid() with more_entropy for better uniqueness and less predictability.
+	$unique_id = 'v-wpsa-' . uniqid( '', true );
 
 	// Return a loading placeholder that will be populated via AJAX.
 	// This breaks server-side caching since content is loaded dynamically.
