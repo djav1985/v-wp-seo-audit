@@ -185,12 +185,21 @@ function v_wpsa_shortcode( $atts ) {
 	<script type="text/javascript">
 	(function() {
 		'use strict';
-		jQuery(function($) {
-			var containerId = <?php echo wp_json_encode( $unique_id ); ?>;
+		var containerId = <?php echo wp_json_encode( $unique_id ); ?>;
+		
+		function loadContent() {
+			// Ensure jQuery is available
+			if (typeof jQuery === 'undefined') {
+				console.error('v-wpsa: jQuery is not loaded');
+				return;
+			}
+			
+			var $ = jQuery;
 			var $container = $('#' + containerId);
 
 			if (!$container.length) {
 				console.error('v-wpsa: Container not found:', containerId);
+				console.error('v-wpsa: Available containers:', $('.v-wpsa-container').map(function() { return this.id; }).get());
 				return;
 			}
 
@@ -229,7 +238,30 @@ function v_wpsa_shortcode( $atts ) {
 					$container.html(errorMessage);
 				}
 			});
-		});
+		}
+		
+		// Wait for both DOM and jQuery to be ready
+		if (typeof jQuery !== 'undefined' && jQuery.isReady) {
+			// jQuery is loaded and DOM is ready
+			loadContent();
+		} else if (typeof jQuery !== 'undefined') {
+			// jQuery is loaded but DOM might not be ready
+			jQuery(document).ready(loadContent);
+		} else {
+			// jQuery is not loaded yet, wait for DOM and check again
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', function checkAndLoad() {
+					if (typeof jQuery !== 'undefined') {
+						loadContent();
+					} else {
+						console.error('v-wpsa: jQuery not loaded after DOMContentLoaded');
+					}
+				});
+			} else {
+				// DOM is ready but jQuery is not loaded
+				console.error('v-wpsa: jQuery not loaded');
+			}
+		}
 	})();
 	</script>
 	<?php
