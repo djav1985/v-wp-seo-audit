@@ -79,8 +79,6 @@ class V_WPSA_Config {
 	private static function get_defaults() {
 		return array(
 			'app.name'                   => 'V WP SEO Audit',
-			'app.timezone'               => 'UTC',
-			'app.default_language'       => 'en',
 			'app.languages'              => array( 'en' => 'English' ),
 			'psi.categories'             => array( 'performance', 'accessibility', 'best-practices', 'seo', 'pwa' ),
 			'psi.device'                 => 'desktop',

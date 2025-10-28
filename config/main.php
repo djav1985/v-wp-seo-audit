@@ -42,9 +42,9 @@ $db_table_prefix = isset( $wpdb ) && isset( $wpdb->prefix ) ? $wpdb->prefix : 'w
 return array(
 	'basePath'   => dirname( __FILE__ ) . DIRECTORY_SEPARATOR . '..',
 	'name'       => $params['app.name'],
-	'language'   => $params['app.default_language'],
-	'timeZone'   => $params['app.timezone'],
-	'preload'    => array( 'log' ),
+	'language'   => get_locale(),
+	'timeZone'   => wp_timezone_string(),
+	'preload'    => array(),
 
 
 	// autoloading model and component classes.
@@ -60,12 +60,6 @@ return array(
 			'urlFormat'      => 'path',
 			'showScriptName' => false,
 			'class'          => 'application.components.UrlManager',
-			'cacheID'        => 'cache',
-		),
-
-		// File Cache. ~/root/website_review/runtime/cache directory.
-		'cache'           => array(
-			'class' => 'CFileCache',
 		),
 
 		'db'              => array(
@@ -80,18 +74,6 @@ return array(
 		),
 
 		// Error handler - removed custom error view, WordPress will handle 404s.
-
-		// Log errors using WordPress or plugin-specific logging.
-			'log'         => array(
-				'class'  => 'CLogRouter',
-				'routes' => array(
-					array(
-						'class'  => 'CFileLogRoute',
-						'levels' => 'error, warning',
-						'except' => 'exception.CHttpException.*',
-					),
-				),
-			),
 
 		'securityManager' => array(
 			'encryptionKey' => wp_salt( 'auth' ),
