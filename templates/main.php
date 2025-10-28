@@ -99,12 +99,32 @@ $base_url    = V_WPSA_PLUGIN_URL;
 	</div>
 </div>
 
-<?php
-// Render website list widget if there are analyzed websites.
-$widget_html = v_wpsa_render_website_list();
-if ( ! empty( $widget_html ) ) :
-	?>
-	<hr>
-	<h3 class="mb-4"><?php esc_html_e( 'Latest Reviews', 'v-wpsa' ); ?></h3>
-	<?php echo $widget_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Widget HTML is safely generated. ?>
-<?php endif; ?>
+<div id="v-wpsa-latest-reviews-container"></div>
+<script type="text/javascript">
+	// Load latest reviews dynamically to prevent widget caching issues
+	(function() {
+		'use strict';
+		// jQuery is enqueued by WordPress, so it should be available
+		jQuery(document).ready(function($) {
+			$.ajax({
+				url: <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>,
+				type: 'POST',
+				data: {
+					action: 'v_wpsa_load_latest_reviews',
+					nonce: <?php echo wp_json_encode( wp_create_nonce( 'v_wpsa_nonce' ) ); ?>,
+					_cache_bust: new Date().getTime()
+				},
+				dataType: 'json',
+				success: function(response) {
+					if (response && response.success && response.data && response.data.html) {
+						$('#v-wpsa-latest-reviews-container').html(response.data.html);
+					}
+				},
+				error: function() {
+					// Silent fail - widget is optional, no need to alert users
+					console.log('v-wpsa: Failed to load latest reviews widget');
+				}
+			});
+		});
+	})();
+</script>

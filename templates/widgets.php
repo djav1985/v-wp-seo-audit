@@ -245,7 +245,9 @@ function v_wpsa_get_website_thumbnail_url( $args = array() ) {
 		$cached_url  = rtrim( $upload_dir['baseurl'], '\/' ) . '/seo-audit/thumbnails/' . $filename;
 
 		if ( file_exists( $cached_path ) ) {
-			return $cached_url;
+			// Add cache-busting parameter based on file modification time.
+			$cache_bust = filemtime( $cached_path );
+			return add_query_arg( 'v', $cache_bust, $cached_url );
 		}
 	}
 

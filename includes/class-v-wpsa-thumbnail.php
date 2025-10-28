@@ -204,8 +204,14 @@ class V_WPSA_Thumbnail {
 		// Try to get or create cached thumbnail.
 		$thumbnail_url = self::download_thumbnail( $domain, $width );
 
-		// If cached thumbnail exists, return it.
+		// If cached thumbnail exists, return it with cache-busting parameter.
 		if ( $thumbnail_url ) {
+			// Add cache-busting parameter based on current timestamp to ensure fresh loads.
+			$cached_path = self::get_cached_thumbnail_path( $domain );
+			if ( file_exists( $cached_path ) ) {
+				$cache_bust    = filemtime( $cached_path );
+				$thumbnail_url = add_query_arg( 'v', $cache_bust, $thumbnail_url );
+			}
 			return $thumbnail_url;
 		}
 

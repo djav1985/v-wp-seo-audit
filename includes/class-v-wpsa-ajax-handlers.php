@@ -41,6 +41,23 @@ class V_WPSA_Ajax_Handlers {
 
 		// Delete report handler (admin only).
 		add_action( 'wp_ajax_v_wpsa_delete_report', array( __CLASS__, 'delete_report' ) );
+
+		// Latest reviews widget loader (for both logged-in and logged-out users).
+		add_action( 'wp_ajax_v_wpsa_load_latest_reviews', array( __CLASS__, 'load_latest_reviews' ) );
+		add_action( 'wp_ajax_nopriv_v_wpsa_load_latest_reviews', array( __CLASS__, 'load_latest_reviews' ) );
+	}
+
+	/**
+	 * Add cache-busting headers to AJAX responses.
+	 *
+	 * Prevents browser and proxy caching of AJAX responses containing dynamic content.
+	 */
+	private static function add_cache_busting_headers() {
+		if ( ! headers_sent() ) {
+			header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
+			header( 'Pragma: no-cache' );
+			header( 'Expires: Thu, 01 Jan 1970 00:00:00 GMT' );
+		}
 	}
 
 	/**
@@ -50,6 +67,9 @@ class V_WPSA_Ajax_Handlers {
 	 */
 	public static function get_cached_report() {
 		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
+
+		// Add cache-busting headers to prevent browser/proxy caching of AJAX responses.
+		self::add_cache_busting_headers();
 
 		$domain_raw = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
 		if ( empty( $domain_raw ) ) {
@@ -118,6 +138,9 @@ class V_WPSA_Ajax_Handlers {
 	public static function generate_report() {
 		// Verify nonce for security.
 		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
+
+		// Add cache-busting headers to prevent browser/proxy caching of AJAX responses.
+		self::add_cache_busting_headers();
 
 		// Get domain from request.
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitization handled in V_WPSA_Validation.
@@ -394,6 +417,27 @@ class V_WPSA_Ajax_Handlers {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Production error logging for troubleshooting.
 			error_log( sprintf( 'v-wpsa: Error deleting report for %s: %s', $domain, $e->getMessage() ) );
 			wp_send_json_error( array( 'message' => 'Error deleting report: ' . $e->getMessage() ) );
+		}
+	}
+
+	/**
+	 * AJAX handler for loading latest reviews widget.
+	 * Returns the widget HTML with current list of analyzed websites.
+	 */
+	public static function load_latest_reviews() {
+		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
+
+		// Add cache-busting headers.
+		self::add_cache_busting_headers();
+
+		// Render the widget.
+		$widget_html = v_wpsa_render_website_list();
+
+		if ( ! empty( $widget_html ) ) {
+			$output = '<hr><h3 class="mb-4">' . esc_html__( 'Latest Reviews', 'v-wpsa' ) . '</h3>' . $widget_html;
+			wp_send_json_success( array( 'html' => $output ) );
+		} else {
+			wp_send_json_success( array( 'html' => '' ) );
 		}
 	}
 }

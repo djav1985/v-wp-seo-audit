@@ -53,16 +53,59 @@ function v_wpsa_enqueue_assets() {
 
 	// Only load if shortcode is present on the page.
 	if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'v_wpsa' ) ) {
-		// Enqueue CSS files.
-		wp_enqueue_style( 'v-wpsa-bootstrap', V_WPSA_PLUGIN_URL . 'assets/css/bootstrap.min.css', array(), V_WPSA_VERSION );
-		wp_enqueue_style( 'v-wpsa-app', V_WPSA_PLUGIN_URL . 'assets/css/app.css', array( 'v-wpsa-bootstrap' ), V_WPSA_VERSION );
+		// Use file modification time for cache busting instead of static version.
+		// Each file gets its own version to ensure proper cache invalidation.
+		$css_bootstrap_file = V_WPSA_PLUGIN_DIR . 'assets/css/bootstrap.min.css';
+		$css_app_file       = V_WPSA_PLUGIN_DIR . 'assets/css/app.css';
+		$js_bootstrap_file  = V_WPSA_PLUGIN_DIR . 'assets/js/bootstrap.bundle.min.js';
+		$js_flot_file       = V_WPSA_PLUGIN_DIR . 'assets/js/jquery.flot.js';
+		$js_flot_pie_file   = V_WPSA_PLUGIN_DIR . 'assets/js/jquery.flot.pie.js';
+		$js_base_file       = V_WPSA_PLUGIN_DIR . 'assets/js/base.js';
 
-		// Enqueue JS files.
+		// Enqueue CSS files with individual file modification times.
+		wp_enqueue_style(
+			'v-wpsa-bootstrap',
+			V_WPSA_PLUGIN_URL . 'assets/css/bootstrap.min.css',
+			array(),
+			file_exists( $css_bootstrap_file ) ? filemtime( $css_bootstrap_file ) : V_WPSA_VERSION
+		);
+		wp_enqueue_style(
+			'v-wpsa-app',
+			V_WPSA_PLUGIN_URL . 'assets/css/app.css',
+			array( 'v-wpsa-bootstrap' ),
+			file_exists( $css_app_file ) ? filemtime( $css_app_file ) : V_WPSA_VERSION
+		);
+
+		// Enqueue JS files with individual file modification times.
 		wp_enqueue_script( 'jquery' ); // Use WordPress jQuery.
-		wp_enqueue_script( 'v-wpsa-bootstrap', V_WPSA_PLUGIN_URL . 'assets/js/bootstrap.bundle.min.js', array( 'jquery' ), V_WPSA_VERSION, true );
-		wp_enqueue_script( 'v-wpsa-flot', V_WPSA_PLUGIN_URL . 'assets/js/jquery.flot.js', array( 'jquery' ), V_WPSA_VERSION, true );
-		wp_enqueue_script( 'v-wpsa-flot-pie', V_WPSA_PLUGIN_URL . 'assets/js/jquery.flot.pie.js', array( 'jquery', 'v-wpsa-flot' ), V_WPSA_VERSION, true );
-		wp_enqueue_script( 'v-wpsa-base', V_WPSA_PLUGIN_URL . 'assets/js/base.js', array( 'jquery' ), V_WPSA_VERSION, true );
+		wp_enqueue_script(
+			'v-wpsa-bootstrap',
+			V_WPSA_PLUGIN_URL . 'assets/js/bootstrap.bundle.min.js',
+			array( 'jquery' ),
+			file_exists( $js_bootstrap_file ) ? filemtime( $js_bootstrap_file ) : V_WPSA_VERSION,
+			true
+		);
+		wp_enqueue_script(
+			'v-wpsa-flot',
+			V_WPSA_PLUGIN_URL . 'assets/js/jquery.flot.js',
+			array( 'jquery' ),
+			file_exists( $js_flot_file ) ? filemtime( $js_flot_file ) : V_WPSA_VERSION,
+			true
+		);
+		wp_enqueue_script(
+			'v-wpsa-flot-pie',
+			V_WPSA_PLUGIN_URL . 'assets/js/jquery.flot.pie.js',
+			array( 'jquery', 'v-wpsa-flot' ),
+			file_exists( $js_flot_pie_file ) ? filemtime( $js_flot_pie_file ) : V_WPSA_VERSION,
+			true
+		);
+		wp_enqueue_script(
+			'v-wpsa-base',
+			V_WPSA_PLUGIN_URL . 'assets/js/base.js',
+			array( 'jquery' ),
+			file_exists( $js_base_file ) ? filemtime( $js_base_file ) : V_WPSA_VERSION,
+			true
+		);
 
 		// Add global JavaScript variables needed by the plugin.
 		$base_url = rtrim( V_WPSA_PLUGIN_URL, '/' );
