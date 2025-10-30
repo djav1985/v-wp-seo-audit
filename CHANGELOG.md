@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added JavaScript function to automatically inject back button on all reports if missing
 
 ### Fixed
+- Fixed AJAX requests not working for logged-out users by modifying nonce verification to not die on failure for public endpoints
 - Fixed shortcode AJAX loading stuck issue by ensuring jQuery and base.js are properly enqueued before inline script execution
 - Fixed "Container not found" error by using wp_add_inline_script for proper script timing and execution order
 - Fixed 504 Gateway Timeout errors during SEO analysis by increasing timeouts and resource limits
