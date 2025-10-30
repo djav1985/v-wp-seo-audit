@@ -81,7 +81,8 @@ class V_WPSA_Ajax_Handlers {
 	 * This is used by the front-end "Review" buttons to view the stored report as-is.
 	 */
 	public static function get_cached_report() {
-		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
+		// Verify nonce but don't die on failure - allow logged-out users to access cached reports.
+		$nonce_valid = check_ajax_referer( 'v_wpsa_nonce', 'nonce', false );
 
 		// Add cache-busting headers to prevent browser/proxy caching of AJAX responses.
 		self::add_cache_busting_headers();
@@ -131,8 +132,8 @@ class V_WPSA_Ajax_Handlers {
 	 * AJAX handler for domain validation.
 	 */
 	public static function validate_domain() {
-		// Verify nonce for security.
-		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
+		// Verify nonce but don't die on failure - allow logged-out users to validate domains.
+		$nonce_valid = check_ajax_referer( 'v_wpsa_nonce', 'nonce', false );
 
 		// Get domain from request.
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitization handled in V_WPSA_Validation.
@@ -154,8 +155,8 @@ class V_WPSA_Ajax_Handlers {
 	 * WordPress-native implementation.
 	 */
 	public static function generate_report() {
-		// Verify nonce for security.
-		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
+		// Verify nonce but don't die on failure - allow logged-out users to generate reports.
+		$nonce_valid = check_ajax_referer( 'v_wpsa_nonce', 'nonce', false );
 
 		// Add cache-busting headers to prevent browser/proxy caching of AJAX responses.
 		self::add_cache_busting_headers();
@@ -273,8 +274,8 @@ class V_WPSA_Ajax_Handlers {
 	 * @throws Exception If PDF generation or file reading fails.
 	 */
 	public static function download_pdf() {
-		// Verify nonce for security.
-		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
+		// Verify nonce but don't die on failure - allow logged-out users to download PDFs.
+		$nonce_valid = check_ajax_referer( 'v_wpsa_nonce', 'nonce', false );
 
 		// Get domain from request.
 		$domain = isset( $_POST['domain'] ) ? sanitize_text_field( wp_unslash( $_POST['domain'] ) ) : '';
@@ -454,7 +455,8 @@ class V_WPSA_Ajax_Handlers {
 	 * Returns the widget HTML with current list of analyzed websites.
 	 */
 	public static function load_latest_reviews() {
-		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
+		// Verify nonce but don't die on failure - allow logged-out users to view latest reviews.
+		$nonce_valid = check_ajax_referer( 'v_wpsa_nonce', 'nonce', false );
 
 		// Add cache-busting headers.
 		self::add_cache_busting_headers();
@@ -475,7 +477,8 @@ class V_WPSA_Ajax_Handlers {
 	 * Returns the main template HTML to break caching.
 	 */
 	public static function load_main_content() {
-		check_ajax_referer( 'v_wpsa_nonce', 'nonce' );
+		// Verify nonce but don't die on failure - allow logged-out users to load main content.
+		$nonce_valid = check_ajax_referer( 'v_wpsa_nonce', 'nonce', false );
 
 		// Add cache-busting headers.
 		self::add_cache_busting_headers();
